@@ -52,6 +52,60 @@ export const MANUAL_FOOTER_KINDS = Object.freeze(["insurance"]);
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
 export const LEGAL_WELFARE_NAME1 = "労務費";
 
+// U27 (2026-07-29): 直前と同値の継続は空欄ではなく「〃」を表示・保存する。
+export const DITTO_MARK = "〃";
+export const DITTO_NAME_FIELDS = Object.freeze(["name1", "name2", "name3"]);
+
+export function isDittoMark(value) {
+  return detailHasText(value) && String(value).trim() === DITTO_MARK;
+}
+
+/** 行 index の field を、〃／空を遡って実値に解決する（ブロック内のみ）。 */
+export function resolveContinuedField(rows, index, field) {
+  if (!Array.isArray(rows) || index < 0) return null;
+  for (let i = index; i >= 0; i -= 1) {
+    const raw = rows[i]?.[field];
+    if (!detailHasText(raw)) continue;
+    if (isDittoMark(raw)) continue;
+    return String(raw).trim();
+  }
+  return null;
+}
+
+/**
+ * 直前と同値の継続行を「〃」に正規化する。
+ * - name1/name2: 同値、または空で継承できる継続 → 〃（真の未設定＝上に実値が無い空は空のまま）
+ * - name3: 同値のときだけ 〃。空は空のまま（定義なしと継承を混同しない）
+ */
+export function normalizeContinuedFieldsToDitto(
+  rows,
+  fields = DITTO_NAME_FIELDS,
+) {
+  if (!Array.isArray(rows)) return rows;
+  for (const field of fields) {
+    const emptyBecomesDitto = field === "name1" || field === "name2";
+    let prevResolved = null;
+    for (const row of rows) {
+      const raw = row[field];
+      if (isDittoMark(raw)) {
+        if (!prevResolved) row[field] = null;
+        continue;
+      }
+      if (!detailHasText(raw)) {
+        if (emptyBecomesDitto && prevResolved) row[field] = DITTO_MARK;
+        continue;
+      }
+      const text = String(raw).trim();
+      if (prevResolved && text === prevResolved) {
+        row[field] = DITTO_MARK;
+      } else {
+        prevResolved = text;
+      }
+    }
+  }
+  return rows;
+}
+
 // R-11: 諸経費率 = 10%（依頼者確定 2026-07-26）。表示用の百分率も併記。
 export const OVERHEAD_RATE = "0.1";
 export const OVERHEAD_RATE_PERCENT = "10";
@@ -267,9 +321,14 @@ export function createDetailBlockModel({
     const overheadBase = detailAmounts.length ? sum(detailAmounts) : null;
     const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
     const laborAmounts = block.detailRows
-      .filter((row) => row.name1 === LEGAL_WELFARE_NAME1)
-      .map((row) => detailRowAmount(row))
-      .filter((amount) => amount !== null);
+      .map((row, rowIndex) => ({
+        name1: resolveContinuedField(block.detailRows, rowIndex, "name1"),
+        amount: detailRowAmount(row),
+      }))
+      .filter(
+        (row) => row.name1 === LEGAL_WELFARE_NAME1 && row.amount !== null,
+      )
+      .map((row) => row.amount);
     const legalWelfare = legalWelfareFromLaborAmounts(laborAmounts);
     return {
       ...blockTotals({
@@ -284,13 +343,15 @@ export function createDetailBlockModel({
     };
   }
 
-  // U13/U24: rows with a blank 1st column inherit the group of the closest
-  // row above that has one. Recomputed on every snapshot, so reorders and
-  // deletes re-attach groups automatically. U27: display column stays blank.
+  // U13/U24: rows with a blank/〃 1st column inherit the group of the closest
+  // row above that has a real value. Recomputed on every snapshot.
+  // U27: 継続は保存・表示とも「〃」（空欄表示は廃止）。
   function nameSpecGroups(block) {
     let group = null;
     return block.detailRows.map((row) => {
-      if (detailHasText(row.name1)) group = row.name1;
+      if (detailHasText(row.name1) && !isDittoMark(row.name1)) {
+        group = String(row.name1).trim();
+      }
       return group;
     });
   }
@@ -452,6 +513,7 @@ export function createDetailBlockModel({
   }
 
   // U28: prune empty detail rows / blank blocks before save; renumber display order.
+  // U27: 同値連続の費目/種別/定義は「〃」に正規化してから保存する。
   function prepareForSave() {
     for (let blockIndex = list.length - 1; blockIndex >= 0; blockIndex -= 1) {
       const block = list[blockIndex];
@@ -463,6 +525,7 @@ export function createDetailBlockModel({
       } else {
         block.detailRows = [...nonEmptyRows, ...emptyRows.slice(0, 1)];
       }
+      normalizeContinuedFieldsToDitto(block.detailRows);
       if (!blockHasMeaningfulContent(block)) {
         list.splice(blockIndex, 1);
       }

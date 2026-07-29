@@ -335,6 +335,59 @@ test("name_spec_group inherits from the closest 1st-column value above (U13/U24)
   );
 });
 
+test("U27: prepareForSave normalizes continued name1/2/3 to 〃; legal welfare resolves 〃", () => {
+  const model = editableModel();
+  const blockId = model.addBlock();
+  const r0 = model.snapshot().blocks[0].detailRows[0].rowKey;
+  model.updateDetailRow(blockId, r0, {
+    name1: "労務費",
+    name2: "出向工事管理者賃金（昼）",
+    name3: "A",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "100",
+  });
+  const r1 = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, r1, {
+    name1: "労務費",
+    name2: "出向工事管理者賃金（昼）",
+    name3: "A",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "50",
+  });
+  const r2 = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, r2, {
+    name1: "",
+    name2: "",
+    name3: "B",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "25",
+  });
+
+  // Before save: empty continuation already resolves to 労務費 for legal welfare.
+  assert.equal(model.snapshot().blocks[0].footer.legal_welfare.amount, "175");
+
+  model.prepareForSave();
+  const rows = model.snapshot().blocks[0].detailRows;
+  assert.equal(rows[0].name1, "労務費");
+  assert.equal(rows[0].name2, "出向工事管理者賃金（昼）");
+  assert.equal(rows[0].name3, "A");
+  assert.equal(rows[1].name1, "〃");
+  assert.equal(rows[1].name2, "〃");
+  assert.equal(rows[1].name3, "〃");
+  assert.equal(rows[2].name1, "〃");
+  assert.equal(rows[2].name2, "〃");
+  // name3 が異なれば〃にしない
+  assert.equal(rows[2].name3, "B");
+  assert.equal(model.snapshot().blocks[0].footer.legal_welfare.amount, "175");
+  assert.deepEqual(
+    rows.map((row) => row.nameSpecGroup),
+    ["労務費", "労務費", "労務費"],
+  );
+});
+
 test("editBudget=false freezes every 内訳 mutation while display stays readable", () => {
   for (const lockState of [LOCK_STATES.BUDGET_LOCKED, LOCK_STATES.FULL_LOCKED]) {
     const model = createDetailBlockModel({
@@ -661,7 +714,7 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /定義及び品名（入力）/);
   assert.match(
     source,
-    /const anchor = jy2HasText\(row\.name1\) \|\| jy2HasText\(row\.name2\);/,
+    /const anchor =\s*[\s\S]*?jy2HasText\(row\.name1\)[\s\S]*?jy2HasText\(row\.name2\)/,
   );
   assert.doesNotMatch(
     source,
@@ -715,7 +768,7 @@ test("U37 定義及び品名は列幅拡大＋fullTitleホバー全文", () => {
   assert.match(source, /opts\.fullTitle/);
   assert.match(
     source,
-    /jy2ComboInput\(\s*documentRef,\s*row\.name3,\s*rowSuggest\.name3,[\s\S]*?\{ fullTitle: true \}/,
+    /jy2ComboInput\(\s*documentRef,\s*row\.name3,\s*rowSuggest\.name3,[\s\S]*?fullTitle:\s*true/,
   );
 });
 

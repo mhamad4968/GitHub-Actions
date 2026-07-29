@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-labor-type-day-night-only
+  // @JY_V2_BUILD 2026-07-29-ver02-ditto-mark-u27
   // U34: 保存・セル編集の再描画／reload でページ上部へ跳ばない（縦・横位置を維持）
 
   const JY2_STYLE_ID = "jy2-shell-style";
@@ -628,24 +628,41 @@
     if (cell.classList.contains("jy2-incomplete")) return;
     if (continued && label) {
       cell.classList.add("jy2-name-continued");
-      cell.title = `（上の${kind}「${label}」と同一・空白表示）`;
+      cell.title = `（上の${kind}「${label}」と同一・〃表示）`;
     } else {
       cell.classList.add("jy2-name-unset");
       cell.title = `（${kind} 未設定）`;
     }
   }
 
-  // U27: 直前行と同じ費目/種別（補助）は画面上を空白にする（保存値は保持可）。
+  // U27: 直前行と同じ費目/種別/定義は「〃」（保存値は実値または〃）。
+  const JY2_DITTO_MARK = "〃";
+  function jy2IsDitto(value) {
+    return jy2HasText(value) && String(value).trim() === JY2_DITTO_MARK;
+  }
+
   function jy2SameText(a, b) {
     if (!jy2HasText(a) || !jy2HasText(b)) return false;
+    if (jy2IsDitto(a) || jy2IsDitto(b)) return false;
     return String(a).trim() === String(b).trim();
   }
 
-  function jy2PrevFilled(rows, index, field) {
+  function jy2PrevResolved(rows, index, field) {
     for (let i = index - 1; i >= 0; i--) {
-      if (jy2HasText(rows[i][field])) return rows[i][field];
+      const value = rows[i][field];
+      if (!jy2HasText(value) || jy2IsDitto(value)) continue;
+      return String(value).trim();
     }
     return null;
+  }
+
+  function jy2ShowDitto(rowValue, prevResolved, { emptyContinues = true } = {}) {
+    if (jy2IsDitto(rowValue)) return Boolean(prevResolved);
+    if (jy2SameText(rowValue, prevResolved)) return true;
+    if (emptyContinues && !jy2HasText(rowValue) && jy2HasText(prevResolved)) {
+      return true;
+    }
+    return false;
   }
 
   // U5: 半角カナ → 全角（定義及び品名・name3）
@@ -736,28 +753,39 @@
   // U4/U26/U26-2: 候補選択コンボ。常にリスト緑。
   // 左 input は打鍵で候補が絞り込み表示（datalist）。
   // 右 <select>(▼) は全候補を常時列挙（datalist が現行値で絞られても選べる）。
-  // opts.displayBlank: U27 連続同値は初期表示を空にし、focus で保存値を一時表示。
+  // opts.displayDitto: U27 連続同値は初期表示を「〃」にし、focus で実値を一時表示。
+  // opts.revealValue: focus 時に見せる実値（〃保存時は解決済みの上段値）。
   // opts.listOnly: 候補あり時はリスト外の非空値を blur/change で拒否（空クリアは可）。
-  //   既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
+  //   「〃」は常に許可。既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
   // opts.fullTitle: 見切れ時ホバーで全文（定義及び品名など長文列）。listOnly 拒否中は miss 文言優先。
   function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
     const stored = value === null || value === undefined ? "" : String(value);
-    const displayBlank = Boolean(opts.displayBlank) && jy2HasText(stored);
+    const revealValue = jy2HasText(opts.revealValue)
+      ? String(opts.revealValue).trim()
+      : stored.trim();
+    const displayDitto = Boolean(opts.displayDitto);
+    // 後方互換: displayBlank は displayDitto と同義（〃表示）。
+    const useDittoDisplay = displayDitto || Boolean(opts.displayBlank);
     const fullTitle = Boolean(opts.fullTitle);
     const input = documentRef.createElement("input");
     input.type = "text";
     input.className = "jy2-input jy2-combo";
     input.autocomplete = "off";
-    input.value = displayBlank ? "" : stored;
+    input.value = useDittoDisplay ? JY2_DITTO_MARK : stored;
     let revealed = false;
     let composing = false;
     let lastCommitted = stored.trim();
     const syncFullTitle = () => {
       if (!fullTitle) return;
       const shown = input.value.trim();
-      const tip = shown || (displayBlank ? stored.trim() : "");
+      const tip =
+        shown && shown !== JY2_DITTO_MARK
+          ? shown
+          : useDittoDisplay
+            ? revealValue
+            : "";
       input.title = tip;
     };
     if (fullTitle) syncFullTitle();
@@ -775,6 +803,17 @@
     blank.textContent = "▼";
     select.appendChild(blank);
     const seen = new Set();
+    // 「〃」を候補先頭に（継続入力用）
+    if (useDittoDisplay || opts.allowDitto) {
+      const dittoOpt = documentRef.createElement("option");
+      dittoOpt.value = JY2_DITTO_MARK;
+      dittoOpt.textContent = JY2_DITTO_MARK;
+      select.appendChild(dittoOpt);
+      const dlDitto = documentRef.createElement("option");
+      dlDitto.value = JY2_DITTO_MARK;
+      datalist.appendChild(dlDitto);
+      seen.add(JY2_DITTO_MARK);
+    }
     for (const option of options || []) {
       const text = String(option || "").trim();
       if (!text || seen.has(text)) continue;
@@ -787,6 +826,12 @@
       dlOpt.value = text;
       datalist.appendChild(dlOpt);
     }
+    if ([...seen].every((t) => t === JY2_DITTO_MARK) && !useDittoDisplay && seen.size === 0) {
+      select.disabled = true;
+      select.title = "このブロックに候補リストがありません";
+      input.removeAttribute("list");
+    }
+    // 候補ゼロ（〃のみ／無し）でも list は残す場合あり。真の空候補だけ無効化。
     if (seen.size === 0) {
       select.disabled = true;
       select.title = "このブロックに候補リストがありません";
@@ -807,31 +852,47 @@
       input.title = msg;
     };
     const commit = () => {
-      // 未フォーカスの空表示を「クリア保存」と誤認しない
-      if (displayBlank && !revealed) return;
+      // 未フォーカスの〃表示を「クリア保存」と誤認しない
+      if (useDittoDisplay && !revealed) return;
       const next = input.value.trim();
       if (
         opts.listOnly &&
         seen.size > 0 &&
         next !== "" &&
+        next !== JY2_DITTO_MARK &&
         !seen.has(next)
       ) {
         const restored = lastCommitted;
         input.value =
-          displayBlank && restored === stored ? "" : restored;
+          useDittoDisplay &&
+          (restored === stored || jy2IsDitto(restored) || restored === revealValue)
+            ? JY2_DITTO_MARK
+            : restored;
         showMiss();
         return;
       }
-      if (next === lastCommitted) return;
+      if (next === lastCommitted) {
+        if (useDittoDisplay && (next === revealValue || jy2IsDitto(next))) {
+          input.value = JY2_DITTO_MARK;
+        }
+        return;
+      }
       clearMiss();
       lastCommitted = next;
       onCommit(next);
-      if (displayBlank && next === stored) input.value = "";
+      if (
+        useDittoDisplay &&
+        (next === revealValue || jy2IsDitto(next) || next === stored.trim())
+      ) {
+        input.value = JY2_DITTO_MARK;
+      }
     };
     input.addEventListener("focus", () => {
       revealed = true;
       clearMiss();
-      if (displayBlank && input.value === "") input.value = stored;
+      if (useDittoDisplay && input.value === JY2_DITTO_MARK) {
+        input.value = revealValue || stored;
+      }
     });
     input.addEventListener("change", commit);
     input.addEventListener("blur", commit);
@@ -857,6 +918,12 @@
       if (fullTitle) syncFullTitle();
       onCommit(picked);
       select.selectedIndex = 0;
+      if (
+        useDittoDisplay &&
+        (picked === JY2_DITTO_MARK || picked === revealValue)
+      ) {
+        input.value = JY2_DITTO_MARK;
+      }
     });
     wrap.append(input, datalist, select, miss);
     return wrap;
@@ -934,7 +1001,7 @@
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
   "sourceFile": "内訳で使うコード表.xlsx",
-  "generatedAt": "2026-07-29T18:59:41",
+  "generatedAt": "2026-07-29T18:56:16",
   "labels": {
     "name1": "費目",
     "name2": "種別（補助）",
@@ -1232,16 +1299,14 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": [
-          "出向工事管理者賃金（昼）",
-          "出向工事管理者賃金（夜）"
+          "出向工事管理者賃金"
         ]
       },
       "dashTypeByHimoku": {
         "労務費": false
       },
       "allTypes": [
-        "出向工事管理者賃金（昼）",
-        "出向工事管理者賃金（夜）"
+        "出向工事管理者賃金"
       ],
       "allDefinitions": [
         "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
@@ -2497,16 +2562,14 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": [
-          "出向工事管理者賃金（昼）",
-          "出向工事管理者賃金（夜）"
+          "出向工事管理者賃金"
         ]
       },
       "dashTypeByHimoku": {
         "労務費": false
       },
       "allTypes": [
-        "出向工事管理者賃金（昼）",
-        "出向工事管理者賃金（夜）"
+        "出向工事管理者賃金"
       ],
       "allDefinitions": [
         "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
@@ -2523,16 +2586,14 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": [
-          "建設機械オペレーター（昼）",
-          "建設機械オペレーター（夜）"
+          "建設機械オペレーター"
         ]
       },
       "dashTypeByHimoku": {
         "労務費": false
       },
       "allTypes": [
-        "建設機械オペレーター（昼）",
-        "建設機械オペレーター（夜）"
+        "建設機械オペレーター"
       ],
       "allDefinitions": [
         "工事に直接従事する軌陸車などの運転手賃金であり、社員及び契約社員は除く"
@@ -2549,16 +2610,14 @@
       "himokuDefault": "労務費",
       "typesByHimoku": {
         "労務費": [
-          "その他労務者（昼）",
-          "その他労務者（夜）"
+          "その他労務者"
         ]
       },
       "dashTypeByHimoku": {
         "労務費": false
       },
       "allTypes": [
-        "その他労務者（昼）",
-        "その他労務者（夜）"
+        "その他労務者"
       ],
       "allDefinitions": [
         "工事に直接従事する労務者などの賃金であり、社員及び契約社員は除く"
@@ -3353,14 +3412,17 @@
       "その他材料費"
     ],
     "労務費": [
+      "出向工事管理者賃金",
+      "建設機械オペレーター",
+      "その他労務者",
+      "労務費（昼間）",
+      "労務費（夜間）",
       "出向工事管理者賃金（昼）",
       "出向工事管理者賃金（夜）",
       "建設機械オペレーター（昼）",
       "建設機械オペレーター（夜）",
       "その他労務者（昼）",
-      "その他労務者（夜）",
-      "労務費（昼間）",
-      "労務費（夜間）"
+      "その他労務者（夜）"
     ],
     "仮設機械経費": [
       "鎌ヶ谷資材使用料",
@@ -3504,24 +3566,6 @@
     ],
     "直轄重機誘導員": [
       "社員名を入れたい"
-    ],
-    "出向工事管理者賃金（昼）": [
-      "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
-    ],
-    "出向工事管理者賃金（夜）": [
-      "出向工事管理者賃金や工事に直接従事する労務者賃金であり、社員及び契約社員は除く"
-    ],
-    "建設機械オペレーター（昼）": [
-      "工事に直接従事する軌陸車などの運転手賃金であり、社員及び契約社員は除く"
-    ],
-    "建設機械オペレーター（夜）": [
-      "工事に直接従事する軌陸車などの運転手賃金であり、社員及び契約社員は除く"
-    ],
-    "その他労務者（昼）": [
-      "工事に直接従事する労務者などの賃金であり、社員及び契約社員は除く"
-    ],
-    "その他労務者（夜）": [
-      "工事に直接従事する労務者などの賃金であり、社員及び契約社員は除く"
     ]
   }
 });
@@ -3747,36 +3791,43 @@
     const snapshot = detailModel.snapshot();
     for (const block of snapshot.blocks) {
       const entry = jy2ResolveNameHierarchy(block);
-      for (const row of block.detailRows) {
+      block.detailRows.forEach((row, rowIndex) => {
+        const himoku =
+          jy2IsDitto(row.name1) || !jy2HasText(row.name1)
+            ? jy2PrevResolved(block.detailRows, rowIndex, "name1")
+            : String(row.name1 || "").trim();
         if (
-          jy2HimokuUsesDashType(entry, row.name1) &&
+          jy2HimokuUsesDashType(entry, himoku) &&
           String(row.name2 || "").trim() !== "－"
         ) {
           detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
             name2: "－",
           });
         }
-      }
+      });
     }
   }
 
-  // 費目に対する種別（補助）が1件だけの行は、空／「－」なら自動セット。
+  // 費目に対する種別（補助）が1件だけの行は、空／「－」／〃なら自動セット。
   function jy2NormalizeSoleTypeDetails(detailModel) {
     const snapshot = detailModel.snapshot();
     for (const block of snapshot.blocks) {
       const entry = jy2ResolveNameHierarchy(block);
-      for (const row of block.detailRows) {
-        const himoku = String(row.name1 || "").trim();
-        if (!himoku) continue;
+      block.detailRows.forEach((row, rowIndex) => {
+        const himoku =
+          jy2IsDitto(row.name1) || !jy2HasText(row.name1)
+            ? jy2PrevResolved(block.detailRows, rowIndex, "name1")
+            : String(row.name1 || "").trim();
+        if (!himoku) return;
         const sole = jy2SoleTypeForHimoku(entry, himoku);
-        if (!sole) continue;
+        if (!sole) return;
         const current = String(row.name2 || "").trim();
-        if (!current || current === "－") {
+        if (!current || current === "－" || current === JY2_DITTO_MARK) {
           detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
             name2: sole,
           });
         }
-      }
+      });
     }
   }
 
@@ -6016,36 +6067,45 @@
         detailModel.updateDetailRow(block.stableBlockId, row.rowKey, patch);
         scheduleRerender();
       };
-      // 行ごとのカスケード候補（費目→種別→定義及び品名）。
-      const rowSuggest = jy2CollectDetailSuggestions(null, block, row);
+      // 行ごとのカスケード候補（費目→種別→定義及び品名）。〃／空は上段実値で解決。
+      const prevName1 = jy2PrevResolved(block.detailRows, rowIndex, "name1");
+      const prevName2 = jy2PrevResolved(block.detailRows, rowIndex, "name2");
+      const prevName3 = jy2PrevResolved(block.detailRows, rowIndex, "name3");
+      const resolvedName1 =
+        jy2IsDitto(row.name1) || !jy2HasText(row.name1)
+          ? prevName1
+          : String(row.name1).trim();
+      const resolvedName2 =
+        jy2IsDitto(row.name2) || !jy2HasText(row.name2)
+          ? prevName2
+          : String(row.name2).trim();
+      const rowSuggest = jy2CollectDetailSuggestions(null, block, {
+        ...row,
+        name1: resolvedName1,
+        name2: resolvedName2,
+      });
       const dashTypeFixed = jy2HimokuUsesDashType(
         jy2ResolveNameHierarchy(block),
-        row.name1,
+        resolvedName1,
       );
-      const prevName1 = jy2PrevFilled(block.detailRows, rowIndex, "name1");
-      const prevName2 = jy2PrevFilled(block.detailRows, rowIndex, "name2");
-      // U27: 保存値が埋まっていても直前と同値なら画面は空白（Excel寄り）
-      const name1SameAsAbove = jy2SameText(row.name1, prevName1);
-      const name2SameAsAbove = jy2SameText(row.name2, prevName2);
-      const name1DisplayBlank =
-        !jy2HasText(row.name1) || name1SameAsAbove;
-      const name2DisplayBlank =
-        !jy2HasText(row.name2) || name2SameAsAbove;
+      // U27: 直前と同値／空継承／保存〃 → 画面は「〃」（Excelの空欄表示は廃止）
+      const name1ShowDitto = jy2ShowDitto(row.name1, prevName1);
+      const name2ShowDitto = jy2ShowDitto(row.name2, prevName2);
+      // 定義及び品名は同値のときだけ〃（空は未設定のまま）
+      const name3ShowDitto = jy2ShowDitto(row.name3, prevName3, {
+        emptyContinues: false,
+      });
+      const name1DisplayBlank = name1ShowDitto || !jy2HasText(row.name1);
+      const name2DisplayBlank = name2ShowDitto || !jy2HasText(row.name2);
       const name1BlankVisual = {
         blank: name1DisplayBlank,
-        continued:
-          name1SameAsAbove ||
-          (!jy2HasText(row.name1) && jy2HasText(row.nameSpecGroup)),
-        label: name1SameAsAbove
-          ? String(prevName1).trim()
-          : row.nameSpecGroup,
+        continued: name1ShowDitto,
+        label: prevName1 || row.nameSpecGroup,
         kind: "費目",
       };
       const name2BlankVisual = {
         blank: name2DisplayBlank,
-        continued:
-          name2SameAsAbove ||
-          (!jy2HasText(row.name2) && jy2HasText(prevName2)),
+        continued: name2ShowDitto,
         label: prevName2,
         kind: "種別（補助）",
       };
@@ -6057,7 +6117,12 @@
           row.name1,
           rowSuggest.name1,
           commit("name1"),
-          { displayBlank: name1SameAsAbove, listOnly: true },
+          {
+            displayDitto: name1ShowDitto,
+            revealValue: prevName1 || row.name1,
+            listOnly: true,
+            allowDitto: Boolean(prevName1),
+          },
         );
         name1Ctrl.dataset.jy2Field = "name1";
         name1.appendChild(name1Ctrl);
@@ -6073,7 +6138,12 @@
             row.name2,
             rowSuggest.name2,
             commit("name2"),
-            { displayBlank: name2SameAsAbove, listOnly: true },
+            {
+              displayDitto: name2ShowDitto,
+              revealValue: prevName2 || row.name2,
+              listOnly: true,
+              allowDitto: Boolean(prevName2),
+            },
           );
           name2Ctrl.dataset.jy2Field = "name2";
           name2.appendChild(name2Ctrl);
@@ -6085,7 +6155,12 @@
           row.name3,
           rowSuggest.name3,
           (value) => commit("name3")(jy2ToFullWidthKana(value)),
-          { fullTitle: true },
+          {
+            fullTitle: true,
+            displayDitto: name3ShowDitto,
+            revealValue: prevName3 || row.name3,
+            allowDitto: Boolean(prevName3),
+          },
         );
         name3Ctrl.dataset.jy2Field = "name3";
         name3.appendChild(name3Ctrl);
@@ -6119,9 +6194,22 @@
         unitPriceCell.appendChild(priceCtrl);
         tr.appendChild(unitPriceCell);
         // U17: 薄い赤の起点は費目/種別（補助）のみ。定義及び品名（name3）は必須扱いにしない。
-        const anchor = jy2HasText(row.name1) || jy2HasText(row.name2);
-        jy2MarkIncompleteIfAnchor(name1, anchor, row.name1);
-        jy2MarkIncompleteIfAnchor(name2, anchor, row.name2);
+        // 〃は「値あり」扱い（継続入力）。
+        const anchor =
+          jy2HasText(row.name1) ||
+          jy2HasText(row.name2) ||
+          name1ShowDitto ||
+          name2ShowDitto;
+        jy2MarkIncompleteIfAnchor(
+          name1,
+          anchor,
+          name1ShowDitto ? JY2_DITTO_MARK : row.name1,
+        );
+        jy2MarkIncompleteIfAnchor(
+          name2,
+          anchor,
+          name2ShowDitto ? JY2_DITTO_MARK : row.name2,
+        );
         jy2MarkIncompleteIfAnchor(unit, anchor, row.unit);
         jy2MarkIncompleteIfAnchor(quantityCell, anchor, row.quantity);
         jy2MarkIncompleteIfAnchor(unitPriceCell, anchor, row.unitPrice);
@@ -6171,22 +6259,28 @@
           documentRef,
           "td",
           "",
-          name1SameAsAbove ? "" : row.name1,
+          name1ShowDitto ? JY2_DITTO_MARK : row.name1,
         );
         const name2Cell = jy2Cell(
           documentRef,
           "td",
           "",
-          name2SameAsAbove ? "" : row.name2,
+          name2ShowDitto ? JY2_DITTO_MARK : row.name2,
         );
         jy2MarkNameBlankVisual(name1Cell, name1BlankVisual);
         jy2MarkNameBlankVisual(name2Cell, name2BlankVisual);
         tr.appendChild(name1Cell);
         tr.appendChild(name2Cell);
         {
-          const name3Ro = jy2Cell(documentRef, "td", "", row.name3);
-          const name3Text =
-            row.name3 === null || row.name3 === undefined
+          const name3Ro = jy2Cell(
+            documentRef,
+            "td",
+            "",
+            name3ShowDitto ? JY2_DITTO_MARK : row.name3,
+          );
+          const name3Text = name3ShowDitto
+            ? prevName3 || ""
+            : row.name3 === null || row.name3 === undefined
               ? ""
               : String(row.name3).trim();
           if (name3Text) name3Ro.title = name3Text;
