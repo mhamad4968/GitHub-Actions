@@ -150,12 +150,13 @@ P-36により、請負・給与の行金額とその合計は丸め前の十進�
 
 | コード | ラベル | 型 | 必須/一意 | 備考 |
 |---|---|---|---|---|
-| `actual_record_key` | 予実レコードキー | 文字列(1行) | 必須／**一意** | 月別=`project_id|block_id|category|monthly|YYYY-MM`、最終=`project_id|block_id|category|final` |
+| `actual_record_key` | 予実レコードキー | 文字列(1行) | 必須／**一意**／≤64 | **レガシー**月別=`project_id\|block_id\|category\|monthly\|YYYY-MM`、最終=`…\|final`。**明細展開（2026-07-29）**詳細変種: 月別=`…\|m\|YY-MM\|r{FNV1a8}`、最終=`…\|f\|r{FNV1a8}`（`r`＝`rowKey`のFNV-1a 8hex） |
 | `project_id` | 工事ID | 文字列(1行) | 必須 | 帰属・JOINの正 |
 | `project_business_key` | 工事業務キー | 文字列(1行) | 必須 | 検索表示用 |
 | `record_kind` | レコード種別 | ドロップダウン | 必須 | monthly_consumption／final_budget |
 | `stable_block_id` | 工種キー | 文字列(1行) | 必須 | ①②と対応 |
 | `cost_category_key` | 費用区分キー | ドロップダウン | 必須 | 施工／保安 |
+| `detail_row_key` | 明細行キー | 文字列(1行) | 任意 | **2026-07-29 追加**。明細変種のみ。App757 `row_key`（`row-…`）を保存。レガシー行は空 |
 | `target_month` | 対象月 | 日付 | 月別のみ必須 | 月初日で保存し年月として表示 |
 | `amount` | 金額（税抜） | 数値 | 必須 | 月別消化または最終予算額 |
 | `note` | 内容 | 文字列(複数行) | 任意 | 摘要 |
