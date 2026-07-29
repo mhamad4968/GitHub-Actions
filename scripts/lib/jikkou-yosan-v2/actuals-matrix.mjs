@@ -414,12 +414,21 @@ export function createActualsMatrixModel({
       }
     }
     const parentFinalRaw = parentEntry?.finalBudget ?? null;
-    const childFinalInputs = children
-      .filter((child) => child.finalBudgetManual)
-      .map((child) => child.finalBudget);
-    const finalFromChildren = childFinalInputs.length > 0;
+    // 最終予算の親集計:
+    // - 子に月別実績 or 手入力最終が1件でもある → 全子の「有効最終」
+    //   （手入力値、なければ各子の現行予算デフォルト）を合計する。
+    // - どちらも無い → レガシー（ブロック単位）最終を使う。
+    // これで「月別は子合計／最終だけレガシー」のハイブリッドを避ける。
+    const anyChildHasMonthly = children.some((child) =>
+      monthList.some(
+        (month) =>
+          child.monthly[month] !== null && child.monthly[month] !== undefined,
+      ),
+    );
+    const anyChildManualFinal = children.some((child) => child.finalBudgetManual);
+    const finalFromChildren = anyChildManualFinal || anyChildHasMonthly;
     const finalBudgetInput = finalFromChildren
-      ? sum(childFinalInputs)
+      ? sum(children.map((child) => child.finalBudget))
       : parentFinalRaw;
     const finalBudget = finalBudgetInput ?? currentBudget;
     const monthlyAmounts = Object.values(monthly).filter(

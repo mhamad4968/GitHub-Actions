@@ -1,11 +1,12 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-actual-detail-expand
+  // @JY_V2_BUILD 2026-07-29-ver02-actual-detail-expand-fix
   // 工事原価管理: 親行＝内訳№単位は合計表示のみ・編集不可。＋/－で明細行
   // （費目/種別/定義）を開き、月別消化と最終予算額は明細行に入力する
   // （Hamada 確定 2026-07-29 夕）。明細行が1つでも値を持つ列は親=子の合計、
   // 空のときはレガシー（旧・親単位）値を親で表示するフォールバック。
+  // fix: 親最終=全子の有効最終合計／name3〃／子行種別列=name2。
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -6661,7 +6662,14 @@
     const nameLabel = documentRef.createElement("span");
     const name2Resolved =
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name2") ?? "";
-    const nameParts = [name1Resolved, name2Resolved, child.name3 || ""]
+    // 定義及び品名: 空は空のまま／〃だけ上位解決（U27）
+    const name3Raw = detailRows?.[detailIndex]?.name3;
+    const name3Resolved = jy2IsDitto(name3Raw)
+      ? jy2ActualResolveContinuedField(detailRows, detailIndex, "name3") ?? ""
+      : jy2HasText(name3Raw)
+        ? String(name3Raw).trim()
+        : "";
+    const nameParts = [name1Resolved, name2Resolved, name3Resolved]
       .map((part) => String(part).trim())
       .filter((part) => part.length > 0);
     nameLabel.textContent = nameParts.join(" / ") || "（明細）";
@@ -6669,7 +6677,10 @@
     nameCell.appendChild(nameLabel);
     tr.appendChild(jy2MarkFreeze(nameCell, 3));
 
-    tr.appendChild(jy2Cell(documentRef, "td", "", child.unit || ""));
+    // ヘッダ「種別／単価」に合わせる（単位は title に併記）
+    const typeCell = jy2Cell(documentRef, "td", "", name2Resolved || "");
+    if (child.unit) typeCell.title = `単位: ${child.unit}`;
+    tr.appendChild(typeCell);
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(child.unitPrice)),
     );

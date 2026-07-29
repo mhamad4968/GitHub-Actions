@@ -160,9 +160,9 @@ test("pivot: detail_row_key routes actual rows to child grain", () => {
   // Parent aggregates children: 2026-02 sum = 300 + 100 = 400.
   assert.equal(row.monthly["2026-02"], "400");
   assert.equal(row.actual, "400");
-  // Final budget: only child 1 has a manual value → parent = 850 (child sum),
-  // and finalBudgetFromChildren must be true so the UI can show it as auto.
-  assert.equal(row.finalBudget, "850");
+  // Final: child1 manual 850 + child2 default(currentBudget 200) = 1050.
+  // (Any child monthly/final activity switches parent final to child-sum mode.)
+  assert.equal(row.finalBudget, "1050");
   assert.equal(row.finalBudgetFromChildren, true);
 });
 
@@ -224,6 +224,36 @@ test("child overrides legacy for the cells where a child value exists", () => {
   assert.equal(row.monthly["2026-02"], "300");
   // 2026-03: no child value → legacy 200 shows on parent.
   assert.equal(row.monthly["2026-03"], "200");
+  // Child monthly exists → parent final switches to child-sum mode
+  // (effective finals: 800 + 200 defaults), not leftover legacy final.
+  assert.equal(row.finalBudgetFromChildren, true);
+  assert.equal(row.finalBudget, "1000");
+});
+
+test("parent final uses child effective finals when any child has monthly", () => {
+  const model = editableModel({
+    actualRows: [
+      {
+        record_kind: "final_budget",
+        stable_block_id: "blk-a",
+        cost_category_key: "施工",
+        amount: "9999",
+      },
+      {
+        record_kind: "monthly_consumption",
+        stable_block_id: "blk-a",
+        cost_category_key: "施工",
+        detail_row_key: DETAIL_A1.rowKey,
+        target_month: "2026-02-01",
+        amount: "10",
+      },
+    ],
+  });
+  const detailMap = new Map([["blk-a", [DETAIL_A1, DETAIL_A2]]]);
+  const [row] = model.matrixRows([BLOCK_A], { detailRowsByBlockId: detailMap });
+  assert.equal(row.finalBudgetFromChildren, true);
+  assert.equal(row.finalBudget, "1000");
+  assert.notEqual(row.finalBudget, "9999");
 });
 
 test("updateActualRow({rowKey}) writes to the detail entry only", () => {
