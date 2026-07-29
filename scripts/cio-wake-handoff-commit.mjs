@@ -15,18 +15,10 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { WAKE_HANDOFF_ALLOWLIST } from './lib/cio-wake-handoff-allowlist.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const ALLOWLIST = [
-  'docs/handoff/latest-session-bridge.json',
-  'docs/handoff/spec-task-scores.json',
-  'docs/knowledge/debug-tips.md',
-  'chat-sessions/checkpoint-latest.md',
-  'chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt',
-  'chat-sessions/desktop-ai-emergency-read-pack/31-META-26-formalization-lifecycle-charter.txt',
-  'chat-sessions/desktop-ai-emergency-read-pack/32-META-27-constitution-navigation-charter.txt',
-  'chat-sessions/desktop-ai-emergency-read-pack/33-META-28-ceo-go-phases-charter.txt',
-];
+const ALLOWLIST = [...WAKE_HANDOFF_ALLOWLIST];
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });

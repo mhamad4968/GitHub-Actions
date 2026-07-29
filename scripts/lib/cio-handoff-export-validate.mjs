@@ -7,6 +7,13 @@ import { execFileSync } from 'node:child_process';
 import { bridgeSchemaOk, loadBridge } from './cio-session-bridge.mjs';
 import { readCheckpointNextTask } from './cio-checkpoint-read.mjs';
 import { checkClosedProjectNextTask } from './cio-project-closure.mjs';
+import {
+  WAKE_HANDOFF_ALLOWLIST,
+  commitTouchesOnly as wakeCommitTouchesOnly,
+  gitAncestorHeadShort as wakeGitAncestorHeadShort,
+  isWakeHandoffParentGitHeadFold,
+  lastCommitTouchesOnlyWakeHandoff,
+} from './cio-wake-handoff-allowlist.mjs';
 
 const RED = '\x1b[31m';
 const RESET = '\x1b[0m';
@@ -71,43 +78,21 @@ export function gitHeadShort(root) {
   }
 }
 
-/** R31/R44 — HEAD から指定世代前の短縮 hash */
+/** R31/R44 — HEAD から指定世代前の短縮 hash（共有 lib 委譲） */
 export function gitAncestorHeadShort(root, generations = 1) {
-  try {
-    return execFileSync('git', ['rev-parse', '--short', `HEAD~${generations}`], {
-      cwd: root,
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-    }).trim();
-  } catch {
-    return null;
-  }
+  return wakeGitAncestorHeadShort(root, generations);
 }
 
 export function commitTouchesOnly(root, ref, allowedFiles) {
-  try {
-    const names = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', ref], {
-      cwd: root,
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-    })
-      .trim()
-      .split(/\r?\n/)
-      .filter(Boolean);
-    if (!names.length) return false;
-    const allowed = new Set(allowedFiles);
-    return names.every((n) => allowed.has(n));
-  } catch {
-    return false;
-  }
+  return wakeCommitTouchesOnly(root, ref, allowedFiles);
 }
 
-/** R31 — 直近 commit が bridge のみ */
+/**
+ * R31 — 直近 commit が WAKE handoff allowlist のみ
+ * （旧: bridge+debug-tips のみ → wake:handoff-commit 拡張後にフル allowlist）
+ */
 export function lastCommitTouchesOnlyBridge(root) {
-  return commitTouchesOnly(root, 'HEAD', [
-    'docs/handoff/latest-session-bridge.json',
-    'docs/knowledge/debug-tips.md',
-  ]);
+  return lastCommitTouchesOnlyWakeHandoff(root);
 }
 
 /** DeepSeek 職分 — 決定論セマンティック監査（API 可用時は強化可能） */
@@ -185,11 +170,8 @@ export function validateExportHandoff(root, options = {}) {
 
   const currentHead = gitHeadShort(root);
   if (currentHead && bridge.gitHead && bridge.gitHead !== 'unknown' && currentHead !== bridge.gitHead) {
-    const parentHead = gitAncestorHeadShort(root, 1);
-    const r31BridgeFold =
-      parentHead &&
-      bridge.gitHead === parentHead &&
-      lastCommitTouchesOnlyBridge(root);
+    // r31BridgeFold: WAKE handoff parent fold（allowlist 共有 · isWakeHandoffParentGitHeadFold）
+    const r31BridgeFold = isWakeHandoffParentGitHeadFold(root, bridge.gitHead);
     const grandparentHead = gitAncestorHeadShort(root, 2);
     const r44CheckpointAfterBridge =
       grandparentHead &&
@@ -199,7 +181,17 @@ export function validateExportHandoff(root, options = {}) {
         'docs/knowledge/debug-tips.md',
       ]) &&
       commitTouchesOnly(root, 'HEAD', ['chat-sessions/checkpoint-latest.md']);
-    if (!options.allowHeadDrift && !r31BridgeFold && !r44CheckpointAfterBridge) {
+    const r44WakeThenCheckpoint =
+      grandparentHead &&
+      bridge.gitHead === grandparentHead &&
+      commitTouchesOnly(root, 'HEAD~1', WAKE_HANDOFF_ALLOWLIST) &&
+      commitTouchesOnly(root, 'HEAD', ['chat-sessions/checkpoint-latest.md']);
+    if (
+      !options.allowHeadDrift &&
+      !r31BridgeFold &&
+      !r44CheckpointAfterBridge &&
+      !r44WakeThenCheckpoint
+    ) {
       issues.push({
         code: 'GIT_HEAD_DRIFT',
         message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,

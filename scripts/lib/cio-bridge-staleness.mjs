@@ -6,6 +6,7 @@ import {
   readCheckpointLatestSectionDate,
   readCheckpointNextTask,
 } from './cio-checkpoint-read.mjs';
+import { isWakeHandoffParentGitHeadFold } from './cio-wake-handoff-allowlist.mjs';
 
 export { readCheckpointNextTask, readCheckpointLatestSectionDate };
 
@@ -85,11 +86,14 @@ export function checkBridgeStaleness(root, bridge, opts = {}) {
     && bridge.gitHead !== 'unknown'
     && currentHead !== bridge.gitHead
   ) {
-    issues.push({
-      code: 'GIT_HEAD_DRIFT',
-      message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,
-      fix: 'npm run cio:session:export-handoff',
-    });
+    // WAKE handoff commit 後は bridge.gitHead=parent が正（再 export 禁止）
+    if (!isWakeHandoffParentGitHeadFold(root, bridge.gitHead)) {
+      issues.push({
+        code: 'GIT_HEAD_DRIFT',
+        message: `gitHead 不一致: bridge=${bridge.gitHead} current=${currentHead}`,
+        fix: 'npm run cio:session:export-handoff',
+      });
+    }
   }
 
   return { ok: issues.length === 0, issues };
