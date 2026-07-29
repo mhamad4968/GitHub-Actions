@@ -46,7 +46,7 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
 });
 // C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11、法定福利費(legal_welfare)は
 // R-12 で自動確定したため手入力から除外(読取専用)。各種保険料(insurance)のみ手入力
-// （R-13 未確定）。
+// （R-13 CONFIRMED 2026-07-29: 計算式なし・手入力のみ）。
 export const MANUAL_FOOTER_KINDS = Object.freeze(["insurance"]);
 
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
