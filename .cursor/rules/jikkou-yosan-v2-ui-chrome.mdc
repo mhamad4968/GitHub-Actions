@@ -20,6 +20,14 @@ alwaysApply: false
 5. deploy 後は BUILD / rev / **fileKey** 三点照合（#S-SYNC-01）
 6. 浜田に見せる前に chrome 受け入れチェックリストを自己消化
 
+## デプロイ品質（2026-07-29 浜田 GO・C1/C2/B2）
+
+正本: `docs/runbooks/cio-ops-2026-07-29-hard-request-clarity.md`
+
+7. **集計ロジック**（親合計・率・残予算・キー変更等）を変えるときは、関連ユニットテスト緑かつレビュー **P1 指摘ゼロ**まで **LIVE 禁止**（C1）。UIだけの試作出しは可だが、チャットで「永続化は未LIVE」と明示する。
+8. 大型機能は **UIスモーク LIVE** と **永続化 LIVE** を2段にしてよい（C2）。段を飛ばすときは浜田 GO。
+9. 実績キー／App フィールド追加／階層UIなど破壊的に戻りづらい変更は、実装前に **git tag バックアップ**（B2）。例: `backup/756-before-actual-detail-expand-2026-07-29`。
+
 ## 機械
 
 ```bash

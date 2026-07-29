@@ -30,6 +30,7 @@ alwaysApply: false
 6. **`npm run session:clock:clear`**（**R-SESS-03** — 次セッション bootstrap NG 防止）
 7. `npm run cio:session:close-git -- --execute --auto-stage --message "…"` **または** B1/B4 整備後 `desktop:sync-and-verify`
 8. **deploy 漏れ防止**: `npm run verify:session-close-git-warn`（R21 台帳 + R55 本番 BUILD 三重照合 — close-git 手順 5 でも実行）
+9. **origin ahead（2026-07-29 D1）**: `git status -sb` で `ahead` を確認。`ahead ≥ 1` なら返答に **未 push 件数**を出し、浜田へ **push 要否を1問**（独断 push 禁止）。
 
 **#D-CLOSE-01（2026-07-20 浜田 GO）**: 依頼者確認メール送付後でも `git status` が dirty なら、締めを待たず **即 commit**（同一レーンの仕様追記を落とさない）。
 

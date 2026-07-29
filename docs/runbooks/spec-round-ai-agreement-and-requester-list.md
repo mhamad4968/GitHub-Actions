@@ -29,7 +29,21 @@
 - 文面の既定は **施工部向けの平易な箇条書き**（専門略語・内部 ID は括弧か脚注に）。
 - 仮置きは「仮の案・変更可」と明示する。
 
+## 2b. 確認資料クローズ切替（2026-07-29 E1/E2・浜田 GO）
+
+確認資料ラウンドを閉じる（または「次は要望実装」に移る）とき、チャットか SPEC 先頭に次を残す。
+
+| 欄 | 内容 |
+|----|------|
+| **HOLD** | 保留のまま触らない項目 |
+| **一旦このまま** | 現行維持で閉じた項目 |
+| **次は要望実装** | これから1件ずつ進める要望 |
+
+大きな実装の GO 前に、仮置きは **最大3箇条**まで宣言する（編集境界・既存データ移行・対象外など）。4箇条以上は OPEN として残し、独断で埋めない。
+
 ## 3. 関連
 
 - 失敗記録: `docs/reports/2026-07-20-evening-reflection.md` F2 / F3
 - GO: `docs/approved-changes/2026-07-20-evening-improvements-hamada-go.md`
+- 2026-07-29 運用改善 GO: `docs/approved-changes/2026-07-29-ops-improvements-hamada-go.md`  
+  正本: `docs/runbooks/cio-ops-2026-07-29-hard-request-clarity.md`
