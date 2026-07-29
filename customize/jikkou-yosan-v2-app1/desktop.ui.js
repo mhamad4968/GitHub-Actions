@@ -1,8 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-hide-summary-tax-cols
-  // 総括表: 消費税率・金額税込列を非表示（依頼者要望）。保存フィールドは後方互換で残す。
+  // @JY_V2_BUILD 2026-07-29-ver02-hide-actual-attr-cols
+  // 工事原価管理: 消費税・単位・数量・金額・備考を非表示（依頼者要望）。種別・単価は残す。
 
   const JY2_STYLE_ID = "jy2-shell-style";
   const JY2_ACTIVE_TAB_KEY = `jy2:${APP1_ID}:activeTab`;
@@ -10,9 +10,8 @@
   const JY2_HSCROLL_KEY = `jy2:${APP1_ID}:hscrollLeft`;
   const JY2_FONT_SCALE_KEY = "jy2-font-scale";
   const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
-  const JY2_TAX_RATE_LABELS = { "0": "0％", "0.08": "8％", "0.1": "10％" };
-  // 種別・消費税・単位・数量・単価・金額・備考（計算基準は非表示）
-  const JY2_ACTUAL_ATTR_COLS = 7;
+  // 種別・単価のみ表示（消費税・単位・数量・金額・備考は非表示・2026-07-29）
+  const JY2_ACTUAL_ATTR_COLS = 2;
 
   function jy2StoreActiveTab(view, tabId) {
     if (!tabId || !view || !view.sessionStorage) return;
@@ -4384,15 +4383,7 @@
     ["内訳№", "区分", "工種番号", "システム入力工種"].forEach((label, index) => {
       top.appendChild(th(label, { rowSpan: 2, freeze: index }));
     });
-    for (const label of [
-      "種別",
-      "消費税",
-      "単位",
-      "数量",
-      "単価",
-      "金額",
-      "備考",
-    ]) {
+    for (const label of ["種別", "単価"]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
     top.appendChild(th("現行予算", { colSpan: 2 }));
@@ -6536,27 +6527,8 @@
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.workTypeName), 3));
     tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetLineType || ""));
     tr.appendChild(
-      jy2Cell(
-        documentRef,
-        "td",
-        "",
-        JY2_TAX_RATE_LABELS[row.budgetTaxRate] || row.budgetTaxRate || "－",
-      ),
-    );
-    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetUnit || ""));
-    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", row.budgetQty || ""));
-    tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(row.budgetUnitPrice)),
     );
-    tr.appendChild(
-      jy2Cell(
-        documentRef,
-        "td",
-        "jy2-amount",
-        jy2AmountDisplay(row.budgetAmountExclTax),
-      ),
-    );
-    tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetNote || ""));
     // 現行予算: auto from 内訳 block totals; retired blocks show 0 (P-39/R-11).
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.currentBudget)),
@@ -6799,7 +6771,7 @@
     const noteBody = documentRef.createElement("p");
     noteBody.className = "jy2-actual-note";
     noteBody.textContent =
-      "予算属性は表示のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
+      "表示する予算属性は種別・単価のみ（編集は内訳・総括）。手入力は月別消化と最終予算額の予算額のみ。" +
       "現行予算・最終予算額は「予算額｜消化率」の2段（ここでの消化率＝各予算÷請負①）。右端の消化率＝原価累計÷現行予算。" +
       "横スクロール時も左の内訳№〜工種名は固定表示されます。";
     note.append(summary, noteBody);
