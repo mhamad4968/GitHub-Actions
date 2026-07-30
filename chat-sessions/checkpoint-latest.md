@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-30 18:57 JST — 756 工事原価管理の依頼者対面4問をメモ化・引継ぎ。実装しない。
+**最終更新**: 2026-07-30 19:30 JST — 夕反省GO反映済＋SPEC/索引/bridge 同期（`bb51067b` 系）。756 対面4問は 7/31。
 
-**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。
 
-**Git**: （本メモはローカル引継ぎ。push は未依頼）
+**Git**: `origin/main` 同期済見込み（本ターン handoff 再push）
 
-**本日状態（要約）**: 756↔Excel「原価管理明細」の寄せ方を整理。金額は現状直入れ／Excelは単価×数量が多い。作り込み前に依頼者確認が必要と合意。対面用4問を確定。
+**本日状態（要約）**: 756↔Excel 寄せは依頼者対面待ち。夕反省改善案は全承認反映。674棚卸入力OK。GitHub constitution 緑。
 
 **継続メモ**:
 1. **756 工事原価管理**: 対面4問の正本 → `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`。回答後に仕様案。現行 LIVE rev167・Y12（金額直入れ）は維持。
@@ -17,7 +17,7 @@
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**（履歴ログに残っていても現行待ちと混同禁止）。
 
-**調査正本**: 756 SPEC Y12／P-41／`detail_row_key`。運用 `docs/runbooks/cio-ops-2026-07-29-hard-request-clarity.md`。GO `docs/approved-changes/2026-07-29-ops-improvements-hamada-go.md`。
+**調査正本**: 756 SPEC（2026-07-30 対面待ちスタンプ）／Y12。夕反省GO `docs/approved-changes/2026-07-30-evening-reflection-hamada-go.md`。運用 `docs/runbooks/cio-ops-2026-07-30-evening-improvements.md`。
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 

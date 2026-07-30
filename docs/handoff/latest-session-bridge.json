@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-30T08:55:03.273Z",
-  "gitHead": "d5c9287f",
+  "exportedAt": "2026-07-30T10:28:21.584Z",
+  "gitHead": "bb51067b",
   "gitStatus": "## main...origin/main",
-  "nextTask": "756 明細展開を依頼者に見せて認識確認（違えば tag ロールバック）。新アプリは指示後。完了済を GO 待ちに出さない。",
+  "nextTask": "**2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=d5c9287f | 次=756 明細展開を依頼者に見せて認識確認（違えば tag ロールバック）。新アプリは指示後。完了済を GO 待ちに出さない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=bb51067b | 次=**2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-07-30T10:28:22.097Z",
+  "crosscheckOk": true
 }

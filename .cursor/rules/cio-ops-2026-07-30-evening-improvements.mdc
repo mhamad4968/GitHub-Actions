@@ -8,7 +8,7 @@ globs: "**/*"
 
 > 正本: `docs/runbooks/cio-ops-2026-07-30-evening-improvements.md`  
 > GO: `docs/approved-changes/2026-07-30-evening-reflection-hamada-go.md`  
-> **憲法本文は変更しない。** `alwaysApply: true` は付けない。
+> **憲法本文は変更しない。** alwaysApply を true にしない（許可は憲法2本のみ）。
 
 ## O-1 — CI 緑だけで十分としない
 

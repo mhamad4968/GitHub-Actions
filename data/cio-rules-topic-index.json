@@ -12,6 +12,7 @@
         ".cursor/rules/constitution-enforcement-core.mdc",
         ".cursor/rules/mode-b-canonical.mdc",
         ".cursor/rules/cio-ops-hard-request-clarity.mdc",
+        ".cursor/rules/cio-ops-2026-07-30-evening-improvements.mdc",
         ".cursor/rules/autonomous-with-mandatory-asks.mdc",
         ".cursor/rules/creation-timing-ask.mdc",
         ".cursor/rules/persist-policies.mdc",
@@ -36,7 +37,10 @@
       ],
       "when": "新規チャット・checkpoint・bridge·CLOSE·確認ログ",
       "runbook": "docs/runbooks/session-lifecycle-v2.md",
-      "npm": ["cio:session:cold-start", "verify:checkpoint-handoff-template"]
+      "npm": [
+        "cio:session:cold-start",
+        "verify:checkpoint-handoff-template"
+      ]
     },
     {
       "topic": "kintone 全般",
@@ -74,11 +78,17 @@
       ],
       "when": "MCP 呼出・descriptor 必読・フロント検証",
       "runbook": "docs/runbooks/ai-team-tool-routing-v2.md",
-      "npm": ["cio:tool:route", "verify:cio-tool-routing-infra"]
+      "npm": [
+        "cio:tool:route",
+        "verify:cio-tool-routing-infra"
+      ]
     },
     {
       "topic": "Grok L2b・verify ループ",
-      "rules": [".cursor/rules/mode-b-canonical.mdc", ".cursor/rules/mcp-server-use-triggers.mdc"],
+      "rules": [
+        ".cursor/rules/mode-b-canonical.mdc",
+        ".cursor/rules/mcp-server-use-triggers.mdc"
+      ],
       "when": "Composer 後 lint/smoke NG・自律ループ・Grok C",
       "runbook": "docs/runbooks/cio-grok-execution-loop.md",
       "npm": [
@@ -117,7 +127,9 @@
     },
     {
       "topic": "Git履歴・先祖返り",
-      "rules": [".cursor/rules/cio-git-history-alignment-gate.mdc"],
+      "rules": [
+        ".cursor/rules/cio-git-history-alignment-gate.mdc"
+      ],
       "when": "git-history-mcp · 4要素 · 憲法層検索"
     },
     {
@@ -151,7 +163,9 @@
     },
     {
       "topic": "予実・yojitsu",
-      "rules": [".cursor/rules/constitutional-focus-yojitsu.mdc"],
+      "rules": [
+        ".cursor/rules/constitutional-focus-yojitsu.mdc"
+      ],
       "when": "予実アプリ 677/678"
     },
     {

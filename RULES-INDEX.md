@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-07-29 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-07-30 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -42,6 +42,8 @@
 | 毎ターン・四行 | [`cio-18-zero-tolerance.mdc`](.cursor/rules/cio-18-zero-tolerance.mdc) | 18-重要確認 遵守ゼロ容認 — 毎ターン turn-start・編集前 strict gate・報告前 verify（2026-05-30 CEO命令） |
 | 毎ターン・四行 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | 論点9 — §1 先頭4行のリポ／PR 向け機械検証（B スコープ）とチャット先頭ブロックの正本参照 |
 | 毎ターン・四行 | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック） |
+| 毎ターン・四行 | [`cio-ops-hard-request-clarity.mdc`](.cursor/rules/cio-ops-hard-request-clarity.mdc) | 難要望の粒度合意・日程語禁止・未push可視化・確認資料切替（2026-07-29 浜田全承認） |
+| 毎ターン・四行 | [`cio-ops-2026-07-30-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-07-30-evening-improvements.mdc) | 2026-07-30夕反省GO — CIローカルparity・依頼者核質問・CON-01 Excel・alwaysApply規律（憲法本文は触らない） |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
@@ -98,7 +100,6 @@
 | ドメイン特化・その他 | [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | 恒久方針の永続化 — 正本は .rag/extra-docs/persist-policies.md |
 | ドメイン特化・その他 | [`spec-round-ai-agreement.mdc`](.cursor/rules/spec-round-ai-agreement.mdc) | 仕様ラウンド無条件合意・依頼者リスト4見出し（#R-SPEC-01/#R-REQ-01） |
 | ドメイン特化・その他 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
-| （未分類） | [`cio-ops-hard-request-clarity.mdc`](.cursor/rules/cio-ops-hard-request-clarity.mdc) | 難要望の粒度合意・日程語禁止・未push可視化・確認資料切替（2026-07-29 浜田全承認） |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
 
