@@ -5,7 +5,7 @@
 
 **次の1手**: 756 明細展開を依頼者に見せて認識確認（違えば tag ロールバック）。新アプリは指示後。完了済を GO 待ちに出さない。
 
-**Git**: **`04559897`** = `origin/main` — push 済（R44 parent）
+**Git**: `origin/main` 同期済（push 済・ahead 0 見込み）
 
 **本日状態（要約）**: 確認資料クローズ（HOLD／一旦このまま）→要望実装。総括税列削除・工事原価管理属性列削減・**明細展開 Y12** LIVE。運用改善 A1–F3 規則化。ロールバック tag `backup/756-before-actual-detail-expand-2026-07-29`。
 
@@ -37,6 +37,9 @@
 | **736** | 現行版保持・Ver.02 後も触らない |
 | **756/757/758** | LIVE rev167（actual-detail-expand-fix）・Y12／確認資料HOLD残・明日依頼者確認 |
 | **712** | 削除済 — deploy 禁止 |
+
+**品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
+**クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 

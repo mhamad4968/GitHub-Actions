@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-07-29T11:14:42.153Z",
+  "scoredAt": "2026-07-30T08:48:12.223Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "756 明細展開を依頼者に見せて認識確認（違えば tag ロールバック）。新アプリは指示後。完了済を GO 待ちに出さない。",
   "tasks": [
