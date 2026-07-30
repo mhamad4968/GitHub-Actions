@@ -1,7 +1,9 @@
 ---
 description: 難要望の粒度合意・日程語禁止・未push可視化・確認資料切替（2026-07-29 浜田全承認）
-alwaysApply: true
+alwaysApply: false
+globs: "**/*"
 ---
+
 
 # 運用改善 — 難要望／日程／git ahead（2026-07-29 GO）
 
