@@ -1,19 +1,19 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-29 20:15 JST — **セッション締め**。AI緊急用 最新同期。756 LIVE rev**167**。
+**最終更新**: 2026-07-30 18:57 JST — 756 工事原価管理の依頼者対面4問をメモ化・引継ぎ。実装しない。
 
-**次の1手**: 756 明細展開を依頼者に見せて認識確認（違えば tag ロールバック）。新アプリは指示後。完了済を GO 待ちに出さない。
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
 
-**Git**: `origin/main` 同期済（push 済・ahead 0 見込み）
+**Git**: （本メモはローカル引継ぎ。push は未依頼）
 
-**本日状態（要約）**: 確認資料クローズ（HOLD／一旦このまま）→要望実装。総括税列削除・工事原価管理属性列削減・**明細展開 Y12** LIVE。運用改善 A1–F3 規則化。ロールバック tag `backup/756-before-actual-detail-expand-2026-07-29`。
+**本日状態（要約）**: 756↔Excel「原価管理明細」の寄せ方を整理。金額は現状直入れ／Excelは単価×数量が多い。作り込み前に依頼者確認が必要と合意。対面用4問を確定。
 
 **継続メモ**:
-1. **756**: 明細展開を**依頼者に見せて認識確認**（違えば tag ロールバック）。合っていれば残課題（セルクリア時 DELETE 等）検討
+1. **756 工事原価管理**: 対面4問の正本 → `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`。回答後に仕様案。現行 LIVE rev167・Y12（金額直入れ）は維持。
 2. RAG aide 観察〜**8/9** 判定。東海iPad 運用観察。**新アプリ**＝指示後
 
-**GO待ち**: 明細展開の依頼者確認結果。新アプリ＝相談・GO後のみ。
+**GO待ち**: 依頼者4問の回答。新アプリ＝相談・GO後のみ。
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**（履歴ログに残っていても現行待ちと混同禁止）。
 
@@ -35,7 +35,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev167（actual-detail-expand-fix）・Y12／確認資料HOLD残・明日依頼者確認 |
+| **756/757/758** | LIVE rev167・Y12維持。Excel寄せは**未実装**。**7/31** 依頼者対面4問（メモ `2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`） |
 | **712** | 削除済 — deploy 禁止 |
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
@@ -46,6 +46,13 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-07-30
+
+### 2026-07-30 夜（756・依頼者対面確認の引継ぎ）
+- Excel `工事原価管理.xlsx` と756の差分を口頭整理（予算正本・横断材料費・月金額の出し方は作り込み前に要確認）
+- 浜田方針: **明日対面で4問だけ聞く**／運用は対象外／実装は回答後
+- メモ正本: `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`
+
 ## 2026-07-29
 
 ### 2026-07-29 夜（セッション締め）
