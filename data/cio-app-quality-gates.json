@@ -10,6 +10,7 @@
     "steps": [
       { "type": "npm", "script": "verify:constitution-handoff" },
       { "type": "npm", "script": "lint:customize" },
+      { "type": "npm", "script": "cio:pre-push-local-parity" },
       { "type": "npm", "script": "jikkou-yosan:pre-push-gate" },
       { "type": "npm", "script": "verify:jikkou-v2-chrome-css" },
       { "type": "npm", "script": "verify:jikkou-v2-ui-spec-same-turn" }

@@ -162,6 +162,8 @@
     "verify:session-close-handoff-freshness": "node scripts/verify-session-close-handoff-freshness.mjs",
     "test:evening-improvements-2026-07-23": "node scripts/test-evening-improvements-2026-07-23.mjs",
     "test:evening-improvements-2026-07-26": "node scripts/test-evening-improvements-2026-07-26.mjs",
+    "test:evening-improvements-2026-07-30": "node scripts/test-evening-improvements-2026-07-30.mjs",
+    "cio:pre-push-local-parity": "node scripts/cio-pre-push-local-parity.mjs",
     "test:evening-improvements-2026-07-28": "node scripts/test-evening-improvements-2026-07-28.mjs",
     "cio:guard-r63-v2": "node scripts/cio-guard-r63-v2-dirty.mjs",
     "jikkou-yosan:v2-sync-app-ids": "node scripts/jikkou-yosan-v2-sync-app-ids.mjs",

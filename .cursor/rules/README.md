@@ -36,7 +36,7 @@
 
 | トピック | 代表 `.mdc` |
 |----------|-------------|
-| **CIO核・方式B** | `cio-constitution` / `mode-b-canonical` / `every-turn-rules-confirm` / **`cio-ops-hard-request-clarity`**（難要望・日程・ahead） |
+| **CIO核・方式B** | `cio-constitution` / `mode-b-canonical` / `every-turn-rules-confirm` / **`cio-ops-hard-request-clarity`**（難要望・日程・ahead） / **`cio-ops-2026-07-30-evening-improvements`**（CI parity・CON-01 Excel・核質問） |
 | **セッション** | `session-handoff` / `constitution-handoff-gate` / `cio-operating-loop` |
 | **4AI・DeepSeek** | `deepseek-cursor-spec-division` / `deepseek-pre-edit-gate` |
 | **MCP** | `mcp-server-use-triggers` / `mcp-tool-discipline` / `cursor-generate-image-assets` |

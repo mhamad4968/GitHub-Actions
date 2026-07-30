@@ -55,6 +55,10 @@ on:
       - 'scripts/verify-runbook-registry-integrity.mjs'
       - 'scripts/verify-kintone-customize-path-registry.mjs'
       - 'scripts/verify-kintone-project-close-gate.mjs'
+      - 'scripts/cio-chat-report-selfcheck.mjs'
+      - 'scripts/test-evening-improvements-2026-07-26.mjs'
+      - 'scripts/test-evening-improvements-2026-07-30.mjs'
+      - 'scripts/cio-pre-push-local-parity.mjs'
       - 'eslint.config.js'
 
 permissions:
@@ -95,6 +99,9 @@ jobs:
         run: npm run test:evening-improvements-2026-07-23
       - name: test-evening-improvements-2026-07-26（R63 clear / medal-line / CON）
         run: npm run test:evening-improvements-2026-07-26
+
+      - name: test-evening-improvements-2026-07-30（O/C parity / CON-01 Excel）
+        run: npm run test:evening-improvements-2026-07-30
 
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs

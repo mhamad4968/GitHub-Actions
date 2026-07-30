@@ -1,7 +1,7 @@
 # 運用改善正本 — 難要望／日程／git ahead／確認切替（2026-07-29）
 
 > **浜田 GO**: すべて承認（2026-07-29）  
-> **Cursor 規則**: `.cursor/rules/cio-ops-hard-request-clarity.mdc`（alwaysApply）  
+> **Cursor 規則**: `.cursor/rules/cio-ops-hard-request-clarity.mdc`（`alwaysApply: false` + globs）  
 > **Ver.02 追加**: `.cursor/rules/jikkou-yosan-v2-ui-chrome.mdc` 内「デプロイ品質」  
 > **憲法**: 当面 **本文変更なし**（F3・2週間運用後に効けば憲法候補へ）
 

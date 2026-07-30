@@ -1,0 +1,47 @@
+---
+description: 2026-07-30夕反省GO — CIローカルparity・依頼者核質問・CON-01 Excel・alwaysApply規律（憲法本文は触らない）
+alwaysApply: false
+globs: "**/*"
+---
+
+# 運用改善 — 2026-07-30 GO（夕反省全承認）
+
+> 正本: `docs/runbooks/cio-ops-2026-07-30-evening-improvements.md`  
+> GO: `docs/approved-changes/2026-07-30-evening-reflection-hamada-go.md`  
+> **憲法本文は変更しない。** `alwaysApply: true` は付けない。
+
+## O-1 — CI 緑だけで十分としない
+
+push 前に `npm run cio:pre-push-local-parity`（quality-gate push に組込）。緊急のみ `SKIP_CIO_LOCAL_PARITY=1`。
+
+## O-2 / A3 — 依頼者確認
+
+最初から核 **3〜4 問**。`docs/runbooks/requester-core-questions-template.md`。
+
+## O-3 — 起動失敗
+
+WAKE／bootstrap／mandatory-read-gate NG は本題前に直す（当日最初の障害）。
+
+## O-4 — 仕様メモ
+
+正本候補 1・未決最大 3。
+
+## O-5 — 完了済
+
+完了済案件を GO 待ち／次の1手に出さない。
+
+## C-1 — alwaysApply
+
+新規 true 禁止が既定。許可リスト変更は GO＋同PRで `verify-ci-rule-integrity`＋「なぜ憲法級か」1 行。
+
+## C-2 / #CON-01
+
+画面・**Excel・表計算の見た目だけ**で手動／自動を断定しない。式セル／関数／commit を Read。未読は未確認。
+
+## C-3 — ambient
+
+gitignore の last-tier 等に検査を暗黙依存させない。テストは明示引数または一時固定。`process.env` 直読で合否を変えない。
+
+## A1
+
+計算・集計の回答前に式または入力セルを Read する。

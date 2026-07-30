@@ -40,8 +40,9 @@ for (const rel of [
     "utf8",
   );
   assert.match(scope, /#CON-01/);
-  assert.match(scope, /画面挙動の断定/);
-  assert.match(scope, /commit／判定関数を Read/);
+  assert.match(scope, /画面・Excel・計算の断定|画面挙動の断定/);
+  assert.match(scope, /commit／判定関数|式セル/);
+  assert.match(scope, /Excel/);
 }
 
 // #CON-02 wording

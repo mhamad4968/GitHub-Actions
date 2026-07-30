@@ -32,7 +32,7 @@ commit 前（軽量） → push 前（標準） → deploy 前（app 固有）
 | 段 | コマンド | 内容 | タイミング |
 |----|----------|------|------------|
 | **commit** | `npm run cio:pre-commit-check` | `lint:customize` のみ | **git commit 前**（WORK 内） |
-| **push** | `npm run cio:pre-push-check` | constitution-handoff + lint | **git push 前**（hook 同等） |
+| **push** | `npm run cio:pre-push-check` | constitution-handoff + lint + **`cio:pre-push-local-parity`（O-1・2026-07-30）** + jikkou gates | **git push 前**（hook 同等） |
 | **deploy** | `npm run cio:deploy-gate -- 736` | app manifest 参照 | **`cio:preflight` → `deploy` の間** |
 
 ```mermaid

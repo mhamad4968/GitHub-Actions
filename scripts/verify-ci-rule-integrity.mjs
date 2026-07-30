@@ -6,8 +6,10 @@
  * - constitution.mdc の第 1 frontmatter が alwaysApply: false であること（網羅版は常時オフ）
  * - cio-constitution.mdc が存在し alwaysApply: true であること（CIO 統合核・2026-05-09）
  * - alwaysApply: true のファイル数が上限を超えないこと（運用上限・調整は本スクリプト）
+ * - 許可リスト外の alwaysApply:true は NG（2026-07-30 C-1: 変更は GO＋同PR＋「なぜ憲法級か」1行）
  *
  * @see .cursor/rules/cio-constitution.mdc
+ * @see docs/runbooks/cio-ops-2026-07-30-evening-improvements.md
  */
 import fs from 'node:fs';
 import path from 'node:path';
