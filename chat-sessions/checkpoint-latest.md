@@ -1,13 +1,13 @@
 # 復元チェックポイント（最新）
 <!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
 <!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
-**最終更新**: 2026-07-30 19:30 JST — 夕反省GO反映済＋SPEC/索引/bridge 同期（`bb51067b` 系）。756 対面4問は 7/31。
+**最終更新**: 2026-07-30 19:35 JST — **セッション締め**。AI緊急用 最新同期。夕反省GO反映済。756 対面4問は次セッション。
 
-**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
 
-**Git**: `origin/main` 同期済見込み（本ターン handoff 再push）
+**Git**: `origin/main` 同期（締め close-git）
 
-**本日状態（要約）**: 756↔Excel 寄せは依頼者対面待ち。夕反省改善案は全承認反映。674棚卸入力OK。GitHub constitution 緑。
+**本日状態（要約）**: 674棚卸OK。756↔Excelは対面4問待ち。夕反省改善案全承認反映。GitHub CI 緑。Desktop AI緊急用 最新入替。
 
 **継続メモ**:
 1. **756 工事原価管理**: 対面4問の正本 → `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`。回答後に仕様案。現行 LIVE rev167・Y12（金額直入れ）は維持。
@@ -47,6 +47,11 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-07-30
+
+### 2026-07-30 夜（セッション締め）
+- Desktop AI緊急用: 旧ファイル prune＋最新入替（`session-starter:sync-desktop` + verify）
+- 夕反省GO全承認反映済・SPEC対面待ちスタンプ・CI緑
+- close-git / clock:clear
 
 ### 2026-07-30 夜（756・依頼者対面確認の引継ぎ）
 - Excel `工事原価管理.xlsx` と756の差分を口頭整理（予算正本・横断材料費・月金額の出し方は作り込み前に要確認）
