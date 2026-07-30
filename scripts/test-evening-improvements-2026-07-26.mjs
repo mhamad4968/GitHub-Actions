@@ -8,7 +8,10 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expectedMedalLine } from "./lib/cio-turn-start-tier.mjs";
+import {
+  expectedMedalLine,
+  lastTierPath,
+} from "./lib/cio-turn-start-tier.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const node = process.execPath;
@@ -84,6 +87,8 @@ for (const rel of [
 }
 
 // #S-REPORT-01: --check-medal-line mismatch → exit 1
+// last-tier.json は logs/ 配下でローカル作業中に strict になり得るため、
+// 検査中は standard/default に固定して CI／開発機の差を無くす（環境依存 NG の再発防止）。
 {
   const wrong = path.join(os.tmpdir(), `jy2-report-medal-wrong-${Date.now()}.txt`);
   const okPath = path.join(os.tmpdir(), `jy2-report-medal-ok-${Date.now()}.txt`);
@@ -92,6 +97,8 @@ for (const rel of [
 【適用憲法】§1e
 [🎖️ 本セッション割当] CIO=WRONG | Composer=x | DeepSeek=y | Kimi=z
 [ルール確認] test
+Goal: evening-improvements medal-line fixture
+Touch: scripts/cio-chat-report-selfcheck.mjs
 
 □ A: §1四行あり
 □ A1: ダブルチェック（誰と・結果）DeepSeek=ok
@@ -111,7 +118,20 @@ DRY_RUN_TO_APPLY_GAP: n/a
   );
   fs.writeFileSync(wrong, bodyWrong, "utf8");
   fs.writeFileSync(okPath, bodyOk, "utf8");
+  const tierFile = lastTierPath(root);
+  const hadTier = fs.existsSync(tierFile);
+  const tierBackup = hadTier ? fs.readFileSync(tierFile) : null;
   try {
+    fs.mkdirSync(path.dirname(tierFile), { recursive: true });
+    fs.writeFileSync(
+      tierFile,
+      `${JSON.stringify(
+        { tier: "standard", lane: "default", at: "2026-07-30T00:00:00.000Z" },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
     const bad = run("scripts/cio-chat-report-selfcheck.mjs", [
       "--strict-head",
       "--require-v2",
@@ -133,8 +153,10 @@ DRY_RUN_TO_APPLY_GAP: n/a
     ]);
     assert.equal(good.status, 0, good.stderr || good.stdout);
   } finally {
-    fs.unlinkSync(wrong);
-    fs.unlinkSync(okPath);
+    if (hadTier) fs.writeFileSync(tierFile, tierBackup);
+    else if (fs.existsSync(tierFile)) fs.unlinkSync(tierFile);
+    if (fs.existsSync(wrong)) fs.unlinkSync(wrong);
+    if (fs.existsSync(okPath)) fs.unlinkSync(okPath);
   }
 }
 

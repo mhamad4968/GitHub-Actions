@@ -17,7 +17,9 @@
  *   --check-medal-line     🎖️ 行が last-tier lane と不一致なら NG（exit 1）— #S-REPORT-01
  *                          lane 自動チェックのみのときは従来どおり WARN（exit 0）
  *
- * last-tier=strict 時は Goal/Touch/SPEC_TOUCHED 3 行を自動必須（D-1）
+ * last-tier=strict 時は、報告系フラグ付き実行で Goal/Touch/SPEC_TOUCHED 3 行を自動必須（D-1）
+ * ※ logs/cio-turn-start/last-tier.json は gitignore。禁止語のみの smoke には ambient strict を効かせない。
+ *    報告フィクスチャ検査は last-tier を一時固定すること（環境差の再発防止）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -188,8 +190,18 @@ function main() {
   }
 
   const lastTier = readLastTier(root);
+  // D-1: ambient strict は「報告ゲート」経路のみ turn-contract を自動必須にする。
+  // 禁止語だけの smoke（フラグなし）まで縛るとローカル strict 作業中に誤 NG になる。
+  const reportGate =
+    argv.includes('--strict-head') ||
+    argv.includes('--require-v2') ||
+    argv.includes('--require-a1') ||
+    argv.includes('--require-ceo-block') ||
+    argv.includes('--check-medal-line') ||
+    argv.includes('--require-turn-contract');
   const requireContract =
-    argv.includes('--require-turn-contract') || lastTier?.tier === 'strict';
+    argv.includes('--require-turn-contract') ||
+    (lastTier?.tier === 'strict' && reportGate);
   if (requireContract) {
     const tc = requireTurnContractOk(body);
     if (!tc.ok) {
