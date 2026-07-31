@@ -524,7 +524,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-a/b/c: 費目→種別視覚入れ子。App758 キー変更なし。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-hide-catalog/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-template-types/);
   // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
   assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
@@ -544,6 +544,10 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /__jy2CostDetailRevealKeys/);
   assert.match(source, /revealDetailKey/);
   assert.match(source, /内訳の品名カタログは隠し/);
+  // Phase2c-c-template-types: コード表種別を空枠でも出す
+  assert.match(source, /typesByHimokuMap/);
+  assert.match(source, /templateTypes/);
+  assert.match(source, /jy2HimokuChoicesForEntry/);
   // Phase2c-b-a: 「＋種別行」ボタン・banner・addDetailRow 使用が並ぶ。
   assert.match(source, /＋種別行/);
   assert.match(source, /jy2-actual-himoku-add-type-btn/);

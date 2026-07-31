@@ -181,6 +181,7 @@
 | 2026-07-31 | 子行ラベル Excel寄せ: 費目グループ下は詳細(name3)のみ表示（種別は種別列）。BUILD `…-child-label` |
 | 2026-07-31 | Phase2c-c: 費目下に種別(name2)視覚枠＋「＋詳細行」。BUILD `…-phase2c-c-type-group` |
 | 2026-07-31 | Phase2c-c-hide: 内訳品名カタログ(name3)を原価管理から隠す。枠＋手追加詳細のみ。BUILD `…-hide-catalog` |
+| 2026-07-31 | Phase2c-c-template-types: コード表 typesByHimoku の空種別枠を常時表示。BUILD `…-template-types` |
 | 2026-07-31 | Phase2c AI合意: 2c-a=費目視覚グループ（書込なし）→2c-b=種別行挿入→2c-c=深階層。浜田GO後に実装 |
 | 2026-07-31 | Phase2c-a 実装（未deploy）: `jy2ActualHimokuGroupRow` を追加。expand時に費目(name1)ヘッダ行（灰色SUM・`dataset.virtual="himoku-group"`）を挿入する視覚グループ化のみ。App757/758キー・save-model・actuals-matrix 書込は未変更。BUILD `2026-07-31-ver02-actual-excel-phase2c-a` |
 | 2026-07-31 | Phase2c-b-a 実装（未deploy）: 費目グループヘッダに「＋種別行」ボタンを追加。押下で `detailModel.addDetailRow` → 実費目時のみ `name1` prefill → `moveDetailRow` 反復で当該費目末尾直後へ寄せる。書込は **App757 の内訳（detailModel）のみ**、App758／keys.mjs／save-model／actuals-matrix pivot は未変更。永続化は sticky トップの「一時保存」経由（明示バナー）。削除は次スライスへ後送。BUILD `2026-07-31-ver02-actual-excel-phase2c-b` |
