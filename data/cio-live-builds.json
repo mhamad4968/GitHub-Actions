@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-type-authority",
-      "fileKey": "75fd8b6f-2aed-44dc-836f-a248a262814a",
-      "revision": "206",
+      "build": "2026-08-01-ver02-actual-deny-type-row",
+      "fileKey": "28449a08-b8ea-4df5-a69c-05043f7ff38b",
+      "revision": "207",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T23:26:49.067Z",
+      "deployedAt": "2026-07-31T23:29:02.380Z",
       "note": null
     },
     "757": {
