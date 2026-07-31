@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-no-type-add
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf
+  // Phase2c-c-excel-struct-raf: 操作＋／－の全表 rerender を rAF に逃がし
+  // click 1〜2s Violation を緩和（本直し＝ブロック単位再描画は別タスク）。
   // Phase2c-c-excel-no-type-add: 種別枠の「＋詳細行」撤去。追加は操作列＋
   // （空種別は操作列＋／詳細列クイック入力）。App758 keys/save/pivot 不変。
   // Phase2c-c-excel-ops-col: 詳細の右に「操作」列（＋／－）。Excel列＋UI専用。
@@ -7767,6 +7769,9 @@
     // フック。detail 構造が変わった旨を shell に通知し（内訳 pane 再描画・
     // 総括/予実 dirty マーク）、続けて予実 pane を rerender して新しい
     // 種別行を expand 済みグループの下に表示する。
+    // Phase2c-c-excel-struct-raf: 全表再構築は重いので click 内では走らせず
+    // rAF にまとめる（連続＋でも1回）。ブロック単位再描画が本直し。
+    let structureRerenderPending = false;
     const onDetailStructureAdded = () => {
       if (typeof onDetailStructureChanged === "function") {
         try {
@@ -7777,7 +7782,18 @@
           }
         }
       }
-      rerender();
+      if (structureRerenderPending) return;
+      structureRerenderPending = true;
+      const view = documentRef && documentRef.defaultView;
+      const run = () => {
+        structureRerenderPending = false;
+        rerender();
+      };
+      if (view && typeof view.requestAnimationFrame === "function") {
+        view.requestAnimationFrame(run);
+      } else {
+        run();
+      }
     };
     // 詳細・単価などフィールド編集: 内訳/予実の全 DOM 再構築はしない（Violation 対策）。
     // モデルは既に updateDetailRow 済み。内訳タブ表示時に dirty 反映。
