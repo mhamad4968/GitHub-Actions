@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-hide-dash-type
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-row-tint-green-blue
+  // Phase2c-row-tint-green-blue: 費目行=薄緑・種別行=薄青・詳細=ほぼ白（階層識別）。
   // Phase2c-hide-dash-type: 種別「－」「（種別未設定）」行は原価管理に出さない
   // （内訳の dash/空 name2 由来。Excel原価管理明細に無い）。
   // Phase2c-type-col-wide: 種別列(freeze-2) 5.5〜7rem → 12rem。見切れ解消。
@@ -527,11 +528,11 @@
       ".jy2-actual-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;margin-right:4px;font-size:11px;font-weight:700;line-height:1;border:1px solid #94a3b8;border-radius:3px;background:#f8fafc;color:#334155;cursor:pointer}",
       ".jy2-actual-expand-btn:hover{background:#e2e8f0;border-color:#64748b}",
       ".jy2-actual-parent-num{display:inline-block;min-width:1.5rem}",
-      /* 3段階薄色: 費目(濃灰) > 種別(薄灰) > 詳細=実績入力(ごく薄い青白) */
-      ".jy2-actual-table .jy2-actual-parent-row td{background:#e8eaed!important;color:#1e293b}",
-      ".jy2-actual-table .jy2-actual-parent-row .jy2-freeze{background:#e8eaed!important}",
-      ".jy2-actual-child-row td{background:#f0f7fc}",
-      ".jy2-actual-child-row .jy2-freeze{background:#f0f7fc}",
+      /* 3段階薄色: 費目=薄緑 / 種別=薄青 / 詳細=ほぼ白（入力しやすい） */
+      ".jy2-actual-table .jy2-actual-parent-row td{background:#e8f5e9!important;color:#1e293b}",
+      ".jy2-actual-table .jy2-actual-parent-row .jy2-freeze{background:#e8f5e9!important}",
+      ".jy2-actual-child-row td{background:#ffffff}",
+      ".jy2-actual-child-row .jy2-freeze{background:#ffffff}",
       ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:visible;white-space:normal}",
       ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-child-name{padding-left:6px}",
       ".jy2-actual-table .jy2-actual-child-name-input{display:block;width:100%;min-width:5rem;box-sizing:border-box}",
@@ -542,27 +543,27 @@
       ".jy2-actual-child-ops .jy2-actual-detail-pm-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;margin:0;font-size:12px;font-weight:700;line-height:1;border:1px solid #64748b;border-radius:3px;background:#fff;color:#0f172a;cursor:pointer}",
       ".jy2-actual-child-ops .jy2-actual-detail-pm-btn:hover{background:#e2e8f0}",
       ".jy2-actual-child-ops .jy2-actual-child-delete-btn{border-color:#b91c1c;color:#b91c1c}",
-      /* Phase2a (2026-07-31): 親月セル・総計月セルは合計表示（自動）で入力不可。
-         灰色背景で「編集不可」を視覚化。子月セルは元のまま（入力可）を維持する。 */
-      ".jy2-actual-table td.jy2-actual-sum-cell{background:#e8eaed!important;color:#334155;cursor:default}",
-      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-sum-cell{background:#e8eaed!important}",
-      ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-auto-budget{background:#e8f1f8!important;color:#334155;cursor:default}",
-      /* Phase2c-a (2026-07-31): expand時の費目(name1)視覚グループヘッダ。
-         灰色 SUM の表示専用行（書込・保存対象外）を子行と視覚的に区別する。 */
-      ".jy2-actual-table .jy2-actual-himoku-group-row td{background:#e8eaed!important;color:#1e293b;font-weight:700}",
-      ".jy2-actual-table .jy2-actual-himoku-group-row .jy2-freeze{background:#e8eaed!important}",
+      /* 合計セルは行色に合わせる（編集不可は cursor で示す） */
+      ".jy2-actual-table td.jy2-actual-sum-cell{color:#334155;cursor:default}",
+      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-sum-cell{background:#e8f5e9!important}",
+      ".jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-sum-cell{background:#e8f5e9!important}",
+      ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-sum-cell{background:#e3f2fd!important}",
+      ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-auto-budget{background:#f8fafc!important;color:#334155;cursor:default}",
+      /* 費目グループ行（追加費目）= 親と同じ薄緑 */
+      ".jy2-actual-table .jy2-actual-himoku-group-row td{background:#e8f5e9!important;color:#1e293b;font-weight:700}",
+      ".jy2-actual-table .jy2-actual-himoku-group-row .jy2-freeze{background:#e8f5e9!important}",
       ".jy2-actual-table .jy2-actual-himoku-group-label{padding-left:6px}",
-      /* Phase2c-c: 費目の下の種別(name2)枠。費目より一段薄い灰色＋字下げ。 */
-      ".jy2-actual-table .jy2-actual-type-group-row td{background:#f1f3f5!important;color:#334155;font-weight:600}",
-      ".jy2-actual-table .jy2-actual-type-group-row .jy2-freeze{background:#f1f3f5!important}",
+      /* 種別行 = 薄青 */
+      ".jy2-actual-table .jy2-actual-type-group-row td{background:#e3f2fd!important;color:#334155;font-weight:600}",
+      ".jy2-actual-table .jy2-actual-type-group-row .jy2-freeze{background:#e3f2fd!important}",
       ".jy2-actual-table .jy2-actual-type-group-label{padding-left:18px}",
       /* Excel寄せ: 集計行の空き列を見た目結合（tdは残し枠線のみ消す＝sticky維持） */
       ".jy2-actual-table td.jy2-actual-visual-merge-start,.jy2-actual-table td.jy2-actual-visual-merge-mid{border-right-color:transparent!important;box-shadow:none!important}",
       ".jy2-actual-table td.jy2-actual-visual-merge-mid,.jy2-actual-table td.jy2-actual-visual-merge-end{border-left-color:transparent!important}",
-      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8eaed!important}",
-      ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#f1f3f5!important}",
-      ".jy2-actual-table .jy2-actual-child-row:hover td:not(.jy2-freeze){background:#e4eef8}",
-      ".jy2-actual-table .jy2-actual-child-row:hover .jy2-freeze{background:#e4eef8}",
+      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8f5e9!important}",
+      ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#e3f2fd!important}",
+      ".jy2-actual-table .jy2-actual-child-row:hover td:not(.jy2-freeze){background:#f1f5f9}",
+      ".jy2-actual-table .jy2-actual-child-row:hover .jy2-freeze{background:#f1f5f9}",
       ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
       /* 縦 sticky 禁止（2段見出しが同じ top でデータ行に沈む）。左固定列のみ sticky */
       ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:static;top:auto;z-index:auto;background:#f1f5f9;box-shadow:none}",

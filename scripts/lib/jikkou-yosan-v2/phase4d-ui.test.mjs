@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-hide-dash-type/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-row-tint-green-blue/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_TYPE_DENY/);
   assert.match(source, /jy2CostMgmtIsDeniedType/);
@@ -523,6 +523,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2CostMgmtShouldOmitType/);
   assert.match(source, /jy2CostMgmtTemplateTypes/);
   assert.match(source, /その他材料費/);
+  assert.match(source, /himoku-group-row td\{background:#e8f5e9/);
+  assert.match(source, /type-group-row td\{background:#e3f2fd/);
   assert.match(
     source,
     /\.jy2-freeze-2\{left:16\.2rem;min-width:12rem;width:12rem;max-width:12rem/,
