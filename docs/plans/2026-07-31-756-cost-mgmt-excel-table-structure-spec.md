@@ -25,7 +25,7 @@
 | **2a** | **安全第1弾（UIのみ）**: 備考列再表示／子行の数量表示（読取）／親・計の月セル灰色。Y12 親+展開維持。App758 キー・保存は**変更しない** | **完了** LIVE rev168 / `70a09aef` / tag `backup/756-before-excel-table-phase2a-2026-07-31` |
 | **2b** | 月次 **数量+金額** デュアル／`ROUND(単価×数量,0)` 自動＋金額直入れ／実行予算額＝既存最終予算手入力の暫定ラベル | **完了** LIVE rev169 / `bccf61d9` / tag `backup/756-before-excel-table-phase2b-2026-07-31`（数量はセッションのみ） |
 | **2c-a** | **視覚グループのみ**: 展開後の明細を費目(name1)でまとめ、費目ヘッダ行＝灰色SUM（表示専用）。App757/758書込なし。＋展開維持 | **実装中（未deploy）**: BUILD `2026-07-31-ver02-actual-excel-phase2c-a`。`jy2ActualHimokuGroupRow`（`dataset.virtual="himoku-group"`／灰色SUM／`▸ 費目名`）を追加し、`row.children` を既存順で走査して直前の name1 と label が変わった時点でヘッダ行を挿入。書込・キー・ソートは一切変更なし |
-| **2c-b** | 種別（補助）行の挿入／削除（App757 明細への書き込み） | 2c-a 目視後 |
+| **2c-b** | 種別（補助）行の挿入／削除（App757 明細への書き込み） | **2c-b-a 実装中（未deploy）**: 挿入のみ。BUILD `2026-07-31-ver02-actual-excel-phase2c-b`。費目グループヘッダに「＋種別行」ボタンを追加し、`detailModel.addDetailRow(blockId)` → 実費目なら `updateDetailRow({ name1 })` prefill → `moveDetailRow(id, key, ±1)` を反復して当該費目末尾直後へ寄せる。書込は **App757 内訳のみ**。永続化は sticky トップの「一時保存」で行う（バナーで案内、「予実を保存」では保存されない）。keys.mjs / save-model / actuals-matrix pivot・App758 書込は未変更。削除（空行のみ・アクチュアル無し）は次スライスへ後送 |
 | **2c-c** | 昼／夜等の深い階層表示・常時階層（開閉任意） | 2c-b 後 |
 | **3** | 目視確認・抜け漏れ埋め | Phase 2 各弾後 |
 | **4** | 実行予算額の出し方（月曜依頼者確認後）差し替え | 月曜以降 |
@@ -180,3 +180,4 @@
 | 2026-07-31 | Phase2b 着手: 月次数量+金額UI。数量はセッションMap（永続は後続）。金額のみ App758 保存。実行予算額＝最終予算手入力ラベル寄せ |
 | 2026-07-31 | Phase2c AI合意: 2c-a=費目視覚グループ（書込なし）→2c-b=種別行挿入→2c-c=深階層。浜田GO後に実装 |
 | 2026-07-31 | Phase2c-a 実装（未deploy）: `jy2ActualHimokuGroupRow` を追加。expand時に費目(name1)ヘッダ行（灰色SUM・`dataset.virtual="himoku-group"`）を挿入する視覚グループ化のみ。App757/758キー・save-model・actuals-matrix 書込は未変更。BUILD `2026-07-31-ver02-actual-excel-phase2c-a` |
+| 2026-07-31 | Phase2c-b-a 実装（未deploy）: 費目グループヘッダに「＋種別行」ボタンを追加。押下で `detailModel.addDetailRow` → 実費目時のみ `name1` prefill → `moveDetailRow` 反復で当該費目末尾直後へ寄せる。書込は **App757 の内訳（detailModel）のみ**、App758／keys.mjs／save-model／actuals-matrix pivot は未変更。永続化は sticky トップの「一時保存」経由（明示バナー）。削除は次スライスへ後送。BUILD `2026-07-31-ver02-actual-excel-phase2c-b` |

@@ -1,7 +1,14 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-a
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b
+  // Phase2c-b-a (2026-07-31): 費目グループ行の label セルに「＋種別行」
+  // ボタンを追加。押下で `detailModel.addDetailRow` → 費目が実費目のときは
+  // `name1` に費目名を prefill → `moveDetailRow` を繰り返して当該グループ
+  // 末尾の直後まで移動する。書込みは App757 の内訳（detailModel）だけで、
+  // App758 の予実（actualsModel）・keys.mjs・save-model・actuals-matrix
+  // pivot は一切触らない。永続化は sticky トップの「一時保存」経由（App757）
+  // で行い、「予実を保存」は使わない（明示バナーで案内）。
   // Phase2c-a (UI-only): expand時に明細を費目(name1)で視覚グループ化する。
   // 費目ヘッダ行＝表示専用の灰色 SUM（`▸ 費目名` ラベル・数量/金額は集計）
   // で、書込みは一切行わない（`dataset.virtual = "himoku-group"` を保存
@@ -6936,6 +6943,7 @@
     label,
     childrenInGroup,
     months,
+    opts,
   ) {
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-actual-himoku-group-row";
@@ -6955,6 +6963,99 @@
       `▸ ${label}`,
     );
     labelCell.title = `費目「${label}」の合計（表示専用・入力不可）`;
+    // Phase2c-b-a (2026-07-31): 実費目のグループヘッダに「＋種別行」ボタン。
+    // 押下で detailModel.addDetailRow → name1 prefill（実費目のときのみ）→
+    // moveDetailRow の反復で当該費目の末尾直後へ寄せる。「未分類」ヘッダは
+    // 費目自体が未設定のため prefill しない（ただし追加は許可し、name1 空の
+    // まま先頭にぶら下がる ⇒ ユーザーが後から選ぶ）。書込みは detailModel
+    // （App757）のみで、actualsModel/App758 は一切変更しない。永続化は sticky
+    // トップの「一時保存」で行う（バナーで案内）。
+    if (
+      opts &&
+      opts.detailModel &&
+      opts.canEditBudget === true &&
+      typeof opts.onAdded === "function"
+    ) {
+      const addTypeButton = documentRef.createElement("button");
+      addTypeButton.type = "button";
+      addTypeButton.className =
+        "jy2-row-button jy2-actual-himoku-add-type-btn";
+      addTypeButton.textContent = "＋種別行";
+      addTypeButton.title =
+        "この費目の下に明細行を追加（内訳として一時保存が必要）";
+      // フォーカス中セルの blur→commit と click の順序で押しつぶされない
+      // ように、下（内訳の明細行追加）と同じく mousedown で preventDefault。
+      addTypeButton.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      addTypeButton.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const detailModel = opts.detailModel;
+          const blockId = parent.stableBlockId;
+          const lastChildRowKeyInGroup = opts.lastChildRowKeyInGroup || null;
+          const isUnknownGroup = label === "（未分類）";
+          const findBlockRows = () => {
+            const snapshot = detailModel.snapshot();
+            const blocks = (snapshot && snapshot.blocks) || [];
+            const target = blocks.find(
+              (block) => block && block.stableBlockId === blockId,
+            );
+            return target && Array.isArray(target.detailRows)
+              ? target.detailRows
+              : [];
+          };
+          const indexOfKey = (rows, key) => {
+            for (let i = 0; i < rows.length; i += 1) {
+              if (rows[i] && rows[i].rowKey === key) return i;
+            }
+            return -1;
+          };
+          // Add-before snapshot to resolve the anchor (末尾直後へ寄せるため)。
+          const preRows = findBlockRows();
+          const anchorIndex =
+            lastChildRowKeyInGroup !== null
+              ? indexOfKey(preRows, lastChildRowKeyInGroup)
+              : -1;
+          const newKey = detailModel.addDetailRow(blockId);
+          if (!isUnknownGroup) {
+            detailModel.updateDetailRow(blockId, newKey, { name1: label });
+          }
+          // 反復 move: 新規行は末尾。目標位置は anchorIndex + 1。
+          // anchorIndex が見つからない（未分類グループが空 / 初期状態）は
+          // 末尾のまま放置（並びを狂わせない）。
+          if (anchorIndex >= 0) {
+            const targetIndex = anchorIndex + 1;
+            let safety = findBlockRows().length + 1;
+            while (safety > 0) {
+              safety -= 1;
+              const currentRows = findBlockRows();
+              const currentIndex = indexOfKey(currentRows, newKey);
+              if (currentIndex < 0 || currentIndex === targetIndex) break;
+              const offset = currentIndex > targetIndex ? -1 : 1;
+              detailModel.moveDetailRow(blockId, newKey, offset);
+            }
+          }
+          if (opts.expandState && typeof opts.expandState.expand === "function") {
+            opts.expandState.expand(blockId);
+          }
+          opts.onAdded();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const message =
+            (error && error.message) ||
+            "種別行の追加に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      labelCell.appendChild(documentRef.createTextNode(" "));
+      labelCell.appendChild(addTypeButton);
+    }
     tr.appendChild(jy2MarkFreeze(labelCell, 3));
 
     // 種別 / 単価 / 数量: 明細のみの列（費目集計行では意味が無い）
@@ -7194,6 +7295,12 @@
   // detailModel.snapshot().blocks（明細行付き）を返し、親行の＋展開時に
   // 子行として月別消化・最終予算額の入力欄を提供する。省略時はレガシー
   // （親のみ）動作。
+  // Phase2c-b-a (2026-07-31): `detailModel` と `onDetailStructureChanged`
+  // を追加。費目グループ行の「＋種別行」ボタンから `addDetailRow` を呼び
+  // 出したとき、shell が Detail pane を再描画し、総括/予実を dirty マーク
+  // できるようにする。両引数は optional（省略時は Phase2c-a 相当の表示専用
+  // 動作）。書き込みは常に detailModel（App757）に限定し、actualsModel／
+  // App758 の書込経路には触れない。
   function jy2RenderActualPane(
     documentRef,
     pane,
@@ -7204,6 +7311,8 @@
     projectionManual,
     summaryTotalsProvider,
     detailBlocksProvider,
+    detailModel,
+    onDetailStructureChanged,
   ) {
     const scroll = jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
@@ -7224,7 +7333,30 @@
         projectionManual,
         summaryTotalsProvider,
         detailBlocksProvider,
+        detailModel,
+        onDetailStructureChanged,
       );
+    // Phase2c-b-a: 費目グループ行の「＋種別行」ボタンから呼ばれる pane 側
+    // フック。detail 構造が変わった旨を shell に通知し（内訳 pane 再描画・
+    // 総括/予実 dirty マーク）、続けて予実 pane を rerender して新しい
+    // 種別行を expand 済みグループの下に表示する。
+    const onDetailStructureAdded = () => {
+      if (typeof onDetailStructureChanged === "function") {
+        try {
+          onDetailStructureChanged();
+        } catch (error) {
+          if (typeof console !== "undefined" && console.error) {
+            console.error("onDetailStructureChanged failed:", error);
+          }
+        }
+      }
+      rerender();
+    };
+    const canEditBudget = Boolean(
+      detailModel &&
+        detailModel.allowedOperations &&
+        detailModel.allowedOperations.editBudget === true,
+    );
     const months = actualsModel.months();
     const blocks = blocksProvider();
     const contractTotal1 = contractTotal1Provider ? contractTotal1Provider() : null;
@@ -7331,6 +7463,15 @@
       "横スクロール時も左の内訳№〜工種名は固定表示されます。";
     note.append(summary, noteBody);
     pane.appendChild(note);
+    // Phase2c-b-a: 「＋種別行」で追加した内訳（App757）の永続化は sticky トップの
+    // 「一時保存」で行う旨をバナー表示（「予実を保存」では保存されない）。
+    if (canEditBudget) {
+      const detailAddNotice = documentRef.createElement("p");
+      detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
+      detailAddNotice.textContent =
+        "種別行の追加は上部「一時保存」で内訳(App757)に保存されます（「予実を保存」では保存されません）";
+      pane.appendChild(detailAddNotice);
+    }
     if (rows.length === 0) {
       pane.appendChild(
         jy2Cell(
@@ -7409,6 +7550,15 @@
               if (peekLabel !== himokuLabel) break;
               currentGroupChildren.push(peekChild);
             }
+            // Phase2c-b-a: 「＋種別行」ボタンの対象位置は「同一費目内の最終子」の
+            // 直後。walker が事前 SUM 用に集めた `currentGroupChildren` の末尾
+            // rowKey が実 detailRows 上の最後の同一 name1 行の rowKey と一致する
+            // ので、これを `lastChildRowKeyInGroup` として渡す。addDetailRow は
+            // 常に末尾追加 → 移動 (`moveDetailRow` の反復) でここへ寄せる。
+            const lastChildRowKeyInGroup =
+              currentGroupChildren.length > 0
+                ? currentGroupChildren[currentGroupChildren.length - 1].rowKey
+                : null;
             body.appendChild(
               jy2ActualHimokuGroupRow(
                 documentRef,
@@ -7416,6 +7566,13 @@
                 himokuLabel,
                 currentGroupChildren,
                 months,
+                {
+                  detailModel,
+                  canEditBudget,
+                  lastChildRowKeyInGroup,
+                  expandState,
+                  onAdded: onDetailStructureAdded,
+                },
               ),
             );
             previousHimokuLabel = himokuLabel;
@@ -8636,6 +8793,16 @@
     const contractTotal1 = () => summaryModel.snapshot().totals.total1;
     const summaryTotalsProvider = () => summaryModel.totals(currentBlocks());
     const currentDetailBlocks = () => detailModel.snapshot().blocks;
+    // Phase2c-b-a (2026-07-31): 予実 pane の費目グループ「＋種別行」ボタンから
+    // 内訳（App757・detailModel）へ行が追加されたときのフック。総括と予実を
+    // dirty マークし、内訳 pane を再描画する（予実 pane 自身は rerender で
+    // 直後に描き直されるため actualsDirty はマークしない）。ボタン押下時
+    // にしか呼ばれないため、後に定義される `refreshDetail` を lexical closure
+    // で参照して構わない（TDZ の観点で mount 完了後にしか実行されない）。
+    const onDetailStructureChanged = () => {
+      summaryDirty = true;
+      refreshDetail();
+    };
     const refreshActuals = () => {
       jy2RenderActualPane(
         documentRef,
@@ -8647,6 +8814,8 @@
         projectionManual,
         summaryTotalsProvider,
         currentDetailBlocks,
+        detailModel,
+        onDetailStructureChanged,
       );
       actualsDirty = false;
     };

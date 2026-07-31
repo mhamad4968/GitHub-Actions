@@ -5301,3 +5301,19 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 JST — **756 Phase2c-b-a LIVE**
+
+**要約**: BUILD phase2c-b LIVE rev171。費目下＋種別行追加(detailModel)。一時保存でApp757。削除は後続。次=目視。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `325b3220` — 
+
+**BUILD**: 2026-07-31-ver02-actual-excel-phase2c-b rev171
+
+**GO待ち**: 756 Phase2c-b visual; then delete slice or 2c-c
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---

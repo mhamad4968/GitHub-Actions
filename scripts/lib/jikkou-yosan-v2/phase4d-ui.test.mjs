@@ -525,19 +525,85 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   );
   // Phase2c-a (2026-07-31): expand時の費目(name1)視覚グループ化。表示専用の
   // 灰色 SUM 費目ヘッダ行を挿入するだけで、書込・キー変更は一切行わない。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-a/);
+  // Phase2c-b (2026-07-31): 費目グループヘッダに「＋種別行」ボタンを追加し、
+  // detailModel.addDetailRow → name1 prefill → moveDetailRow で末尾直後へ寄せる。
+  // 書込は App757 の内訳（detailModel）のみで、App758 / keys.mjs / actuals-matrix
+  // pivot は一切触らない。永続化は sticky トップの「一時保存」に案内する。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
   assert.match(source, /費目合計（表示専用・入力不可）/);
-  // 表示専用（書込みなし）: helper 内で App758/keys.mjs 系の書込 API を
-  // 呼ばないこと（保険 assertion）。次の helper `jy2ActualSumField` を境界に切り出す。
+  // Phase2c-b-a: 「＋種別行」ボタン・banner・addDetailRow 使用が並ぶ。
+  assert.match(source, /＋種別行/);
+  assert.match(source, /jy2-actual-himoku-add-type-btn/);
+  assert.match(source, /この費目の下に明細行を追加/);
+  assert.match(source, /種別行の追加は上部「一時保存」で内訳\(App757\)に保存されます/);
+  assert.match(source, /jy2-actual-detail-add-notice/);
+  // helper 領域（jy2ActualHimokuGroupRow〜jy2ActualSumField）に detailModel の
+  // 内訳書込 API を必ず含めること（＋種別行の実装が消えていない担保）。
   const helperMatch = source.match(
     /function jy2ActualHimokuGroupRow[\s\S]*?function jy2ActualSumField/,
   );
   assert.ok(helperMatch, "jy2ActualHimokuGroupRow body must be present");
+  // 予実（App758）側の書込 API を helper 内で呼ばないこと（保険）。
   assert.doesNotMatch(helperMatch[0], /actualsModel\.update/);
   assert.doesNotMatch(helperMatch[0], /commit\(/);
+  // helper 内で detailModel.addDetailRow / updateDetailRow / moveDetailRow を用いる。
+  assert.match(helperMatch[0], /detailModel\.addDetailRow/);
+  assert.match(helperMatch[0], /detailModel\.updateDetailRow/);
+  assert.match(helperMatch[0], /detailModel\.moveDetailRow/);
+  // jy2RenderActualPane 側の pane フックと shell 側 refreshActuals 配線を検査。
+  assert.match(source, /onDetailStructureChanged/);
+  assert.match(source, /onDetailStructureAdded/);
+  // shell からは detailModel と onDetailStructureChanged を pane 描画に渡す。
+  assert.match(
+    source,
+    /refreshActuals\s*=\s*\(\)\s*=>\s*\{[\s\S]*?detailModel,[\s\S]*?onDetailStructureChanged,[\s\S]*?\};/,
+  );
+});
+
+// Phase2c-b-a (2026-07-31): addDetailRow → updateDetailRow → moveDetailRow の
+// 反復で「同一費目内の末尾直後」へ新規行を寄せる並び替えロジックのユニット
+// 相当。detailModel の実装（U23 の +1/-1 swap）で目標位置に到達することを担保。
+test("Phase2c-b addDetailRow + updateDetailRow + moveDetailRow lands new row after group last", async () => {
+  const detailModule = await import("./detail-block-model.mjs");
+  const { LOCK_STATES: LOCK_STATES_LOCAL } = await import("./lock.mjs");
+  const model = detailModule.createDetailBlockModel({
+    lockState: LOCK_STATES_LOCAL.EDITABLE,
+  });
+  const blockId = model.addBlock();
+  const [row0] = model.snapshot().blocks[0].detailRows;
+  model.updateDetailRow(blockId, row0.rowKey, { name1: "材料費", name2: "鉄筋" });
+  const row1Key = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, row1Key, { name1: "材料費", name2: "鋼材" });
+  const row2Key = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, row2Key, { name1: "労務費", name2: "型枠工" });
+  // Snapshot the target block; last row in 材料費 group is row1Key (index 1).
+  const before = model.snapshot().blocks[0].detailRows;
+  const anchorIndex = before.findIndex((row) => row.rowKey === row1Key);
+  assert.equal(anchorIndex, 1);
+  const newKey = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, newKey, { name1: "材料費" });
+  const rowsAfterAdd = model.snapshot().blocks[0].detailRows;
+  assert.equal(rowsAfterAdd[rowsAfterAdd.length - 1].rowKey, newKey);
+  const targetIndex = anchorIndex + 1;
+  let safety = rowsAfterAdd.length + 1;
+  while (safety > 0) {
+    safety -= 1;
+    const currentRows = model.snapshot().blocks[0].detailRows;
+    const currentIndex = currentRows.findIndex((row) => row.rowKey === newKey);
+    if (currentIndex === targetIndex) break;
+    const offset = currentIndex > targetIndex ? -1 : 1;
+    model.moveDetailRow(blockId, newKey, offset);
+  }
+  const finalRows = model.snapshot().blocks[0].detailRows;
+  const finalIndex = finalRows.findIndex((row) => row.rowKey === newKey);
+  assert.equal(finalIndex, targetIndex);
+  // 材料費グループ末尾直後（＝労務費グループの直前）に新規行が入ること。
+  assert.equal(finalRows[finalIndex].name1, "材料費");
+  assert.equal(finalRows[finalIndex + 1].rowKey, row2Key);
+  assert.equal(finalRows[finalIndex + 1].name1, "労務費");
 });
 
 test("phase 4d sources never target customize/736 / App 735/736 / kintone REST", () => {
