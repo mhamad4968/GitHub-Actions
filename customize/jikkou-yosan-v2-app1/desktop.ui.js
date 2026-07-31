@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-row-ops
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-unit-price
+  // Phase2c-c-excel-unit-price: 工事原価管理の詳細行・単価を手入力
+  // （detailModel.updateDetailRow unitPrice・一時保存 App757）。
   // Phase2c-c-excel-row-ops: 工事原価管理の詳細行に「＋」「削除」。追加は種別の
   // ＋詳細行／子行＋、削除は removeDetailRow（最低1行・実績ありは確認）。
   // Phase2c-c-excel-flat-detail2: 詳細列の「└」＋width:100%入力で入力欄が
@@ -6962,9 +6964,42 @@
     }
     tr.appendChild(jy2MarkFreeze(nameCell, 3));
 
-    tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(child.unitPrice)),
-    );
+    const unitPriceCell = jy2Cell(documentRef, "td", "jy2-num", "");
+    const unitPriceRaw =
+      detailIndex >= 0 && detailRows?.[detailIndex]
+        ? detailRows[detailIndex].unitPrice
+        : child.unitPrice;
+    const unitPriceInputValue =
+      unitPriceRaw === null || unitPriceRaw === undefined
+        ? ""
+        : String(unitPriceRaw).trim();
+    if (childCanEditBudget && childDetailModel) {
+      const unitPriceInput = jy2TextInput(
+        documentRef,
+        unitPriceInputValue,
+        (value) => {
+          childDetailModel.updateDetailRow(parent.stableBlockId, child.rowKey, {
+            unitPrice: value,
+          });
+          if (typeof revealDetailKey === "function") {
+            revealDetailKey(child.rowKey);
+          }
+          if (typeof onDetailChanged === "function") {
+            onDetailChanged();
+          } else {
+            rerender();
+          }
+        },
+      );
+      unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
+      unitPriceInput.placeholder = "単価";
+      unitPriceInput.title = "単価（手入力・一時保存で App757 へ）";
+      unitPriceCell.appendChild(unitPriceInput);
+    } else {
+      unitPriceCell.className = "jy2-num";
+      unitPriceCell.textContent = jy2AmountDisplay(child.unitPrice);
+    }
+    tr.appendChild(unitPriceCell);
 
     const commit = (patch) => {
       try {
@@ -7787,7 +7822,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理は Excel 同様に費目→種別→詳細。詳細は手入力、行の「＋／削除」または種別の「＋詳細行」で増減、一時保存で App757 へ。「予実を保存」では構造は保存されません";
+        "原価管理は Excel 同様に費目→種別→詳細。詳細・単価は手入力、行の「＋／削除」または種別の「＋詳細行」で増減、一時保存で App757 へ。「予実を保存」では構造は保存されません";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {

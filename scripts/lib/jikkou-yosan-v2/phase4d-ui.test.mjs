@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-row-ops/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-unit-price/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -542,6 +542,13 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-child-add-btn/);
   assert.match(source, /removeDetailRow\(\s*parent\.stableBlockId,\s*child\.rowKey/);
   assert.match(source, /行の「＋／削除」/);
+  // Phase2c-c-excel-unit-price: 単価手入力
+  assert.match(source, /jy2-actual-child-unit-price-input/);
+  assert.match(
+    source,
+    /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*unitPrice: value,/,
+  );
+  assert.match(source, /詳細・単価は手入力/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
