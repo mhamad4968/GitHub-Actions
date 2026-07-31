@@ -523,31 +523,33 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
-  // Phase2c-a (2026-07-31): expand時の費目(name1)視覚グループ化。表示専用の
-  // 灰色 SUM 費目ヘッダ行を挿入するだけで、書込・キー変更は一切行わない。
-  // Phase2c-b (2026-07-31): 費目グループヘッダに「＋種別行」ボタンを追加し、
-  // detailModel.addDetailRow → name1 prefill → moveDetailRow で末尾直後へ寄せる。
-  // 書込は App757 の内訳（detailModel）のみで、App758 / keys.mjs / actuals-matrix
-  // pivot は一切触らない。永続化は sticky トップの「一時保存」に案内する。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-child-label/);
+  // Phase2c-a/b/c: 費目→種別視覚入れ子。App758 キー変更なし。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-type-group/);
   // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
   assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
   assert.match(source, /費目合計（表示専用・入力不可）/);
+  // Phase2c-c: 種別枠・＋詳細行
+  assert.match(source, /jy2ActualTypeGroupRow/);
+  assert.match(source, /jy2-actual-type-group-row/);
+  assert.match(source, /dataset\.virtual\s*=\s*["']type-group["']/);
+  assert.match(source, /＋詳細行/);
+  assert.match(source, /jy2-actual-type-add-detail-btn/);
+  assert.match(source, /jy2ActualInsertDetailNear/);
+  assert.match(source, /種別合計（表示専用・入力不可）/);
   // Phase2c-b-a: 「＋種別行」ボタン・banner・addDetailRow 使用が並ぶ。
   assert.match(source, /＋種別行/);
   assert.match(source, /jy2-actual-himoku-add-type-btn/);
-  assert.match(source, /この費目の下に明細行を追加/);
-  assert.match(source, /種別行の追加は上部「一時保存」で内訳\(App757\)に保存されます/);
+  assert.match(source, /この費目の下に種別用の明細行を追加/);
+  assert.match(source, /種別行・詳細行の追加は上部「一時保存」で内訳\(App757\)に保存されます/);
   assert.match(source, /jy2-actual-detail-add-notice/);
-  // helper 領域（jy2ActualHimokuGroupRow〜jy2ActualSumField）に detailModel の
-  // 内訳書込 API を必ず含めること（＋種別行の実装が消えていない担保）。
+  // helper 領域（InsertNear〜SumField）に detailModel の内訳書込 API を含める。
   const helperMatch = source.match(
-    /function jy2ActualHimokuGroupRow[\s\S]*?function jy2ActualSumField/,
+    /function jy2ActualInsertDetailNear[\s\S]*?function jy2ActualSumField/,
   );
-  assert.ok(helperMatch, "jy2ActualHimokuGroupRow body must be present");
+  assert.ok(helperMatch, "jy2ActualInsertDetailNear..SumField body must be present");
   // 予実（App758）側の書込 API を helper 内で呼ばないこと（保険）。
   assert.doesNotMatch(helperMatch[0], /actualsModel\.update/);
   assert.doesNotMatch(helperMatch[0], /commit\(/);
