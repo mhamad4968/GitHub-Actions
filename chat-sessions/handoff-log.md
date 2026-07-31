@@ -5209,3 +5209,47 @@ npm run cio:morning:ready
 **Git**: `origin/main` 同期済（push 済・ahead 0 見込み）
 
 ---
+
+### 2026-07-31 JST — **674 inventory date — Hamada OK**
+
+**要約**: 浜田確認OK。棚卸日（個別・一括・当年確認上書き）受理。LIVE rev265+ / commit 2132ed37。追加作業なし。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `2132ed37` — feat(674): inventory date accepted
+
+**BUILD**: 674 LIVE OK
+
+**GO待ち**: 756 face-to-face 4q only
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---
+
+### 2026-07-31 JST — **756 cost mgmt — Hamada explanation captured**
+
+**要約**: Excel通り。工種→費目→種別行挿入・行ごと実績。昼/夜・旅費・交際はコード表。月次灰=合計。原価累計・予算差=自動。備考必要。予算出し方は月曜確認・暫定手入力。実装はGO後。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `2132ed37` — 
+
+**GO待ち**: 756 Monday budget how-to; implement after explicit GO
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---
+
+### 2026-07-31 JST — **756 Excel table structure SPEC committed**
+
+**要約**: SPEC docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md 作成。実装は別GO。月曜=予算出し方。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `2132ed37` — 
+
+**GO待ち**: 756 Phase2 implement after GO; Monday budget how-to
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---
