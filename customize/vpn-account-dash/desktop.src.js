@@ -2,7 +2,7 @@
   "use strict";
 
   /** VPNアカウント台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 + PC台帳連携 */
-  var BUILD = "2026-07-01-vpn-delete-records-api-fix";
+  var BUILD = "2026-08-01-vpn-id-correct-history-pc-sync";
   var APP_DB = 733;
   var APP_EMP_MASTER = 595;
   var APP_PC_LEDGER = 674;
@@ -257,7 +257,7 @@
     return "user" + local + d;
   }
 
-  function validateManualVpnId(raw, domain) {
+  function validateManualVpnId(raw, domain, excludeRecordId) {
     var d = domain || VPN_DOMAINS.FRE;
     var s = String(raw || "").trim().toLowerCase();
     if (!s) return "VPN ID を入力してください";
@@ -272,6 +272,7 @@
       return "形式が不正です（例: onishi@bnp001）";
     }
     var dup = state.records.some(function (r) {
+      if (excludeRecordId != null && String(r.id) === String(excludeRecordId)) return false;
       return String(r.vpn_id).toLowerCase() === s;
     });
     if (dup) return "この VPN ID は既に登録されています";
@@ -1368,9 +1369,9 @@
       '<label>所属<select id="vpn-edit-dept">' +
       deptOptionsHtml(row.dept) +
       "</select></label>" +
-      '<label>VPN ID<input value="' +
+      '<label>VPN ID<input id="vpn-edit-vpn" value="' +
       esc(row.vpn_id) +
-      '" readonly disabled></label>' +
+      '" autocomplete="off"></label>' +
       '<label>パスワード<input id="vpn-edit-pw" value="' +
       esc(row.password) +
       '" autocomplete="off"></label>' +
@@ -1384,6 +1385,7 @@
     openModal("編集 — " + row.vpn_id, body, function () {
       var label = document.getElementById("vpn-edit-label").value.trim();
       var dept = document.getElementById("vpn-edit-dept").value;
+      var vpnRaw = document.getElementById("vpn-edit-vpn").value.trim();
       var password = document.getElementById("vpn-edit-pw").value.trim();
       var regDate = document.getElementById("vpn-edit-date").value;
       var note = document.getElementById("vpn-edit-note").value;
@@ -1403,6 +1405,37 @@
         return;
       }
 
+      var vpnErr = validateManualVpnId(vpnRaw, row.vpn_domain, row.id);
+      if (vpnErr) {
+        alert(vpnErr);
+        return;
+      }
+      var vpnId =
+        vpnRaw.indexOf("@") >= 0 ? vpnRaw.toLowerCase() : vpnRaw.toLowerCase() + row.vpn_domain;
+      if (inferDomainFromVpnId(vpnId) !== row.vpn_domain) {
+        alert("所属または指定しているドメインが違いますので確認してください");
+        return;
+      }
+
+      var vpnIdChanged = vpnId.toLowerCase() !== String(row.vpn_id).toLowerCase();
+      if (vpnIdChanged) {
+        if (
+          !window.confirm(
+            "VPN ID を変更します:\n" +
+              row.vpn_id +
+              " → " +
+              vpnId +
+              "\n\n備考に履歴を追記し、PC台帳を同期します。よろしいですか？",
+          )
+        ) {
+          return;
+        }
+        var historyLine =
+          "[VPN ID修正] " + todayJstYmd() + " " + row.vpn_id + " → " + vpnId;
+        note = note.trim();
+        note = note ? note + "\n" + historyLine : historyLine;
+      }
+
       apiPut("/k/v1/record.json", {
         app: APP_DB,
         id: row.id,
@@ -1410,13 +1443,14 @@
         record: {
           account_label: { value: label },
           dept: { value: dept },
+          vpn_id: { value: vpnId },
           password: { value: password },
           registered_date: { value: regDate },
           note: { value: note },
         },
       })
         .then(function () {
-          return syncVpnToPcLedger(label, row.vpn_id, password);
+          return syncVpnToPcLedger(label, vpnId, password);
         })
         .then(function (syncRes) {
           closeModal();

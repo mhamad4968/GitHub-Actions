@@ -306,11 +306,11 @@
       "note": null
     },
     "734": {
-      "build": "2026-07-01-vpn-delete-records-api-fix",
-      "fileKey": "4babdb64-f815-49ec-9444-82bef64fa707",
-      "revision": "30",
+      "build": "2026-08-01-vpn-id-correct-history-pc-sync",
+      "fileKey": "21caa91c-6d53-4b9a-811b-d4e1906e4cb3",
+      "revision": "31",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-07-01T10:25:48.584Z",
+      "deployedAt": "2026-07-31T22:22:32.090Z",
       "note": null
     },
     "736": {

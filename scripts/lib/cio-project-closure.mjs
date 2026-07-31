@@ -76,8 +76,15 @@ export function findClosure(root, laneOrProjectId) {
   return closures.find((c) => c.id === key || c.laneId === key) || null;
 }
 
+/** closed-v1 のみ着手禁止。reopened / その他は作業可（R47 再開） */
+export function isClosureActivelyClosed(c) {
+  if (!c) return false;
+  const st = String(c.status || 'closed-v1').trim();
+  return st === 'closed-v1';
+}
+
 export function isProjectClosed(root, laneOrProjectId) {
-  return Boolean(findClosure(root, laneOrProjectId));
+  return isClosureActivelyClosed(findClosure(root, laneOrProjectId));
 }
 
 /** クローズ済みプロジェクトを「次の1手」に載せていないか */
@@ -87,6 +94,7 @@ export function checkClosedProjectNextTask(root, nextTaskText) {
   const issues = [];
   const { closures } = loadProjectClosures(root);
   for (const c of closures) {
+    if (!isClosureActivelyClosed(c)) continue;
     const patterns = c.forbiddenNextTaskPatterns || [];
     const hit = patterns.some((p) => p && text.includes(p));
     const mentionsClose =
