@@ -5,7 +5,7 @@
 
 **次の1手**: **2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。
 
-**Git**: **`0b5eadc5`** = `origin/main` — push 済（R44 parent）
+**Git**: `0879b3f4`（締め close-git で更新）
 
 **本日状態（要約）**: 756 操作列／＋詳細行撤去／struct-raf／SPEC 追記／4h deploy 硬拒否＋chrome-css。AI緊急用 最新同期済。CI 緑。
 
