@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-29-ver02-actual-detail-expand-fix
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2a
+  // Phase2a (UI-only): 備考再表示 + 数量表示（読取） + 親月セル灰色。
+  // App758 key/save-model/actuals-matrix write paths は変更しない（読取のみ）。
   // 工事原価管理: 親行＝内訳№単位は合計表示のみ・編集不可。＋/－で明細行
   // （費目/種別/定義）を開き、月別消化と最終予算額は明細行に入力する
   // （Hamada 確定 2026-07-29 夕）。明細行が1つでも値を持つ列は親=子の合計、
@@ -14,8 +16,9 @@
   const JY2_HSCROLL_KEY = `jy2:${APP1_ID}:hscrollLeft`;
   const JY2_FONT_SCALE_KEY = "jy2-font-scale";
   const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
-  // 種別・単価のみ表示（消費税・単位・数量・金額・備考は非表示・2026-07-29）
-  const JY2_ACTUAL_ATTR_COLS = 2;
+  // Phase2a (2026-07-31): 種別・単価・数量を予算属性列として表示（読取のみ）。
+  // 備考は右端に別列で並べる（ATTR_COLS には含めない・末尾追加扱い）。
+  const JY2_ACTUAL_ATTR_COLS = 3;
 
   function jy2StoreActiveTab(view, tabId) {
     if (!tabId || !view || !view.sessionStorage) return;
@@ -393,6 +396,11 @@
       ".jy2-actual-child-row .jy2-freeze{background:#fafafa}",
       ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".jy2-actual-child-indent{color:#94a3b8;margin-right:2px}",
+      /* Phase2a (2026-07-31): 親月セル・総計月セルは合計表示（自動）で入力不可。
+         灰色背景で「編集不可」を視覚化。子月セルは元のまま（入力可）を維持する。 */
+      ".jy2-actual-table td.jy2-actual-sum-cell{background:#e8eaed!important;color:#334155;cursor:default}",
+      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-sum-cell{background:#e8eaed!important}",
+      ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
       /* 縦 sticky 禁止（2段見出しが同じ top でデータ行に沈む）。左固定列のみ sticky */
       ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:static;top:auto;z-index:auto;background:#f1f5f9;box-shadow:none}",
       ".jy2-actual-table thead th[colspan]{background:#fef3c7}",
@@ -4395,7 +4403,7 @@
     ["内訳№", "区分", "工種番号", "システム入力工種"].forEach((label, index) => {
       top.appendChild(th(label, { rowSpan: 2, freeze: index }));
     });
-    for (const label of ["種別", "単価"]) {
+    for (const label of ["種別", "単価", "数量"]) {
       top.appendChild(th(label, { rowSpan: 2 }));
     }
     top.appendChild(th("現行予算", { colSpan: 2 }));
@@ -4415,6 +4423,11 @@
     rateEnd.classList.add("jy2-actual-rate-end");
     rateEnd.title = "消化率＝原価累計÷現行予算";
     top.appendChild(rateEnd);
+    // Phase2a (2026-07-31): 備考列を右端に追加（親=表示のみ／子=表示のみ・読取）。
+    const noteHead = th("備考（入力）", { rowSpan: 2 });
+    noteHead.classList.add("jy2-actual-note-col");
+    noteHead.title = "備考（内訳タブで手入力・ここは表示のみ）";
+    top.appendChild(noteHead);
     bottom.appendChild(th("予算額"));
     bottom.appendChild(th("消化率"));
     bottom.appendChild(th("予算額（入力）"));
@@ -6589,20 +6602,23 @@
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(row.budgetUnitPrice)),
     );
+    // Phase2a: 数量列（親は明細集計行なので "－" 表示・入力不可）。
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
     // 現行予算: auto from 内訳 block totals; retired blocks show 0 (P-39/R-11).
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.currentBudget)),
     );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", jy2Percent(row.bcRate)));
     for (const month of months) {
-      tr.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "jy2-amount jy2-actual-month",
-          jy2AmountDisplay(row.monthly[month]),
-        ),
+      // Phase2a: 親月セルは子合計の自動表示。グレー背景 + tooltip で入力不可を明示。
+      const monthCell = jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount jy2-actual-month jy2-actual-sum-cell",
+        jy2AmountDisplay(row.monthly[month]),
       );
+      monthCell.title = "合計（自動・入力不可）";
+      tr.appendChild(monthCell);
     }
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.actual)),
@@ -6625,6 +6641,16 @@
         jy2Percent(row.consumptionRatio),
       ),
     );
+    // Phase2a: 備考列。表示のみ（親行は projection の summary_note 由来）。
+    const parentNoteText = String(row.budgetNote ?? "");
+    const parentNoteCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-actual-note",
+      parentNoteText,
+    );
+    if (parentNoteText) parentNoteCell.title = parentNoteText;
+    tr.appendChild(parentNoteCell);
     return tr;
   }
 
@@ -6677,13 +6703,21 @@
     nameCell.appendChild(nameLabel);
     tr.appendChild(jy2MarkFreeze(nameCell, 3));
 
-    // ヘッダ「種別／単価」に合わせる（単位は title に併記）
+    // ヘッダ「種別／単価／数量」に合わせる（単位は title に併記）
     const typeCell = jy2Cell(documentRef, "td", "", name2Resolved || "");
     if (child.unit) typeCell.title = `単位: ${child.unit}`;
     tr.appendChild(typeCell);
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(child.unitPrice)),
     );
+    // Phase2a: 数量列（子行は明細行の数量を表示のみ・読取）。
+    const qtyText =
+      child.quantity === null || child.quantity === undefined
+        ? ""
+        : String(child.quantity);
+    const qtyCell = jy2Cell(documentRef, "td", "jy2-num", qtyText || "－");
+    if (child.unit) qtyCell.title = `単位: ${child.unit}`;
+    tr.appendChild(qtyCell);
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(child.currentBudget)),
     );
@@ -6751,6 +6785,18 @@
         jy2Percent(child.consumptionRatio),
       ),
     );
+    // Phase2a: 備考列。子行は detailRows[detailIndex].note を読取表示のみ。
+    // App758 のキー・App757 明細モデルは変更しない（編集は Phase2a 対象外）。
+    const childNoteRaw = detailRows?.[detailIndex]?.note;
+    const childNoteText = childNoteRaw == null ? "" : String(childNoteRaw);
+    const childNoteCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-actual-note",
+      childNoteText,
+    );
+    if (childNoteText) childNoteCell.title = childNoteText;
+    tr.appendChild(childNoteCell);
     return tr;
   }
 
@@ -6793,16 +6839,17 @@
     );
     for (const month of months) {
       const monthAmount = total.monthly[month];
-      tr.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "jy2-amount jy2-actual-month",
-          monthAmount === null || monthAmount === undefined
-            ? "－"
-            : jy2AmountDisplay(monthAmount),
-        ),
+      // Phase2a: 総計行の月セルも合計セル。灰色 + 入力不可 tooltip。
+      const monthCell = jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount jy2-actual-month jy2-actual-sum-cell",
+        monthAmount === null || monthAmount === undefined
+          ? "－"
+          : jy2AmountDisplay(monthAmount),
       );
+      monthCell.title = "合計（自動・入力不可）";
+      tr.appendChild(monthCell);
     }
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(total.actual)),
@@ -6837,6 +6884,8 @@
         jy2Percent(total.consumptionRatio),
       ),
     );
+    // Phase2a: 総計行の備考列は常に空表示（"－"）。
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-actual-note", "－"));
     return tr;
   }
 
