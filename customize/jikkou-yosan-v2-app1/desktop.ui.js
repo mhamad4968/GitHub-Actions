@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-detail-save-guard
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-qty-auto-budget-tint
+  // Phase2c-qty-auto-budget: 単価の右に明細数量列。実行予算額＝ROUND(単価×数量)
+  // 自動のみ（手入力撤去）。費目/種別/詳細の3段階薄色分け。
   // Phase2c-detail-save-guard: 詳細/単価/行構造の未保存時に「予実を保存」を
   // 押しても App757 に書かれず消える／「変更なし」になる誤認を防ぐ。
   // 未保存なら上部「一時保存」へ誘導。予実保存ボタンに mousedown ガード。
@@ -461,12 +463,16 @@
       ".jy2-actual-expand-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;margin-right:4px;font-size:11px;font-weight:700;line-height:1;border:1px solid #94a3b8;border-radius:3px;background:#f8fafc;color:#334155;cursor:pointer}",
       ".jy2-actual-expand-btn:hover{background:#e2e8f0;border-color:#64748b}",
       ".jy2-actual-parent-num{display:inline-block;min-width:1.5rem}",
-      ".jy2-actual-child-row td{background:#fafafa}",
-      ".jy2-actual-child-row .jy2-freeze{background:#fafafa}",
+      /* 3段階薄色: 費目(濃灰) > 種別(薄灰) > 詳細=実績入力(ごく薄い青白) */
+      ".jy2-actual-table .jy2-actual-parent-row td{background:#e8eaed!important;color:#1e293b}",
+      ".jy2-actual-table .jy2-actual-parent-row .jy2-freeze{background:#e8eaed!important}",
+      ".jy2-actual-child-row td{background:#f0f7fc}",
+      ".jy2-actual-child-row .jy2-freeze{background:#f0f7fc}",
       ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:visible;white-space:normal}",
       ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-child-name{padding-left:6px}",
       ".jy2-actual-table .jy2-actual-child-name-input{display:block;width:100%;min-width:5rem;box-sizing:border-box}",
       ".jy2-actual-table .jy2-actual-type-detail-slot .jy2-actual-child-name-input{display:block;width:100%;min-width:6rem;box-sizing:border-box}",
+      ".jy2-actual-table .jy2-actual-child-qty-input{display:block;width:100%;min-width:3.5rem;box-sizing:border-box;text-align:right}",
       ".jy2-actual-child-ops{display:inline-flex;gap:2px;flex-shrink:0;align-items:center;justify-content:center;width:100%}",
       ".jy2-actual-ops-cell{text-align:center;padding:2px 3px!important;vertical-align:middle}",
       ".jy2-actual-child-ops .jy2-actual-detail-pm-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;margin:0;font-size:12px;font-weight:700;line-height:1;border:1px solid #64748b;border-radius:3px;background:#fff;color:#0f172a;cursor:pointer}",
@@ -476,6 +482,7 @@
          灰色背景で「編集不可」を視覚化。子月セルは元のまま（入力可）を維持する。 */
       ".jy2-actual-table td.jy2-actual-sum-cell{background:#e8eaed!important;color:#334155;cursor:default}",
       ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-sum-cell{background:#e8eaed!important}",
+      ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-auto-budget{background:#e8f1f8!important;color:#334155;cursor:default}",
       /* Phase2c-a (2026-07-31): expand時の費目(name1)視覚グループヘッダ。
          灰色 SUM の表示専用行（書込・保存対象外）を子行と視覚的に区別する。 */
       ".jy2-actual-table .jy2-actual-himoku-group-row td{background:#e8eaed!important;color:#1e293b;font-weight:700}",
@@ -490,6 +497,8 @@
       ".jy2-actual-table td.jy2-actual-visual-merge-mid,.jy2-actual-table td.jy2-actual-visual-merge-end{border-left-color:transparent!important}",
       ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8eaed!important}",
       ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#f1f3f5!important}",
+      ".jy2-actual-table .jy2-actual-child-row:hover td:not(.jy2-freeze){background:#e4eef8}",
+      ".jy2-actual-table .jy2-actual-child-row:hover .jy2-freeze{background:#e4eef8}",
       ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
       /* 縦 sticky 禁止（2段見出しが同じ top でデータ行に沈む）。左固定列のみ sticky */
       ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:static;top:auto;z-index:auto;background:#f1f5f9;box-shadow:none}",
@@ -4509,8 +4518,8 @@
   }
 
   /** 予実ヘッダ2段: Excel 原価管理明細列（システム工種｜費目｜種別（補助）｜
-   * 詳細｜操作｜単価｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。
-   * 「操作」は UI 専用（＋／－）。 */
+   * 詳細｜操作｜単価｜数量｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。
+   * 「操作」は UI 専用（＋／－）。数量＝明細計画数量（App757）。 */
   function jy2ActualHead(documentRef, months) {
     const thead = documentRef.createElement("thead");
     const top = documentRef.createElement("tr");
@@ -4531,8 +4540,12 @@
     opsHead.title = "詳細行の追加（＋）・削除（－）。構造は一時保存で App757 へ";
     top.appendChild(opsHead);
     top.appendChild(th("単価", { rowSpan: 2 }));
+    const planQtyHead = th("数量", { rowSpan: 2 });
+    planQtyHead.title =
+      "明細の計画数量（App757）。実行予算額＝ROUND(単価×数量)。月次数量とは別";
+    top.appendChild(planQtyHead);
     const finalHead = th("実行予算額", { rowSpan: 2 });
-    finalHead.title = "手入力＝finalBudget（App758）。親＝子合計。";
+    finalHead.title = "ROUND(単価×数量) 自動（入力不可）。親＝子合計";
     top.appendChild(finalHead);
     for (const month of months) {
       const monthTh = th(jy2MonthLabel(month), { colSpan: 2 });
@@ -6746,15 +6759,23 @@
       "jy2-num jy2-actual-group-unit-price",
       "",
     );
+    const parentPlanQtyCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-group-plan-qty",
+      "",
+    );
     tr.appendChild(parentTypeCell);
     tr.appendChild(parentDetailCell);
     tr.appendChild(parentOpsCell);
     tr.appendChild(parentUnitCell);
+    tr.appendChild(parentPlanQtyCell);
     jy2ActualApplyVisualMerge([
       parentTypeCell,
       parentDetailCell,
       parentOpsCell,
       parentUnitCell,
+      parentPlanQtyCell,
     ]);
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
@@ -7013,44 +7034,7 @@
       unitPriceRaw === null || unitPriceRaw === undefined
         ? ""
         : String(unitPriceRaw).trim();
-    if (childCanEditBudget && childDetailModel) {
-      const unitPriceInput = jy2TextInput(
-        documentRef,
-        unitPriceInputValue,
-        (value) => {
-          childDetailModel.updateDetailRow(parent.stableBlockId, child.rowKey, {
-            unitPrice: value,
-          });
-          if (typeof revealDetailKey === "function") {
-            revealDetailKey(child.rowKey);
-          }
-          notifyFieldChanged();
-        },
-      );
-      unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
-      unitPriceInput.placeholder = "単価";
-      unitPriceInput.title = "単価（手入力・一時保存で App757 へ）";
-      unitPriceCell.appendChild(unitPriceInput);
-    } else {
-      unitPriceCell.className = "jy2-num";
-      unitPriceCell.textContent = jy2AmountDisplay(child.unitPrice);
-    }
-    tr.appendChild(unitPriceCell);
-
-    const commit = (patch) => {
-      try {
-        actualsModel.updateActualRow(
-          parent.stableBlockId,
-          parent.costCategory,
-          patch,
-          { rowKey: child.rowKey },
-        );
-      } catch {
-        // Invalid input (non-integer) is discarded; rerender restores the cell.
-      }
-      scheduleActualRerender();
-    };
-    // 月次・実行予算の change を同一フレームにまとめ、連続入力の全表再構築を抑える。
+    // 月次・明細フィールド change を同一フレームにまとめ、連続入力の全表再構築を抑える。
     let actualRerenderPending = false;
     function scheduleActualRerender() {
       if (actualRerenderPending) return;
@@ -7066,22 +7050,80 @@
         run();
       }
     }
-    const finalCell = jy2Cell(documentRef, "td", "jy2-num", "");
-    if (editable) {
-      finalCell.appendChild(
-        jy2TextInput(
-          documentRef,
-          child.finalBudgetManual ? child.finalBudget : "",
-          (value) => commit({ finalBudget: value }),
-        ),
-      );
-      if (!child.finalBudgetManual) {
-        finalCell.firstChild.placeholder = jy2AmountDisplay(child.finalBudget);
+    const commitDetailField = (patch) => {
+      childDetailModel.updateDetailRow(parent.stableBlockId, child.rowKey, patch);
+      if (typeof revealDetailKey === "function") {
+        revealDetailKey(child.rowKey);
       }
+      notifyFieldChanged();
+      scheduleActualRerender();
+    };
+    if (childCanEditBudget && childDetailModel) {
+      const unitPriceInput = jy2TextInput(
+        documentRef,
+        unitPriceInputValue,
+        (value) => commitDetailField({ unitPrice: value }),
+      );
+      unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
+      unitPriceInput.placeholder = "単価";
+      unitPriceInput.title = "単価（手入力・一時保存で App757 へ）";
+      unitPriceCell.appendChild(unitPriceInput);
     } else {
-      finalCell.className = "jy2-amount";
-      finalCell.textContent = jy2AmountDisplay(child.finalBudget);
+      unitPriceCell.className = "jy2-num";
+      unitPriceCell.textContent = jy2AmountDisplay(child.unitPrice);
     }
+    tr.appendChild(unitPriceCell);
+
+    const planQtyCell = jy2Cell(documentRef, "td", "jy2-num", "");
+    const planQtyRaw =
+      detailIndex >= 0 && detailRows?.[detailIndex]
+        ? detailRows[detailIndex].quantity
+        : child.quantity;
+    const planQtyInputValue =
+      planQtyRaw === null || planQtyRaw === undefined
+        ? ""
+        : String(planQtyRaw).trim();
+    if (childCanEditBudget && childDetailModel) {
+      const planQtyInput = jy2TextInput(
+        documentRef,
+        planQtyInputValue,
+        (value) => commitDetailField({ quantity: value }),
+      );
+      planQtyInput.className = "jy2-input jy2-actual-child-qty-input";
+      planQtyInput.placeholder = "数量";
+      planQtyInput.title =
+        "計画数量（一時保存で App757 へ）。実行予算額＝ROUND(単価×数量)";
+      planQtyCell.appendChild(planQtyInput);
+    } else {
+      planQtyCell.textContent = planQtyInputValue || "－";
+    }
+    tr.appendChild(planQtyCell);
+
+    const commit = (patch) => {
+      try {
+        actualsModel.updateActualRow(
+          parent.stableBlockId,
+          parent.costCategory,
+          patch,
+          { rowKey: child.rowKey },
+        );
+      } catch {
+        // Invalid input (non-integer) is discarded; rerender restores the cell.
+      }
+      scheduleActualRerender();
+    };
+    // 実行予算額＝ROUND(単価×数量) 自動のみ（手入力なし）
+    const autoBudget = jy2RoundYenQtyTimesPrice(
+      planQtyInputValue || child.quantity,
+      unitPriceInputValue || child.unitPrice,
+    );
+    const finalCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-amount jy2-actual-auto-budget",
+      autoBudget === null ? "－" : jy2AmountDisplay(autoBudget),
+    );
+    finalCell.title = "実行予算額＝ROUND(単価×数量)（自動・入力不可）";
     tr.appendChild(finalCell);
     // Phase2b (2026-07-31): 月次は「数量｜金額」の2セル。
     // - 数量: pane 上のセッション Map で保持（App758 に保存しない・再読込で消える）。
@@ -7278,18 +7320,19 @@
     tr.appendChild(himokuTypeCell);
     tr.appendChild(himokuDetailCell);
     tr.appendChild(himokuOpsCell);
-    const himokuUnitCell = jy2ActualAppendGroupValueCols(
+    const himokuValueCols = jy2ActualAppendGroupValueCols(
       documentRef,
       tr,
       childrenInGroup,
       months,
-      { unitPriceEmpty: true },
+      { unitPriceEmpty: true, planQtyEmpty: true },
     );
     jy2ActualApplyVisualMerge([
       himokuTypeCell,
       himokuDetailCell,
       himokuOpsCell,
-      himokuUnitCell,
+      himokuValueCols.unitPriceCell,
+      himokuValueCols.planQtyCell,
     ]);
     return tr;
   }
@@ -7391,14 +7434,19 @@
       typeOpsCell.appendChild(ops);
     }
     tr.appendChild(jy2MarkFreeze(typeOpsCell, 4));
-    const typeUnitCell = jy2ActualAppendGroupValueCols(
+    const typeValueCols = jy2ActualAppendGroupValueCols(
       documentRef,
       tr,
       childrenInGroup,
       months,
-      { unitPriceEmpty: true },
+      { unitPriceEmpty: true, planQtyEmpty: true },
     );
-    jy2ActualApplyVisualMerge([detailCell, typeOpsCell, typeUnitCell]);
+    jy2ActualApplyVisualMerge([
+      detailCell,
+      typeOpsCell,
+      typeValueCols.unitPriceCell,
+      typeValueCols.planQtyCell,
+    ]);
     return tr;
   }
 
@@ -7461,9 +7509,9 @@
     }
   }
 
-  // 費目/種別グループ行の値列（単価/実行予算額/月次/原価累計/差/備考）を追加。
-  // opts.unitPriceEmpty=true のとき単価は空（見た目結合用。従来の「－」は出さない）。
-  // 戻り値: 単価セル（見た目結合の末尾に使う）。
+  // 費目/種別グループ行の値列（単価/数量/実行予算額/月次/原価累計/差/備考）を追加。
+  // opts.unitPriceEmpty / planQtyEmpty: 見た目結合用に空表示。
+  // 戻り値: { unitPriceCell, planQtyCell }（見た目結合の末尾に使う）。
   function jy2ActualAppendGroupValueCols(
     documentRef,
     tr,
@@ -7472,6 +7520,7 @@
     opts,
   ) {
     const unitPriceEmpty = !!(opts && opts.unitPriceEmpty);
+    const planQtyEmpty = !!(opts && opts.planQtyEmpty);
     const unitPriceCell = jy2Cell(
       documentRef,
       "td",
@@ -7479,6 +7528,13 @@
       unitPriceEmpty ? "" : "－",
     );
     tr.appendChild(unitPriceCell);
+    const planQtyCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-group-plan-qty",
+      planQtyEmpty ? "" : "－",
+    );
+    tr.appendChild(planQtyCell);
     const finalBudgetSum = jy2ActualSumField(childrenInGroup, "finalBudget");
     tr.appendChild(
       jy2Cell(
@@ -7520,7 +7576,7 @@
       ),
     );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-actual-note", "－"));
-    return unitPriceCell;
+    return { unitPriceCell, planQtyCell };
   }
 
   // Phase2b (2026-07-31): 月次数量セル用の丸めヘルパ。単価×数量を整数円へ
@@ -7616,6 +7672,7 @@
     const head = jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-freeze-span", label), 0);
     head.colSpan = JY2_ACTUAL_FREEZE_COLS;
     tr.appendChild(head);
+    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(total.finalBudget)),
@@ -7886,7 +7943,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理は Excel 同様に費目→種別→詳細。「操作」列の＋／－・詳細・単価の変更は上部「一時保存」（App757）。「予実を保存」は月次など予実（App758）のみ。詳細を変えたあと予実保存だけ押すと消えます";
+        "原価管理は費目→種別→詳細（3段階の薄色）。詳細行で単価・数量を入れ実行予算額は自動。変更は上部「一時保存」（App757）。「予実を保存」は月次など予実（App758）のみ";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {

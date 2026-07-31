@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-qty-auto-budget-tint/);
   assert.match(source, /structureRerenderPending/);
   assert.match(source, /onDetailFieldChanged/);
   assert.match(source, /scheduleActualRerender/);
@@ -523,7 +523,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /flushDetailIfDirty/);
   assert.match(source, /liveUnitPrice/);
   assert.match(source, /jy2-actual-detail-pm-btn/);
-  assert.match(source, /「操作」列の＋／－/);
+  assert.match(source, /jy2-actual-child-qty-input/);
+  assert.match(source, /jy2-actual-auto-budget/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 5/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -552,14 +553,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-child-delete-btn/);
   assert.match(source, /jy2-actual-child-add-btn/);
   assert.match(source, /removeDetailRow\(\s*parent\.stableBlockId,\s*child\.rowKey/);
-  assert.match(source, /「操作」列の＋／－/);
-  // Phase2c-c-excel-unit-price: 単価手入力
+  assert.match(source, /commitDetailField/);
+  // Phase2c-c-excel-unit-price + 計画数量: 単価・数量手入力 → 実行予算自動
   assert.match(source, /jy2-actual-child-unit-price-input/);
-  assert.match(
-    source,
-    /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*unitPrice: value,/,
-  );
-  assert.match(source, /「操作」列の＋／－/);
+  assert.match(source, /commitDetailField\(\{\s*unitPrice: value\s*\}\)/);
+  assert.match(source, /commitDetailField\(\{\s*quantity: value\s*\}\)/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
@@ -571,7 +569,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(childRowMatch[0], /revealDetailKey\(child\.rowKey\)/);
   assert.match(childRowMatch[0], /onDetailChanged\(\)/);
   assert.match(childRowMatch[0], /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
-  assert.match(source, /「操作」列の＋／－/);
+  assert.match(source, /操作列（＋／－）/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
@@ -605,16 +603,15 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualCostDetailVisibility/);
   assert.match(source, /shouldShow:\s*\(\)\s*=>\s*true/);
   assert.match(source, /detailQuickAdd/);
-  assert.match(source, /「操作」列の＋／－/);
+  assert.match(source, /操作列＋／－のみ/);
   assert.doesNotMatch(source, /内訳の品名カタログは隠し/);
   // Phase2c-c-template-types: コード表種別を空枠でも出す
   assert.match(source, /typesByHimokuMap/);
   assert.match(source, /templateTypes/);
   assert.match(source, /jy2HimokuChoicesForEntry/);
-  // Phase2c-b-a: 「＋種別行」ボタン・banner・addDetailRow 使用が並ぶ。
-  assert.match(source, /＋種別行/);
-  assert.match(source, /jy2-actual-himoku-add-type-btn/);
-  assert.match(source, /この費目の下に種別用の明細行を追加/);
+  // Excel寄せ: 費目横「＋種別行」は撤去済み（コメント履歴に残る文言は許容）
+  assert.doesNotMatch(source, /jy2-actual-himoku-add-type-btn/);
+  assert.doesNotMatch(source, /この費目の下に種別用の明細行を追加/);
   assert.match(source, /jy2-actual-detail-add-notice/);
   // helper 領域（InsertNear〜SumField）に detailModel の内訳書込 API を含める。
   const helperMatch = source.match(

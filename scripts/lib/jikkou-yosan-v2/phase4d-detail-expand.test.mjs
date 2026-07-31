@@ -160,9 +160,8 @@ test("pivot: detail_row_key routes actual rows to child grain", () => {
   // Parent aggregates children: 2026-02 sum = 300 + 100 = 400.
   assert.equal(row.monthly["2026-02"], "400");
   assert.equal(row.actual, "400");
-  // Final: child1 manual 850 + child2 default(currentBudget 200) = 1050.
-  // (Any child monthly/final activity switches parent final to child-sum mode.)
-  assert.equal(row.finalBudget, "1050");
+  // Final: 明細は常に数量×単価（800+200）。App758 final_budget 手入力は無視。
+  assert.equal(row.finalBudget, "1000");
   assert.equal(row.finalBudgetFromChildren, true);
 });
 
@@ -267,8 +266,9 @@ test("updateActualRow({rowKey}) writes to the detail entry only", () => {
   const detailMap = new Map([["blk-a", [DETAIL_A1, DETAIL_A2]]]);
   const [row] = model.matrixRows([BLOCK_A], { detailRowsByBlockId: detailMap });
   assert.equal(row.children[0].monthly["2026-02"], "120");
+  // 実行予算は数量×単価の自動（手入力 finalBudget は明細では無視）
   assert.equal(row.children[0].finalBudget, "800");
-  assert.equal(row.children[0].finalBudgetManual, true);
+  assert.equal(row.children[0].finalBudgetManual, false);
   // Second child untouched.
   assert.equal(row.children[1].monthly["2026-02"], null);
   // Parent = child sum (120 + null); parent value = 120.

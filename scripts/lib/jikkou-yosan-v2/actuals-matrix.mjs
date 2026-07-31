@@ -346,8 +346,9 @@ export function createActualsMatrixModel({
       monthly[month] = entry?.monthly.get(month) ?? null;
     }
     const monthlyAmounts = entry ? [...entry.monthly.values()] : [];
-    const finalBudgetInput = entry?.finalBudget ?? null;
-    const finalBudget = finalBudgetInput ?? currentBudget;
+    // 工事原価管理 Excel寄せ: 明細の実行予算額は常に ROUND(数量×単価)。
+    // App758 final_budget の手入力は明細行では使わない（UIも入力不可）。
+    const finalBudget = currentBudget;
     const metrics = actualMetrics({ monthlyAmounts, currentBudget, finalBudget });
     return Object.freeze({
       rowKey: detail.rowKey,
@@ -363,7 +364,7 @@ export function createActualsMatrixModel({
       monthly: Object.freeze(monthly),
       actual: metrics.actual,
       finalBudget,
-      finalBudgetManual: finalBudgetInput !== null,
+      finalBudgetManual: false,
       ecRate: rateTo1(finalBudget, contractTotal1),
       remainingBudget: metrics.remainingBudget,
       futureRequired: metrics.futureRequired,
@@ -425,11 +426,21 @@ export function createActualsMatrixModel({
           child.monthly[month] !== null && child.monthly[month] !== undefined,
       ),
     );
-    const anyChildManualFinal = children.some((child) => child.finalBudgetManual);
-    const finalFromChildren = anyChildManualFinal || anyChildHasMonthly;
-    const finalBudgetInput = finalFromChildren
-      ? sum(children.map((child) => child.finalBudget))
-      : parentFinalRaw;
+    // 子がいるとき: 実行予算は子の自動額（数量×単価）合計を優先。
+    // 月次実績がある場合も従来どおり子合計モード。
+    const anyChildAutoBudget = children.some(
+      (child) =>
+        child.currentBudget !== null &&
+        child.currentBudget !== undefined &&
+        String(child.currentBudget) !== "" &&
+        String(child.currentBudget) !== "0",
+    );
+    const finalFromChildren =
+      anyChildHasMonthly || anyChildAutoBudget || children.length > 0;
+    const finalBudgetInput =
+      children.length > 0
+        ? sum(children.map((child) => child.finalBudget))
+        : parentFinalRaw;
     const finalBudget = finalBudgetInput ?? currentBudget;
     const monthlyAmounts = Object.values(monthly).filter(
       (value) => value !== null && value !== undefined,
