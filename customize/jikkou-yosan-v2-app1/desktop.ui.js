@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-three-cols
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-himoku-expand
   // Phase2c-c: 親行の「（塗）材料費」等システム入力工種名は Excel 原価管理に
   // 無いため非表示（工種番号のみ。ホバーに旧名称）。freeze列は費目枠用。
   // Phase2c-c-template-types: コード表 typesByHimoku の種別を空枠でも常時表示
@@ -6971,9 +6971,33 @@
       documentRef,
       "td",
       "jy2-actual-himoku-group-label",
-      `▸ ${label}`,
+      "",
     );
     labelCell.title = `費目「${label}」の合計（表示専用・入力不可）`;
+    const himokuExpanded =
+      opts &&
+      opts.himokuExpandState &&
+      typeof opts.himokuExpandState.isExpanded === "function"
+        ? opts.himokuExpandState.isExpanded(parent.stableBlockId, label)
+        : false;
+    const himokuToggle = documentRef.createElement("button");
+    himokuToggle.type = "button";
+    himokuToggle.className = "jy2-actual-expand-btn";
+    himokuToggle.textContent = himokuExpanded ? "－" : "＋";
+    himokuToggle.setAttribute(
+      "aria-label",
+      himokuExpanded ? "種別行を閉じる" : "種別行を開く",
+    );
+    himokuToggle.title = himokuExpanded ? "種別行を閉じる" : "種別行を開く";
+    himokuToggle.addEventListener("click", () => {
+      if (!opts || !opts.himokuExpandState) return;
+      opts.himokuExpandState.toggle(parent.stableBlockId, label);
+      if (typeof opts.rerender === "function") opts.rerender();
+    });
+    labelCell.appendChild(himokuToggle);
+    const himokuLabelSpan = documentRef.createElement("span");
+    himokuLabelSpan.textContent = label;
+    labelCell.appendChild(himokuLabelSpan);
     // Phase2c-b-a: 実費目のグループヘッダに「＋種別行」ボタン。
     // name1 のみ prefill（種別はユーザーが内訳で設定 → 新種別枠になる）。
     if (
@@ -7005,6 +7029,12 @@
             isUnknownGroup ? {} : { name1: label },
             opts.expandState,
           );
+          if (
+            opts.himokuExpandState &&
+            typeof opts.himokuExpandState.expand === "function"
+          ) {
+            opts.himokuExpandState.expand(parent.stableBlockId, label);
+          }
           if (typeof opts.revealDetailKey === "function") {
             opts.revealDetailKey(newKey);
           }
@@ -7054,9 +7084,37 @@
       documentRef,
       "td",
       "jy2-actual-type-group-label",
-      `▸▸ ${typeLabel}`,
+      "",
     );
     labelCell.title = `種別「${typeLabel}」の合計（表示専用・入力不可）`;
+    const typeExpanded =
+      opts &&
+      opts.typeExpandState &&
+      typeof opts.typeExpandState.isExpanded === "function"
+        ? opts.typeExpandState.isExpanded(
+            parent.stableBlockId,
+            himokuLabel,
+            typeLabel,
+          )
+        : false;
+    const typeToggle = documentRef.createElement("button");
+    typeToggle.type = "button";
+    typeToggle.className = "jy2-actual-expand-btn";
+    typeToggle.textContent = typeExpanded ? "－" : "＋";
+    typeToggle.setAttribute(
+      "aria-label",
+      typeExpanded ? "詳細行を閉じる" : "詳細行を開く",
+    );
+    typeToggle.title = typeExpanded ? "詳細行を閉じる" : "詳細行を開く";
+    typeToggle.addEventListener("click", () => {
+      if (!opts || !opts.typeExpandState) return;
+      opts.typeExpandState.toggle(parent.stableBlockId, himokuLabel, typeLabel);
+      if (typeof opts.rerender === "function") opts.rerender();
+    });
+    labelCell.appendChild(typeToggle);
+    const typeLabelSpan = documentRef.createElement("span");
+    typeLabelSpan.textContent = typeLabel;
+    labelCell.appendChild(typeLabelSpan);
     if (
       opts &&
       opts.detailModel &&
@@ -7092,6 +7150,22 @@
             patch,
             opts.expandState,
           );
+          if (
+            opts.himokuExpandState &&
+            typeof opts.himokuExpandState.expand === "function"
+          ) {
+            opts.himokuExpandState.expand(parent.stableBlockId, himokuLabel);
+          }
+          if (
+            opts.typeExpandState &&
+            typeof opts.typeExpandState.expand === "function"
+          ) {
+            opts.typeExpandState.expand(
+              parent.stableBlockId,
+              himokuLabel,
+              typeLabel,
+            );
+          }
           if (typeof opts.revealDetailKey === "function") {
             opts.revealDetailKey(newKey);
           }
@@ -7270,6 +7344,61 @@
     };
   }
 
+  // Phase2c-c-himoku-expand: 費目(name1)枠の展開状態。キーは
+  // `${stableBlockId}\t${himokuLabel}`。pane 要素に Set を保持。
+  function jy2ActualHimokuExpandState(pane) {
+    if (!pane) {
+      return {
+        isExpanded: () => false,
+        toggle: () => {},
+        expand: () => {},
+      };
+    }
+    if (!pane.__jy2ExpandedActualHimoku) {
+      pane.__jy2ExpandedActualHimoku = new Set();
+    }
+    const set = pane.__jy2ExpandedActualHimoku;
+    const key = (blockId, himokuLabel) => `${blockId}\t${himokuLabel}`;
+    return {
+      isExpanded: (blockId, himokuLabel) => set.has(key(blockId, himokuLabel)),
+      toggle: (blockId, himokuLabel) => {
+        const k = key(blockId, himokuLabel);
+        if (set.has(k)) set.delete(k);
+        else set.add(k);
+      },
+      expand: (blockId, himokuLabel) => set.add(key(blockId, himokuLabel)),
+    };
+  }
+
+  // Phase2c-c-himoku-expand: 種別(name2)枠の展開状態。キーは
+  // `${stableBlockId}\t${himokuLabel}\t${typeLabel}`。
+  function jy2ActualTypeExpandState(pane) {
+    if (!pane) {
+      return {
+        isExpanded: () => false,
+        toggle: () => {},
+        expand: () => {},
+      };
+    }
+    if (!pane.__jy2ExpandedActualType) {
+      pane.__jy2ExpandedActualType = new Set();
+    }
+    const set = pane.__jy2ExpandedActualType;
+    const key = (blockId, himokuLabel, typeLabel) =>
+      `${blockId}\t${himokuLabel}\t${typeLabel}`;
+    return {
+      isExpanded: (blockId, himokuLabel, typeLabel) =>
+        set.has(key(blockId, himokuLabel, typeLabel)),
+      toggle: (blockId, himokuLabel, typeLabel) => {
+        const k = key(blockId, himokuLabel, typeLabel);
+        if (set.has(k)) set.delete(k);
+        else set.add(k);
+      },
+      expand: (blockId, himokuLabel, typeLabel) =>
+        set.add(key(blockId, himokuLabel, typeLabel)),
+    };
+  }
+
   // Phase2c-c-hide: Excel「原価管理明細」は費目→種別が主で、詳細は手入力の
   // 少数行。内訳の品名カタログ（name3 あり）を全部出すと Excel と乖離する。
   // 表示する子行 = 詳細未入力、または ＋詳細行/＋種別行で reveal した rowKey。
@@ -7373,6 +7502,8 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
+    const himokuExpandState = jy2ActualHimokuExpandState(pane);
+    const typeExpandState = jy2ActualTypeExpandState(pane);
     const costDetailVisibility = jy2ActualCostDetailVisibility(pane);
     // Phase2b (2026-07-31): pane スコープの月次数量セッション Map。rerender を
     // 跨いで残るが、リロード（保存後・タブ再入場含む）で pane が作り直され
@@ -7618,6 +7749,9 @@
           detailModel,
           canEditBudget,
           expandState,
+          himokuExpandState,
+          typeExpandState,
+          rerender,
           revealDetailKey: costDetailVisibility.reveal,
           onAdded: onDetailStructureAdded,
         };
@@ -7641,6 +7775,9 @@
               { ...groupOpts, lastChildRowKeyInGroup: lastHimokuKey },
             ),
           );
+          if (!himokuExpandState.isExpanded(row.stableBlockId, himokuLabel)) {
+            continue;
+          }
           const templateTypes = Array.isArray(typesByHimokuMap[himokuLabel])
             ? typesByHimokuMap[himokuLabel]
             : [];
@@ -7673,6 +7810,15 @@
             if (typeChildren.length > 0) {
               lastAnchorInHimoku =
                 typeChildren[typeChildren.length - 1].rowKey;
+            }
+            if (
+              !typeExpandState.isExpanded(
+                row.stableBlockId,
+                himokuLabel,
+                typeLabel,
+              )
+            ) {
+              continue;
             }
             for (const { child, detailIndex } of entries) {
               const name3Raw =
