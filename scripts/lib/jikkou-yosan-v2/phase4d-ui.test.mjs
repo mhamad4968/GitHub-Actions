@@ -488,14 +488,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /row\.ecRate/);
   // Y10 note + Y4 exclusion are stated on the pane.
   assert.match(source, /給与手当は対象外/);
-  // 2026-07-29-ver02-actual-detail-expand: parent-only display, +/- expand,
-  // and child rows carry the actual writes.
+  // 2026-07-29-ver02-actual-detail-expand: parent-only display + child rows;
+  // Phase2c-c-excel-flat で費目開閉トグルは廃止（Excel常時階層）。
   assert.match(source, /jy2ActualChildRow/);
-  assert.match(source, /jy2-actual-expand-btn/);
   assert.match(source, /jy2-actual-child-row/);
   assert.match(source, /detailRowsByBlockId/);
   assert.match(source, /rowKey: child\.rowKey/);
-  assert.match(source, /種別行を開く/);
   assert.match(source, /2026-07-29-ver02-actual-detail-expand/);
   // 内訳 mutations refresh the 予実 current budgets too.
   assert.match(source, /refreshSummary\(true\);\s*refreshActuals\(\);/);
@@ -517,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-outline/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-flat/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -550,15 +548,17 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
   assert.match(source, /費目合計（表示専用・入力不可）/);
-  // Phase2c-c-excel-outline: 親行＝工種｜既定費目（＋）→ 種別＋詳細を一段開く
+  // Phase2c-c-excel-flat: 親行＝工種｜既定費目同一行。種別・詳細は常時表示（開閉なし）
   assert.match(source, /jy2ActualPrimaryHimokuLabel/);
   assert.match(source, /jy2-actual-parent-himoku/);
   assert.match(source, /himokuLabel !== primaryHimokuLabel/);
-  assert.match(source, /jy2ActualHimokuExpandState/);
-  assert.match(source, /__jy2ExpandedActualHimoku/);
-  assert.match(source, /himokuExpandState\.isExpanded\(row\.stableBlockId, himokuLabel\)/);
-  assert.match(source, /種別行を開く/);
-  assert.match(source, /himokuExpandState\.expand\(parent\.stableBlockId, label\)/);
+  assert.match(source, /Excelどおり種別・詳細を常時表示/);
+  assert.match(source, /その下に種別・詳細を常時表示/);
+  assert.doesNotMatch(source, /種別行を開く/);
+  assert.doesNotMatch(
+    source,
+    /himokuExpandState\.isExpanded\(row\.stableBlockId, himokuLabel\)/,
+  );
   assert.doesNotMatch(
     source,
     /typeExpandState\.isExpanded\(\s*row\.stableBlockId,\s*himokuLabel,\s*typeLabel/,
@@ -703,11 +703,12 @@ test("rebuild bundles actuals-matrix before the UI, 736 untouched", () => {
       "ACTUAL_COST_CATEGORY_KEYS",
       "jy2RenderActualPane",
       "jy2ActualRow",
-      // 2026-07-29-ver02-actual-detail-expand: child row + expand UI must be bundled.
+      // 2026-07-29-ver02-actual-detail-expand: child row must be bundled.
       "jy2ActualChildRow",
       "jy2ActualExpandState",
-      "jy2ActualHimokuExpandState",
-      "jy2ActualTypeExpandState",
+      // Phase2c-c-excel-flat: 費目/種別開閉は廃止。種別枠＋費目枠は常時。
+      "jy2ActualTypeGroupRow",
+      "jy2ActualPrimaryHimokuLabel",
       // Phase2c-a (2026-07-31): 表示専用の費目視覚グループ行も bundled。
       "jy2ActualHimokuGroupRow",
     ]) {

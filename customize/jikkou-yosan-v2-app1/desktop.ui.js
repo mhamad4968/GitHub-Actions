@@ -1,9 +1,11 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-outline
-  // Phase2c-c-excel-outline: 親行＝システム工種｜既定費目（＋で種別→詳細を
-  // 一段開く）。種別枠の +/- は廃止し ＋詳細行のみ。追加費目は従来の費目行。
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-flat
+  // Phase2c-c-excel-flat: Excel原価管理明細どおり常時階層。親行＝工種番号｜
+  // 費目（同一行・SUM）。下に種別行→詳細行を常時表示（費目＋開閉なし）。
+  // 同一工種の追加費目は工種番号なしの費目行。＋種別行／＋詳細行は維持。
+  // Phase2c-c-excel-outline: （旧）親行＝工種｜既定費目＋で種別→詳細を一段開く。
   // Phase2c-c-detail-edit: 工事原価管理の詳細(name3)を手入力可。commit 時
   // detailModel.updateDetailRow → reveal(rowKey) → onDetailStructureChanged。
   // 行追加は種別枠の「＋詳細行」（維持）。App758 keys/actuals 月次は不変。
@@ -6622,8 +6624,8 @@
 
   // Parent 予実 row (2026-07-29-ver02-actual-detail-expand): 内訳№単位で
   // 合計を表示する。手入力欄は明細行にあるためここは全カラム readonly。
-  // Phase2c-c-excel-outline: freeze0＝工種番号のみ。既定費目は freeze1 に
-  // ＋トグル（himokuExpandState）。種別/詳細は費目展開時に walker が描画。
+  // Phase2c-c-excel-flat: freeze0＝工種番号・freeze1＝既定費目（Excel同一行）。
+  // 開閉トグルなし。種別/詳細は walker が常時描画。
   function jy2ActualRow(
     documentRef,
     actualsModel,
@@ -6668,99 +6670,56 @@
         ? String(parentHimokuOpts.primaryHimokuLabel)
         : "";
     if (primaryHimokuLabel) {
-      himokuCell.title = `費目「${primaryHimokuLabel}」`;
-      if (row.hasChildren) {
-        const himokuExpanded =
-          parentHimokuOpts.himokuExpandState &&
-          typeof parentHimokuOpts.himokuExpandState.isExpanded === "function"
-            ? parentHimokuOpts.himokuExpandState.isExpanded(
-                row.stableBlockId,
-                primaryHimokuLabel,
-              )
-            : false;
-        const himokuToggle = documentRef.createElement("button");
-        himokuToggle.type = "button";
-        himokuToggle.className = "jy2-actual-expand-btn";
-        himokuToggle.textContent = himokuExpanded ? "－" : "＋";
-        himokuToggle.setAttribute(
-          "aria-label",
-          himokuExpanded ? "種別行を閉じる" : "種別行を開く",
-        );
-        himokuToggle.title = himokuExpanded ? "種別行を閉じる" : "種別行を開く";
-        himokuToggle.addEventListener("click", () => {
-          if (
-            !parentHimokuOpts ||
-            !parentHimokuOpts.himokuExpandState ||
-            typeof parentHimokuOpts.himokuExpandState.toggle !== "function"
-          ) {
-            return;
-          }
-          parentHimokuOpts.himokuExpandState.toggle(
-            row.stableBlockId,
-            primaryHimokuLabel,
-          );
-          if (typeof rerender === "function") rerender();
+      himokuCell.title = `費目「${primaryHimokuLabel}」（Excel: 工種と同一行）`;
+      const himokuLabelSpan = documentRef.createElement("span");
+      himokuLabelSpan.textContent = primaryHimokuLabel;
+      himokuCell.appendChild(himokuLabelSpan);
+      if (
+        row.hasChildren &&
+        parentHimokuOpts &&
+        parentHimokuOpts.detailModel &&
+        parentHimokuOpts.canEditBudget === true &&
+        typeof parentHimokuOpts.onAdded === "function"
+      ) {
+        const addTypeButton = documentRef.createElement("button");
+        addTypeButton.type = "button";
+        addTypeButton.className =
+          "jy2-row-button jy2-actual-himoku-add-type-btn";
+        addTypeButton.textContent = "＋種別行";
+        addTypeButton.title =
+          "この費目の下に種別用の明細行を追加（内訳として一時保存が必要）";
+        addTypeButton.addEventListener("mousedown", (event) => {
+          if (typeof event.preventDefault === "function") event.preventDefault();
         });
-        himokuCell.appendChild(himokuToggle);
-        const himokuLabelSpan = documentRef.createElement("span");
-        himokuLabelSpan.textContent = primaryHimokuLabel;
-        himokuCell.appendChild(himokuLabelSpan);
-        if (
-          parentHimokuOpts.detailModel &&
-          parentHimokuOpts.canEditBudget === true &&
-          typeof parentHimokuOpts.onAdded === "function"
-        ) {
-          const addTypeButton = documentRef.createElement("button");
-          addTypeButton.type = "button";
-          addTypeButton.className =
-            "jy2-row-button jy2-actual-himoku-add-type-btn";
-          addTypeButton.textContent = "＋種別行";
-          addTypeButton.title =
-            "この費目の下に種別用の明細行を追加（内訳として一時保存が必要）";
-          addTypeButton.addEventListener("mousedown", (event) => {
-            if (typeof event.preventDefault === "function") event.preventDefault();
-          });
-          addTypeButton.addEventListener("click", (event) => {
-            try {
-              if (event && typeof event.stopPropagation === "function") {
-                event.stopPropagation();
-              }
-              const isUnknownGroup = primaryHimokuLabel === "（未分類）";
-              const newKey = jy2ActualInsertDetailNear(
-                parentHimokuOpts.detailModel,
-                row.stableBlockId,
-                parentHimokuOpts.lastChildRowKeyInGroup || null,
-                isUnknownGroup ? {} : { name1: primaryHimokuLabel },
-                expandState,
-              );
-              if (
-                parentHimokuOpts.himokuExpandState &&
-                typeof parentHimokuOpts.himokuExpandState.expand === "function"
-              ) {
-                parentHimokuOpts.himokuExpandState.expand(
-                  row.stableBlockId,
-                  primaryHimokuLabel,
-                );
-              }
-              if (typeof parentHimokuOpts.revealDetailKey === "function") {
-                parentHimokuOpts.revealDetailKey(newKey);
-              }
-              parentHimokuOpts.onAdded();
-            } catch (error) {
-              const view = documentRef && documentRef.defaultView;
-              const message =
-                (error && error.message) || "種別行の追加に失敗しました";
-              if (view && typeof view.alert === "function") view.alert(message);
-              else if (typeof console !== "undefined" && console.error) {
-                console.error(message, error);
-              }
+        addTypeButton.addEventListener("click", (event) => {
+          try {
+            if (event && typeof event.stopPropagation === "function") {
+              event.stopPropagation();
             }
-          });
-          himokuCell.appendChild(documentRef.createTextNode(" "));
-          himokuCell.appendChild(addTypeButton);
-        }
-      } else {
-        himokuCell.textContent = primaryHimokuLabel;
+            const isUnknownGroup = primaryHimokuLabel === "（未分類）";
+            const newKey = jy2ActualInsertDetailNear(
+              parentHimokuOpts.detailModel,
+              row.stableBlockId,
+              parentHimokuOpts.lastChildRowKeyInGroup || null,
+              isUnknownGroup ? {} : { name1: primaryHimokuLabel },
+              expandState,
+            );
+            if (typeof parentHimokuOpts.revealDetailKey === "function") {
+              parentHimokuOpts.revealDetailKey(newKey);
+            }
+            parentHimokuOpts.onAdded();
+          } catch (error) {
+            const view = documentRef && documentRef.defaultView;
+            const message =
+              (error && error.message) || "種別行の追加に失敗しました";
+            if (view && typeof view.alert === "function") view.alert(message);
+            else if (typeof console !== "undefined" && console.error) {
+              console.error(message, error);
+            }
+          }
+        });
+        himokuCell.appendChild(documentRef.createTextNode(" "));
+        himokuCell.appendChild(addTypeButton);
       }
     }
     tr.appendChild(jy2MarkFreeze(himokuCell, 1));
@@ -7116,27 +7075,6 @@
       "",
     );
     labelCell.title = `費目「${label}」の合計（表示専用・入力不可）`;
-    const himokuExpanded =
-      opts &&
-      opts.himokuExpandState &&
-      typeof opts.himokuExpandState.isExpanded === "function"
-        ? opts.himokuExpandState.isExpanded(parent.stableBlockId, label)
-        : false;
-    const himokuToggle = documentRef.createElement("button");
-    himokuToggle.type = "button";
-    himokuToggle.className = "jy2-actual-expand-btn";
-    himokuToggle.textContent = himokuExpanded ? "－" : "＋";
-    himokuToggle.setAttribute(
-      "aria-label",
-      himokuExpanded ? "種別行を閉じる" : "種別行を開く",
-    );
-    himokuToggle.title = himokuExpanded ? "種別行を閉じる" : "種別行を開く";
-    himokuToggle.addEventListener("click", () => {
-      if (!opts || !opts.himokuExpandState) return;
-      opts.himokuExpandState.toggle(parent.stableBlockId, label);
-      if (typeof opts.rerender === "function") opts.rerender();
-    });
-    labelCell.appendChild(himokuToggle);
     const himokuLabelSpan = documentRef.createElement("span");
     himokuLabelSpan.textContent = label;
     labelCell.appendChild(himokuLabelSpan);
@@ -7171,12 +7109,6 @@
             isUnknownGroup ? {} : { name1: label },
             opts.expandState,
           );
-          if (
-            opts.himokuExpandState &&
-            typeof opts.himokuExpandState.expand === "function"
-          ) {
-            opts.himokuExpandState.expand(parent.stableBlockId, label);
-          }
           if (typeof opts.revealDetailKey === "function") {
             opts.revealDetailKey(newKey);
           }
@@ -7204,7 +7136,7 @@
 
   // Phase2c-c (2026-07-31): 種別(name2)視覚グループ。費目枠の内側。
   // virtual=type-group・表示専用 SUM。「＋詳細行」で name1+name2 prefill。
-  // Phase2c-c-excel-outline: 種別 +/- は廃止。費目展開時は詳細行を常時表示。
+  // Phase2c-c-excel-flat: 種別 +/- なし。Excelどおり常時表示。
   function jy2ActualTypeGroupRow(
     documentRef,
     parent,
@@ -7268,12 +7200,6 @@
             patch,
             opts.expandState,
           );
-          if (
-            opts.himokuExpandState &&
-            typeof opts.himokuExpandState.expand === "function"
-          ) {
-            opts.himokuExpandState.expand(parent.stableBlockId, himokuLabel);
-          }
           if (typeof opts.revealDetailKey === "function") {
             opts.revealDetailKey(newKey);
           }
@@ -7452,61 +7378,6 @@
     };
   }
 
-  // Phase2c-c-himoku-expand: 費目(name1)枠の展開状態。キーは
-  // `${stableBlockId}\t${himokuLabel}`。pane 要素に Set を保持。
-  function jy2ActualHimokuExpandState(pane) {
-    if (!pane) {
-      return {
-        isExpanded: () => false,
-        toggle: () => {},
-        expand: () => {},
-      };
-    }
-    if (!pane.__jy2ExpandedActualHimoku) {
-      pane.__jy2ExpandedActualHimoku = new Set();
-    }
-    const set = pane.__jy2ExpandedActualHimoku;
-    const key = (blockId, himokuLabel) => `${blockId}\t${himokuLabel}`;
-    return {
-      isExpanded: (blockId, himokuLabel) => set.has(key(blockId, himokuLabel)),
-      toggle: (blockId, himokuLabel) => {
-        const k = key(blockId, himokuLabel);
-        if (set.has(k)) set.delete(k);
-        else set.add(k);
-      },
-      expand: (blockId, himokuLabel) => set.add(key(blockId, himokuLabel)),
-    };
-  }
-
-  // Phase2c-c-himoku-expand: 種別(name2)枠の展開状態。キーは
-  // `${stableBlockId}\t${himokuLabel}\t${typeLabel}`。
-  function jy2ActualTypeExpandState(pane) {
-    if (!pane) {
-      return {
-        isExpanded: () => false,
-        toggle: () => {},
-        expand: () => {},
-      };
-    }
-    if (!pane.__jy2ExpandedActualType) {
-      pane.__jy2ExpandedActualType = new Set();
-    }
-    const set = pane.__jy2ExpandedActualType;
-    const key = (blockId, himokuLabel, typeLabel) =>
-      `${blockId}\t${himokuLabel}\t${typeLabel}`;
-    return {
-      isExpanded: (blockId, himokuLabel, typeLabel) =>
-        set.has(key(blockId, himokuLabel, typeLabel)),
-      toggle: (blockId, himokuLabel, typeLabel) => {
-        const k = key(blockId, himokuLabel, typeLabel);
-        if (set.has(k)) set.delete(k);
-        else set.add(k);
-      },
-      expand: (blockId, himokuLabel, typeLabel) =>
-        set.add(key(blockId, himokuLabel, typeLabel)),
-    };
-  }
-
   // Phase2c-c-hide: Excel「原価管理明細」は費目→種別が主で、詳細は手入力の
   // 少数行。内訳の品名カタログ（name3 あり）を全部出すと Excel と乖離する。
   // 表示する子行 = 詳細未入力、または ＋詳細行/＋種別行で reveal した rowKey。
@@ -7610,8 +7481,6 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
-    const himokuExpandState = jy2ActualHimokuExpandState(pane);
-    const typeExpandState = jy2ActualTypeExpandState(pane);
     const costDetailVisibility = jy2ActualCostDetailVisibility(pane);
     // Phase2b (2026-07-31): pane スコープの月次数量セッション Map。rerender を
     // 跨いで残るが、リロード（保存後・タブ再入場含む）で pane が作り直され
@@ -7753,7 +7622,7 @@
     noteBody.className = "jy2-actual-note";
     noteBody.textContent =
       "Excel 原価管理明細と同じ列構成（システム工種｜費目｜種別（補助）｜詳細｜単価｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。" +
-      "親行は工種番号と既定費目を同一行に表示。費目の＋で種別と詳細（手入力・行追加）を開く（種別枠に二段目の＋は無し）。" +
+      "親行は工種番号と既定費目を同一行に表示し、その下に種別・詳細を常時表示（Excelどおり・開閉なし）。追加費目は工種番号なしの費目行。" +
       "予算との差＝実行予算額−原価累計金額（表示のみ）。横スクロール時も左4列は固定。";
     note.append(summary, noteBody);
     pane.appendChild(note);
@@ -7803,8 +7672,6 @@
         detailModel,
         canEditBudget,
         expandState,
-        himokuExpandState,
-        typeExpandState,
         rerender,
         revealDetailKey: costDetailVisibility.reveal,
         onAdded: onDetailStructureAdded,
@@ -7867,7 +7734,6 @@
               : null;
           parentHimokuOpts = {
             primaryHimokuLabel,
-            himokuExpandState,
             detailModel,
             canEditBudget,
             onAdded: onDetailStructureAdded,
@@ -7913,9 +7779,7 @@
             ),
           );
         }
-        if (!himokuExpandState.isExpanded(row.stableBlockId, himokuLabel)) {
-          continue;
-        }
+        // Phase2c-c-excel-flat: Excelどおり種別・詳細を常時表示（費目開閉なし）
         const templateTypes = Array.isArray(typesByHimokuMap[himokuLabel])
           ? typesByHimokuMap[himokuLabel]
           : [];
