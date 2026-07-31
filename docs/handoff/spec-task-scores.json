@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-07-31T09:02:25.091Z",
+  "scoredAt": "2026-07-31T13:22:57.089Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。",
+  "topTask": "**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。",
   "tasks": [
     {
-      "id": "checkpoint:**2026-07-31**_浜田が依頼者へ対面で4問確認_→_回答をチャットへ",
-      "text": "**2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。",
+      "id": "checkpoint:**2026-08-01**_新チャットで_**756_操作＋／－のブロック単位",
+      "text": "**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。",
       "source": "checkpoint",
-      "difficulty": 5,
-      "tokens": "高",
-      "tokenScore": 3,
+      "difficulty": 2,
+      "tokens": "中",
+      "tokenScore": 2,
       "impact": 5,
       "priority": 0,
       "status": "pending"

@@ -5360,3 +5360,19 @@ npm run cio:morning:ready
   - `関連パス`: scripts/cio-deploy-preflight-guard.mjs / docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md / .cursor/rules/jikkou-yosan-v2-ops-budget.mdc
 - **改善候補（日終わり1段落）**: (1) 4h硬拒否を commit 側にも広げるか要検討 (2) Violation 計測の簡易スクリプト化 (3) Desktop スターターへ硬拒否句の同期確認
 
+
+### 2026-07-31 JST — **2026-07-31 full CLOSE — 756 Excel ops + 運用ルール**
+
+**要約**: 756 操作列/＋詳細行撤去/struct-raf/SPEC。4h deploy硬拒否+chrome-css。明日=ブロック単位再描画でExcelどおり継続。
+
+**次の1手**: **2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。
+
+**Git**: `0879b3f4` — HEAD 0879b3f4; close-gitで更新
+
+**BUILD**: 756 …excel-struct-raf rev194
+
+**GO待ち**: なし
+
+**触らない**: 688WBGT以外/677-679/736/712deploy禁止
+
+---

@@ -80,6 +80,7 @@
         "composer-mcp-audit-gate.mdc",
         "preflight-checklist.mdc",
         "jikkou-yosan-v2-ui-chrome.mdc",
+        "jikkou-yosan-v2-ops-budget.mdc",
         "ui-acceptance-smoke.mdc"
       ]
     },
