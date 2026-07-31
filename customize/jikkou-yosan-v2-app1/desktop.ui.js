@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-ops-col
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-no-type-add
+  // Phase2c-c-excel-no-type-add: 種別枠の「＋詳細行」撤去。追加は操作列＋
+  // （空種別は操作列＋／詳細列クイック入力）。App758 keys/save/pivot 不変。
   // Phase2c-c-excel-ops-col: 詳細の右に「操作」列（＋／－）。Excel列＋UI専用。
   // Phase2c-c-excel-detail-pm: 詳細列の横に＋／－（追加・削除）。入力の左に
   // 常時表示。Phase2c-c-excel-perf の dirty-only フィールド編集は維持。
@@ -7368,61 +7370,10 @@
     const typeLabelSpan = documentRef.createElement("span");
     typeLabelSpan.textContent = typeLabel;
     labelCell.appendChild(typeLabelSpan);
-    if (
-      opts &&
-      opts.detailModel &&
-      opts.canEditBudget === true &&
-      typeof opts.onAdded === "function"
-    ) {
-      const addDetailButton = documentRef.createElement("button");
-      addDetailButton.type = "button";
-      addDetailButton.className =
-        "jy2-row-button jy2-actual-type-add-detail-btn";
-      addDetailButton.textContent = "＋詳細行";
-      addDetailButton.title =
-        "この種別の下に詳細（品名）行を追加（内訳として一時保存が必要）";
-      addDetailButton.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
-      addDetailButton.addEventListener("click", (event) => {
-        try {
-          if (event && typeof event.stopPropagation === "function") {
-            event.stopPropagation();
-          }
-          const patch = {};
-          if (himokuLabel && himokuLabel !== "（未分類）") {
-            patch.name1 = himokuLabel;
-          }
-          if (typeLabel && typeLabel !== "（種別未設定）") {
-            patch.name2 = typeLabel;
-          }
-          const newKey = jy2ActualInsertDetailNear(
-            opts.detailModel,
-            parent.stableBlockId,
-            opts.lastChildRowKeyInGroup || null,
-            patch,
-            opts.expandState,
-          );
-          if (typeof opts.revealDetailKey === "function") {
-            opts.revealDetailKey(newKey);
-          }
-          opts.onAdded();
-        } catch (error) {
-          const view = documentRef && documentRef.defaultView;
-          const message =
-            (error && error.message) || "詳細行の追加に失敗しました";
-          if (view && typeof view.alert === "function") view.alert(message);
-          else if (typeof console !== "undefined" && console.error) {
-            console.error(message, error);
-          }
-        }
-      });
-      labelCell.appendChild(documentRef.createTextNode(" "));
-      labelCell.appendChild(addDetailButton);
-    }
     tr.appendChild(jy2MarkFreeze(labelCell, 2));
     const detailCell = jy2Cell(documentRef, "td", "jy2-actual-type-detail-slot", "");
     // Excel: 種別の下に詳細を手入力。子がまだ無いときは種別行の詳細列で追加できる。
+    // 「＋詳細行」ボタンは操作列と重複するため出さない。
     if (
       opts &&
       opts.detailQuickAdd === true &&
@@ -7475,9 +7426,65 @@
       detailCell.appendChild(name3Input);
     }
     tr.appendChild(jy2MarkFreeze(detailCell, 3));
-    tr.appendChild(
-      jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""), 4),
-    );
+    const typeOpsCell = jy2Cell(documentRef, "td", "jy2-actual-ops-cell", "");
+    // 空種別: 操作列の＋で最初の詳細行を追加（ラベル横の「＋詳細行」は廃止）
+    if (
+      opts &&
+      opts.detailQuickAdd === true &&
+      opts.detailModel &&
+      opts.canEditBudget === true &&
+      typeof opts.onAdded === "function"
+    ) {
+      const ops = documentRef.createElement("span");
+      ops.className = "jy2-actual-child-ops";
+      ops.setAttribute("aria-label", "詳細行の追加");
+      const addBtn = documentRef.createElement("button");
+      addBtn.type = "button";
+      addBtn.className =
+        "jy2-actual-detail-pm-btn jy2-actual-type-ops-add-btn";
+      addBtn.textContent = "＋";
+      addBtn.setAttribute("aria-label", "詳細行を追加");
+      addBtn.title = "この種別の下に詳細行を追加（一時保存で App757 へ）";
+      addBtn.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      addBtn.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const patch = {};
+          if (himokuLabel && himokuLabel !== "（未分類）") {
+            patch.name1 = himokuLabel;
+          }
+          if (typeLabel && typeLabel !== "（種別未設定）") {
+            patch.name2 = typeLabel;
+          }
+          const newKey = jy2ActualInsertDetailNear(
+            opts.detailModel,
+            parent.stableBlockId,
+            opts.lastChildRowKeyInGroup || null,
+            patch,
+            opts.expandState,
+          );
+          if (typeof opts.revealDetailKey === "function") {
+            opts.revealDetailKey(newKey);
+          }
+          opts.onAdded();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const message =
+            (error && error.message) || "詳細行の追加に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      ops.appendChild(addBtn);
+      typeOpsCell.appendChild(ops);
+    }
+    tr.appendChild(jy2MarkFreeze(typeOpsCell, 4));
 
     jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months);
     return tr;

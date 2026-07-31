@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-ops-col/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-no-type-add/);
   assert.match(source, /onDetailFieldChanged/);
   assert.match(source, /scheduleActualRerender/);
   assert.match(source, /fieldOnly:\s*true/);
@@ -591,12 +591,13 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /typeExpandState\.isExpanded\(\s*row\.stableBlockId,\s*himokuLabel,\s*typeLabel/,
   );
   assert.doesNotMatch(source, /詳細行を開く/);
-  // Phase2c-c: 種別枠・＋詳細行
+  // Phase2c-c: 種別枠（＋詳細行は撤去・空種別は操作列＋／詳細クイック入力）
   assert.match(source, /jy2ActualTypeGroupRow/);
   assert.match(source, /jy2-actual-type-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']type-group["']/);
-  assert.match(source, /＋詳細行/);
-  assert.match(source, /jy2-actual-type-add-detail-btn/);
+  assert.doesNotMatch(source, /textContent = ["']＋詳細行["']/);
+  assert.doesNotMatch(source, /jy2-actual-type-add-detail-btn/);
+  assert.match(source, /jy2-actual-type-ops-add-btn/);
   assert.match(source, /jy2ActualInsertDetailNear/);
   assert.match(source, /種別合計（表示専用・入力不可）/);
   // Phase2c-c-excel-flat-detail: 詳細行を表示し name3 手入力（旧 hide 廃止）
