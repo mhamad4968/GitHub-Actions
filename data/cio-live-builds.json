@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf",
-      "fileKey": "22a2eab7-9b7b-44cd-b484-923e539cf424",
-      "revision": "194",
+      "build": "2026-08-01-ver02-actual-himoku-col-12rem",
+      "fileKey": "438c2b00-eca9-4aa1-8be9-95d0ca75f514",
+      "revision": "195",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T13:11:22.817Z",
+      "deployedAt": "2026-07-31T22:35:13.436Z",
       "note": null
     },
     "757": {

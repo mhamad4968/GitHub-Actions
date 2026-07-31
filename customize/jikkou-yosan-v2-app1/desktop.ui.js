@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-col-12rem
+  // Phase2c-himoku-col-12rem: 費目列(freeze-1) max 7rem→12rem 固定幅で見切れ解消。
+  // sticky left を min 連鎖で再計算（種別以降を右へずらす）。
   // Phase2c-c-excel-struct-raf: 操作＋／－の全表 rerender を rAF に逃がし
   // click 1〜2s Violation を緩和（本直し＝ブロック単位再描画は別タスク）。
   // Phase2c-c-excel-no-type-add: 種別枠の「＋詳細行」撤去。追加は操作列＋
@@ -483,14 +485,15 @@
       ".jy2-actual-table thead tr:last-child th{background:#f1f5f9;font-size:10px}",
       ".jy2-actual-table .jy2-freeze{position:sticky;top:auto;z-index:3;background:#fff}",
       ".jy2-actual-table thead .jy2-freeze{z-index:4;background:#f1f5f9}",
-      ".jy2-actual-table .jy2-freeze-0{left:0;min-width:4.2rem}",
-      ".jy2-actual-table .jy2-freeze-1{left:4.2rem;min-width:5.5rem;max-width:7rem;overflow:hidden;text-overflow:ellipsis}",
-      ".jy2-actual-table .jy2-freeze-2{left:9.7rem;min-width:5.5rem;max-width:7rem;overflow:hidden;text-overflow:ellipsis}",
+      /* freeze幅: 工種4.2 | 費目12 | 種別5.5 | 詳細7.5 | 操作2.6（leftは累積） */
+      ".jy2-actual-table .jy2-freeze-0{left:0;min-width:4.2rem;width:4.2rem}",
+      ".jy2-actual-table .jy2-freeze-1{left:4.2rem;min-width:12rem;width:12rem;max-width:12rem;overflow:hidden;text-overflow:ellipsis}",
+      ".jy2-actual-table .jy2-freeze-2{left:16.2rem;min-width:5.5rem;max-width:7rem;overflow:hidden;text-overflow:ellipsis}",
       /* 詳細列は手入力セルのため ellipsis で入力を潰さない */
-      ".jy2-actual-table .jy2-freeze-3{left:15.2rem;min-width:7.5rem;max-width:11rem;overflow:visible}",
+      ".jy2-actual-table .jy2-freeze-3{left:21.7rem;min-width:7.5rem;max-width:11rem;overflow:visible}",
       ".jy2-actual-table thead .jy2-freeze-3{overflow:hidden;text-overflow:ellipsis}",
       /* 操作列（＋／－）: 詳細の右・最終固定列 */
-      ".jy2-actual-table .jy2-freeze-4{left:22.7rem;min-width:2.6rem;max-width:3rem;overflow:visible;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
+      ".jy2-actual-table .jy2-freeze-4{left:29.2rem;min-width:2.6rem;max-width:3rem;overflow:visible;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
       ".jy2-actual-table thead .jy2-freeze-4{overflow:hidden;text-overflow:ellipsis;text-align:center}",
       ".jy2-actual-table .jy2-total-row .jy2-freeze,.jy2-actual-table .jy2-freeze-span{background:#f5ebe0;z-index:4}",
       ".jy2-actual-table tr:hover td:not(.jy2-freeze){background:#f8fafc}",
