@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-07-31T13:22:58.560Z",
-  "gitHead": "0879b3f4",
-  "gitStatus": "## main...origin/main",
+  "exportedAt": "2026-07-31T13:23:21.651Z",
+  "gitHead": "0b5eadc5",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=0879b3f4 | 次=**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=0b5eadc5 | 次=**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-07-31T13:22:59.220Z",
+  "validatedAt": "2026-07-31T13:23:22.126Z",
   "crosscheckOk": true
 }
