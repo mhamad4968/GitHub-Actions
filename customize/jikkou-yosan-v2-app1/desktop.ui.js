@@ -1,12 +1,11 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-omit-sonota-himoku
-  // Phase2c-omit-sonota-himoku: 費目列に載った「その他材料費」（種別の取り違え）を
-  // 原価管理から除外。詳細2行は App757 に残し非表示。
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-sonota-himoku
+  // Phase2c-excel-sonota-himoku: 浜田訂正 — Excel原価管理明細では「その他材料費」は
+  // 費目。種別なし・詳細2行（例: 塗装表示記録･数字シール）。表示し、手動のみでも出す。
   // Phase2c-himoku-end-rule: 費目ブロック最終行の下に薄いグレー区切り線。
-  // Phase2c-omit-extra-himoku: 薄緑の追加費目行（（未分類）等・工種テンプレ外）を
-  // 原価管理から出さない。Excelに無い費目枠（システム工種空欄に見える行）。
+  // Phase2c-omit-extra-himoku: （未分類）等の余分な費目枠は出さない。
   // Phase2c-hide-blank-worktype: システム工種が空/「－」の親行は原価管理に出さない。
   // Phase2c-row-tint-green-blue: 費目行=薄緑・種別行=薄青・詳細=ほぼ白（階層識別）。
   // Phase2c-hide-dash-type: 種別「－」「（種別未設定）」行は原価管理に出さない。
@@ -116,15 +115,18 @@
   // true: 既存内訳由来の詳細は隠し、reveal（＋追加）した行だけ表示・手入力。
   // false: 全詳細行を表示（来週内訳連動方針後）。
   const JY2_ACTUAL_DETAIL_MANUAL_ONLY = true;
-  // 原価管理明細に無いコード表余剰種別 → 原価管理 UI から種別行ごと削除相当。
-  // App757 / コード表 JSON は非破壊（内訳タブや保存データは残る）。
+  // 材料費下の種別「その他材料費」は Excel では費目へ出すため種別行では抑止。
   const JY2_COST_MGMT_TYPE_DENY = Object.freeze({
     "10100": Object.freeze({
       材料費: Object.freeze(["その他材料費"]),
     }),
   });
-  // 種別名が費目列に入った取り違え行（薄緑・システム工種なし）も抑止。
-  const JY2_COST_MGMT_HIMOKU_DENY = Object.freeze(["その他材料費"]);
+  // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
+  const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
+    "10100": Object.freeze(["その他材料費"]),
+  });
+  // Excel: 費目の下に種別行なし・詳細だけ（その他材料費）。
+  const JY2_COST_MGMT_TYPELESS_HIMOKU = Object.freeze(["その他材料費"]);
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
     const denyList =
@@ -132,18 +134,23 @@
     return denyList && denyList.length > 0 ? new Set(denyList) : null;
   }
   function jy2CostMgmtIsDeniedType(workTypeCode, himokuLabel, typeLabel) {
-    const text = String(typeLabel || "").trim();
-    if (!text) return false;
-    // どの費目配下でも「その他材料費」種別は出さない
-    if (text === "その他材料費") return true;
     const deny = jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel);
-    return Boolean(deny && deny.has(text));
+    return Boolean(deny && typeLabel && deny.has(String(typeLabel).trim()));
   }
-  function jy2CostMgmtIsDeniedHimoku(himokuLabel) {
+  function jy2CostMgmtIsTypeLessHimoku(himokuLabel) {
     const text = String(himokuLabel || "").trim();
-    return Boolean(text && JY2_COST_MGMT_HIMOKU_DENY.includes(text));
+    return Boolean(text && JY2_COST_MGMT_TYPELESS_HIMOKU.includes(text));
   }
-  // ダッシュ類（半角/全角/類似）・空・（種別未設定）は原価管理に出さない。
+  function jy2CostMgmtHimokuTemplate(workTypeCode, templateHimoku) {
+    const base = Array.isArray(templateHimoku) ? [...templateHimoku] : [];
+    const extra =
+      JY2_COST_MGMT_HIMOKU_EXTRA[String(workTypeCode || "")] || [];
+    for (const himoku of extra) {
+      if (himoku && !base.includes(himoku)) base.push(himoku);
+    }
+    return base;
+  }
+  // ダッシュ類（半角/全角/類似）・空・（種別未設定）は通常は種別行に出さない。
   function jy2CostMgmtIsDashLike(text) {
     const value = String(text || "").trim();
     return !value ? false : /^[\-－―‐ーｰ−]+$/.test(value);
@@ -152,36 +159,31 @@
     const value = String(code || "").trim();
     return !value || jy2CostMgmtIsDashLike(value);
   }
-  // 内訳の「－」固定／空種別が typeMap に載ると空の種別行になる → 原価管理では抑止。
   function jy2CostMgmtIsNoiseType(typeLabel) {
     const text = String(typeLabel || "").trim();
     return !text || jy2CostMgmtIsDashLike(text) || text === "（種別未設定）";
   }
   function jy2CostMgmtIsNoiseHimoku(himokuLabel) {
     const text = String(himokuLabel || "").trim();
-    return (
-      !text ||
-      jy2CostMgmtIsDashLike(text) ||
-      text === "（未分類）" ||
-      jy2CostMgmtIsDeniedHimoku(text)
-    );
+    return !text || jy2CostMgmtIsDashLike(text) || text === "（未分類）";
   }
   function jy2CostMgmtShouldOmitType(workTypeCode, himokuLabel, typeLabel) {
-    return (
-      jy2CostMgmtIsNoiseType(typeLabel) ||
-      jy2CostMgmtIsDeniedType(workTypeCode, himokuLabel, typeLabel)
-    );
+    if (jy2CostMgmtIsDeniedType(workTypeCode, himokuLabel, typeLabel)) {
+      return true;
+    }
+    // 種別なし費目: ノイズ種別行は描画しないが、子詳細は別経路で出す
+    if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) return true;
+    return jy2CostMgmtIsNoiseType(typeLabel);
   }
-  function jy2CostMgmtShouldOmitHimoku(himokuLabel, templateHimoku) {
-    // （未分類）・ダッシュ・その他材料費（種別の取り違え）は常に出さない
+  function jy2CostMgmtShouldOmitHimoku(himokuLabel, himokuTemplate) {
     if (jy2CostMgmtIsNoiseHimoku(himokuLabel)) return true;
-    // 工種テンプレの費目だけ空枠を出す（データ由来の余分な費目枠は出さない）
-    const allowed = Array.isArray(templateHimoku) ? templateHimoku : [];
+    const allowed = Array.isArray(himokuTemplate) ? himokuTemplate : [];
     if (allowed.length === 0) return true;
     if (!allowed.includes(himokuLabel)) return true;
     return false;
   }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
+    if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) return [];
     const raw =
       typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
         ? typesByHimoku[himokuLabel]
@@ -8310,7 +8312,10 @@
             ? resolvedName2
             : "（種別未設定）";
         };
-        const templateHimoku = jy2HimokuChoicesForEntry(hierarchyEntry);
+        const templateHimoku = jy2CostMgmtHimokuTemplate(
+          row.workTypeCode,
+          jy2HimokuChoicesForEntry(hierarchyEntry),
+        );
         typesByHimokuMap =
           hierarchyEntry && hierarchyEntry.typesByHimoku
             ? hierarchyEntry.typesByHimoku
@@ -8380,10 +8385,13 @@
         parentTr.classList.add("jy2-actual-himoku-block-end");
         continue;
       }
-      const templateHimoku = jy2HimokuChoicesForEntry(hierarchyEntry);
+      const costHimokuTemplate = jy2CostMgmtHimokuTemplate(
+        row.workTypeCode,
+        jy2HimokuChoicesForEntry(hierarchyEntry),
+      );
       for (const himokuLabel of himokuOrder) {
         const typeMap = bucket.get(himokuLabel) || new Map();
-        if (jy2CostMgmtShouldOmitHimoku(himokuLabel, templateHimoku)) {
+        if (jy2CostMgmtShouldOmitHimoku(himokuLabel, costHimokuTemplate)) {
           continue;
         }
         const himokuChildren = [];
@@ -8409,8 +8417,62 @@
             ),
           );
         }
+        // Excel: その他材料費など「種別なし・詳細だけ」の費目
+        if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) {
+          const flatEntries = [];
+          const seenKeys = new Set();
+          const pushEntry = (entry) => {
+            const key = entry && entry.child && entry.child.rowKey;
+            if (!key || seenKeys.has(key)) return;
+            seenKeys.add(key);
+            flatEntries.push(entry);
+          };
+          for (const entries of typeMap.values()) {
+            for (const entry of entries || []) pushEntry(entry);
+          }
+          // コード表では材料費＞種別「その他材料費」にある行も費目側へ寄せる
+          if (himokuLabel === "その他材料費") {
+            const materialTypes = bucket.get("材料費");
+            const fromType =
+              materialTypes && materialTypes.get("その他材料費");
+            if (Array.isArray(fromType)) {
+              for (const entry of fromType) pushEntry(entry);
+            }
+          }
+          for (const { child, detailIndex } of flatEntries) {
+            if (!child || !child.rowKey) continue;
+            // Excel正の詳細は手動のみモードでも表示
+            if (typeof costDetailVisibility.reveal === "function") {
+              costDetailVisibility.reveal(child.rowKey);
+            }
+            himokuBlockEndRow = body.appendChild(
+              jy2ActualChildRow(
+                documentRef,
+                actualsModel,
+                row,
+                child,
+                detailRows,
+                detailIndex,
+                months,
+                editable,
+                rerender,
+                monthQtyState,
+                {
+                  detailModel,
+                  canEditBudget,
+                  revealDetailKey: costDetailVisibility.reveal,
+                  onDetailChanged: onDetailStructureAdded,
+                  onDetailFieldChanged,
+                },
+              ),
+            );
+          }
+          if (himokuBlockEndRow) {
+            himokuBlockEndRow.classList.add("jy2-actual-himoku-block-end");
+          }
+          continue;
+        }
         // Phase2c-c-excel-flat: Excelどおり種別・詳細を常時表示（費目開閉なし）
-        // deny 種別（例: その他材料費）はテンプレもデータ由来も出さない。
         const templateTypes = jy2CostMgmtTemplateTypes(
           row.workTypeCode,
           himokuLabel,
