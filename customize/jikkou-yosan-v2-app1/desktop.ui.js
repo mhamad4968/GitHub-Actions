@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-qty-amt-sum
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-label-unify
+  // Phase2c-himoku-label-unify: 費目名は親行・費目グループ行とも太字（ラベルのみ）。
+  // 種別なし費目（その他材料費）も数量/実行予算SUM・行色・太字は他費目と同一仕様。
   // Phase2c-himoku-qty-amt-sum: 費目行も表示中詳細の計画数量SUM＋実行予算SUM。
   // 見た目結合は種別〜単価まで（数量・金額は結合外。種別行と同方針）。
   // Phase2c-dual-detail-cells: その他材料費の詳細行は Excelどおり2セル
@@ -129,6 +131,7 @@
     "10100": Object.freeze(["その他材料費"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費）。
+  // #R-EXCEL-UI-07: SUM・行色・費目名太字は通常費目と同一。差分は詳細2セルのみ。
   const JY2_COST_MGMT_TYPELESS_HIMOKU = Object.freeze(["その他材料費"]);
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
@@ -594,14 +597,16 @@
       ".jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-sum-cell{background:#e8f5e9!important}",
       ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-sum-cell{background:#e3f2fd!important}",
       ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-auto-budget{background:#f8fafc!important;color:#334155;cursor:default}",
-      /* 費目グループ行（追加費目）= 親と同じ薄緑 */
-      ".jy2-actual-table .jy2-actual-himoku-group-row td{background:#e8f5e9!important;color:#1e293b;font-weight:700}",
+      /* 費目グループ行（追加費目）= 親と同じ薄緑。太字は費目名ラベルのみ（数値は通常） */
+      ".jy2-actual-table .jy2-actual-himoku-group-row td{background:#e8f5e9!important;color:#1e293b}",
       ".jy2-actual-table .jy2-actual-himoku-group-row .jy2-freeze{background:#e8f5e9!important}",
       ".jy2-actual-table .jy2-actual-himoku-group-label{padding-left:6px}",
+      /* #R-EXCEL-UI-06: 費目名は親行・グループ行とも太字で統一（種別なし費目も含む） */
+      ".jy2-actual-table .jy2-actual-parent-himoku,.jy2-actual-table .jy2-actual-himoku-group-label{font-weight:700}",
       /* 種別行 = 薄青 */
-      ".jy2-actual-table .jy2-actual-type-group-row td{background:#e3f2fd!important;color:#334155;font-weight:600}",
+      ".jy2-actual-table .jy2-actual-type-group-row td{background:#e3f2fd!important;color:#334155}",
       ".jy2-actual-table .jy2-actual-type-group-row .jy2-freeze{background:#e3f2fd!important}",
-      ".jy2-actual-table .jy2-actual-type-group-label{padding-left:18px}",
+      ".jy2-actual-table .jy2-actual-type-group-label{padding-left:18px;font-weight:600}",
       /* Excel寄せ: 集計行の空き列を見た目結合（tdは残し枠線のみ消す＝sticky維持） */
       ".jy2-actual-table td.jy2-actual-visual-merge-start,.jy2-actual-table td.jy2-actual-visual-merge-mid{border-right-color:transparent!important;box-shadow:none!important}",
       ".jy2-actual-table td.jy2-actual-visual-merge-mid,.jy2-actual-table td.jy2-actual-visual-merge-end{border-left-color:transparent!important}",

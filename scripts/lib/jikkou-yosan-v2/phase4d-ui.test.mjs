@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-himoku-qty-amt-sum/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-himoku-label-unify/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU/);
@@ -533,6 +533,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-himoku-block-end/);
   assert.match(source, /himoku-group-row td\{background:#e8f5e9/);
   assert.match(source, /type-group-row td\{background:#e3f2fd/);
+  // #R-EXCEL-UI-06: 費目名太字は親行・グループ行で統一
+  assert.match(
+    source,
+    /\.jy2-actual-table \.jy2-actual-parent-himoku,\.jy2-actual-table \.jy2-actual-himoku-group-label\{font-weight:700\}/,
+  );
+  assert.match(source, /#R-EXCEL-UI-07/);
   assert.match(
     source,
     /\.jy2-freeze-2\{left:16\.2rem;min-width:12rem;width:12rem;max-width:12rem/,
@@ -542,6 +548,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualChildrenForBudgetSum/);
   assert.match(source, /himokuChildren:\s*primaryChildren/);
   assert.match(source, /Phase2c-himoku-qty-amt-sum/);
+  assert.match(source, /Phase2c-himoku-label-unify/);
   // 費目・種別とも planQtyEmpty:false（数量SUM）。true は使わない。
   assert.match(source, /planQtyEmpty:\s*false/);
   assert.doesNotMatch(source, /planQtyEmpty:\s*true/);
