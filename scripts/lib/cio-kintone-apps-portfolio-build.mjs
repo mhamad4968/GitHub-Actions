@@ -11,13 +11,17 @@ export function parsePortfolioMachineBuild(md, appId) {
   return build;
 }
 
+/** 詳細行の app 列（2列目）が **NNN** の行 — 文中の「**674**」誤マッチ防止（#S-SYNC-01） */
+function portfolioDetailLineRe(appId) {
+  const id = String(appId).trim();
+  return new RegExp(`^\\|[^|\\n]+\\|\\s*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
+}
+
 export function parsePortfolioDetailBuild(md, appId) {
   const id = String(appId).trim();
-  const re = new RegExp(
-    `^\\|[^\\n]*?\\*\\*${id}\\*\\*[^\\n]*?\\*\\*BUILD=\`([^\`]+)\``,
-    'm',
-  );
-  const m = md.match(re);
+  const line = md.match(portfolioDetailLineRe(id))?.[0];
+  if (!line) return null;
+  const m = line.match(/\*\*BUILD=`([^`]+)`/);
   return m ? m[1].trim() : null;
 }
 
@@ -35,11 +39,10 @@ export function parsePortfolioMachineFileKey(md, appId) {
   return key;
 }
 
-/** 詳細行: fileKey **`…`** */
+/** 詳細行: fileKey **`…`**（先頭＝現行。文中の他アプリ **NNN** は無視） */
 export function parsePortfolioDetailFileKey(md, appId) {
   const id = String(appId).trim();
-  const lineRe = new RegExp(`^\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
-  const line = md.match(lineRe)?.[0];
+  const line = md.match(portfolioDetailLineRe(id))?.[0];
   if (!line) return null;
   const m = line.match(/fileKey\s+\*\*`([^`]+)`\*\*/i);
   return m ? m[1].trim() : null;
@@ -78,7 +81,7 @@ function stripDetailRevPrefix(tail) {
 export function updatePortfolioDetailBuild(md, appId, build, revision) {
   const id = String(appId).trim();
   const lineRe = new RegExp(
-    `^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*?)\\*\\*BUILD=\`[^\`]+\`([^\\n]*\\|)\\s*$`,
+    `^(\\|[^|\\n]+\\|\\s*\\*\\*${id}\\*\\*[^\\n]*?)\\*\\*BUILD=\`[^\`]+\`([^\\n]*\\|)\\s*$`,
     'm',
   );
   if (!lineRe.test(md)) return { md, changed: false };
@@ -103,12 +106,14 @@ export function updatePortfolioMachineFileKey(md, appId, fileKey) {
   return { md: next, changed: next !== md };
 }
 
-/** 詳細行 fileKey **`…`** 更新（#S-SYNC-01） */
+/** 詳細行 fileKey **`…`** 更新（#S-SYNC-01・先頭の fileKey のみ） */
 export function updatePortfolioDetailFileKey(md, appId, fileKey) {
   if (!fileKey) return { md, changed: false };
   const id = String(appId).trim();
-  const lineRe = new RegExp(`^(\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*fileKey\\s+\\*\\*\`)([^\`]+)(\`\\*\\*[^\\n]*\\|)\\s*$`, 'mi');
-  if (!lineRe.test(md)) return { md, changed: false };
-  const next = md.replace(lineRe, (_m, p1, _old, p3) => `${p1}${fileKey}${p3}`);
-  return { md: next, changed: next !== md };
+  const line = md.match(portfolioDetailLineRe(id))?.[0];
+  if (!line) return { md, changed: false };
+  if (!/fileKey\s+\*\*`[^`]+`\*\*/i.test(line)) return { md, changed: false };
+  const nextLine = line.replace(/fileKey\s+\*\*`[^`]+`\*\*/i, `fileKey **\`${fileKey}\`**`);
+  if (nextLine === line) return { md, changed: false };
+  return { md: md.replace(line, nextLine), changed: true };
 }

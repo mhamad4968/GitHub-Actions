@@ -46,7 +46,7 @@ if (!build) {
   process.exit(0);
 }
 
-const rowRe = new RegExp(`^\\|[^\\n]*\\*\\*${appId}\\*\\*[^\\n]*\\*\\*BUILD=\``, 'm');
+const rowRe = new RegExp(`^\\|[^|\\n]+\\|\\s*\\*\\*${appId}\\*\\*[^\\n]*\\*\\*BUILD=\``, 'm');
 let changed = false;
 
 const machineBefore = parsePortfolioMachineBuild(md, appId);

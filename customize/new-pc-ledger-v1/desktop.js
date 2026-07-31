@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-07-17-674-note-search-checkbox';
+  const BUILD = '2026-07-31-674-inventory-date';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1168,6 +1168,59 @@
     subField.value = rows;
   }
 
+  function ymdCalendarYear674(ymd) {
+    const t = parseYmd674(ymd);
+    if (!t) return NaN;
+    return parseInt(t.substring(0, 4), 10);
+  }
+
+  function getHistRowDateYmd674(row) {
+    const cell = row && row.value && row.value[FC_INV_HIST_DATE];
+    return parseYmd674(cell && cell.value);
+  }
+
+  function historyHasCalendarYear674(histField, year) {
+    const rows = (histField && histField.value) || [];
+    for (let i = 0; i < rows.length; i++) {
+      const d = getHistRowDateYmd674(rows[i]);
+      if (d && ymdCalendarYear674(d) === year) return true;
+    }
+    return false;
+  }
+
+  function removeHistoryRowsForCalendarYear674(subField, year) {
+    const rows = cloneSubtableRows674(subField);
+    subField.value = rows.filter(function (row) {
+      const d = getHistRowDateYmd674(row);
+      if (!d) return true;
+      return ymdCalendarYear674(d) !== year;
+    });
+  }
+
+  function assertInventoryDateOk674(ymd) {
+    const t = parseYmd674(ymd);
+    if (!t) throw new Error('棚卸日を正しく入力してください（YYYY-MM-DD）。');
+    if (t > todayYmd674()) throw new Error('棚卸日に未来の日付は指定できません。');
+    return t;
+  }
+
+  function applyInventorySaveToHist674(hist, dateYmd, person, location, method, opts) {
+    const date = assertInventoryDateOk674(dateYmd);
+    const year = ymdCalendarYear674(date);
+    const owOpts = opts || {};
+    const hasYear = historyHasCalendarYear674(hist, year);
+    if (hasYear && !owOpts.overwriteYear) {
+      const err = new Error('本年度の棚卸履歴が既にあります。');
+      err.code = 'NEED_OVERWRITE';
+      return { skipped: true, dateYmd: date, year: year };
+    }
+    if (hasYear && owOpts.overwriteYear) {
+      removeHistoryRowsForCalendarYear674(hist, year);
+    }
+    appendInventoryHistoryRow674(hist, date, person, location, method);
+    return { skipped: false, dateYmd: date, year: year };
+  }
+
   function buildInventoryTargetStatusQueryPart674() {
     return (
       '(' +
@@ -1211,7 +1264,9 @@
 
   function saveInventoryToRecord674(recordId, person, location, method, opts) {
     const app = kintone.app.getId();
-    const today = todayYmd674();
+    const o = opts || {};
+    const dateYmd = assertInventoryDateOk674(o.dateYmd || todayYmd674());
+    const year = ymdCalendarYear674(dateYmd);
     const fields = [FC_INVENTORY_HISTORY, FC_LATEST_INVENTORY_DATE, FC_PC_STATUS, FC_USER_NAME];
     return fetchRecord674ById674(recordId, fields).then(function (rec) {
       if (!isInventoryTargetPcStatus674(rec)) {
@@ -1220,21 +1275,46 @@
       const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
       let loc = String(location || '').trim();
       let per = String(person || '').trim();
-      if (opts && opts.takeout) {
+      if (o.takeout) {
         loc = loc ? loc + '（持ち出し）' : '（持ち出し）';
       }
-      if (opts && opts.selfConfirm) {
+      if (o.selfConfirm) {
         const un = String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim();
         if (un) per = un;
       }
       if (!per) throw new Error('棚卸者を入力してください。');
-      appendInventoryHistoryRow674(hist, today, per, loc, method);
+      let overwriteYear = false;
+      if (historyHasCalendarYear674(hist, year)) {
+        if (o.allowOverwrite) {
+          overwriteYear = true;
+        } else {
+          const ok = window.confirm(
+            year +
+              '年（1月1日〜12月31日）の棚卸履歴が既にあります。上書きしますか？\n' +
+              '（OK＝当該年の履歴を削除して新規記録、キャンセル＝保存しない）',
+          );
+          if (!ok) {
+            const skipErr = new Error('棚卸をキャンセルしました。');
+            skipErr.code = 'SKIP';
+            throw skipErr;
+          }
+          overwriteYear = true;
+        }
+      }
+      const result = applyInventorySaveToHist674(hist, dateYmd, per, loc, method, {
+        overwriteYear: overwriteYear,
+      });
+      if (result.skipped) {
+        const skipErr = new Error('棚卸をキャンセルしました。');
+        skipErr.code = 'SKIP';
+        throw skipErr;
+      }
       return kintoneApiPut('/k/v1/record.json', {
         app: app,
         id: recordId,
         record: {
           [FC_INVENTORY_HISTORY]: hist,
-          [FC_LATEST_INVENTORY_DATE]: { value: today },
+          [FC_LATEST_INVENTORY_DATE]: { value: dateYmd },
         },
       });
     });
@@ -1299,6 +1379,14 @@
     inpLoc.type = 'text';
     inpLoc.style.cssText = 'width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;';
 
+    const lblDate = document.createElement('label');
+    lblDate.style.cssText = 'display:block;font-size:12px;font-weight:700;margin:12px 0 4px;';
+    lblDate.textContent = '棚卸日';
+    const inpDate = document.createElement('input');
+    inpDate.type = 'date';
+    inpDate.value = todayYmd674();
+    inpDate.style.cssText = 'width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;';
+
     const rowChk = document.createElement('div');
     rowChk.style.cssText = 'margin:12px 0;font-size:13px;';
     const lineSelf = document.createElement('div');
@@ -1344,6 +1432,7 @@
       saveInventoryToRecord674(rid, inpPerson.value, inpLoc.value, INV_METHOD_INDIVIDUAL, {
         takeout: chkTake.checked,
         selfConfirm: chkSelf.checked,
+        dateYmd: inpDate.value,
       })
         .then(function () {
           showInventoryLoading674(false);
@@ -1354,6 +1443,7 @@
         .catch(function (e) {
           showInventoryLoading674(false);
           btnOk.disabled = false;
+          if (e && e.code === 'SKIP') return;
           window.alert('棚卸の保存に失敗: ' + (e && e.message ? e.message : String(e)));
         });
     });
@@ -1365,6 +1455,8 @@
     box.appendChild(inpPerson);
     box.appendChild(lblLoc);
     box.appendChild(inpLoc);
+    box.appendChild(lblDate);
+    box.appendChild(inpDate);
     box.appendChild(rowChk);
     box.appendChild(btnRow);
     modal.appendChild(box);
@@ -1451,19 +1543,29 @@
   }
 
   /** 保存時は画面上の行入力を正とする（共通欄だけ変更して行欄が古い「管理者」のまま残る不具合対策） */
-  function resolveBulkRowFields674(recordId, defaultPerson, defaultLocation, overrides, rowUiById) {
+  function resolveBulkRowFields674(recordId, defaultPerson, defaultLocation, defaultDate, overrides, rowUiById) {
     const id = String(recordId);
     const ov = overrides[id] || {};
     const ui = rowUiById && rowUiById[id];
     let per = ui ? String(ui.inpP.value || '').trim() : '';
     let loc = ui ? String(ui.inpL.value || '').trim() : '';
+    let date = ui && ui.inpD ? String(ui.inpD.value || '').trim() : '';
     if (!per) per = effectiveBulkField674(ov.person, defaultPerson);
     if (!loc) loc = effectiveBulkField674(ov.location, defaultLocation);
-    return { per: per, loc: loc };
+    if (!date) date = effectiveBulkField674(ov.date, defaultDate);
+    return { per: per, loc: loc, date: date };
   }
 
   /** 一括棚卸は既存履歴に追記するため、PUT 前に各レコードのサブテーブルを取得してマージ */
-  function saveBulkInventoryMerged674(records, defaultPerson, defaultLocation, checkedIds, rowOverrides, rowUiById) {
+  function saveBulkInventoryMerged674(
+    records,
+    defaultPerson,
+    defaultLocation,
+    defaultDate,
+    checkedIds,
+    rowOverrides,
+    rowUiById,
+  ) {
     const checked = checkedIds instanceof Set ? checkedIds : new Set();
     const ids = [];
     records.forEach(function (rec) {
@@ -1472,34 +1574,86 @@
     });
     if (!ids.length) throw new Error('棚卸する行にチェックを付けてください。');
     showInventoryLoading674(true, '棚卸を保存中…');
-    const fields = [FC_INVENTORY_HISTORY, FC_PC_STATUS];
+    const fields = [FC_INVENTORY_HISTORY, FC_PC_STATUS, FC_PC_NAME];
     return Promise.all(
       ids.map(function (id) {
         return fetchRecord674ById674(id, fields);
       }),
     ).then(function (fullRecs) {
-      const today = todayYmd674();
       const defPer = String(defaultPerson || '').trim();
       const defLoc = String(defaultLocation || '').trim();
+      const defDate = String(defaultDate || '').trim() || todayYmd674();
       if (!defPer) throw new Error('一括棚卸の棚卸者を入力してください。');
+      assertInventoryDateOk674(defDate);
       const overrides = rowOverrides || Object.create(null);
-      const puts = [];
+      const resolvedById = Object.create(null);
+      const needsOverwrite = [];
+
       for (let i = 0; i < fullRecs.length; i++) {
         const rec = fullRecs[i];
         const id = rec.$id && rec.$id.value;
         if (!id || !isInventoryTargetPcStatus674(rec)) continue;
-        const resolved = resolveBulkRowFields674(id, defPer, defLoc, overrides, rowUiById);
-        const per = resolved.per || defPer;
-        const loc = resolved.loc;
+        const sid = String(id);
+        const resolved = resolveBulkRowFields674(sid, defPer, defLoc, defDate, overrides, rowUiById);
+        const dateYmd = assertInventoryDateOk674(resolved.date || defDate);
+        const year = ymdCalendarYear674(dateYmd);
         const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
-        appendInventoryHistoryRow674(hist, today, per, loc, INV_METHOD_BULK);
+        resolvedById[sid] = {
+          per: resolved.per || defPer,
+          loc: resolved.loc,
+          dateYmd: dateYmd,
+          year: year,
+          hist: hist,
+          pcName: String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || sid),
+        };
+        if (historyHasCalendarYear674(hist, year)) {
+          needsOverwrite.push({ id: sid, pcName: resolvedById[sid].pcName, year: year });
+        }
+      }
+
+      const overwriteAllowedIds = new Set();
+      if (needsOverwrite.length) {
+        const lines = needsOverwrite.slice(0, 10).map(function (x) {
+          return '・' + x.pcName + '（' + x.year + '年）';
+        });
+        let msg =
+          needsOverwrite.length +
+          '件のPCに、棚卸日の年（本年度）の履歴が既にあります。上書きしますか？\n' +
+          '（OK＝該当PCのみ当該年の履歴を削除して新規記録、キャンセル＝該当PCはスキップ）\n\n';
+        msg += lines.join('\n');
+        if (needsOverwrite.length > 10) {
+          msg += '\n…他 ' + (needsOverwrite.length - 10) + ' 件';
+        }
+        if (window.confirm(msg)) {
+          needsOverwrite.forEach(function (x) {
+            overwriteAllowedIds.add(x.id);
+          });
+        }
+      }
+
+      const puts = [];
+      for (let j = 0; j < fullRecs.length; j++) {
+        const rec = fullRecs[j];
+        const id = rec.$id && rec.$id.value;
+        if (!id || !isInventoryTargetPcStatus674(rec)) continue;
+        const sid = String(id);
+        const row = resolvedById[sid];
+        if (!row) continue;
+        const hasYear = historyHasCalendarYear674(row.hist, row.year);
+        if (hasYear && !overwriteAllowedIds.has(sid)) continue;
+        applyInventorySaveToHist674(row.hist, row.dateYmd, row.per, row.loc, INV_METHOD_BULK, {
+          overwriteYear: hasYear && overwriteAllowedIds.has(sid),
+        });
         puts.push({
           id: id,
           record: {
-            [FC_INVENTORY_HISTORY]: hist,
-            [FC_LATEST_INVENTORY_DATE]: { value: today },
+            [FC_INVENTORY_HISTORY]: row.hist,
+            [FC_LATEST_INVENTORY_DATE]: { value: row.dateYmd },
           },
         });
+      }
+      if (!puts.length) {
+        throw new Error('保存対象がありません（上書きをキャンセルした行のみ等）。');
       }
       return putInventoryRecordsBulk674(puts);
     });
@@ -1552,7 +1706,7 @@
     const hintCommon = document.createElement('p');
     hintCommon.style.cssText = 'margin:0 0 6px;font-size:12px;color:#475569;';
     hintCommon.textContent =
-      '※ 棚卸者・設置場所は下の2欄に入力すると一覧の全行に反映されます（各行は個別に上書き可）。';
+      '※ 棚卸者・設置場所・棚卸日は下の欄に入力すると一覧の全行に反映されます（各行は個別に上書き可）。';
 
     const inpDefPer = document.createElement('input');
     inpDefPer.type = 'text';
@@ -1563,6 +1717,11 @@
     inpDefLoc.type = 'text';
     inpDefLoc.placeholder = '設置場所（全行共通）';
     inpDefLoc.style.cssText = 'flex:1;min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
+    const inpDefDate = document.createElement('input');
+    inpDefDate.type = 'date';
+    inpDefDate.value = todayYmd674();
+    inpDefDate.title = '棚卸日（全行共通）';
+    inpDefDate.style.cssText = 'min-width:140px;padding:6px;border-radius:6px;border:1px solid #cbd5e1;';
 
     const btnFillLogin = document.createElement('button');
     btnFillLogin.type = 'button';
@@ -1590,6 +1749,7 @@
     topRow.appendChild(selDept);
     topRow.appendChild(inpDefPer);
     topRow.appendChild(inpDefLoc);
+    topRow.appendChild(inpDefDate);
     topRow.appendChild(btnFillLogin);
     topRow.appendChild(btnApplyCommon);
     topRow.appendChild(btnLoad);
@@ -1605,21 +1765,28 @@
     function applyCommonToRowInputs674() {
       const defP = inpDefPer.value;
       const defL = inpDefLoc.value;
+      const defD = inpDefDate.value;
       Object.keys(rowUiById).forEach(function (rid) {
         const ui = rowUiById[rid];
         if (!ui) return;
         ui.inpP.value = defP;
         ui.inpL.value = defL;
+        if (ui.inpD) ui.inpD.value = defD;
         if (rowOverrides[rid]) {
           delete rowOverrides[rid].person;
           delete rowOverrides[rid].location;
+          delete rowOverrides[rid].date;
           if (Object.keys(rowOverrides[rid]).length === 0) delete rowOverrides[rid];
         }
       });
     }
 
     function syncRowOverride674(rid, field, value) {
-      const common = field === 'person' ? inpDefPer.value : inpDefLoc.value;
+      let common;
+      if (field === 'person') common = inpDefPer.value;
+      else if (field === 'location') common = inpDefLoc.value;
+      else if (field === 'date') common = inpDefDate.value;
+      else common = '';
       if (String(value) === String(common)) {
         if (rowOverrides[rid]) {
           delete rowOverrides[rid][field];
@@ -1638,6 +1805,8 @@
     inpDefPer.addEventListener('change', bindCommonSync674);
     inpDefLoc.addEventListener('input', bindCommonSync674);
     inpDefLoc.addEventListener('change', bindCommonSync674);
+    inpDefDate.addEventListener('input', bindCommonSync674);
+    inpDefDate.addEventListener('change', bindCommonSync674);
     btnApplyCommon.addEventListener('click', bindCommonSync674);
 
     function renderTable() {
@@ -1651,7 +1820,7 @@
       table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
       const thead = document.createElement('thead');
       thead.innerHTML =
-        '<tr style="background:#f1f5f9;"><th></th><th>PC名</th><th>利用者</th><th>棚卸者</th><th>設置場所</th></tr>';
+        '<tr style="background:#f1f5f9;"><th></th><th>PC名</th><th>利用者</th><th>棚卸日</th><th>棚卸者</th><th>設置場所</th></tr>';
       table.appendChild(thead);
       const tbody = document.createElement('tbody');
       loadedRecords.forEach(function (rec) {
@@ -1672,6 +1841,17 @@
         td1.textContent = (rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '';
         const td2 = document.createElement('td');
         td2.textContent = (rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '';
+        const tdD = document.createElement('td');
+        const inpD = document.createElement('input');
+        inpD.type = 'date';
+        inpD.style.cssText = 'width:100%;box-sizing:border-box;padding:4px;';
+        inpD.value = inpDefDate.value;
+        inpD.addEventListener('input', function () {
+          syncRowOverride674(id, 'date', inpD.value);
+        });
+        inpD.addEventListener('change', function () {
+          syncRowOverride674(id, 'date', inpD.value);
+        });
         const td3 = document.createElement('td');
         const inpP = document.createElement('input');
         inpP.type = 'text';
@@ -1690,12 +1870,14 @@
         inpL.addEventListener('input', function () {
           syncRowOverride674(id, 'location', inpL.value);
         });
-        rowUiById[id] = { inpP: inpP, inpL: inpL };
+        rowUiById[id] = { inpP: inpP, inpL: inpL, inpD: inpD };
+        tdD.appendChild(inpD);
         td3.appendChild(inpP);
         td4.appendChild(inpL);
         tr.appendChild(td0);
         tr.appendChild(td1);
         tr.appendChild(td2);
+        tr.appendChild(tdD);
         tr.appendChild(td3);
         tr.appendChild(td4);
         tbody.appendChild(tr);
@@ -1769,9 +1951,10 @@
         loadedRecords,
         inpDefPer.value,
         inpDefLoc.value,
+        inpDefDate.value,
         checkedIds,
         rowOverrides,
-        rowUiById
+        rowUiById,
       )
         .then(function () {
           showInventoryLoading674(false);

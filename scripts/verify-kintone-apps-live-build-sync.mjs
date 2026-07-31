@@ -32,12 +32,14 @@ const md = readFileSync(mdPath, 'utf8');
 const reg = readLiveBuildRegistry();
 
 function detectDetailGarble(mdText, id) {
-  const lineRe = new RegExp(`^\\|[^\\n]*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
+  const lineRe = new RegExp(`^\\|[^|\\n]+\\|\\s*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
   const line = mdText.match(lineRe)?.[0];
   if (!line) return null;
-  const revHits = line.match(/rev\s*\*\*/g) || [];
+  // 履歴「前 deploy」以降の旧 rev は対象外（674 等の長文詳細行）
+  const head = line.split(/前\s*deploy|前\s*BUILD/i)[0];
+  const revHits = head.match(/rev\s*\*\*/g) || [];
   if (revHits.length > 1) return `duplicate rev markers (${revHits.length})`;
-  const buildHits = line.match(/BUILD=`/g) || [];
+  const buildHits = head.match(/BUILD=`/g) || [];
   if (buildHits.length > 1) return `duplicate BUILD markers (${buildHits.length})`;
   return null;
 }
