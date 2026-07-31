@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-detail-manual-only
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-budget-sum-visible
+  // Phase2c-budget-sum-visible: 手動のみモードでは実行予算/月次/累計のSUMを
+  // 表示中（＋で reveal）の詳細行だけから取る。隠れ内訳行を混ぜない。
   // Phase2c-detail-manual-only: 既存内訳由来の詳細は隠す。＋で追加した行だけ表示・手入力。
   // App757は非破壊（既存行は消さない）。来週内訳連動方針後に全件再表示可。
   // Phase2c-hide-detail-interim: （前段）詳細全隠し → 手入力可に緩和。
@@ -48,7 +50,8 @@
   // （例: 材料費下の鋼材･二次製品費など）。データに無い種別も type-group。
   // Phase2c-c-hide: Excel原価管理明細に合わせ、内訳の品名カタログ行
   // （name3 あり）は工事原価管理に出さない。費目→種別枠が主。＋詳細行で
-  // 追加した行、または詳細未入力行のみ表示。SUM は隠れ子も含む。
+  // 追加した行、または詳細未入力行のみ表示。
+  // （手動のみモードの SUM は表示中行のみ → Phase2c-budget-sum-visible）
   // Phase2c-c (2026-07-31): Excel入れ子 — 費目枠の下に種別(name2)視覚
   // グループ（`▸▸`・virtual=type-group・表示専用 SUM）。種別枠に「＋詳細行」
   // （name1+name2 prefill）。費目枠の「＋種別行」は維持。子行ラベルは
@@ -6785,8 +6788,28 @@
       parentUnitCell,
       parentPlanQtyCell,
     ]);
+    const parentShouldShow =
+      parentHimokuOpts &&
+      typeof parentHimokuOpts.shouldShowDetail === "function"
+        ? parentHimokuOpts.shouldShowDetail
+        : null;
+    const parentSumChildren = jy2ActualChildrenForBudgetSum(
+      row.children,
+      parentShouldShow,
+    );
+    const parentFinalBudget = row.hasChildren
+      ? jy2ActualSumField(parentSumChildren, "finalBudget")
+      : row.finalBudget;
+    const parentActual = row.hasChildren
+      ? jy2ActualSumField(parentSumChildren, "actual")
+      : row.actual;
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
+      jy2Cell(
+        documentRef,
+        "td",
+        "jy2-amount",
+        jy2AmountDisplay(parentFinalBudget),
+      ),
     );
     const parentMonthQtyState =
       parentHimokuOpts && parentHimokuOpts.monthQtyState
@@ -6794,7 +6817,7 @@
         : null;
     for (const month of months) {
       const qtySum = jy2ActualSumMonthQty(
-        row.children,
+        parentSumChildren,
         month,
         parentMonthQtyState,
         row,
@@ -6805,26 +6828,31 @@
         "jy2-num jy2-actual-month jy2-actual-month-qty jy2-actual-sum-cell",
         jy2ActualMonthQtySumDisplay(qtySum),
       );
-      qtyCell.title = "合計（子の月次数量・自動・入力不可）";
+      qtyCell.title = "合計（表示中の子の月次数量・自動・入力不可）";
       tr.appendChild(qtyCell);
+      const monthSum = row.hasChildren
+        ? jy2ActualSumMonth(parentSumChildren, month)
+        : row.monthly[month];
       const monthCell = jy2Cell(
         documentRef,
         "td",
         "jy2-amount jy2-actual-month jy2-actual-sum-cell",
-        jy2AmountDisplay(row.monthly[month]),
+        monthSum === null || monthSum === undefined
+          ? "－"
+          : jy2AmountDisplay(monthSum),
       );
       monthCell.title = "合計（自動・入力不可）";
       tr.appendChild(monthCell);
     }
     tr.appendChild(
-      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.actual)),
+      jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(parentActual)),
     );
     tr.appendChild(
       jy2Cell(
         documentRef,
         "td",
         "jy2-amount",
-        jy2ActualBudgetDiffDisplay(row.finalBudget, row.actual),
+        jy2ActualBudgetDiffDisplay(parentFinalBudget, parentActual),
       ),
     );
     // Phase2a: 備考列。表示のみ（親行は projection の summary_note 由来）。
@@ -7229,7 +7257,10 @@
         documentRef,
         "td",
         "jy2-amount",
-        jy2ActualBudgetDiffDisplay(child.finalBudget, child.actual),
+        jy2ActualBudgetDiffDisplay(
+          autoBudget !== null ? autoBudget : child.finalBudget,
+          child.actual,
+        ),
       ),
     );
     // Phase2a: 備考列。子行は detailRows[detailIndex].note を読取表示のみ。
@@ -7347,6 +7378,7 @@
         unitPriceEmpty: true,
         planQtyEmpty: true,
         monthQtyState: opts && opts.monthQtyState,
+        shouldShowDetail: opts && opts.shouldShowDetail,
         parent,
       },
     );
@@ -7465,6 +7497,7 @@
       {
         unitPriceEmpty: true,
         planQtyEmpty: true,
+        shouldShowDetail: opts && opts.shouldShowDetail,
         monthQtyState: opts && opts.monthQtyState,
         parent,
       },
@@ -7487,6 +7520,15 @@
     if (!text || text === "-" || text === "－") return null;
     if (!/^[+-]?\d+(?:\.\d*)?$/.test(text)) return null;
     return text;
+  }
+
+  // 手動のみ: 集計は画面に出ている詳細だけ（隠れ内訳の金額を乗せない）。
+  function jy2ActualChildrenForBudgetSum(children, shouldShowDetail) {
+    if (!JY2_ACTUAL_DETAIL_MANUAL_ONLY) return children || [];
+    if (typeof shouldShowDetail !== "function") return children || [];
+    return (children || []).filter(
+      (child) => child && child.rowKey && shouldShowDetail(child.rowKey),
+    );
   }
 
   function jy2ActualSumField(children, field) {
@@ -7576,6 +7618,11 @@
   ) {
     const unitPriceEmpty = !!(opts && opts.unitPriceEmpty);
     const planQtyEmpty = !!(opts && opts.planQtyEmpty);
+    const shouldShowDetail = opts && opts.shouldShowDetail;
+    const sumChildren = jy2ActualChildrenForBudgetSum(
+      childrenInGroup,
+      shouldShowDetail,
+    );
     const unitPriceCell = jy2Cell(
       documentRef,
       "td",
@@ -7590,7 +7637,7 @@
       planQtyEmpty ? "" : "－",
     );
     tr.appendChild(planQtyCell);
-    const finalBudgetSum = jy2ActualSumField(childrenInGroup, "finalBudget");
+    const finalBudgetSum = jy2ActualSumField(sumChildren, "finalBudget");
     tr.appendChild(
       jy2Cell(
         documentRef,
@@ -7603,7 +7650,7 @@
     const parentRef = opts && opts.parent;
     for (const month of months) {
       const qtySum = jy2ActualSumMonthQty(
-        childrenInGroup,
+        sumChildren,
         month,
         monthQtyState,
         parentRef,
@@ -7614,9 +7661,9 @@
         "jy2-num jy2-actual-month jy2-actual-month-qty jy2-actual-sum-cell",
         jy2ActualMonthQtySumDisplay(qtySum),
       );
-      qtyCell.title = "合計（子の月次数量・自動・入力不可）";
+      qtyCell.title = "合計（表示中の子の月次数量・自動・入力不可）";
       tr.appendChild(qtyCell);
-      const monthSum = jy2ActualSumMonth(childrenInGroup, month);
+      const monthSum = jy2ActualSumMonth(sumChildren, month);
       const monthCell = jy2Cell(
         documentRef,
         "td",
@@ -7626,7 +7673,7 @@
       monthCell.title = "合計（表示専用・入力不可）";
       tr.appendChild(monthCell);
     }
-    const actualSum = jy2ActualSumField(childrenInGroup, "actual");
+    const actualSum = jy2ActualSumField(sumChildren, "actual");
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(actualSum)),
     );
@@ -7944,10 +7991,50 @@
       budgetAttrsByBlockId,
       detailRowsByBlockId,
     });
-    const totals = actualsModel.sectionTotals(blocks, {
+    let totals = actualsModel.sectionTotals(blocks, {
       contractTotal1,
       detailRowsByBlockId,
     });
+    // 手動のみ: 区分計・⑧⑨の実行予算も表示中詳細の合計に合わせる。
+    if (JY2_ACTUAL_DETAIL_MANUAL_ONLY) {
+      const visibleSection = {};
+      for (const category of ACTUAL_COST_CATEGORY_KEYS) {
+        const sectionRows = rows.filter((row) => row.costCategory === category);
+        let finalBudget = "0";
+        let actual = "0";
+        const monthly = {};
+        for (const month of months) monthly[month] = "0";
+        for (const row of sectionRows) {
+          const kids = jy2ActualChildrenForBudgetSum(
+            row.children,
+            costDetailVisibility.shouldShow,
+          );
+          const fb = row.hasChildren
+            ? jy2ActualSumField(kids, "finalBudget")
+            : row.finalBudget;
+          const ac = row.hasChildren
+            ? jy2ActualSumField(kids, "actual")
+            : row.actual;
+          if (fb != null) finalBudget = add(finalBudget, fb);
+          if (ac != null) actual = add(actual, ac);
+          for (const month of months) {
+            const ms = row.hasChildren
+              ? jy2ActualSumMonth(kids, month)
+              : row.monthly[month];
+            if (ms != null) monthly[month] = add(monthly[month], ms);
+          }
+        }
+        const base = totals[category] || {};
+        visibleSection[category] = Object.freeze({
+          ...base,
+          costCategory: category,
+          finalBudget,
+          actual,
+          monthly: Object.freeze(monthly),
+        });
+      }
+      totals = Object.freeze(visibleSection);
+    }
     const summaryTotals = summaryTotalsProvider ? summaryTotalsProvider() : null;
     const salaryAmount = summaryTotals ? summaryTotals.salary : "0";
     const grand8 = actualsModel.grandCost8Totals(
@@ -8085,6 +8172,7 @@
         expandState,
         rerender,
         revealDetailKey: costDetailVisibility.reveal,
+        shouldShowDetail: costDetailVisibility.shouldShow,
         onAdded: onDetailStructureAdded,
         monthQtyState,
       };
@@ -8150,14 +8238,21 @@
             canEditBudget,
             onAdded: onDetailStructureAdded,
             revealDetailKey: costDetailVisibility.reveal,
+            shouldShowDetail: costDetailVisibility.shouldShow,
             lastChildRowKeyInGroup: primaryLastKey,
             monthQtyState,
           };
         } else {
-          parentHimokuOpts = { monthQtyState };
+          parentHimokuOpts = {
+            monthQtyState,
+            shouldShowDetail: costDetailVisibility.shouldShow,
+          };
         }
       } else {
-        parentHimokuOpts = { monthQtyState };
+        parentHimokuOpts = {
+          monthQtyState,
+          shouldShowDetail: costDetailVisibility.shouldShow,
+        };
       }
       body.appendChild(
         jy2ActualRow(
