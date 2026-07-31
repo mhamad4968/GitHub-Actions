@@ -114,15 +114,23 @@
       "id": "vpn-account-ledger",
       "laneId": "vpn-account-ledger",
       "label": "VPNアカウント台帳",
-      "status": "reopened",
+      "status": "closed-v1",
       "closedAt": "2026-06-17",
       "reopenedAt": "2026-08-01",
-      "reopenReason": "浜田GO: VPN ID修正（編集可）+備考自動履歴+674同期（案A）",
+      "reclosedAt": "2026-08-01",
+      "reopenReason": "浜田GO: VPN ID修正（編集可）+備考自動履歴+674同期（案A）→目視OK・再クローズ",
       "completionReport": "docs/reports/2026-06-17-vpn-account-completion.md",
       "kintoneAppsSection": "VPNアカウント台帳（Space 48 — 733–734）",
       "kintoneAppsStateMarker": "v1 完成",
-      "forbiddenNextTaskPatterns": [],
-      "note": "2026-08-01 reopen — VPN ID 修正機能。完了後に再クローズ可。元: 66件・浜田目視 OK"
+      "forbiddenNextTaskPatterns": [
+        "VPNアカウント",
+        "vpn-account",
+        "kensetsutoso.fre",
+        "733",
+        "734",
+        "VPN ID"
+      ],
+      "note": "v1+ VPN ID訂正（BUILD vpn-id-correct-history-pc-sync rev31・浜田目視OK 2026-08-01）。66件・採番user080・674連携済"
     },
     {
       "id": "total-network-ledger",
