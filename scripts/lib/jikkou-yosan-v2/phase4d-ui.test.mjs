@@ -515,12 +515,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-perf/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-detail-pm/);
   assert.match(source, /onDetailFieldChanged/);
   assert.match(source, /scheduleActualRerender/);
   assert.match(source, /fieldOnly:\s*true/);
   assert.match(source, /flushDetailIfDirty/);
   assert.match(source, /liveUnitPrice/);
+  assert.match(source, /jy2-actual-detail-pm-btn/);
+  assert.match(source, /詳細列の横の＋／－/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -546,14 +548,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-child-delete-btn/);
   assert.match(source, /jy2-actual-child-add-btn/);
   assert.match(source, /removeDetailRow\(\s*parent\.stableBlockId,\s*child\.rowKey/);
-  assert.match(source, /行の「＋／削除」/);
+  assert.match(source, /詳細列の横の＋／－/);
   // Phase2c-c-excel-unit-price: 単価手入力
   assert.match(source, /jy2-actual-child-unit-price-input/);
   assert.match(
     source,
     /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*unitPrice: value,/,
   );
-  assert.match(source, /詳細・単価は手入力/);
+  assert.match(source, /詳細列の横の＋／－/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
@@ -565,7 +567,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(childRowMatch[0], /revealDetailKey\(child\.rowKey\)/);
   assert.match(childRowMatch[0], /onDetailChanged\(\)/);
   assert.match(childRowMatch[0], /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
-  assert.match(source, /行の「＋／削除」または種別の「＋詳細行」/);
+  assert.match(source, /詳細列の横の＋／－/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
@@ -598,7 +600,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualCostDetailVisibility/);
   assert.match(source, /shouldShow:\s*\(\)\s*=>\s*true/);
   assert.match(source, /detailQuickAdd/);
-  assert.match(source, /行の「＋／削除」または種別の「＋詳細行」/);
+  assert.match(source, /詳細列の横の＋／－/);
   assert.doesNotMatch(source, /内訳の品名カタログは隠し/);
   // Phase2c-c-template-types: コード表種別を空枠でも出す
   assert.match(source, /typesByHimokuMap/);
