@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-flat-detail2
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-row-ops
+  // Phase2c-c-excel-row-ops: 工事原価管理の詳細行に「＋」「削除」。追加は種別の
+  // ＋詳細行／子行＋、削除は removeDetailRow（最低1行・実績ありは確認）。
   // Phase2c-c-excel-flat-detail2: 詳細列の「└」＋width:100%入力で入力欄が
   // クリップされ手入力不能だったのを修正。Excelどおり詳細列＝入力セルのみ。
   // Phase2c-c-excel-flat-detail: Excelどおり詳細行を表示し name3 を手入力可
@@ -443,10 +445,12 @@
       ".jy2-actual-parent-num{display:inline-block;min-width:1.5rem}",
       ".jy2-actual-child-row td{background:#fafafa}",
       ".jy2-actual-child-row .jy2-freeze{background:#fafafa}",
-      ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:visible;white-space:normal}",
+      ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:visible;white-space:normal;display:flex;flex-wrap:wrap;align-items:center;gap:4px}",
       ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-child-name{padding-left:6px}",
-      ".jy2-actual-table .jy2-actual-child-name-input{display:block;width:100%;min-width:6rem;box-sizing:border-box}",
+      ".jy2-actual-table .jy2-actual-child-name-input{display:block;flex:1 1 5rem;width:auto;min-width:5rem;box-sizing:border-box}",
       ".jy2-actual-table .jy2-actual-type-detail-slot .jy2-actual-child-name-input{display:block;width:100%;min-width:6rem;box-sizing:border-box}",
+      ".jy2-actual-child-ops{display:inline-flex;gap:2px;flex-shrink:0;align-items:center}",
+      ".jy2-actual-child-ops .jy2-row-button{padding:1px 6px;font-size:10px;line-height:1.3}",
       /* Phase2a (2026-07-31): 親月セル・総計月セルは合計表示（自動）で入力不可。
          灰色背景で「編集不可」を視覚化。子月セルは元のまま（入力可）を維持する。 */
       ".jy2-actual-table td.jy2-actual-sum-cell{background:#e8eaed!important;color:#334155;cursor:default}",
@@ -6633,6 +6637,18 @@
   // 合計を表示する。手入力欄は明細行にあるためここは全カラム readonly。
   // Phase2c-c-excel-flat: freeze0＝工種番号・freeze1＝既定費目（Excel同一行）。
   // 開閉トグルなし。種別/詳細は walker が常時描画。
+  function jy2ActualChildHasStoredAmounts(child) {
+    if (!child) return false;
+    if (jy2ActualDecimalAddend(child.finalBudget) !== null) return true;
+    if (jy2ActualDecimalAddend(child.actual) !== null) return true;
+    if (child.monthly && typeof child.monthly === "object") {
+      for (const value of Object.values(child.monthly)) {
+        if (jy2ActualDecimalAddend(value) !== null) return true;
+      }
+    }
+    return false;
+  }
+
   function jy2ActualRow(
     documentRef,
     actualsModel,
@@ -6854,6 +6870,90 @@
       name3Input.placeholder = "詳細（手入力）";
       if (fullPath) name3Input.title = fullPath;
       nameCell.appendChild(name3Input);
+      const ops = documentRef.createElement("span");
+      ops.className = "jy2-actual-child-ops";
+      const addSibling = documentRef.createElement("button");
+      addSibling.type = "button";
+      addSibling.className = "jy2-row-button jy2-actual-child-add-btn";
+      addSibling.textContent = "＋";
+      addSibling.title = "この行の直後に詳細行を追加（一時保存で App757 へ）";
+      addSibling.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      addSibling.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const patch = {};
+          if (name1Resolved) patch.name1 = name1Resolved;
+          if (name2Resolved && name2Resolved !== "－") patch.name2 = name2Resolved;
+          const newKey = jy2ActualInsertDetailNear(
+            childDetailModel,
+            parent.stableBlockId,
+            child.rowKey,
+            patch,
+            null,
+          );
+          if (typeof revealDetailKey === "function") {
+            revealDetailKey(newKey);
+          }
+          if (typeof onDetailChanged === "function") onDetailChanged();
+          else if (typeof rerender === "function") rerender();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const message =
+            (error && error.message) || "詳細行の追加に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      const deleteBtn = documentRef.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "jy2-row-button jy2-actual-child-delete-btn";
+      deleteBtn.textContent = "削除";
+      deleteBtn.title = "この詳細行を削除（一時保存で App757 へ）";
+      deleteBtn.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      deleteBtn.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const view = documentRef && documentRef.defaultView;
+          if (jy2ActualChildHasStoredAmounts(child)) {
+            const ok =
+              view && typeof view.confirm === "function"
+                ? view.confirm(
+                    "この行には実行予算または月次実績があります。削除しますか？\n（構造は一時保存で App757 へ。App758 の古い実績キーは残る場合があります）",
+                  )
+                : true;
+            if (!ok) return;
+          }
+          childDetailModel.removeDetailRow(
+            parent.stableBlockId,
+            child.rowKey,
+          );
+          if (typeof onDetailChanged === "function") onDetailChanged();
+          else if (typeof rerender === "function") rerender();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const raw = String((error && error.message) || error || "");
+          const message = /at least 1 detail row/i.test(raw)
+            ? "工種ブロックには明細が1行以上必要なため削除できません"
+            : raw || "詳細行の削除に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      ops.appendChild(addSibling);
+      ops.appendChild(deleteBtn);
+      nameCell.appendChild(ops);
     } else {
       const nameLabel = documentRef.createElement("span");
       nameLabel.textContent = name3Resolved || "－";
@@ -7687,7 +7787,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理は Excel 同様に費目→種別→詳細。詳細(name3)は下書き編集可のとき手入力、行追加は種別の「＋詳細行」、一時保存で App757 へ。「予実を保存」では構造は保存されません";
+        "原価管理は Excel 同様に費目→種別→詳細。詳細は手入力、行の「＋／削除」または種別の「＋詳細行」で増減、一時保存で App757 へ。「予実を保存」では構造は保存されません";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {
