@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-decimal-fix
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-decimal-fix2
+  // Fix2: displayInteger 自体も空・非数を null 返し（旧キャッシュでも落ちにくく）。
   // Fix: jy2AmountDisplay / 費目SUM が空単価・非数で Invalid decimal を投げない。
   // Phase2c-b-a (2026-07-31): 費目グループ行の label セルに「＋種別行」
   // ボタンを追加。押下で `detailModel.addDetailRow` → 費目が実費目のときは

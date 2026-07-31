@@ -22,7 +22,15 @@ export function decimalLineAmount(quantity, unitPrice) {
 }
 
 export function displayInteger(decimalAmount) {
-  return decimalAmount === null ? null : round(decimalAmount, 0);
+  if (decimalAmount === null || decimalAmount === undefined) return null;
+  const text = String(decimalAmount).trim().replace(/[,，]/g, "");
+  if (!text || text === "-" || text === "－") return null;
+  if (!/^[+-]?\d+(?:\.\d*)?$/.test(text)) return null;
+  try {
+    return round(text, 0);
+  } catch {
+    return null;
+  }
 }
 
 export function detailLineAmount({ quantity, unitPrice, unit }) {

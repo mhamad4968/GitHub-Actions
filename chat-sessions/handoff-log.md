@@ -5333,3 +5333,19 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 JST — **756 decimal-fix2 LIVE**
+
+**要約**: displayIntegerも空ガード。BUILD decimal-fix2 LIVE rev173。旧JSキャッシュが原因の再発対策。要ハードリロード。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `2b8ec888` — 
+
+**BUILD**: 2026-07-31-ver02-actual-excel-phase2c-b-decimal-fix2 rev173
+
+**GO待ち**: 756 hard-refresh visual
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---
