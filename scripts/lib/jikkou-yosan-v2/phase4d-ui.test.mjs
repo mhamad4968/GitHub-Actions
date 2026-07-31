@@ -516,13 +516,25 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
-  // Phase2c-c-excel-cols: Excel 原価管理明細列（固定2＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-cols/);
-  assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 2/);
-  assert.match(source, /費目・種別・詳細/);
+  // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-three-cols/);
+  assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
+  assert.match(source, /th\("費目"/);
+  assert.match(source, /th\("種別（補助）"/);
+  assert.match(source, /th\("詳細"/);
+  assert.doesNotMatch(source, /th\("費目・種別・詳細"/);
+  assert.doesNotMatch(source, /th\("費目→種別→詳細"/);
+  const actualHeadMatch = source.match(
+    /function jy2ActualHead[\s\S]*?return thead;\s*\}/,
+  );
+  assert.ok(actualHeadMatch, "jy2ActualHead body must be present");
+  assert.doesNotMatch(actualHeadMatch[0], /内訳№/);
+  assert.doesNotMatch(actualHeadMatch[0], /th\("区分"/);
+  assert.match(source, /jy2-freeze-3/);
   assert.match(source, /codeLabel\.title = String\(row\.workTypeName\)/);
-  // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
+  // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目/種別は各列のグループ枠）。
   assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
+  assert.match(source, /jy2MarkFreeze\(nameCell, 3\)/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);

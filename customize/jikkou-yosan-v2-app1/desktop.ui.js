@@ -1,7 +1,7 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-cols
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-three-cols
   // Phase2c-c: 親行の「（塗）材料費」等システム入力工種名は Excel 原価管理に
   // 無いため非表示（工種番号のみ。ホバーに旧名称）。freeze列は費目枠用。
   // Phase2c-c-template-types: コード表 typesByHimoku の種別を空枠でも常時表示
@@ -50,9 +50,9 @@
   const JY2_HSCROLL_KEY = `jy2:${APP1_ID}:hscrollLeft`;
   const JY2_FONT_SCALE_KEY = "jy2-font-scale";
   const JY2_FONT_SCALES = Object.freeze(["standard", "large", "xlarge"]);
-  // Phase2c-c-excel-cols: Excel 原価管理明細に合わせ固定2列＋単価1列。
-  // 備考は右端に別列（ATTR_COLS には含めない）。
-  const JY2_ACTUAL_FREEZE_COLS = 2;
+  // Phase2c-c-three-cols: Excel 原価管理明細に合わせ固定4列（システム工種｜
+  // 費目｜種別（補助）｜詳細）＋単価1列。備考は右端に別列。
+  const JY2_ACTUAL_FREEZE_COLS = 4;
   const JY2_ACTUAL_ATTR_COLS = 1;
 
   function jy2StoreActiveTab(view, tabId) {
@@ -456,7 +456,9 @@
       ".jy2-actual-table .jy2-freeze{position:sticky;top:auto;z-index:3;background:#fff}",
       ".jy2-actual-table thead .jy2-freeze{z-index:4;background:#f1f5f9}",
       ".jy2-actual-table .jy2-freeze-0{left:0;min-width:4.2rem}",
-      ".jy2-actual-table .jy2-freeze-1{left:4.2rem;min-width:9rem;max-width:12rem;overflow:hidden;text-overflow:ellipsis;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
+      ".jy2-actual-table .jy2-freeze-1{left:4.2rem;min-width:5.5rem;max-width:7rem;overflow:hidden;text-overflow:ellipsis}",
+      ".jy2-actual-table .jy2-freeze-2{left:9.7rem;min-width:5.5rem;max-width:7rem;overflow:hidden;text-overflow:ellipsis}",
+      ".jy2-actual-table .jy2-freeze-3{left:15.2rem;min-width:6rem;max-width:9rem;overflow:hidden;text-overflow:ellipsis;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
       ".jy2-actual-table .jy2-total-row .jy2-freeze,.jy2-actual-table .jy2-freeze-span{background:#f5ebe0;z-index:4}",
       ".jy2-actual-table tr:hover td:not(.jy2-freeze){background:#f8fafc}",
       ".jy2-actual-table tr:hover .jy2-freeze{background:#eef2ff}",
@@ -4439,8 +4441,8 @@
     return cell;
   }
 
-  /** 予実ヘッダ2段: Excel 原価管理明細列（システム工種｜費目→種別→詳細｜単価｜
-   * 実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。 */
+  /** 予実ヘッダ2段: Excel 原価管理明細列（システム工種｜費目｜種別（補助）｜
+   * 詳細｜単価｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。 */
   function jy2ActualHead(documentRef, months) {
     const thead = documentRef.createElement("thead");
     const top = documentRef.createElement("tr");
@@ -4454,7 +4456,9 @@
       return cell;
     };
     top.appendChild(th("システム工種", { rowSpan: 2, freeze: 0 }));
-    top.appendChild(th("費目・種別・詳細", { rowSpan: 2, freeze: 1 }));
+    top.appendChild(th("費目", { rowSpan: 2, freeze: 1 }));
+    top.appendChild(th("種別（補助）", { rowSpan: 2, freeze: 2 }));
+    top.appendChild(th("詳細", { rowSpan: 2, freeze: 3 }));
     top.appendChild(th("単価", { rowSpan: 2 }));
     const finalHead = th("実行予算額", { rowSpan: 2 });
     finalHead.title = "手入力＝finalBudget（App758）。親＝子合計。";
@@ -6655,6 +6659,8 @@
     tr.appendChild(jy2MarkFreeze(idCell, 0));
 
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3));
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
@@ -6721,8 +6727,10 @@
     tr.dataset.stableBlockId = parent.stableBlockId;
     tr.dataset.costCategory = parent.costCategory;
     tr.dataset.rowKey = child.rowKey;
-    // 左2列: freeze0=空、freeze1=詳細(name3)のみ（費目/種別はグループ枠）。
+    // 左4列: freeze0–2=空、freeze3=詳細(name3)のみ（費目/種別はグループ枠）。
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
     const name1Resolved =
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name1") ?? "";
     const nameCell = jy2Cell(documentRef, "td", "jy2-actual-child-name", "");
@@ -6746,7 +6754,7 @@
     nameLabel.textContent = name3Resolved || "－";
     nameLabel.title = fullPath || nameLabel.textContent;
     nameCell.appendChild(nameLabel);
-    tr.appendChild(jy2MarkFreeze(nameCell, 1));
+    tr.appendChild(jy2MarkFreeze(nameCell, 3));
 
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(child.unitPrice)),
@@ -6941,7 +6949,7 @@
   }
 
   // Phase2c-a (2026-07-31): 費目(name1)視覚グループ用の表示専用行。
-  // 列: freeze0空/freeze1ラベル + 単価/実行予算額/月次/原価累計/差/備考（helper）。
+  // 列: freeze0/2/3空/freeze1ラベル + 単価/実行予算額/月次/原価累計/差/備考（helper）。
   function jy2ActualHimokuGroupRow(
     documentRef,
     parent,
@@ -7015,6 +7023,8 @@
       labelCell.appendChild(addTypeButton);
     }
     tr.appendChild(jy2MarkFreeze(labelCell, 1));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3));
 
     jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months);
     return tr;
@@ -7039,6 +7049,7 @@
     tr.title = "種別合計（表示専用・入力不可）";
 
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
     const labelCell = jy2Cell(
       documentRef,
       "td",
@@ -7098,7 +7109,8 @@
       labelCell.appendChild(documentRef.createTextNode(" "));
       labelCell.appendChild(addDetailButton);
     }
-    tr.appendChild(jy2MarkFreeze(labelCell, 1));
+    tr.appendChild(jy2MarkFreeze(labelCell, 2));
+    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3));
 
     jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months);
     return tr;
@@ -7501,9 +7513,9 @@
     const noteBody = documentRef.createElement("p");
     noteBody.className = "jy2-actual-note";
     noteBody.textContent =
-      "Excel 原価管理明細と同じ列構成（システム工種｜費目→種別→詳細｜単価｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。" +
+      "Excel 原価管理明細と同じ列構成（システム工種｜費目｜種別（補助）｜詳細｜単価｜実行予算額｜月次数量/金額｜原価累計金額｜予算との差｜備考）。" +
       "親行（工種単位）は合計表示のみで編集不可。＋で明細行を開き、月別消化と実行予算額は明細行に入力（親＝子の合計）。" +
-      "予算との差＝実行予算額−原価累計金額（表示のみ）。横スクロール時も左2列は固定。";
+      "予算との差＝実行予算額−原価累計金額（表示のみ）。横スクロール時も左4列は固定。";
     note.append(summary, noteBody);
     pane.appendChild(note);
     // Phase2c-b-a: 「＋種別行」で追加した内訳（App757）の永続化は sticky トップの
