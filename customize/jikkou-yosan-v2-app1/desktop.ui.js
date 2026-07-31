@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-omit-extra-himoku
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-end-rule
+  // Phase2c-himoku-end-rule: 費目ブロック最終行の下に薄いグレー区切り線。
   // Phase2c-omit-extra-himoku: 薄緑の追加費目行（（未分類）等・工種テンプレ外）を
   // 原価管理から出さない。Excelに無い費目枠（システム工種空欄に見える行）。
   // Phase2c-hide-blank-worktype: システム工種が空/「－」の親行は原価管理に出さない。
@@ -580,6 +581,8 @@
       ".jy2-actual-table td.jy2-actual-visual-merge-mid,.jy2-actual-table td.jy2-actual-visual-merge-end{border-left-color:transparent!important}",
       ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8f5e9!important}",
       ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#e3f2fd!important}",
+      /* 費目ブロックの区切り（最終行の下辺・薄いグレー） */
+      ".jy2-actual-table tr.jy2-actual-himoku-block-end > td{border-bottom:2px solid #94a3b8!important}",
       ".jy2-actual-table .jy2-actual-child-row:hover td:not(.jy2-freeze){background:#f1f5f9}",
       ".jy2-actual-table .jy2-actual-child-row:hover .jy2-freeze{background:#f1f5f9}",
       ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
@@ -8344,19 +8347,19 @@
           shouldShowDetail: costDetailVisibility.shouldShow,
         };
       }
-      body.appendChild(
-        jy2ActualRow(
-          documentRef,
-          actualsModel,
-          row,
-          months,
-          editable,
-          rerender,
-          expandState,
-          parentHimokuOpts,
-        ),
+      const parentTr = jy2ActualRow(
+        documentRef,
+        actualsModel,
+        row,
+        months,
+        editable,
+        rerender,
+        expandState,
+        parentHimokuOpts,
       );
+      body.appendChild(parentTr);
       if (!row.hasChildren) {
+        parentTr.classList.add("jy2-actual-himoku-block-end");
         continue;
       }
       const templateHimoku = jy2HimokuChoicesForEntry(hierarchyEntry);
@@ -8373,8 +8376,11 @@
           himokuChildren.length > 0
             ? himokuChildren[himokuChildren.length - 1].rowKey
             : null;
+        // 費目ブロック最終行に区切り線（薄いグレー）を付けるための追跡
+        let himokuBlockEndRow =
+          himokuLabel === primaryHimokuLabel ? parentTr : null;
         if (himokuLabel !== primaryHimokuLabel) {
-          body.appendChild(
+          himokuBlockEndRow = body.appendChild(
             jy2ActualHimokuGroupRow(
               documentRef,
               row,
@@ -8415,7 +8421,7 @@
             typeChildren.length > 0
               ? typeChildren[typeChildren.length - 1].rowKey
               : lastAnchorInHimoku;
-          body.appendChild(
+          himokuBlockEndRow = body.appendChild(
             jy2ActualTypeGroupRow(
               documentRef,
               row,
@@ -8453,7 +8459,7 @@
             ) {
               continue;
             }
-            body.appendChild(
+            himokuBlockEndRow = body.appendChild(
               jy2ActualChildRow(
                 documentRef,
                 actualsModel,
@@ -8475,6 +8481,9 @@
               ),
             );
           }
+        }
+        if (himokuBlockEndRow) {
+          himokuBlockEndRow.classList.add("jy2-actual-himoku-block-end");
         }
       }
     }

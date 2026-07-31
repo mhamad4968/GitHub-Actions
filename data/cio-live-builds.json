@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-omit-extra-himoku",
-      "fileKey": "48dd7ee6-8004-49a6-a45a-af45d7ff18a2",
-      "revision": "212",
+      "build": "2026-08-01-ver02-actual-himoku-end-rule",
+      "fileKey": "2c3bcf4c-fd9f-4c63-8894-331de68505ad",
+      "revision": "213",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T23:37:32.382Z",
+      "deployedAt": "2026-07-31T23:39:11.651Z",
       "note": null
     },
     "757": {
