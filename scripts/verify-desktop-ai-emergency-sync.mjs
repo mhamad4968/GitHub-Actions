@@ -28,6 +28,7 @@ import {
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 import {
   EVENING_REFLECTION_SLOT_NAME,
+  SESSION_ONE_REPORT_SLOT_NAME,
   buildExpectedDesktopAiEmergencyFilenames,
   isReadPackFileSyncedToDesktop,
   verifyDesktopNumberingContinuity,
@@ -96,6 +97,67 @@ function main() {
   }
 
   const isoEvening = `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
+  const sessionOneSrc = path.join(
+    root,
+    'chat-sessions/desktop-ai-emergency-read-pack',
+    `19-SESSION-ONE-REPORT-${isoEvening}.md`
+  );
+  const sessionOneDestName = `19-SESSION-ONE-REPORT-${isoEvening}.md`;
+  const sessionOneDest = path.join(destDir, sessionOneDestName);
+  const sessionOneSlotDest = path.join(destDir, SESSION_ONE_REPORT_SLOT_NAME);
+  if (fs.existsSync(sessionOneSrc)) {
+    if (!fs.existsSync(sessionOneDest)) {
+      console.warn(
+        `[verify-desktop-ai-emergency-sync] NG: Desktop に ${sessionOneDestName} が無い（当日一報は read-pack に存在）\n` +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    } else {
+      const a = fs.readFileSync(sessionOneSrc);
+      const b = fs.readFileSync(sessionOneDest);
+      if (!a.equals(b)) {
+        console.warn(
+          `[verify-desktop-ai-emergency-sync] NG: 不一致 read-pack/${sessionOneDestName}\n` +
+            '  先に: npm run session-starter:sync-desktop'
+        );
+        bad = true;
+      } else {
+        console.log(`[verify-desktop-ai-emergency-sync] OK ${sessionOneDestName}（当日一報一致）`);
+      }
+    }
+    if (fs.existsSync(sessionOneSlotDest)) {
+      console.warn(
+        `[verify-desktop-ai-emergency-sync] NG: 一報ありなのに ${SESSION_ONE_REPORT_SLOT_NAME} が残っている\n` +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    }
+  } else {
+    const slotSrc = path.join(root, 'chat-sessions/desktop-ai-emergency-read-pack', SESSION_ONE_REPORT_SLOT_NAME);
+    if (!fs.existsSync(slotSrc)) {
+      console.warn(`[verify-desktop-ai-emergency-sync] NG: リポ側なし read-pack/${SESSION_ONE_REPORT_SLOT_NAME}`);
+      bad = true;
+    } else if (!fs.existsSync(sessionOneSlotDest)) {
+      console.warn(
+        `[verify-desktop-ai-emergency-sync] NG: Desktop に ${SESSION_ONE_REPORT_SLOT_NAME} が無い（19 番プレースホルダ）\n` +
+          '  先に: npm run session-starter:sync-desktop'
+      );
+      bad = true;
+    } else {
+      const a = fs.readFileSync(slotSrc);
+      const b = fs.readFileSync(sessionOneSlotDest);
+      if (!a.equals(b)) {
+        console.warn(
+          `[verify-desktop-ai-emergency-sync] NG: 不一致 read-pack/${SESSION_ONE_REPORT_SLOT_NAME}\n` +
+            '  先に: npm run session-starter:sync-desktop'
+        );
+        bad = true;
+      } else {
+        console.log(`[verify-desktop-ai-emergency-sync] OK ${SESSION_ONE_REPORT_SLOT_NAME}（一報未作成日・19 番）`);
+      }
+    }
+  }
+
   const eveningSrc = path.join(root, 'docs/reports', `${isoEvening}-evening-reflection.md`);
   const eveningDestName = `26-evening-reflection-${isoEvening}.md`;
   const eveningDest = path.join(destDir, eveningDestName);
@@ -259,7 +321,7 @@ function main() {
     );
     bad = true;
   } else {
-    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜36 連続（26=夕反省、28=ジャンル早見、31–33=METAチャーター、34–35=LITE、36=依頼compose）');
+    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜36 連続（19=一報またはSLOT、26=夕反省、28=ジャンル早見、31–33=METAチャーター、34–35=LITE、36=依頼compose）');
   }
 
   if (bad) {

@@ -21,7 +21,7 @@
 16-README-read-pack.txt … 本パックの使い方
 17-HISTORY-2026-05-06-read-pack-and-tools.txt … **変更履歴控え**（任意追記）
 18-重要確認.txt … **浜田 Desktop 専用**（**`17-HISTORY-…` の直後**に読む想定）
-19-SESSION-ONE-REPORT-YYYY-MM-DD.md … **セッション 1 本報告**（**18 の直後**・**Desktop/read-pack は当日 1 本のみ**）。過去分は **`docs/reports/archive/YYYY-MM/`**（例: `2026-05/19-SESSION-ONE-REPORT-2026-05-19.md`）
+19-SESSION-ONE-REPORT-YYYY-MM-DD.md … **セッション 1 本報告**（**18 の直後**・**Desktop/read-pack は当日 1 本のみ**）。過去分は **`docs/reports/archive/YYYY-MM/`**（例: `2026-05/19-SESSION-ONE-REPORT-2026-05-19.md`）。**未作成日**は **`19-SESSION-ONE-REPORT-SLOT.txt`**（26 SLOT 同型・歯抜け防止）
 20-SESSION-REPORT-CHECKLIST.txt … **報告用チェックリスト**（hooks フッタ検証・詳細は `docs/session-report-checklist.md`）
 21-SESSION-BOOTSTRAP-CHECKLIST.txt … 項番 0 チェックリスト（リポ **SESSION-BOOTSTRAP** の控え）
 22-HANDOFF-HUMAN.txt … 任意メモ（5 行）

@@ -1,0 +1,9 @@
+【19-SESSION-ONE-REPORT-SLOT】セッション一報プレースホルダ（当日レポート未作成日）
+
+正本: 当日の 19-SESSION-ONE-REPORT-YYYY-MM-DD.md が read-pack にある日は sync で
+  同名 md に差し替え（本 SLOT は Desktop から削除）。
+
+役割（18-重要確認 B1）:
+  · Desktop / read-pack の 19 は **当日 JST の 1 本のみ**
+  · 過去分は docs/reports/archive/YYYY-MM/ へ退避
+  · 未作成日は本 SLOT で **18→20 の歯抜けを防ぐ**（26 夕反省 SLOT と同型）

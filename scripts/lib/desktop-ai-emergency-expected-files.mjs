@@ -14,20 +14,30 @@ import { META_CHARTER_DESKTOP_SYNC, META_CHARTER_DESKTOP_MAX_PREFIX } from './co
 /** 夕反省レポートが無い日に Desktop へ置くプレースホルダ（read-pack 正本） */
 export const EVENING_REFLECTION_SLOT_NAME = '26-evening-reflection-SLOT.txt';
 
+/** セッション一報が無い日に Desktop へ置くプレースホルダ（read-pack 正本・B1 当日1本） */
+export const SESSION_ONE_REPORT_SLOT_NAME = '19-SESSION-ONE-REPORT-SLOT.txt';
+
 /** read-pack に残る過去日の `26-evening-reflection-YYYY-MM-DD.md`（Desktop 26 番は当日のみ） */
 export function isDatedEveningReflectionMd(name) {
   return /^26-evening-reflection-\d{4}-\d{2}-\d{2}\.md$/i.test(name);
 }
 
+/** `19-SESSION-ONE-REPORT-YYYY-MM-DD.md`（Desktop 19 番は当日のみ・過去は archive） */
+export function isDatedSessionOneReportMd(name) {
+  return /^19-SESSION-ONE-REPORT-\d{4}-\d{2}-\d{2}\.md$/i.test(name);
+}
+
 /**
  * Desktop / expected に載せる read-pack ファイルか。
- * 26 番 dated md と SLOT は `docs/reports` 有無で別経路（syncEveningReflection / verify evening 節）が正。
+ * 19 / 26 番 dated md と SLOT は別経路（syncSessionOneReport / syncEveningReflection / verify）が正。
  * @param {string} name
  * @returns {boolean}
  */
 export function isReadPackFileSyncedToDesktop(name) {
   if (name === EVENING_REFLECTION_SLOT_NAME) return false;
+  if (name === SESSION_ONE_REPORT_SLOT_NAME) return false;
   if (isDatedEveningReflectionMd(name)) return false;
+  if (isDatedSessionOneReportMd(name)) return false;
   return name.endsWith('.txt') || /^\d{2}-.+\.md$/i.test(name);
 }
 
@@ -69,13 +79,24 @@ export function buildExpectedDesktopAiEmergencyFilenames(root, ymd = getJstYyyym
   if (fs.existsSync(readPackDir)) {
     for (const n of fs.readdirSync(readPackDir)) {
       if (!fs.statSync(path.join(readPackDir, n)).isFile()) continue;
-      // SLOT / 過去日 26-*.md は Desktop 期待に入れない（当日 26 は下記 eveningSrc 分岐）
+      // SLOT / 過去日 19・26-*.md は Desktop 期待に入れない（当日は下記分岐）
       if (!isReadPackFileSyncedToDesktop(n)) continue;
       expected.add(n);
     }
   }
 
   const iso = jstYmdToIso(ymd);
+  const sessionOneSrc = path.join(
+    root,
+    'chat-sessions/desktop-ai-emergency-read-pack',
+    `19-SESSION-ONE-REPORT-${iso}.md`
+  );
+  if (fs.existsSync(sessionOneSrc)) {
+    expected.add(`19-SESSION-ONE-REPORT-${iso}.md`);
+  } else {
+    expected.add(SESSION_ONE_REPORT_SLOT_NAME);
+  }
+
   const eveningSrc = path.join(root, 'docs/reports', `${iso}-evening-reflection.md`);
   if (fs.existsSync(eveningSrc)) {
     expected.add(`26-evening-reflection-${iso}.md`);
@@ -117,7 +138,7 @@ export function pruneUnexpectedNumberedDesktopFiles(destDir, expected) {
 }
 
 /**
- * Explorer 名前順で 00〜36 が揃っているか（26 は md または SLOT）。
+ * Explorer 名前順で 00〜36 が揃っているか（19 / 26 は md または SLOT）。
  * @param {Set<string>} expected
  * @returns {{ ok: boolean, missing: number[] }}
  */

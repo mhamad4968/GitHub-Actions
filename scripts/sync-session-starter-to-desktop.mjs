@@ -8,6 +8,7 @@
  * 同フォルダの **`NN-*.md`（先頭 2 桁が数字）** も **同名で** Desktop へコピーする（例: **`19-SESSION-ONE-REPORT-…md`**）。
  * **`SESSION_DESKTOP_MIRROR_FILES`**（`handoff-log.md`→**`24-handoff-log.md`**、`checkpoint-latest.md`→**`25-checkpoint-latest.md`**）も Desktop へコピーする。
  * **`SESSION_DESKTOP_MIRROR_LITE_SPECS`** … **`34-handoff-log-LITE.txt`**（末尾100行）／**`35-checkpoint-latest-LITE.txt`**（先頭100行）を **浜田用要約**として生成（全文 .md は AI 同期専用・メモ帳非推奨）。
+ * **19**: 当日一報 `19-SESSION-ONE-REPORT-YYYY-MM-DD.md`（read-pack）があれば同名。無い日は **`19-SESSION-ONE-REPORT-SLOT.txt`** で **18→20 の歯抜けを防ぐ**（B1 当日1本・過去は archive）。
  * **26**: 当日夕反省 `docs/reports/YYYY-MM-DD-evening-reflection.md` があれば **`26-evening-reflection-YYYY-MM-DD.md`**。無い日は **`26-evening-reflection-SLOT.txt`**（read-pack 正本）で **25→27 の歯抜けを防ぐ**。
  * 同期の最後に **旧番号ファイル**（`00p01`〜、旧 read-pack `02`〜`19` 帯、旧 **`14-evening-…`** 等）と、当日以外の `SESSION-CLOSE-REPORT_YYYYMMDD.txt` を Desktop から削除する。
  *
@@ -31,6 +32,7 @@ import { syncMirrorLiteFiles } from './lib/desktop-ai-emergency-mirror-lite.mjs'
 import { resolveSessionStarterDesktopDir } from './lib/session-starter-desktop-dir.mjs';
 import {
   EVENING_REFLECTION_SLOT_NAME,
+  SESSION_ONE_REPORT_SLOT_NAME,
   buildExpectedDesktopAiEmergencyFilenames,
   isReadPackFileSyncedToDesktop,
   jstYmdToIso,
@@ -112,6 +114,64 @@ function hasTodayEveningReflection(iso) {
   return fs.existsSync(docs) || fs.existsSync(eveningReflectionReadPackMd(iso));
 }
 
+/** 19 番: 当日一報 md または SLOT（B1・歯抜けなし） */
+function sessionOneReportReadPackMd(iso) {
+  return path.join(root, readPackRelDir, `19-SESSION-ONE-REPORT-${iso}.md`);
+}
+
+function hasTodaySessionOneReport(iso) {
+  return fs.existsSync(sessionOneReportReadPackMd(iso));
+}
+
+function syncSessionOneReportToDesktop() {
+  const ymd = getJstYyyymmdd();
+  const iso = jstYmdToIso(ymd);
+  const reportSrc = sessionOneReportReadPackMd(iso);
+  const slotSrc = path.join(root, readPackRelDir, SESSION_ONE_REPORT_SLOT_NAME);
+  const destName = `19-SESSION-ONE-REPORT-${iso}.md`;
+  const dest = path.join(destDir, destName);
+  if (fs.existsSync(reportSrc)) {
+    fs.copyFileSync(reportSrc, dest);
+    console.log(`[sync-session-starter-to-desktop] OK ${readPackRelDir}/${destName} -> ${dest}`);
+    const slotDest = path.join(destDir, SESSION_ONE_REPORT_SLOT_NAME);
+    if (fs.existsSync(slotDest)) {
+      fs.unlinkSync(slotDest);
+      console.log(`[sync-session-starter-to-desktop] 一報ありのため SLOT 削除: ${SESSION_ONE_REPORT_SLOT_NAME}`);
+    }
+  } else if (fs.existsSync(slotSrc)) {
+    const slotDest = path.join(destDir, SESSION_ONE_REPORT_SLOT_NAME);
+    fs.copyFileSync(slotSrc, slotDest);
+    console.log(
+      `[sync-session-starter-to-desktop] OK ${readPackRelDir}/${SESSION_ONE_REPORT_SLOT_NAME} -> ${slotDest}（一報未作成日）`
+    );
+  } else {
+    console.warn(
+      `[sync-session-starter-to-desktop] 一報 SLOT 正本なし: ${readPackRelDir}/${SESSION_ONE_REPORT_SLOT_NAME}`
+    );
+  }
+  pruneStaleSessionOneReportOnDesktop(destDir);
+}
+
+/** 19 番: 当日以外の一報 md を削除。一報なし日は dated md を全削除（SLOT は sync が配置）。 */
+function pruneStaleSessionOneReportOnDesktop(dir) {
+  const ymd = getJstYyyymmdd();
+  const iso = jstYmdToIso(ymd);
+  const keepMd = `19-SESSION-ONE-REPORT-${iso}.md`;
+  const hasToday = hasTodaySessionOneReport(iso);
+  try {
+    for (const n of fs.readdirSync(dir)) {
+      if (/^19-SESSION-ONE-REPORT-.+\.md$/i.test(n)) {
+        if (!hasToday || n !== keepMd) {
+          fs.unlinkSync(path.join(dir, n));
+          console.log(`[sync-session-starter-to-desktop] 旧一報 md 削除: ${n}`);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn(`[sync-session-starter-to-desktop] 一報 prune 失敗: ${e.message}`);
+  }
+}
+
 function syncEveningReflectionToDesktop() {
   const ymd = getJstYyyymmdd();
   const iso = jstYmdToIso(ymd);
@@ -172,7 +232,7 @@ function syncReadPackToDesktop() {
     console.log(`[sync-session-starter-to-desktop] read-pack スキップ: フォルダなし ${readPackRelDir}`);
     return;
   }
-  // SLOT / 過去日 26-evening-reflection-*.md は syncEveningReflectionToDesktop が正（コピーしない）
+  // SLOT / 過去日 19・26-*.md は syncSessionOneReport / syncEveningReflection が正（コピーしない）
   const names = fs
     .readdirSync(readPackDir)
     .filter((n) => isReadPackFileSyncedToDesktop(n))
@@ -329,6 +389,7 @@ function main() {
   syncMirrorLiteFiles(root, destDir);
   syncReadPackToDesktop();
   syncDesktopImportantConfirmFile();
+  syncSessionOneReportToDesktop();
   syncEveningReflectionToDesktop();
   pruneLegacyDesktopAiEmergency(destDir);
   for (const n of pruneStaleSessionCloseReports(destDir, getJstYyyymmdd())) {
