@@ -512,10 +512,15 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   // qty override 時に金額を自動計算し amount のみ書き戻す（App758 に qty は保存しない）。
   assert.match(
     source,
-    /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
+    /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-unit-price/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-perf/);
+  assert.match(source, /onDetailFieldChanged/);
+  assert.match(source, /scheduleActualRerender/);
+  assert.match(source, /fieldOnly:\s*true/);
+  assert.match(source, /flushDetailIfDirty/);
+  assert.match(source, /liveUnitPrice/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);

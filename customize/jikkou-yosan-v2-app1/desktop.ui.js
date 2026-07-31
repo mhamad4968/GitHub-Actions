@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-unit-price
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-perf
+  // Phase2c-c-excel-perf: 詳細・単価の change で内訳+予実を全再描画していた
+  // のをやめ、フィールド編集は dirty のみ。行追加/削除時だけ予実 rerender。
+  // 月次 change は rAF で1回にまとめる（Chrome Violation 対策）。
   // Phase2c-c-excel-unit-price: 工事原価管理の詳細行・単価を手入力
   // （detailModel.updateDetailRow unitPrice・一時保存 App757）。
   // Phase2c-c-excel-row-ops: 工事原価管理の詳細行に「＋」「削除」。追加は種別の
@@ -136,11 +139,9 @@
       if (h && typeof captured.x === "number") h.scrollLeft = captured.x;
     };
     apply();
+    // 1 回だけ次フレームで追従（二重 rAF は Violation の温床）。
     if (view && typeof view.requestAnimationFrame === "function") {
-      view.requestAnimationFrame(() => {
-        apply();
-        view.requestAnimationFrame(apply);
-      });
+      view.requestAnimationFrame(apply);
     }
   }
 
@@ -6817,7 +6818,38 @@
       canEditBudget: childCanEditBudget,
       revealDetailKey,
       onDetailChanged,
+      onDetailFieldChanged,
     } = childDetailOpts;
+    const notifyFieldChanged = () => {
+      if (typeof onDetailFieldChanged === "function") {
+        onDetailFieldChanged();
+      } else if (typeof onDetailChanged === "function") {
+        onDetailChanged();
+      } else if (typeof rerender === "function") {
+        rerender();
+      }
+    };
+    const liveUnitPrice = () => {
+      if (!childDetailModel || !child || !child.rowKey) {
+        return child && child.unitPrice;
+      }
+      try {
+        const snap = childDetailModel.snapshot();
+        const block = (snap.blocks || []).find(
+          (candidate) =>
+            candidate && candidate.stableBlockId === parent.stableBlockId,
+        );
+        const row = ((block && block.detailRows) || []).find(
+          (candidate) => candidate && candidate.rowKey === child.rowKey,
+        );
+        if (row && row.unitPrice != null && String(row.unitPrice).trim() !== "") {
+          return row.unitPrice;
+        }
+      } catch {
+        // fall through
+      }
+      return child.unitPrice;
+    };
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-actual-child-row";
     tr.dataset.stableBlockId = parent.stableBlockId;
@@ -6860,11 +6892,7 @@
           if (typeof revealDetailKey === "function") {
             revealDetailKey(child.rowKey);
           }
-          if (typeof onDetailChanged === "function") {
-            onDetailChanged();
-          } else {
-            rerender();
-          }
+          notifyFieldChanged();
         },
         { fullTitle: true },
       );
@@ -6984,11 +7012,7 @@
           if (typeof revealDetailKey === "function") {
             revealDetailKey(child.rowKey);
           }
-          if (typeof onDetailChanged === "function") {
-            onDetailChanged();
-          } else {
-            rerender();
-          }
+          notifyFieldChanged();
         },
       );
       unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
@@ -7012,8 +7036,24 @@
       } catch {
         // Invalid input (non-integer) is discarded; rerender restores the cell.
       }
-      rerender();
+      scheduleActualRerender();
     };
+    // 月次・実行予算の change を同一フレームにまとめ、連続入力の全表再構築を抑える。
+    let actualRerenderPending = false;
+    function scheduleActualRerender() {
+      if (actualRerenderPending) return;
+      actualRerenderPending = true;
+      const view = documentRef && documentRef.defaultView;
+      const run = () => {
+        actualRerenderPending = false;
+        if (typeof rerender === "function") rerender();
+      };
+      if (view && typeof view.requestAnimationFrame === "function") {
+        view.requestAnimationFrame(run);
+      } else {
+        run();
+      }
+    }
     const finalCell = jy2Cell(documentRef, "td", "jy2-num", "");
     if (editable) {
       finalCell.appendChild(
@@ -7062,8 +7102,7 @@
               child.rowKey,
               month,
             );
-            // 空クリア時は amount を自動クリアしない（ユーザ手入力を維持）。
-            rerender();
+            // 空クリア時は amount を自動クリアしない（再描画も不要）。
             return;
           }
           monthQtyState.set(
@@ -7073,11 +7112,9 @@
             month,
             trimmed,
           );
-          const computed = jy2RoundYenQtyTimesPrice(trimmed, child.unitPrice);
+          const computed = jy2RoundYenQtyTimesPrice(trimmed, liveUnitPrice());
           if (computed != null) {
             commit({ [month]: computed });
-          } else {
-            rerender();
           }
         });
         qtyInput.title =
@@ -7706,6 +7743,19 @@
       }
       rerender();
     };
+    // 詳細・単価などフィールド編集: 内訳/予実の全 DOM 再構築はしない（Violation 対策）。
+    // モデルは既に updateDetailRow 済み。内訳タブ表示時に dirty 反映。
+    const onDetailFieldChanged = () => {
+      if (typeof onDetailStructureChanged === "function") {
+        try {
+          onDetailStructureChanged({ fieldOnly: true });
+        } catch (error) {
+          if (typeof console !== "undefined" && console.error) {
+            console.error("onDetailFieldChanged failed:", error);
+          }
+        }
+      }
+    };
     const canEditBudget = Boolean(
       detailModel &&
         detailModel.allowedOperations &&
@@ -8040,6 +8090,7 @@
                   canEditBudget,
                   revealDetailKey: costDetailVisibility.reveal,
                   onDetailChanged: onDetailStructureAdded,
+                  onDetailFieldChanged,
                 },
               ),
             );
@@ -9132,9 +9183,11 @@
 
     let actualsDirty = true;
     let summaryDirty = true;
+    let detailDirty = false;
     // activate 定義時点では未代入。後で実体を差し込む。
     let flushSummaryIfDirty = () => {};
     let flushActualsIfDirty = () => {};
+    let flushDetailIfDirty = () => {};
 
     function activate(tabId) {
       for (const button of tabList.querySelectorAll(".jy2-tab")) {
@@ -9153,6 +9206,7 @@
       syncStickyLayout();
       // 内訳タブ入力中は総括/予実を遅延。タブ表示（クリック・No.ジャンプ）時に反映。
       if (tabId === "summary") flushSummaryIfDirty();
+      if (tabId === "detail") flushDetailIfDirty();
       if (tabId === "actual") {
         flushSummaryIfDirty();
         flushActualsIfDirty();
@@ -9164,7 +9218,6 @@
         view.requestAnimationFrame(() => {
           syncStickyLayout();
           syncScroll();
-          view.requestAnimationFrame(syncScroll);
         });
       }
     }
@@ -9252,9 +9305,16 @@
     // 直後に描き直されるため actualsDirty はマークしない）。ボタン押下時
     // にしか呼ばれないため、後に定義される `refreshDetail` を lexical closure
     // で参照して構わない（TDZ の観点で mount 完了後にしか実行されない）。
-    const onDetailStructureChanged = () => {
+    const onDetailStructureChanged = (opts = {}) => {
       summaryDirty = true;
-      refreshDetail();
+      detailDirty = true;
+      // フィールド編集のみ: 内訳 DOM はタブ表示時に反映（change 562ms 対策）。
+      // 行追加/削除: すぐ内訳も合わせる必要はないが、既存どおり即時でも可。
+      // fieldOnly では refreshDetail しない。
+      if (!opts || opts.fieldOnly !== true) {
+        // 構造変更時も即時全描画は重いので dirty のみ。内訳タブで flush。
+        // （予実側は呼び出し元が rerender する）
+      }
     };
     const refreshActuals = () => {
       jy2RenderActualPane(
@@ -9278,6 +9338,22 @@
     flushActualsIfDirty = () => {
       if (actualsDirty) refreshActuals();
     };
+    const refreshDetail = () => {
+      jy2RenderDetailPane(
+        documentRef,
+        detailPane,
+        detailModel,
+        () => {
+          // 明細セル変更 → 総括/予実は dirty のみ（タブ表示・保存時に反映）
+          refreshSummary(false);
+        },
+        summaryData.masterLists || null,
+      );
+      detailDirty = false;
+    };
+    flushDetailIfDirty = () => {
+      if (detailDirty) refreshDetail();
+    };
     const detailRowCount = () =>
       detailModel
         .snapshot()
@@ -9294,18 +9370,6 @@
               saveController.createNextVersion(versionModel, version, versionType)
           : undefined,
       );
-    const refreshDetail = () => {
-      jy2RenderDetailPane(
-        documentRef,
-        detailPane,
-        detailModel,
-        () => {
-          // 明細セル変更 → 総括/予実は dirty のみ（タブ表示・保存時に反映）
-          refreshSummary(false);
-        },
-        summaryData.masterLists || null,
-      );
-    };
 
     refreshSummary(true);
     refreshActuals();
