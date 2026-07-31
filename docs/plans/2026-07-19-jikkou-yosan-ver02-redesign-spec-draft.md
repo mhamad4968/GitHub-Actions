@@ -2,7 +2,9 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
-**2026-07-31 夜（工事原価管理・Phase2c-c 種別枠）**: Excel入れ子 — 費目の下に **種別(name2)視覚グループ**（`▸▸`・表示専用 SUM）と **「＋詳細行」**。子は name3 のみ。BUILD `2026-07-31-ver02-actual-excel-phase2c-c-type-group`。  
+**2026-07-31 夜（工事原価管理・操作列／行ops／性能応急 LIVE）**: Excel列（システム工種｜費目｜種別｜詳細｜単価｜…）に **UI専用「操作」列**（freeze・＋／－）。種別ラベル横の **「＋詳細行」は廃止**（空種別は操作＋／詳細クイック入力）。詳細・単価は手入力・フィールド編集は dirty-only。構造変更の全表 rerender は **rAF 延期**（`…excel-struct-raf`）。本直し＝ブロック単位再描画は翌日。App758 keys/save/pivot 不変。構造は一時保存→App757。LIVE rev **194** / BUILD `2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf`（chrome-css 修正含む）。#R-EXCEL-UI-01／#R-PERF-01。  
+**2026-07-31 夜（運用・体制ルール）**: 4h超 deploy 硬拒否・App756 deploy前 chrome-css・Violation閾値等。証跡 `docs/approved-changes/2026-07-31-evening-ops-rules-hamada-go.md`。  
+**2026-07-31 夜（工事原価管理・Phase2c-c 種別枠）**: Excel入れ子 — 費目の下に **種別(name2)視覚グループ**（表示専用 SUM）。行追加は **操作列＋**（旧「＋詳細行」文言ボタンは撤去済み）。子は name3 のみ。BUILD 系 `…phase2c-c-*`。  
 **2026-07-31 夜（工事原価管理・子行ラベル Excel寄せ）**: 費目グループ下の子行は **詳細(name3)のみ**表示（種別は種別列）。`材料費 / 塗料 / 品名` の連結表示をやめる。BUILD `2026-07-31-ver02-actual-excel-phase2c-b-child-label`。  
 **2026-07-31 夜（工事原価管理・Excel Phase2c-b-a 実装／未deploy）**: 費目グループヘッダに **「＋種別行」ボタン** を追加。押下で `detailModel.addDetailRow(blockId)` → 実費目のときのみ `updateDetailRow({ name1 })` prefill → `moveDetailRow(id, key, ±1)` を反復して**当該費目末尾直後**へ寄せる（`lastChildRowKeyInGroup` を walker から opts 渡し）。書込は **App757 の内訳（detailModel）のみ** で、App758／keys.mjs／save-model／actuals-matrix pivot・`actualsModel.update*` は**一切呼ばない**（helper 内保険 assertion 継続）。永続化は sticky トップの「一時保存」経由（バナーで明示、「予実を保存」では保存されない旨を案内）。`jy2RenderActualPane` 引数に `detailModel` と `onDetailStructureChanged` を追加し、shell 側 `refreshActuals` から `refreshDetail` 呼出で内訳 pane も再描画。BUILD `2026-07-31-ver02-actual-excel-phase2c-b`。削除（空行 + アクチュアル無しのみ）は次スライスへ後送。正本 `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` Phase2c-b（親コミット待ち）。
 **2026-07-31 夜（工事原価管理・Excel Phase2c-a 実装／未deploy）**: expand時に明細を**費目(name1)で視覚グループ化**。`jy2ActualHimokuGroupRow`（灰色SUM・`dataset.virtual="himoku-group"`・`▸ 費目名`）を挿入するだけの表示専用機能で、`row.children` を既存順で走査し直前の name1 と label が変わったタイミングで先頭にヘッダ行を追加する。App757/758 のキー・save-model・actuals-matrix 書込・子行のソートは**一切変更なし**（保険 assertion で helper 内から `actualsModel.update*` / `commit(` が呼ばれないことを検証）。BUILD `2026-07-31-ver02-actual-excel-phase2c-a`。正本 `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` Phase2c-a（親コミット待ち）。
@@ -717,7 +719,7 @@ Excel正＋作成者の入力負荷低減。請負（総括）の「契約工種
 | **Y9** | 原価行の表示項目 | **CONFIRMED（浜田 2026-07-20 夕／UI更新 2026-07-29／Phase2a 2026-07-31）** — 識別列＋**種別・単価・数量・備考**＋予実系列（BC/EC/消化率併記）。数量・備考は **表示（読取）**（備考の編集正は内訳）。消費税／単位／金額(属性)は非表示維持。親月セルは灰色合計見た目 |
 | **Y10** | 予実タブの編集境界 | **CONFIRMED（浜田 2026-07-20 夕／明細展開 2026-07-29）** — 親（内訳№）は**表示のみ**。月別・最終の手入力は **明細行（子）のみ**。予算属性の編集正は内訳／総括（Imp-01）。§9.0j／§9.0d |
 | **Y11** | 予実ラウンドCLOSED | **CONFIRMED（2026-07-20 夕・AI合意）** — §9 CLOSED。残OPENは依頼者リスト／版管理並行 |
-| **Y12** | 工事原価管理の明細展開 | **CONFIRMED（浜田合意＋LIVE 2026-07-29／Phase2a 2026-07-31）** — 親＝内訳№合計表示、`＋`でブロック内明細を開き実績入力、親＝子合計。子が空のセルはレガシー（ブロック単位）実績を親に表示。App758 `detail_row_key`＋詳細変種 `actual_record_key`。Phase2a: 数量・備考列再掲（読取）・親月灰色。BUILD `actual-excel-phase2a` rev168。§9.0d |
+| **Y12** | 工事原価管理の明細展開 | **CONFIRMED（浜田合意＋LIVE 2026-07-29／Excel寄せ 2026-07-31）** — Excel列＋**UI「操作」列**（＋／－）。常時階層（費目｜種別｜詳細）。詳細・単価手入力。種別横「＋詳細行」廃止。親＝工種｜既定費目 SUM。App758 `detail_row_key`＋詳細変種キー。構造は一時保存→App757。BUILD `…excel-struct-raf` rev194。§9.0d／正本 Excel表構造 SPEC |
 
 ### 9.0a 当面スコープと将来像 — CONFIRMED（浜田 2026-07-20 夕）／依頼者説明必須
 
@@ -836,15 +838,16 @@ Excel正＋作成者の入力負荷低減。請負（総括）の「契約工種
 
 予実管理の表は **総括の原価行と同じ粒度**のうち **施工・保安のみ**。給与手当行は予実表に出さない（予算⑧には残るが予実対象外）。確認資料（６）で給与予実・日々給与の要望があったが、**依頼者 2026-07-29「一旦このままでよい」**のため当面変更しない（将来再議可・RY-10）。
 
-**明細展開（Y12・2026-07-29 LIVE）**:
+**明細展開（Y12・2026-07-29 LIVE／Excel寄せ 2026-07-31）**:
 
 | 層 | 役割 |
 |----|------|
-| **親行** | 内訳№（＝工種番号／システム入力工種と同粒度）。合計表示のみ・月別／最終は編集不可 |
-| **子行** | `＋` で開くブロック内明細（費目／種別／定義及び品名）。月別消化・最終予算額を手入力 |
-| **親の数値** | 当該セルで子に1件でも値があれば **子の合計**（最終は全子の有効最終＝手入力または現行予算デフォルトの合計）。子が空なら **レガシー（旧ブロック単位）実績**を親に表示 |
+| **親行** | システム工種番号｜既定費目（Excel同一行）。合計表示。費目に「＋種別行」可 |
+| **種別枠** | name2 視覚グループ（表示専用 SUM）。空のとき詳細クイック入力／操作＋ |
+| **詳細行** | name3・単価手入力。月次数量/金額・実行予算額。**操作列**で＋／－（種別横「＋詳細行」は出さない） |
+| **親の数値** | 当該セルで子に1件でも値があれば **子の合計**。子が空なら **レガシー（旧ブロック単位）実績**を親に表示 |
 
-**状態**: **CONFIRMED（Y4）／依頼者「一旦このまま」2026-07-29／Y12 LIVE rev167**。
+**状態**: **CONFIRMED（Y4）／依頼者「一旦このまま」2026-07-29／Y12 Excel寄せ LIVE rev194**。
 
 **画面行・列（Y3〜Y10）**:
 - **行**: 施工・保安の各原価行（**項目全部**）＋施工計＋保安計＋工事原価額及び率＋粗利額及び率（給与は出さない）

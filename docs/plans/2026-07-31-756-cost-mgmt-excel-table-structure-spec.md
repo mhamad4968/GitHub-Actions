@@ -9,8 +9,8 @@
 　- シート「コード表」（費目／補助の分け方）  
 **依頼メモ**: `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`  
 **親 SPEC**: [`2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md`](2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §9（Y12 を本 SPEC で上書き方向）  
-**現行 LIVE（着手前）**: BUILD `2026-07-29-ver02-actual-detail-expand-fix` / rev **167** / Y12  
-**ロールバック**: git tag `backup/756-before-actual-detail-expand-2026-07-29`  
+**現行 LIVE（2026-07-31 夜）**: BUILD `2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf` / rev **194**  
+**ロールバック**: git tag `backup/756-before-actual-detail-expand-2026-07-29`（必要時は当該 BUILD 前の tag／commit）  
 **非対象**: 735/736 書込、688（WBGT以外）、677–679、SKYSEA、712 deploy、736 触改
 
 ---
@@ -24,11 +24,10 @@
 | **1** | 本 SPEC 作成・commit/push | **完了** `9901a72a` |
 | **2a** | **安全第1弾（UIのみ）**: 備考列再表示／子行の数量表示（読取）／親・計の月セル灰色。Y12 親+展開維持。App758 キー・保存は**変更しない** | **完了** LIVE rev168 / `70a09aef` / tag `backup/756-before-excel-table-phase2a-2026-07-31` |
 | **2b** | 月次 **数量+金額** デュアル／`ROUND(単価×数量,0)` 自動＋金額直入れ／実行予算額＝既存最終予算手入力の暫定ラベル | **完了** LIVE rev169 / `bccf61d9` / tag `backup/756-before-excel-table-phase2b-2026-07-31`（数量はセッションのみ） |
-| **2c-a** | **視覚グループのみ**: 展開後の明細を費目(name1)でまとめ、費目ヘッダ行＝灰色SUM（表示専用）。App757/758書込なし。＋展開維持 | **実装中（未deploy）**: BUILD `2026-07-31-ver02-actual-excel-phase2c-a`。`jy2ActualHimokuGroupRow`（`dataset.virtual="himoku-group"`／灰色SUM／`▸ 費目名`）を追加し、`row.children` を既存順で走査して直前の name1 と label が変わった時点でヘッダ行を挿入。書込・キー・ソートは一切変更なし |
-| **2c-b** | 種別（補助）行の挿入／削除（App757 明細への書き込み） | **2c-b-a 実装中（未deploy）**: 挿入のみ。BUILD `2026-07-31-ver02-actual-excel-phase2c-b`。費目グループヘッダに「＋種別行」ボタンを追加し、`detailModel.addDetailRow(blockId)` → 実費目なら `updateDetailRow({ name1 })` prefill → `moveDetailRow(id, key, ±1)` を反復して当該費目末尾直後へ寄せる。書込は **App757 内訳のみ**。永続化は sticky トップの「一時保存」で行う（バナーで案内、「予実を保存」では保存されない）。keys.mjs / save-model / actuals-matrix pivot・App758 書込は未変更。削除（空行のみ・アクチュアル無し）は次スライスへ後送 |
-| **2c-c** | 昼／夜等の深い階層表示・常時階層（開閉任意） | 2c-b 後 |
-| **3** | 目視確認・抜け漏れ埋め | Phase 2 各弾後 |
+| **2c-a〜c** | 費目／種別視覚枠・常時階層・詳細手入力・操作列 | **完了（LIVE rev194）**: 列＝システム工種｜費目｜種別｜詳細｜**操作**｜単価｜実行予算額｜月次…。操作＝＋／－。種別横「＋詳細行」廃止。単価手入力。構造は一時保存→App757。全表 rerender は rAF 応急（ブロック単位再描画＝翌日） |
+| **3** | 目視確認・抜け漏れ埋め | Phase 2 各弾後・継続 |
 | **4** | 実行予算額の出し方（月曜依頼者確認後）差し替え | 月曜以降 |
+| **perf** | 操作＋／－のブロック単位再描画 | **未着手（翌日）** |
 
 ---
 
