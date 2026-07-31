@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-himoku-expand
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-detail-edit
+  // Phase2c-c-detail-edit: 工事原価管理の詳細(name3)を手入力可。commit 時
+  // detailModel.updateDetailRow → reveal(rowKey) → onDetailStructureChanged。
+  // 行追加は種別枠の「＋詳細行」（維持）。App758 keys/actuals 月次は不変。
   // Phase2c-c: 親行の「（塗）材料費」等システム入力工種名は Excel 原価管理に
   // 無いため非表示（工種番号のみ。ホバーに旧名称）。freeze列は費目枠用。
   // Phase2c-c-template-types: コード表 typesByHimoku の種別を空枠でも常時表示
@@ -6721,7 +6724,14 @@
     editable,
     rerender,
     monthQtyState,
+    childDetailOpts = {},
   ) {
+    const {
+      detailModel: childDetailModel,
+      canEditBudget: childCanEditBudget,
+      revealDetailKey,
+      onDetailChanged,
+    } = childDetailOpts;
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-actual-child-row";
     tr.dataset.stableBlockId = parent.stableBlockId;
@@ -6751,9 +6761,39 @@
       .map((part) => String(part).trim())
       .filter((part) => part.length > 0)
       .join(" / ");
-    nameLabel.textContent = name3Resolved || "－";
-    nameLabel.title = fullPath || nameLabel.textContent;
-    nameCell.appendChild(nameLabel);
+    if (childCanEditBudget && childDetailModel) {
+      const name3InputValue = jy2IsDitto(name3Raw)
+        ? name3Resolved
+        : jy2HasText(name3Raw)
+          ? String(name3Raw).trim()
+          : "";
+      const name3Input = jy2TextInput(
+        documentRef,
+        name3InputValue,
+        (value) => {
+          childDetailModel.updateDetailRow(parent.stableBlockId, child.rowKey, {
+            name3: jy2ToFullWidthKana(value),
+          });
+          if (typeof revealDetailKey === "function") {
+            revealDetailKey(child.rowKey);
+          }
+          if (typeof onDetailChanged === "function") {
+            onDetailChanged();
+          } else {
+            rerender();
+          }
+        },
+        { fullTitle: true },
+      );
+      name3Input.className = "jy2-input jy2-actual-child-name-input";
+      name3Input.placeholder = "詳細（手入力）";
+      if (fullPath) name3Input.title = fullPath;
+      nameCell.appendChild(name3Input);
+    } else {
+      nameLabel.textContent = name3Resolved || "－";
+      nameLabel.title = fullPath || nameLabel.textContent;
+      nameCell.appendChild(nameLabel);
+    }
     tr.appendChild(jy2MarkFreeze(nameCell, 3));
 
     tr.appendChild(
@@ -7655,7 +7695,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理は Excel 同様に費目→種別が主です。内訳の品名カタログは隠し、＋詳細行で追加した行（または詳細未入力）だけ出します。追加の永続化は上部「一時保存」（App757）。「予実を保存」では構造は保存されません";
+        "原価管理は Excel 同様に費目→種別が主です。詳細は手入力、行追加は種別の「＋詳細行」、一時保存で App757 へ。内訳の品名カタログは隠し、＋詳細行で追加した行（または詳細未入力）だけ出します。「予実を保存」では構造は保存されません";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {
@@ -7849,6 +7889,12 @@
                   editable,
                   rerender,
                   monthQtyState,
+                  {
+                    detailModel,
+                    canEditBudget,
+                    revealDetailKey: costDetailVisibility.reveal,
+                    onDetailChanged: onDetailStructureAdded,
+                  },
                 ),
               );
             }

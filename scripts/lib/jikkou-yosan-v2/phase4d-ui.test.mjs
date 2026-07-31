@@ -517,7 +517,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-himoku-expand/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-detail-edit/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -532,9 +532,20 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(actualHeadMatch[0], /th\("区分"/);
   assert.match(source, /jy2-freeze-3/);
   assert.match(source, /codeLabel\.title = String\(row\.workTypeName\)/);
-  // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目/種別は各列のグループ枠）。
-  assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
+  // Excel寄せ: 費目グループ下の子行は詳細(name3)のみ（編集可時は text input）。
   assert.match(source, /jy2MarkFreeze\(nameCell, 3\)/);
+  const childRowMatch = source.match(
+    /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
+  );
+  assert.ok(childRowMatch, "jy2ActualChildRow body must be present");
+  assert.match(
+    childRowMatch[0],
+    /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*name3: jy2ToFullWidthKana\(value\),/,
+  );
+  assert.match(childRowMatch[0], /revealDetailKey\(child\.rowKey\)/);
+  assert.match(childRowMatch[0], /onDetailChanged\(\)/);
+  assert.match(childRowMatch[0], /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
+  assert.match(source, /詳細は手入力、行追加は種別の「＋詳細行」/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);

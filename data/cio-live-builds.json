@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-07-31-ver02-actual-excel-phase2c-c-himoku-expand",
-      "fileKey": "c6ff1600-5843-4249-9184-e288e13de927",
-      "revision": "181",
+      "build": "2026-07-31-ver02-actual-excel-phase2c-c-detail-edit",
+      "fileKey": "51a3d01b-23b4-432a-8c4f-b5d14e59c26e",
+      "revision": "182",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T12:02:49.944Z",
+      "deployedAt": "2026-07-31T12:04:39.004Z",
       "note": null
     },
     "757": {
