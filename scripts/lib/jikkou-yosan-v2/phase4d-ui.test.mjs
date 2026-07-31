@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-flat-detail/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-flat-detail2/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -530,8 +530,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(actualHeadMatch[0], /th\("区分"/);
   assert.match(source, /jy2-freeze-3/);
   assert.match(source, /codeLabel\.title = String\(row\.workTypeName\)/);
-  // Excel寄せ: 費目グループ下の子行は詳細(name3)のみ（編集可時は text input）。
+  // Excel寄せ: 詳細列は手入力セル（└ツリー記号なし・freeze3 overflow visible）
   assert.match(source, /jy2MarkFreeze\(nameCell, 3\)/);
+  assert.doesNotMatch(source, /└ /);
+  assert.doesNotMatch(source, /jy2-actual-child-indent/);
+  assert.match(source, /詳細列はツリー記号なし/);
+  assert.match(source, /jy2-freeze-3\{[^"]*overflow:visible/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
