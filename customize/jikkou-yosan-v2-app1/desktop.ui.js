@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-template-types
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-no-worktype-name
+  // Phase2c-c: 親行の「（塗）材料費」等システム入力工種名は Excel 原価管理に
+  // 無いため非表示（工種番号のみ。ホバーに旧名称）。freeze列は費目枠用。
   // Phase2c-c-template-types: コード表 typesByHimoku の種別を空枠でも常時表示
   // （例: 材料費下の鋼材･二次製品費など）。データに無い種別も type-group。
   // Phase2c-c-hide: Excel原価管理明細に合わせ、内訳の品名カタログ行
@@ -4452,7 +4454,7 @@
       if (opts.freeze != null) jy2MarkFreeze(cell, opts.freeze);
       return cell;
     };
-    ["内訳№", "区分", "工種番号", "システム入力工種"].forEach((label, index) => {
+    ["内訳№", "区分", "工種番号", "費目・種別・詳細"].forEach((label, index) => {
       top.appendChild(th(label, { rowSpan: 2, freeze: index }));
     });
     for (const label of ["種別", "単価", "数量"]) {
@@ -6674,7 +6676,13 @@
 
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.costCategory), 1));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.workTypeCode), 2));
-    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", row.workTypeName), 3));
+    // Excel 原価管理明細: システム工種はコード（例 10100）のみ。名称
+    // 「（塗）材料費」はコード表用で表には出さない（費目は下の ▸ 枠）。
+    const parentNameCell = jy2Cell(documentRef, "td", "", "");
+    if (row.workTypeName) {
+      parentNameCell.title = String(row.workTypeName);
+    }
+    tr.appendChild(jy2MarkFreeze(parentNameCell, 3));
     tr.appendChild(jy2Cell(documentRef, "td", "", row.budgetLineType || ""));
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(row.budgetUnitPrice)),
