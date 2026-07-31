@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-type-col-wide
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-hide-dash-type
+  // Phase2c-hide-dash-type: 種別「－」「（種別未設定）」行は原価管理に出さない
+  // （内訳の dash/空 name2 由来。Excel原価管理明細に無い）。
   // Phase2c-type-col-wide: 種別列(freeze-2) 5.5〜7rem → 12rem。見切れ解消。
   // sticky left を再計算（詳細・操作を右へ）。
   // Phase2c-deny-type-row: deny 種別は空枠もデータ由来も原価管理に出さない
@@ -125,14 +127,31 @@
     const deny = jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel);
     return Boolean(deny && typeLabel && deny.has(typeLabel));
   }
+  // 内訳の「－」固定／空種別が typeMap に載ると空の種別行になる → 原価管理では抑止。
+  function jy2CostMgmtIsNoiseType(typeLabel) {
+    const text = String(typeLabel || "").trim();
+    return (
+      !text ||
+      text === "－" ||
+      text === "-" ||
+      text === "（種別未設定）"
+    );
+  }
+  function jy2CostMgmtShouldOmitType(workTypeCode, himokuLabel, typeLabel) {
+    return (
+      jy2CostMgmtIsNoiseType(typeLabel) ||
+      jy2CostMgmtIsDeniedType(workTypeCode, himokuLabel, typeLabel)
+    );
+  }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
     const raw =
       typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
         ? typesByHimoku[himokuLabel]
         : [];
-    const deny = jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel);
-    if (!deny) return raw.slice();
-    return raw.filter((typeLabel) => !deny.has(typeLabel));
+    return raw.filter(
+      (typeLabel) =>
+        !jy2CostMgmtShouldOmitType(workTypeCode, himokuLabel, typeLabel),
+    );
   }
 
   function jy2StoreActiveTab(view, tabId) {
@@ -8346,7 +8365,7 @@
           if (!typeOrder.includes(t)) typeOrder.push(t);
         }
         for (const t of typeMap.keys()) {
-          if (jy2CostMgmtIsDeniedType(row.workTypeCode, himokuLabel, t)) {
+          if (jy2CostMgmtShouldOmitType(row.workTypeCode, himokuLabel, t)) {
             continue;
           }
           if (!typeOrder.includes(t)) typeOrder.push(t);
@@ -8354,7 +8373,7 @@
         let lastAnchorInHimoku = null;
         for (const typeLabel of typeOrder) {
           if (
-            jy2CostMgmtIsDeniedType(row.workTypeCode, himokuLabel, typeLabel)
+            jy2CostMgmtShouldOmitType(row.workTypeCode, himokuLabel, typeLabel)
           ) {
             continue;
           }
