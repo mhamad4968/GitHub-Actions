@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-dual-detail-cells/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-himoku-qty-amt-sum/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU/);
@@ -540,7 +540,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /\.jy2-freeze-3\{left:28\.2rem/);
   assert.match(source, /\.jy2-freeze-4\{left:35\.7rem/);
   assert.match(source, /jy2ActualChildrenForBudgetSum/);
+  assert.match(source, /himokuChildren:\s*primaryChildren/);
+  assert.match(source, /Phase2c-himoku-qty-amt-sum/);
+  // 費目・種別とも planQtyEmpty:false（数量SUM）。true は使わない。
   assert.match(source, /planQtyEmpty:\s*false/);
+  assert.doesNotMatch(source, /planQtyEmpty:\s*true/);
   assert.match(source, /jy2ActualSumField\(sumChildren,\s*"quantity"\)/);
   assert.match(source, /jy2ActualSumMonthQty/);
   assert.match(source, /structureRerenderPending/);

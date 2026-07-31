@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-dual-detail-cells
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-qty-amt-sum
+  // Phase2c-himoku-qty-amt-sum: 費目行も表示中詳細の計画数量SUM＋実行予算SUM。
+  // 見た目結合は種別〜単価まで（数量・金額は結合外。種別行と同方針）。
   // Phase2c-dual-detail-cells: その他材料費の詳細行は Excelどおり2セル
   // （種別列=左・詳細列=右 → name2/name3）。例: エンドポイント／塗装表示記録･数字シール。
   // Phase2c-excel-sonota-himoku: 「その他材料費」は費目。種別行なし・詳細を表示。
@@ -6874,47 +6876,57 @@
       "jy2-num jy2-actual-group-unit-price",
       "",
     );
-    const parentPlanQtyCell = jy2Cell(
-      documentRef,
-      "td",
-      "jy2-num jy2-actual-group-plan-qty",
-      "",
-    );
     tr.appendChild(parentTypeCell);
     tr.appendChild(parentDetailCell);
     tr.appendChild(parentOpsCell);
     tr.appendChild(parentUnitCell);
-    tr.appendChild(parentPlanQtyCell);
     jy2ActualApplyVisualMerge([
       parentTypeCell,
       parentDetailCell,
       parentOpsCell,
       parentUnitCell,
-      parentPlanQtyCell,
     ]);
     const parentShouldShow =
       parentHimokuOpts &&
       typeof parentHimokuOpts.shouldShowDetail === "function"
         ? parentHimokuOpts.shouldShowDetail
         : null;
+    // 既定費目が親行にあるとき: その費目の子だけSUM（全工種子の合算にしない）
+    const parentHimokuChildren =
+      parentHimokuOpts && Array.isArray(parentHimokuOpts.himokuChildren)
+        ? parentHimokuOpts.himokuChildren
+        : row.children;
     const parentSumChildren = jy2ActualChildrenForBudgetSum(
-      row.children,
+      parentHimokuChildren,
       parentShouldShow,
     );
+    const parentPlanQtySum = row.hasChildren
+      ? jy2ActualSumField(parentSumChildren, "quantity")
+      : jy2ActualDecimalAddend(row.quantity);
+    const parentPlanQtyCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-group-plan-qty jy2-actual-sum-cell",
+      jy2ActualMonthQtySumDisplay(parentPlanQtySum),
+    );
+    parentPlanQtyCell.title =
+      "合計（表示中の詳細の計画数量・自動・入力不可）";
+    tr.appendChild(parentPlanQtyCell);
     const parentFinalBudget = row.hasChildren
       ? jy2ActualSumField(parentSumChildren, "finalBudget")
       : row.finalBudget;
     const parentActual = row.hasChildren
       ? jy2ActualSumField(parentSumChildren, "actual")
       : row.actual;
-    tr.appendChild(
-      jy2Cell(
-        documentRef,
-        "td",
-        "jy2-amount",
-        jy2AmountDisplay(parentFinalBudget),
-      ),
+    const parentFinalCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-amount jy2-actual-sum-cell",
+      jy2AmountDisplay(parentFinalBudget),
     );
+    parentFinalCell.title =
+      "合計（表示中の詳細の実行予算額・自動・入力不可）";
+    tr.appendChild(parentFinalCell);
     const parentMonthQtyState =
       parentHimokuOpts && parentHimokuOpts.monthQtyState
         ? parentHimokuOpts.monthQtyState
@@ -7576,7 +7588,8 @@
       months,
       {
         unitPriceEmpty: true,
-        planQtyEmpty: true,
+        // 費目行: 詳細の計画数量合計＋実行予算合計（結合は単価まで）
+        planQtyEmpty: false,
         monthQtyState: opts && opts.monthQtyState,
         shouldShowDetail: opts && opts.shouldShowDetail,
         parent,
@@ -7587,7 +7600,6 @@
       himokuDetailCell,
       himokuOpsCell,
       himokuValueCols.unitPriceCell,
-      himokuValueCols.planQtyCell,
     ]);
     return tr;
   }
@@ -7808,8 +7820,8 @@
 
   // 費目/種別グループ行の値列（単価/数量/実行予算額/月次/原価累計/差/備考）を追加。
   // opts.unitPriceEmpty: 見た目結合用に空表示。
-  // opts.planQtyEmpty: true なら空（結合用）。false なら表示中子の計画数量 SUM。
-  // 戻り値: { unitPriceCell, planQtyCell }（見た目結合の末尾に使う）。
+  // opts.planQtyEmpty: 省略/偽＝表示中子の計画数量 SUM。真＝空（現状未使用）。
+  // 戻り値: { unitPriceCell, planQtyCell }（見た目結合は単価セルまで）。
   function jy2ActualAppendGroupValueCols(
     documentRef,
     tr,
@@ -8450,6 +8462,7 @@
               : null;
           parentHimokuOpts = {
             primaryHimokuLabel,
+            himokuChildren: primaryChildren,
             detailModel,
             canEditBudget,
             onAdded: onDetailStructureAdded,
@@ -8494,9 +8507,34 @@
         if (jy2CostMgmtShouldOmitHimoku(himokuLabel, costHimokuTemplate)) {
           continue;
         }
-        const himokuChildren = [];
+        let himokuChildren = [];
         for (const entries of typeMap.values()) {
           for (const entry of entries) himokuChildren.push(entry.child);
+        }
+        // Excel: その他材料費など「種別なし・詳細だけ」の費目
+        // （SUM用の子リストも先に確定。材料費側の寄せ行を含む）
+        let typelessFlatEntries = null;
+        if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) {
+          typelessFlatEntries = [];
+          const seenKeys = new Set();
+          const pushEntry = (entry) => {
+            const key = entry && entry.child && entry.child.rowKey;
+            if (!key || seenKeys.has(key)) return;
+            seenKeys.add(key);
+            typelessFlatEntries.push(entry);
+          };
+          for (const entries of typeMap.values()) {
+            for (const entry of entries || []) pushEntry(entry);
+          }
+          if (himokuLabel === "その他材料費") {
+            const materialTypes = bucket.get("材料費");
+            const fromType =
+              materialTypes && materialTypes.get("その他材料費");
+            if (Array.isArray(fromType)) {
+              for (const entry of fromType) pushEntry(entry);
+            }
+          }
+          himokuChildren = typelessFlatEntries.map((entry) => entry.child);
         }
         const lastHimokuKey =
           himokuChildren.length > 0
@@ -8517,29 +8555,8 @@
             ),
           );
         }
-        // Excel: その他材料費など「種別なし・詳細だけ」の費目
-        if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) {
-          const flatEntries = [];
-          const seenKeys = new Set();
-          const pushEntry = (entry) => {
-            const key = entry && entry.child && entry.child.rowKey;
-            if (!key || seenKeys.has(key)) return;
-            seenKeys.add(key);
-            flatEntries.push(entry);
-          };
-          for (const entries of typeMap.values()) {
-            for (const entry of entries || []) pushEntry(entry);
-          }
-          // コード表では材料費＞種別「その他材料費」にある行も費目側へ寄せる
-          if (himokuLabel === "その他材料費") {
-            const materialTypes = bucket.get("材料費");
-            const fromType =
-              materialTypes && materialTypes.get("その他材料費");
-            if (Array.isArray(fromType)) {
-              for (const entry of fromType) pushEntry(entry);
-            }
-          }
-          for (const { child, detailIndex } of flatEntries) {
+        if (typelessFlatEntries) {
+          for (const { child, detailIndex } of typelessFlatEntries) {
             if (!child || !child.rowKey) continue;
             // Excel正の詳細は手動のみモードでも表示
             if (typeof costDetailVisibility.reveal === "function") {
