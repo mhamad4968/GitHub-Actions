@@ -495,7 +495,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-child-row/);
   assert.match(source, /detailRowsByBlockId/);
   assert.match(source, /rowKey: child\.rowKey/);
-  assert.match(source, /明細行を開く/);
+  assert.match(source, /種別行を開く/);
   assert.match(source, /2026-07-29-ver02-actual-detail-expand/);
   // 内訳 mutations refresh the 予実 current budgets too.
   assert.match(source, /refreshSummary\(true\);\s*refreshActuals\(\);/);
@@ -517,7 +517,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-detail-edit/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-outline/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
@@ -550,17 +550,20 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
   assert.match(source, /費目合計（表示専用・入力不可）/);
-  // Phase2c-c-himoku-expand: 費目→種別→詳細の段階展開
+  // Phase2c-c-excel-outline: 親行＝工種｜既定費目（＋）→ 種別＋詳細を一段開く
+  assert.match(source, /jy2ActualPrimaryHimokuLabel/);
+  assert.match(source, /jy2-actual-parent-himoku/);
+  assert.match(source, /himokuLabel !== primaryHimokuLabel/);
   assert.match(source, /jy2ActualHimokuExpandState/);
-  assert.match(source, /jy2ActualTypeExpandState/);
   assert.match(source, /__jy2ExpandedActualHimoku/);
-  assert.match(source, /__jy2ExpandedActualType/);
   assert.match(source, /himokuExpandState\.isExpanded\(row\.stableBlockId, himokuLabel\)/);
-  assert.match(source, /typeExpandState\.isExpanded\(\s*row\.stableBlockId,\s*himokuLabel,\s*typeLabel/);
   assert.match(source, /種別行を開く/);
-  assert.match(source, /詳細行を開く/);
   assert.match(source, /himokuExpandState\.expand\(parent\.stableBlockId, label\)/);
-  assert.match(source, /typeExpandState\.expand\(\s*parent\.stableBlockId,\s*himokuLabel,\s*typeLabel/);
+  assert.doesNotMatch(
+    source,
+    /typeExpandState\.isExpanded\(\s*row\.stableBlockId,\s*himokuLabel,\s*typeLabel/,
+  );
+  assert.doesNotMatch(source, /詳細行を開く/);
   // Phase2c-c: 種別枠・＋詳細行
   assert.match(source, /jy2ActualTypeGroupRow/);
   assert.match(source, /jy2-actual-type-group-row/);
