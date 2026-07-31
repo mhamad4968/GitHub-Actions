@@ -1,8 +1,5 @@
 # 復元チェックポイント（最新）
-<!-- 正本と矛盾したら正本を優先し、このファイルを更新すること。 -->
-<!-- **案件 CLOSED** ≠ **セッション締め**。混同禁止 -->
 **最終更新**: 2026-07-31 22:25 JST — **セッション締め（full CLOSE）**。756 Excel寄せ操作列 LIVE。運用ルール承認反映。明日＝ブロック単位再描画続き。
-
 **次の1手**: **2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。
 
 **Git**: `0879b3f4`（締め close-git で更新）
@@ -51,12 +48,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
 ## 2026-07-31
 
 ### 2026-07-31 夜（セッション締め）
 - 756: 操作列・＋詳細行撤去・struct-raf・SPEC・ops ルール（4h硬拒否）
 - Desktop AI緊急用 最新同期・verify OK
 - 明日: ブロック単位再描画＋Excelどおり修正継続
+
+
 
 ## 2026-07-30
 
@@ -69,6 +69,8 @@
 - Excel `工事原価管理.xlsx` と756の差分を口頭整理（予算正本・横断材料費・月金額の出し方は作り込み前に要確認）
 - 浜田方針: **明日対面で4問だけ聞く**／運用は対象外／実装は回答後
 - メモ正本: `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`
+
+
 
 ## 2026-07-29
 
@@ -87,3 +89,5 @@
 
 ### 2026-07-29 夜（運用改善）
 - A1–F3 浜田全承認 → `cio-ops-hard-request-clarity.mdc` 等。憲法本文は未変更
+
+

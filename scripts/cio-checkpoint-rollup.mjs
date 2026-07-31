@@ -26,18 +26,50 @@ function parseArgs() {
   return { dryRun, keep: Number.isFinite(keep) && keep > 0 ? keep : 5 };
 }
 
+/** CRLF→LF（Windows 保存後に `\n\n` が効かず compact が no-op になる再発防止） */
+function toLf(s) {
+  return String(s || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
+
 /** 凍結ゾーン行数超過の再発防止: 連続空行を1行に、末尾空行を除去（内容は落とさない） */
 function compactPreambleBlankLines(preamble) {
-  return String(preamble || '')
+  return toLf(preamble)
     .replace(/\n{3,}/g, '\n\n')
     .replace(/\n+$/g, '');
 }
 
+/**
+ * FREEZE_MAX 超過時: 三重空行→二重→単一空行を順に除去。
+ * それでも超える場合は HTML コメント行を除去（本文・表は保持）。
+ * 2026-08-01: CRLF だと blank compact が no-op → WARN 残留していた真因を修正。
+ */
+function compactPreambleToMax(preamble, maxLines) {
+  let p = compactPreambleBlankLines(preamble);
+  const count = (s) => toLf(s).replace(/\n+$/g, '').split('\n').length;
+  if (count(p) <= maxLines) return p;
+
+  // 二重空行を1つずつ潰す（CRLF 正規化済み）
+  while (count(p) > maxLines && /\n\n/.test(p)) {
+    p = p.replace(/\n\n/, '\n');
+  }
+  if (count(p) <= maxLines) return p;
+
+  // HTML コメント行を落とす（<!-- ... --> 単独行）
+  const withoutComments = p
+    .split('\n')
+    .filter((l) => !/^\s*<!--.*-->\s*$/.test(l))
+    .join('\n');
+  if (count(withoutComments) < count(p)) {
+    p = withoutComments;
+  }
+  return p.replace(/\n+$/g, '');
+}
+
 function splitSections(text) {
-  const lines = text.split('\n');
+  const lines = toLf(text).split('\n');
   const headerEnd = lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
   if (headerEnd < 0) {
-    return { preamble: text, sections: [] };
+    return { preamble: toLf(text).replace(/\n+$/g, ''), sections: [] };
   }
   const preamble = lines.slice(0, headerEnd).join('\n').trimEnd();
   const rest = lines.slice(headerEnd);
@@ -66,24 +98,30 @@ function main() {
   const FREEZE_MAX = 50;
   const preambleLinesBefore = preamble.split('\n').length;
   if (preambleLinesBefore > FREEZE_MAX) {
-    const compacted = compactPreambleBlankLines(preamble);
+    const compacted = compactPreambleToMax(preamble, FREEZE_MAX);
     if (compacted !== preamble && !dryRun) {
+      // 区切りは単一 \n（\n\n だと空行が preamble 行数に計上され max 超過が再発する）
       const rebuilt =
-        compacted +
-        '\n\n' +
+        compacted.replace(/\n+$/g, '') +
+        '\n' +
         sections.map((s) => s.title + '\n' + s.body.join('\n')).join('\n\n') +
-        (raw.endsWith('\n') ? '\n' : '');
+        '\n';
       fs.writeFileSync(CHECKPOINT, rebuilt, 'utf8');
-      preamble = compacted;
+      preamble = compacted.replace(/\n+$/g, '');
       console.log(
-        `[cio:checkpoint:rollup] compacted preamble blanks ${preambleLinesBefore} → ${preamble.split('\n').length}`,
+        `[cio:checkpoint:rollup] compacted preamble ${preambleLinesBefore} → ${preamble.split('\n').length}`,
       );
     } else if (compacted !== preamble && dryRun) {
       console.log(
         `[cio:checkpoint:rollup] dry-run would compact preamble ${preambleLinesBefore} → ${compacted.split('\n').length}`,
       );
+    } else if (compacted === preamble) {
+      console.warn(
+        `[cio:checkpoint:rollup] WARN preamble still ${preambleLinesBefore} > ${FREEZE_MAX} — 手動短縮が必要`,
+      );
     }
   }
+  // preamble 圧縮だけでも書き込んだ場合、sections≤keep ならここで終了（再読で整合）
   if (sections.length <= keep) {
     const heal = healCheckpointGitWorktree(root, { target: 'origin' });
     if (heal.healed) {
@@ -91,7 +129,18 @@ function main() {
         `[cio:checkpoint:rollup] healed stale Git \`${heal.before}\` → \`${heal.hash}\` (no-op path / D-CHKPT-02)`,
       );
     }
-    console.log(`[cio:checkpoint:rollup] OK no-op sections=${sections.length} keep=${keep}`);
+    const afterLines = preamble.split('\n').length;
+    if (afterLines > FREEZE_MAX) {
+      console.warn(
+        `[cio:checkpoint:rollup] OK sections=${sections.length} keep=${keep} but preamble=${afterLines} > ${FREEZE_MAX}`,
+      );
+    } else if (preambleLinesBefore > FREEZE_MAX && afterLines <= FREEZE_MAX) {
+      console.log(
+        `[cio:checkpoint:rollup] OK preamble-heal sections=${sections.length} keep=${keep} lines=${afterLines}`,
+      );
+    } else {
+      console.log(`[cio:checkpoint:rollup] OK no-op sections=${sections.length} keep=${keep}`);
+    }
     return;
   }
   const kept = sections.slice(0, keep);
@@ -101,8 +150,8 @@ function main() {
   const archivePath = path.join(ARCHIVE_DIR, archiveName);
 
   const newCheckpoint =
-    preamble +
-    '\n\n' +
+    preamble.replace(/\n+$/g, '') +
+    '\n' +
     kept.map((s) => s.title + '\n' + s.body.join('\n')).join('\n\n') +
     '\n\n<!-- 古い履歴: chat-sessions/checkpoints/' +
     archiveName +

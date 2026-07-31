@@ -39,11 +39,11 @@ export function readCheckpointLastUpdatedDate(root) {
   return m ? m[1] : null;
 }
 
-/** @returns {string[]} checkpoint 全文行配列 */
+/** @returns {string[]} checkpoint 全文行配列（CRLF→LF 正規化） */
 export function readCheckpointLines(root) {
   const p = path.join(root, CHECKPOINT_REL);
   if (!fs.existsSync(p)) return [];
-  return fs.readFileSync(p, 'utf8').split('\n');
+  return fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
 }
 
 /** 最初の ## YYYY-MM-DD 日付セクション行 index（無ければ -1） */
@@ -51,18 +51,25 @@ export function findCheckpointDatedSectionIndex(lines) {
   return lines.findIndex((l, i) => i > 0 && /^## \d{4}-\d{2}-\d{2}/.test(l));
 }
 
-/** 凍結ゾーン（最初の ## YYYY-MM-DD 直前まで）の行数 */
+/**
+ * 凍結ゾーン（最初の ## YYYY-MM-DD 直前まで）の行数。
+ * 日付見出し直前の空行は計上しない（rollup 区切り空行の偽陽性防止）。
+ */
 export function readCheckpointPreambleLineCount(root) {
   const lines = readCheckpointLines(root);
   const sectionIdx = findCheckpointDatedSectionIndex(lines);
-  return sectionIdx < 0 ? lines.length : sectionIdx;
+  if (sectionIdx < 0) return lines.filter((l, i) => i < lines.length - 1 || l !== '').length;
+  let end = sectionIdx;
+  while (end > 0 && lines[end - 1].trim() === '') end -= 1;
+  return end;
 }
 
 /** 凍結ゾーン本文（preamble のみ — mandatory-read-gate の正本検査対象） */
 export function readCheckpointPreamble(root) {
   const lines = readCheckpointLines(root);
   const sectionIdx = findCheckpointDatedSectionIndex(lines);
-  const end = sectionIdx < 0 ? lines.length : sectionIdx;
+  let end = sectionIdx < 0 ? lines.length : sectionIdx;
+  while (end > 0 && lines[end - 1].trim() === '') end -= 1;
   return lines.slice(0, end).join('\n');
 }
 
