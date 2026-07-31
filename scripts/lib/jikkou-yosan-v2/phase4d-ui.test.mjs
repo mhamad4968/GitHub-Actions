@@ -524,7 +524,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
   // Phase2c-a/b/c: 費目→種別視覚入れ子。App758 キー変更なし。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-type-group/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-hide-catalog/);
   // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
   assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
@@ -539,11 +539,15 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-type-add-detail-btn/);
   assert.match(source, /jy2ActualInsertDetailNear/);
   assert.match(source, /種別合計（表示専用・入力不可）/);
+  // Phase2c-c-hide: 内訳品名カタログを隠し、reveal / 詳細未入力のみ表示
+  assert.match(source, /jy2ActualCostDetailVisibility/);
+  assert.match(source, /__jy2CostDetailRevealKeys/);
+  assert.match(source, /revealDetailKey/);
+  assert.match(source, /内訳の品名カタログは隠し/);
   // Phase2c-b-a: 「＋種別行」ボタン・banner・addDetailRow 使用が並ぶ。
   assert.match(source, /＋種別行/);
   assert.match(source, /jy2-actual-himoku-add-type-btn/);
   assert.match(source, /この費目の下に種別用の明細行を追加/);
-  assert.match(source, /種別行・詳細行の追加は上部「一時保存」で内訳\(App757\)に保存されます/);
   assert.match(source, /jy2-actual-detail-add-notice/);
   // helper 領域（InsertNear〜SumField）に detailModel の内訳書込 API を含める。
   const helperMatch = source.match(

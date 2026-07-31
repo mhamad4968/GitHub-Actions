@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-type-group
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-hide-catalog
+  // Phase2c-c-hide: Excel原価管理明細に合わせ、内訳の品名カタログ行
+  // （name3 あり）は工事原価管理に出さない。費目→種別枠が主。＋詳細行で
+  // 追加した行、または詳細未入力行のみ表示。SUM は隠れ子も含む。
   // Phase2c-c (2026-07-31): Excel入れ子 — 費目枠の下に種別(name2)視覚
   // グループ（`▸▸`・virtual=type-group・表示専用 SUM）。種別枠に「＋詳細行」
   // （name1+name2 prefill）。費目枠の「＋種別行」は維持。子行ラベルは
@@ -7064,13 +7067,16 @@
             event.stopPropagation();
           }
           const isUnknownGroup = label === "（未分類）";
-          jy2ActualInsertDetailNear(
+          const newKey = jy2ActualInsertDetailNear(
             opts.detailModel,
             parent.stableBlockId,
             opts.lastChildRowKeyInGroup || null,
             isUnknownGroup ? {} : { name1: label },
             opts.expandState,
           );
+          if (typeof opts.revealDetailKey === "function") {
+            opts.revealDetailKey(newKey);
+          }
           opts.onAdded();
         } catch (error) {
           const view = documentRef && documentRef.defaultView;
@@ -7208,13 +7214,16 @@
           if (typeLabel && typeLabel !== "（種別未設定）") {
             patch.name2 = typeLabel;
           }
-          jy2ActualInsertDetailNear(
+          const newKey = jy2ActualInsertDetailNear(
             opts.detailModel,
             parent.stableBlockId,
             opts.lastChildRowKeyInGroup || null,
             patch,
             opts.expandState,
           );
+          if (typeof opts.revealDetailKey === "function") {
+            opts.revealDetailKey(newKey);
+          }
           opts.onAdded();
         } catch (error) {
           const view = documentRef && documentRef.defaultView;
@@ -7389,6 +7398,31 @@
     };
   }
 
+  // Phase2c-c-hide: Excel「原価管理明細」は費目→種別が主で、詳細は手入力の
+  // 少数行。内訳の品名カタログ（name3 あり）を全部出すと Excel と乖離する。
+  // 表示する子行 = 詳細未入力、または ＋詳細行/＋種別行で reveal した rowKey。
+  function jy2ActualCostDetailVisibility(pane) {
+    if (!pane) {
+      return {
+        reveal: () => {},
+        shouldShow: (_key, name3Resolved) => !name3Resolved,
+      };
+    }
+    if (!pane.__jy2CostDetailRevealKeys) {
+      pane.__jy2CostDetailRevealKeys = new Set();
+    }
+    const set = pane.__jy2CostDetailRevealKeys;
+    return {
+      reveal: (key) => {
+        if (key) set.add(String(key));
+      },
+      shouldShow: (key, name3Resolved) => {
+        if (key && set.has(String(key))) return true;
+        return !name3Resolved;
+      },
+    };
+  }
+
   function jy2ActualTotalRow(documentRef, total, label, months) {
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-total-row";
@@ -7493,6 +7527,7 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
+    const costDetailVisibility = jy2ActualCostDetailVisibility(pane);
     // Phase2b (2026-07-31): pane スコープの月次数量セッション Map。rerender を
     // 跨いで残るが、リロード（保存後・タブ再入場含む）で pane が作り直され
     // 消える。App758 の write path は変更しない（数量は保存しない）。
@@ -7644,7 +7679,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "種別行・詳細行の追加は上部「一時保存」で内訳(App757)に保存されます（「予実を保存」では保存されません）";
+        "原価管理は Excel 同様に費目→種別が主です。内訳の品名カタログは隠し、＋詳細行で追加した行（または詳細未入力）だけ出します。追加の永続化は上部「一時保存」（App757）。「予実を保存」では構造は保存されません";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {
@@ -7747,6 +7782,7 @@
                   canEditBudget,
                   lastChildRowKeyInGroup,
                   expandState,
+                  revealDetailKey: costDetailVisibility.reveal,
                   onAdded: onDetailStructureAdded,
                 },
               ),
@@ -7781,11 +7817,26 @@
                   canEditBudget,
                   lastChildRowKeyInGroup,
                   expandState,
+                  revealDetailKey: costDetailVisibility.reveal,
                   onAdded: onDetailStructureAdded,
                 },
               ),
             );
             previousTypeLabel = typeLabel;
+          }
+          // Excel寄せ: 内訳品名カタログ（name3 あり）は出さない。
+          const name3Raw =
+            detailIndex >= 0 ? detailRows[detailIndex]?.name3 : null;
+          const name3Resolved = jy2IsDitto(name3Raw)
+            ? jy2ActualResolveContinuedField(detailRows, detailIndex, "name3") ||
+              ""
+            : jy2HasText(name3Raw)
+              ? String(name3Raw).trim()
+              : "";
+          if (
+            !costDetailVisibility.shouldShow(child.rowKey, name3Resolved)
+          ) {
+            return;
           }
           body.appendChild(
             jy2ActualChildRow(
