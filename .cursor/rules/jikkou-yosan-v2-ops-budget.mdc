@@ -1,0 +1,28 @@
+---
+description: Ver.02 運用予算（4h硬拒否・構造再描画・Excel+UI列・Violation・日終わり反省）
+globs: customize/jikkou-yosan-v2-app1/**,docs/constitution/jikkou-yosan-v2-*.md,docs/runbooks/jikkou-yosan-v2-*.md,scripts/cio-deploy-preflight-guard.mjs
+alwaysApply: false
+---
+
+# Ver.02 運用予算（2026-07-31 浜田承認）
+
+正本の詳細: `docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md`（#R-PERF-01 / #R-EXCEL-UI-01 / #R-VIOLATION-01 / #R-SESSION-4H-DEPLOY）。
+
+## 硬拒否（口頭・機械）
+
+- **4h超**: 「**4h超・新チャットのみ。deploy/実装はしない**」→ `deploy:*` は `cio-deploy-preflight-guard` が拒否。
+- **要約再開**: 会話要約・handoff 直後でも **`data/cio-rule-entry-points.json` E1 mandatory_reads は免除しない**。
+
+## 構造変更（＋／－・列追加）
+
+- 全表 rerender 前提で UI を積まない。**500ms超見積もり**なら同ターンで partial / dirty / rAF、または翌日本直し。
+- Excel に無い列は **#R-EXCEL-UI-01**（例: 操作列）のみ。App758 形状不変。
+
+## deploy / push
+
+- App756: deploy 前に `verify:jikkou-v2-chrome-css` 含む（LIVE 後の push NG を防ぐ）。
+- deploy 成功後は **同一ブロックで R63 commit → 可能なら push**（日終わり一括で CSS 発覚させない）。
+
+## 日終わり
+
+- handoff / checkpoint に **改善候補 1〜3 件を1段落**残す（実装は翌日可）。

@@ -69,6 +69,7 @@
 | customize deploy | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
 | customize deploy | [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2 |
 | customize deploy | [`jikkou-yosan-v2-ui-chrome.mdc`](.cursor/rules/jikkou-yosan-v2-ui-chrome.mdc) | Ver.02 App756 UI クロム不変条件（overflow×sticky / th display / SPEC同一ターン） |
+| Ver.02 運用予算 | [`jikkou-yosan-v2-ops-budget.mdc`](.cursor/rules/jikkou-yosan-v2-ops-budget.mdc) | 4h硬拒否・構造再描画予算・Excel+UI列・Violation・deploy前 chrome-css（2026-07-31） |
 | customize deploy | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |

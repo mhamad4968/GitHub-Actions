@@ -5349,3 +5349,14 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 22:20 JST — 運用・ルール改善（浜田全件承認）反映
+- **浜田メモ**: 運用・体制・ルール・憲法の改善点すべて承認 → 対応進めてOK。続きの性能本直しは明日。
+- **AI 補足**:
+  - `git`: deploy 硬拒否(4h) + App756 chrome-css を preflight に追加。invariants #R-PERF/EXCEL-UI/VIOLATION。session-handoff 要約再開E1。mdc `jikkou-yosan-v2-ops-budget`。証跡 `docs/approved-changes/2026-07-31-evening-ops-rules-hamada-go.md`
+  - `次の1手`: 新チャットで 756 操作＋／－ブロック単位再描画（excel-struct-raf 続き）
+  - `GO待ち`: なし（本日分承認済）
+  - `session-lock`: なし
+  - `関連パス`: scripts/cio-deploy-preflight-guard.mjs / docs/constitution/jikkou-yosan-v2-ui-chrome-invariants.md / .cursor/rules/jikkou-yosan-v2-ops-budget.mdc
+- **改善候補（日終わり1段落）**: (1) 4h硬拒否を commit 側にも広げるか要検討 (2) Violation 計測の簡易スクリプト化 (3) Desktop スターターへ硬拒否句の同期確認
+

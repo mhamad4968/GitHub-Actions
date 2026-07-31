@@ -28,6 +28,16 @@ alwaysApply: false
 8. 大型機能は **UIスモーク LIVE** と **永続化 LIVE** を2段にしてよい（C2）。段を飛ばすときは浜田 GO。
 9. 実績キー／App フィールド追加／階層UIなど破壊的に戻りづらい変更は、実装前に **git tag バックアップ**（B2）。例: `backup/756-before-actual-detail-expand-2026-07-29`。
 
+## 運用予算（2026-07-31 浜田 GO）
+
+詳細: 同 invariants の **#R-PERF-01 / #R-EXCEL-UI-01 / #R-VIOLATION-01 / #R-SESSION-4H-DEPLOY**  
+ルール短冊: `.cursor/rules/jikkou-yosan-v2-ops-budget.mdc`
+
+10. 構造変更（行＋／－・列追加）は **全表 rerender 前提で積まない**（500ms 見積もり）。
+11. Excel に無い列は **UI専用**のみ（例: 操作）。App758 不変。
+12. **4h超は deploy 硬拒否**（口頭: 「4h超・新チャットのみ。deploy/実装はしない」）。
+13. App756 deploy 前に **`verify:jikkou-v2-chrome-css`**（`cio-deploy-preflight-guard`）。
+
 ## 機械
 
 ```bash

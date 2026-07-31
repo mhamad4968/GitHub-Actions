@@ -24,6 +24,10 @@ alwaysApply: false
 
 - **NEW-SESSION-STARTER 通読（浜田が全文貼った直後・必須）**: チャット貼付を「読了」とみなさない。**必ず** `chat-sessions/NEW-SESSION-STARTER.md` を **Read ツールで冒頭〜末尾まで**（長い場合は `offset`/`limit` を切らずに連続取得）。**要約だけで** `checkpoint`・項番 -0・`session:bootstrap` に進まない（詳細は同ファイル **「■ 貼付単独で完走」手順 2**）。
 
+- **要約再開・会話圧縮後（2026-07-31 浜田承認）**: Composer 要約 / handoff 再開でも **`data/cio-rule-entry-points.json` E1 mandatory_reads（wake+session）と constitution-first-read-pack は免除しない**。省略＝報告違反。
+
+- **§51-6-2 4h 超の硬拒否（2026-07-31）**: 実装・`deploy:*`・本番書き込みはしない。口頭固定句: **「4h超・新チャットのみ。deploy/実装はしない」**。機械は `cio-deploy-preflight-guard`。
+
 - **§51-6-2（セッション切替時刻）**: `AGENTS.md` §51-6-2 の **いずれかの発動条件**を満たしたら、**このターンの応答の最上段**に **`【セッション切替】§51-6-2 命令発動 — 条件: … — 理由: …`** を **第 1 行**に置く。**第 2 行**に **`[§1-2-3 ティア判定: …]`** を続けてよい。続けて **同節の `[§51-6-2 命令発動]` テンプレ全文**を出す。浜田へ「そろそろですか？」と聞き返さず **命令として通知**する。壁時計の控えは `chat-sessions/SESSION-SPLIT-REMINDER.md`。
 
 - **項番 0b（Desktop AI緊急用）**: セッション切替のたび、浜田の **`C:\Users\mhamada202408224\Desktop\AI緊急用`** を **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** で都度メンテ・照合する（`session:bootstrap` に内包。未マウント時はチャットに **未照合 1 行**）。
