@@ -1,9 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-hide-detail-interim
-  // Phase2c-hide-detail-interim: 工事原価管理のみ詳細行を非表示（費目・種別枠だけ）。
-  // App757内訳は非破壊。来週「内訳→原価管理の持ち方」確定後に再表示。
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-detail-manual-only
+  // Phase2c-detail-manual-only: 既存内訳由来の詳細は隠す。＋で追加した行だけ表示・手入力。
+  // App757は非破壊（既存行は消さない）。来週内訳連動方針後に全件再表示可。
+  // Phase2c-hide-detail-interim: （前段）詳細全隠し → 手入力可に緩和。
   // Phase2c-month-qty-sum: 費目/種別/親の月次数量＝子のセッション数量SUM（Excel寄せ）。
   // 金額SUMは従来どおり。総計行の数量は単位混在のため「－」維持。
   // Phase2c-qty-auto-budget: 単価の右に明細数量列。実行予算額＝ROUND(単価×数量)
@@ -93,8 +94,9 @@
   // 費目｜種別（補助）｜詳細）＋UI「操作」＋単価1列。備考は右端に別列。
   const JY2_ACTUAL_FREEZE_COLS = 5;
   const JY2_ACTUAL_ATTR_COLS = 1;
-  // true: 工事原価管理で詳細行を出さない（内訳App757は残す）。来週連動方針後に false。
-  const JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM = true;
+  // true: 既存内訳由来の詳細は隠し、reveal（＋追加）した行だけ表示・手入力。
+  // false: 全詳細行を表示（来週内訳連動方針後）。
+  const JY2_ACTUAL_DETAIL_MANUAL_ONLY = true;
 
   function jy2StoreActiveTab(view, tabId) {
     if (!tabId || !view || !view.sessionStorage) return;
@@ -7704,25 +7706,62 @@
     };
   }
 
-  // Phase2c-hide-detail-interim: 工事原価管理のみ詳細行を隠す（App757非破壊）。
-  // 来週内訳連動確定後は JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM=false で再表示。
-  // reveal は将来の＋詳細用に残す（interim 中は shouldShow が常に false）。
+  // Phase2c-detail-manual-only: 既存内訳行は隠し、＋で reveal した行だけ表示。
+  // App757 の既存明細は削除しない。来週連動後は MANUAL_ONLY=false で全表示。
+  // reveal キーは sessionStorage に残し、一時保存後の reload でも手入力行を維持。
+  const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys`;
+  function jy2ActualLoadRevealKeys(view) {
+    const set = new Set();
+    if (!view || !view.sessionStorage) return set;
+    try {
+      const raw = view.sessionStorage.getItem(JY2_ACTUAL_REVEAL_KEYS_STORAGE);
+      const list = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(list)) {
+        for (const key of list) {
+          if (key) set.add(String(key));
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return set;
+  }
+  function jy2ActualPersistRevealKeys(view, set) {
+    if (!view || !view.sessionStorage || !set) return;
+    try {
+      view.sessionStorage.setItem(
+        JY2_ACTUAL_REVEAL_KEYS_STORAGE,
+        JSON.stringify([...set]),
+      );
+    } catch {
+      // ignore
+    }
+  }
   function jy2ActualCostDetailVisibility(pane) {
+    const view =
+      pane && pane.ownerDocument && pane.ownerDocument.defaultView
+        ? pane.ownerDocument.defaultView
+        : null;
     if (!pane) {
       return {
         reveal: () => {},
-        shouldShow: () => !JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM,
+        shouldShow: () => !JY2_ACTUAL_DETAIL_MANUAL_ONLY,
       };
     }
     if (!pane.__jy2CostDetailRevealKeys) {
-      pane.__jy2CostDetailRevealKeys = new Set();
+      pane.__jy2CostDetailRevealKeys = jy2ActualLoadRevealKeys(view);
     }
     const set = pane.__jy2CostDetailRevealKeys;
     return {
       reveal: (key) => {
-        if (key) set.add(String(key));
+        if (!key) return;
+        set.add(String(key));
+        jy2ActualPersistRevealKeys(view, set);
       },
-      shouldShow: () => !JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM,
+      shouldShow: (key) => {
+        if (!JY2_ACTUAL_DETAIL_MANUAL_ONLY) return true;
+        return Boolean(key && set.has(String(key)));
+      },
     };
   }
 
@@ -8004,7 +8043,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理はExcelどおり費目→種別（3段階の薄色）。詳細行は当面非表示（内訳データは消していません）。来週、内訳をどう持ってくるか確定後に再表示。「予実を保存」は月次など予実（App758）のみ";
+        "原価管理はExcelどおり費目→種別。既存内訳の詳細は非表示のまま、操作列＋で詳細を追加して手入力できます（内訳は消していません）。構造は一時保存。「予実を保存」は月次など予実のみ";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {
@@ -8187,8 +8226,9 @@
               {
                 ...groupOpts,
                 lastChildRowKeyInGroup: lastTypeKey,
+                // 手動のみモード: 既存内訳行が隠れている種別でも＋で新規詳細を足せる
                 detailQuickAdd:
-                  !JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM &&
+                  JY2_ACTUAL_DETAIL_MANUAL_ONLY ||
                   typeChildren.length === 0,
               },
             ),

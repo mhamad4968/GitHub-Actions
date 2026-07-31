@@ -515,8 +515,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-hide-detail-interim/);
-  assert.match(source, /JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-detail-manual-only/);
+  assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /jy2ActualSumMonthQty/);
   assert.match(source, /structureRerenderPending/);
   assert.match(source, /onDetailFieldChanged/);
@@ -603,7 +603,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /種別合計（表示専用・入力不可）/);
   // Phase2c-c-excel-flat-detail: 詳細行を表示し name3 手入力（旧 hide 廃止）
   assert.match(source, /jy2ActualCostDetailVisibility/);
-  assert.match(source, /shouldShow:\s*\(\)\s*=>\s*!JY2_ACTUAL_HIDE_DETAIL_ROWS_INTERIM/);
+  assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
+  assert.match(source, /set\.has\(String\(key\)\)/);
   assert.match(source, /detailQuickAdd/);
   assert.match(source, /操作列＋／－のみ/);
   assert.doesNotMatch(source, /内訳の品名カタログは隠し/);
