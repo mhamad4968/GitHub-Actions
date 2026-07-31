@@ -7033,7 +7033,7 @@
     tr.dataset.stableBlockId = parent.stableBlockId;
     tr.dataset.costCategory = parent.costCategory;
     tr.dataset.rowKey = child.rowKey;
-    // 通常: freeze0–2=空、freeze3=詳細(name3)。
+    // 通常: freeze0–2=空、freeze3=詳細(name3)。詳細列はツリー記号なし。
     // dual: freeze2=詳細左(name2)・freeze3=詳細右(name3) — Excelその他材料費。
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));

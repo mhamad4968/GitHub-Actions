@@ -435,10 +435,10 @@
     },
     "756": {
       "build": "2026-08-01-ver02-actual-dual-detail-cells",
-      "fileKey": "1ece44b1-8044-4ed8-a91a-7c9178371c70",
-      "revision": "216",
+      "fileKey": "998b5a0b-f90e-4e90-afd7-81e6cab7df17",
+      "revision": "217",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T23:51:16.393Z",
+      "deployedAt": "2026-07-31T23:52:34.113Z",
       "note": null
     },
     "757": {
