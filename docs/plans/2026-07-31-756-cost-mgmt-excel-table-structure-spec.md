@@ -66,7 +66,7 @@
 | 列 | 役割 | 入力 |
 |----|------|------|
 | システム工種 / 工種番号 | ブロック識別 | 選択・表示 |
-| 費目 | 外枠 | リスト／コード表／＋種別行 |
+| 費目 | 外枠 | リスト／コード表（種別はコード表固定・UIで種別行追加しない） |
 | 種別（補助） | 種別枠（表示専用 SUM） | 表示 |
 | 詳細 / 品名 | 手入力 | 可 |
 | **操作**（UI専用・#R-EXCEL-UI-01） | 詳細行＋／－ | ボタンのみ（Excel正本列ではない） |
@@ -186,3 +186,4 @@
 | 2026-07-31 | Phase2c-a 実装（未deploy）: `jy2ActualHimokuGroupRow` を追加。expand時に費目(name1)ヘッダ行（灰色SUM・`dataset.virtual="himoku-group"`）を挿入する視覚グループ化のみ。App757/758キー・save-model・actuals-matrix 書込は未変更。BUILD `2026-07-31-ver02-actual-excel-phase2c-a` |
 | 2026-07-31 | Phase2c-b-a 実装（未deploy）: 費目グループヘッダに「＋種別行」ボタンを追加。押下で `detailModel.addDetailRow` → 実費目時のみ `name1` prefill → `moveDetailRow` 反復で当該費目末尾直後へ寄せる。書込は **App757 の内訳（detailModel）のみ**、App758／keys.mjs／save-model／actuals-matrix pivot は未変更。永続化は sticky トップの「一時保存」経由（明示バナー）。削除は次スライスへ後送。BUILD `2026-07-31-ver02-actual-excel-phase2c-b` |
 | 2026-07-31 | **操作列 LIVE**（rev194）: 詳細右に UI「操作」＋／－。種別「＋詳細行」廃止。単価手入力。struct-raf 応急。§2.2 更新。翌日＝ブロック単位再描画 |
+| 2026-08-01 | Excel寄せ: 費目横／費目グループの「＋種別行」撤去（種別はコード表固定。詳細増減は操作列＋／－のみ）。BUILD `2026-08-01-ver02-actual-no-himoku-add-type` |
