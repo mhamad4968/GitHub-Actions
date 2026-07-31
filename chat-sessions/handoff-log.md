@@ -5317,3 +5317,19 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 JST — **756 Invalid decimal fix LIVE**
+
+**要約**: 空単価等で Invalid decimal が出る不具合を修正。jy2AmountDisplay/費目SUMガード。BUILD decimal-fix LIVE rev172。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `7d00519d` — 
+
+**BUILD**: 2026-07-31-ver02-actual-excel-phase2c-b-decimal-fix rev172
+
+**GO待ち**: 756 visual confirm after decimal fix
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---
