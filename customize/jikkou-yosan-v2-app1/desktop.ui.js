@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-type-qty-amt-sum
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-authority
+  // Phase2c-excel-type-authority: 工事原価管理の空種別枠は「原価管理明細」正。
+  // コード表 typesByHimoku は候補だが余剰あり → deny で空枠を出さない。
+  // （内訳コード表 JSON 自体は非破壊。データに実在する種別行は従来どおり表示）
   // Phase2c-type-qty-amt-sum: 種別行に表示中詳細の計画数量SUM＋実行予算SUM。
   // 見た目結合は詳細〜単価まで（数量・金額は結合外で見える）。
   // Phase2c-budget-sum-visible: 手動のみモードでは実行予算/月次/累計のSUMを
@@ -102,6 +105,25 @@
   // true: 既存内訳由来の詳細は隠し、reveal（＋追加）した行だけ表示・手入力。
   // false: 全詳細行を表示（来週内訳連動方針後）。
   const JY2_ACTUAL_DETAIL_MANUAL_ONLY = true;
+  // 原価管理明細に無いコード表余剰種別（空枠だけ抑止。実データ行は表示）。
+  // 浜田 2026-08-01: 空枠の正は原価管理明細。コード表は余計が混じりうる。
+  const JY2_COST_MGMT_TYPE_DENY = Object.freeze({
+    "10100": Object.freeze({
+      材料費: Object.freeze(["その他材料費"]),
+    }),
+  });
+  function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
+    const raw =
+      typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
+        ? typesByHimoku[himokuLabel]
+        : [];
+    const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
+    const denyList =
+      byCode && Array.isArray(byCode[himokuLabel]) ? byCode[himokuLabel] : null;
+    if (!denyList || denyList.length === 0) return raw.slice();
+    const deny = new Set(denyList);
+    return raw.filter((typeLabel) => !deny.has(typeLabel));
+  }
 
   function jy2StoreActiveTab(view, tabId) {
     if (!tabId || !view || !view.sessionStorage) return;
@@ -8303,9 +8325,12 @@
           );
         }
         // Phase2c-c-excel-flat: Excelどおり種別・詳細を常時表示（費目開閉なし）
-        const templateTypes = Array.isArray(typesByHimokuMap[himokuLabel])
-          ? typesByHimokuMap[himokuLabel]
-          : [];
+        // 空枠は原価管理明細正（コード表余剰は deny）。実在データ種別は残す。
+        const templateTypes = jy2CostMgmtTemplateTypes(
+          row.workTypeCode,
+          himokuLabel,
+          typesByHimokuMap,
+        );
         const typeOrder = [];
         for (const t of templateTypes) {
           if (!typeOrder.includes(t)) typeOrder.push(t);

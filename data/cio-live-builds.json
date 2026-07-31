@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-type-qty-amt-sum",
-      "fileKey": "f6bce985-9b24-4dfb-b8e9-3fa581c153c9",
-      "revision": "205",
+      "build": "2026-08-01-ver02-actual-excel-type-authority",
+      "fileKey": "75fd8b6f-2aed-44dc-836f-a248a262814a",
+      "revision": "206",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T23:23:37.044Z",
+      "deployedAt": "2026-07-31T23:26:49.067Z",
       "note": null
     },
     "757": {
