@@ -79,6 +79,8 @@
 
 月ヘッダは着手月連動の既存方針を維持してよい（Excel例: 2026-02〜2027-01）。列数は Excel 同型の **数量＋金額ペア×月数**。
 
+**集計行の見た目結合（#R-EXCEL-UI-02）**: 費目行は種別〜単価、種別行は詳細〜単価を枠線消しで一塊に見せる（本物の colspan は sticky 崩れのため使わない）。実行予算額・月次は結合しない。空種別の操作列＋は維持。
+
 ### 2.3 計算（Excel 検証済み）
 
 | 項目 | 式・規則 |
@@ -187,3 +189,4 @@
 | 2026-07-31 | Phase2c-b-a 実装（未deploy）: 費目グループヘッダに「＋種別行」ボタンを追加。押下で `detailModel.addDetailRow` → 実費目時のみ `name1` prefill → `moveDetailRow` 反復で当該費目末尾直後へ寄せる。書込は **App757 の内訳（detailModel）のみ**、App758／keys.mjs／save-model／actuals-matrix pivot は未変更。永続化は sticky トップの「一時保存」経由（明示バナー）。削除は次スライスへ後送。BUILD `2026-07-31-ver02-actual-excel-phase2c-b` |
 | 2026-07-31 | **操作列 LIVE**（rev194）: 詳細右に UI「操作」＋／－。種別「＋詳細行」廃止。単価手入力。struct-raf 応急。§2.2 更新。翌日＝ブロック単位再描画 |
 | 2026-08-01 | Excel寄せ: 費目横／費目グループの「＋種別行」撤去（種別はコード表固定。詳細増減は操作列＋／－のみ）。BUILD `2026-08-01-ver02-actual-no-himoku-add-type` |
+| 2026-08-01 | Excel寄せ: 費目行＝種別〜単価・種別行＝詳細〜単価を**見た目結合**（colspanなし・sticky維持。空種別の操作＋は維持）。BUILD `2026-08-01-ver02-actual-visual-merge-span` |

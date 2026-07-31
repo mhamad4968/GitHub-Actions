@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-no-himoku-add-type
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-visual-merge-span
+  // Phase2c-visual-merge: 費目行=種別〜単価・種別行=詳細〜単価を見た目結合
+  // （colspanなし・枠線消し。sticky安全。空種別の操作＋は維持）。
   // Phase2c-no-himoku-add-type: 費目横「＋種別行」撤去（Excel: 種別はコード表固定。
   // 詳細の増減は操作列＋／－のみ）。親行・費目グループ行の両方。
   // Phase2c-himoku-col-12rem: 費目列(freeze-1) max 7rem→12rem 固定幅で見切れ解消。
@@ -480,6 +482,11 @@
       ".jy2-actual-table .jy2-actual-type-group-row td{background:#f1f3f5!important;color:#334155;font-weight:600}",
       ".jy2-actual-table .jy2-actual-type-group-row .jy2-freeze{background:#f1f3f5!important}",
       ".jy2-actual-table .jy2-actual-type-group-label{padding-left:18px}",
+      /* Excel寄せ: 集計行の空き列を見た目結合（tdは残し枠線のみ消す＝sticky維持） */
+      ".jy2-actual-table td.jy2-actual-visual-merge-start,.jy2-actual-table td.jy2-actual-visual-merge-mid{border-right-color:transparent!important;box-shadow:none!important}",
+      ".jy2-actual-table td.jy2-actual-visual-merge-mid,.jy2-actual-table td.jy2-actual-visual-merge-end{border-left-color:transparent!important}",
+      ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8eaed!important}",
+      ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#f1f3f5!important}",
       ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
       /* 縦 sticky 禁止（2段見出しが同じ top でデータ行に沈む）。左固定列のみ sticky */
       ".jy2-actual-table thead th{text-align:center;vertical-align:bottom;position:static;top:auto;z-index:auto;background:#f1f5f9;box-shadow:none}",
@@ -6724,12 +6731,28 @@
       // Excel寄せ: 種別はコード表固定のため費目横「＋種別行」は出さない。
     }
     tr.appendChild(jy2MarkFreeze(himokuCell, 1));
-    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
-    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3));
-    tr.appendChild(
-      jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""), 4),
+    const parentTypeCell = jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2);
+    const parentDetailCell = jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3);
+    const parentOpsCell = jy2MarkFreeze(
+      jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
+      4,
     );
-    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
+    const parentUnitCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-group-unit-price",
+      "",
+    );
+    tr.appendChild(parentTypeCell);
+    tr.appendChild(parentDetailCell);
+    tr.appendChild(parentOpsCell);
+    tr.appendChild(parentUnitCell);
+    jy2ActualApplyVisualMerge([
+      parentTypeCell,
+      parentDetailCell,
+      parentOpsCell,
+      parentUnitCell,
+    ]);
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
     );
@@ -7243,13 +7266,28 @@
     labelCell.appendChild(himokuLabelSpan);
     // Excel寄せ: 種別はコード表固定のため費目グループの「＋種別行」は出さない。
     tr.appendChild(jy2MarkFreeze(labelCell, 1));
-    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
-    tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3));
-    tr.appendChild(
-      jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""), 4),
+    const himokuTypeCell = jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2);
+    const himokuDetailCell = jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 3);
+    const himokuOpsCell = jy2MarkFreeze(
+      jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
+      4,
     );
-
-    jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months);
+    tr.appendChild(himokuTypeCell);
+    tr.appendChild(himokuDetailCell);
+    tr.appendChild(himokuOpsCell);
+    const himokuUnitCell = jy2ActualAppendGroupValueCols(
+      documentRef,
+      tr,
+      childrenInGroup,
+      months,
+      { unitPriceEmpty: true },
+    );
+    jy2ActualApplyVisualMerge([
+      himokuTypeCell,
+      himokuDetailCell,
+      himokuOpsCell,
+      himokuUnitCell,
+    ]);
     return tr;
   }
 
@@ -7285,61 +7323,12 @@
     typeLabelSpan.textContent = typeLabel;
     labelCell.appendChild(typeLabelSpan);
     tr.appendChild(jy2MarkFreeze(labelCell, 2));
-    const detailCell = jy2Cell(documentRef, "td", "jy2-actual-type-detail-slot", "");
-    // Excel: 種別の下に詳細を手入力。子がまだ無いときは種別行の詳細列で追加できる。
-    // 「＋詳細行」ボタンは操作列と重複するため出さない。
-    if (
-      opts &&
-      opts.detailQuickAdd === true &&
-      opts.detailModel &&
-      opts.canEditBudget === true &&
-      typeof opts.onAdded === "function"
-    ) {
-      const name3Input = jy2TextInput(
-        documentRef,
-        "",
-        (value) => {
-          const trimmed = String(value || "").trim();
-          if (!trimmed) return;
-          try {
-            const patch = {
-              name3: jy2ToFullWidthKana(trimmed),
-            };
-            if (himokuLabel && himokuLabel !== "（未分類）") {
-              patch.name1 = himokuLabel;
-            }
-            if (typeLabel && typeLabel !== "（種別未設定）") {
-              patch.name2 = typeLabel;
-            }
-            const newKey = jy2ActualInsertDetailNear(
-              opts.detailModel,
-              parent.stableBlockId,
-              opts.lastChildRowKeyInGroup || null,
-              patch,
-              opts.expandState,
-            );
-            if (typeof opts.revealDetailKey === "function") {
-              opts.revealDetailKey(newKey);
-            }
-            opts.onAdded();
-          } catch (error) {
-            const view = documentRef && documentRef.defaultView;
-            const message =
-              (error && error.message) || "詳細の追加に失敗しました";
-            if (view && typeof view.alert === "function") view.alert(message);
-            else if (typeof console !== "undefined" && console.error) {
-              console.error(message, error);
-            }
-          }
-        },
-        { fullTitle: true },
-      );
-      name3Input.className = "jy2-input jy2-actual-child-name-input";
-      name3Input.placeholder = "詳細（手入力）";
-      name3Input.title = "この種別の詳細を入力（一時保存で App757 へ）";
-      detailCell.appendChild(name3Input);
-    }
-    tr.appendChild(jy2MarkFreeze(detailCell, 3));
+    // Excel寄せ: 詳細〜単価は見た目結合。空種別の最初の詳細は操作列＋のみ。
+    const detailCell = jy2MarkFreeze(
+      jy2Cell(documentRef, "td", "jy2-actual-type-detail-slot", ""),
+      3,
+    );
+    tr.appendChild(detailCell);
     const typeOpsCell = jy2Cell(documentRef, "td", "jy2-actual-ops-cell", "");
     // 空種別: 操作列の＋で最初の詳細行を追加（ラベル横の「＋詳細行」は廃止）
     if (
@@ -7399,8 +7388,14 @@
       typeOpsCell.appendChild(ops);
     }
     tr.appendChild(jy2MarkFreeze(typeOpsCell, 4));
-
-    jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months);
+    const typeUnitCell = jy2ActualAppendGroupValueCols(
+      documentRef,
+      tr,
+      childrenInGroup,
+      months,
+      { unitPriceEmpty: true },
+    );
+    jy2ActualApplyVisualMerge([detailCell, typeOpsCell, typeUnitCell]);
     return tr;
   }
 
@@ -7448,9 +7443,39 @@
     return jy2AmountDisplay(subtract(fb || "0", ac || "0"));
   }
 
+  // Excel寄せ: 集計行の空き列を見た目結合（colspanなし・sticky維持）。
+  function jy2ActualApplyVisualMerge(cells) {
+    const list = (cells || []).filter(Boolean);
+    for (let i = 0; i < list.length; i += 1) {
+      const td = list[i];
+      td.classList.add("jy2-actual-visual-merge");
+      if (i === 0) td.classList.add("jy2-actual-visual-merge-start");
+      else if (i === list.length - 1) {
+        td.classList.add("jy2-actual-visual-merge-end");
+      } else {
+        td.classList.add("jy2-actual-visual-merge-mid");
+      }
+    }
+  }
+
   // 費目/種別グループ行の値列（単価/実行予算額/月次/原価累計/差/備考）を追加。
-  function jy2ActualAppendGroupValueCols(documentRef, tr, childrenInGroup, months) {
-    tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", "－"));
+  // opts.unitPriceEmpty=true のとき単価は空（見た目結合用。従来の「－」は出さない）。
+  // 戻り値: 単価セル（見た目結合の末尾に使う）。
+  function jy2ActualAppendGroupValueCols(
+    documentRef,
+    tr,
+    childrenInGroup,
+    months,
+    opts,
+  ) {
+    const unitPriceEmpty = !!(opts && opts.unitPriceEmpty);
+    const unitPriceCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-group-unit-price",
+      unitPriceEmpty ? "" : "－",
+    );
+    tr.appendChild(unitPriceCell);
     const finalBudgetSum = jy2ActualSumField(childrenInGroup, "finalBudget");
     tr.appendChild(
       jy2Cell(
@@ -7492,6 +7517,7 @@
       ),
     );
     tr.appendChild(jy2Cell(documentRef, "td", "jy2-actual-note", "－"));
+    return unitPriceCell;
   }
 
   // Phase2b (2026-07-31): 月次数量セル用の丸めヘルパ。単価×数量を整数円へ
