@@ -5269,3 +5269,19 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 JST — **756 Phase2b LIVE**
+
+**要約**: BUILD actual-excel-phase2b LIVE rev169。月次数量+金額。数量はセッションのみ。金額保存。実行予算額=最終予算ラベル。次=目視→2c。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `70a09aef` — 
+
+**BUILD**: 2026-07-31-ver02-actual-excel-phase2b rev169
+
+**GO待ち**: 756 Phase2b visual; then 2c; Monday budget
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---

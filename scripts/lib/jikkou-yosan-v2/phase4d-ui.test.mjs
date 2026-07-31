@@ -505,6 +505,25 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   // 内訳 mutations refresh the 予実 current budgets too.
   assert.match(source, /refreshSummary\(true\);\s*refreshActuals\(\);/);
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
+  // Phase2b (2026-07-31): 月次「数量｜金額」の 2 列 UI・実行予算額（暫定）改称・
+  // セッション数量 Map・qty→ROUND(単価×qty) 自動計算ヘルパを束ねに保持。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2b/);
+  assert.match(source, /jy2ActualMonthQtyState/);
+  assert.match(source, /jy2RoundYenQtyTimesPrice/);
+  assert.match(source, /__jy2ActualMonthQty/);
+  assert.match(source, /実行予算額（暫定）/);
+  assert.match(source, /内訳の数量（表示）/);
+  assert.match(source, /予算額（手入力）/);
+  // 月次ヘッダ: top は colSpan:2 の月ラベル・bottom は 数量 / 金額 ペア。
+  assert.match(source, /jy2MonthLabel\(month\), \{ colSpan: 2 \}/);
+  assert.match(source, /th\("数量"\)/);
+  assert.match(source, /th\("金額"\)/);
+  assert.match(source, /jy2-actual-month-qty/);
+  // qty override 時に金額を自動計算し amount のみ書き戻す（App758 に qty は保存しない）。
+  assert.match(
+    source,
+    /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
+  );
 });
 
 test("phase 4d sources never target customize/736 / App 735/736 / kintone REST", () => {
