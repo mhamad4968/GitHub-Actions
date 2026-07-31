@@ -465,18 +465,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /createActualsMatrixModel/);
   assert.match(source, /refreshActuals\(\)/);
   assert.match(source, /allowedOperations\.editActuals/);
-  for (const label of [
-    "現行予算",
-    "予算額",
-    "消化率",
-    "原価累計",
-    "最終予算額",
-    "今後必要額",
-    "残予算",
-    "消化率",
-  ]) {
-    assert.match(source, new RegExp(label));
-  }
+  assert.match(source, /th\("システム工種"/);
+  assert.match(source, /th\("予算との差"/);
+  assert.match(source, /th\("原価累計金額"/);
+  assert.match(source, /jy2ActualBudgetDiffDisplay/);
+  assert.match(source, /jy2ActualAppendGroupValueCols/);
+  assert.doesNotMatch(source, /th\("現行予算"/);
+  assert.doesNotMatch(source, /th\("今後必要額"/);
+  assert.doesNotMatch(source, /th\("残予算"/);
   assert.match(source, /jy2ActualHead/);
   assert.match(source, /colSpan:\s*2/);
   assert.doesNotMatch(source, /th\("実績"/);
@@ -486,12 +482,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /th\("対①率"\)/);
   assert.doesNotMatch(source, /"BC率"/);
   assert.doesNotMatch(source, /"EC率"/);
-  // Y9/M2: ① is read live from the 総括 contract lines into the rates.
+  // ① is read live from the 総括 contract lines (model still computes rates; UI hides them).
   assert.match(source, /contractTotal1/);
-  assert.match(source, /row\.bcRate/);
-  assert.match(source, /row\.ecRate/);
+  assert.doesNotMatch(source, /row\.bcRate/);
+  assert.doesNotMatch(source, /row\.ecRate/);
   // Y10 note + Y4 exclusion are stated on the pane.
-  assert.match(source, /予算属性は表示のみ/);
   assert.match(source, /給与手当は対象外/);
   // 2026-07-29-ver02-actual-detail-expand: parent-only display, +/- expand,
   // and child rows carry the actual writes.
@@ -510,9 +505,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualMonthQtyState/);
   assert.match(source, /jy2RoundYenQtyTimesPrice/);
   assert.match(source, /__jy2ActualMonthQty/);
-  assert.match(source, /実行予算額（暫定）/);
-  assert.match(source, /内訳の数量（表示）/);
-  assert.match(source, /予算額（手入力）/);
+  assert.match(source, /th\("実行予算額"/);
   // 月次ヘッダ: top は colSpan:2 の月ラベル・bottom は 数量 / 金額 ペア。
   assert.match(source, /jy2MonthLabel\(month\), \{ colSpan: 2 \}/);
   assert.match(source, /th\("数量"\)/);
@@ -523,10 +516,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
-  // Phase2c-a/b/c: 費目→種別視覚入れ子。App758 キー変更なし。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-no-worktype-name/);
+  // Phase2c-c-excel-cols: Excel 原価管理明細列（固定2＋単価1）。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-cols/);
+  assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 2/);
   assert.match(source, /費目・種別・詳細/);
-  assert.match(source, /parentNameCell\.title = String\(row\.workTypeName\)/);
+  assert.match(source, /codeLabel\.title = String\(row\.workTypeName\)/);
   // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
   assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
