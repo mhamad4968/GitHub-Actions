@@ -515,12 +515,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-sonota-himoku/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-dual-detail-cells/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU/);
   assert.match(source, /jy2CostMgmtIsTypeLessHimoku/);
   assert.match(source, /jy2CostMgmtHimokuTemplate/);
+  assert.match(source, /dualDetailCells:\s*true/);
+  assert.match(source, /jy2-actual-dual-detail-row/);
   assert.match(source, /jy2CostMgmtIsBlankWorkTypeCode/);
   assert.match(source, /jy2CostMgmtIsNoiseHimoku/);
   assert.match(source, /jy2CostMgmtIsNoiseType/);

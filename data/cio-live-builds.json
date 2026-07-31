@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-sonota-himoku",
-      "fileKey": "40cbf62c-de13-4fcf-b2c9-1e3d29550bbe",
-      "revision": "215",
+      "build": "2026-08-01-ver02-actual-dual-detail-cells",
+      "fileKey": "1ece44b1-8044-4ed8-a91a-7c9178371c70",
+      "revision": "216",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T23:45:43.458Z",
+      "deployedAt": "2026-07-31T23:51:16.393Z",
       "note": null
     },
     "757": {
