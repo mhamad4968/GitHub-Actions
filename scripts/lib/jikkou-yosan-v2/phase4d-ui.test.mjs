@@ -515,9 +515,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-budget-sum-visible/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-type-qty-amt-sum/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /jy2ActualChildrenForBudgetSum/);
+  assert.match(source, /planQtyEmpty:\s*false/);
+  assert.match(source, /jy2ActualSumField\(sumChildren,\s*"quantity"\)/);
   assert.match(source, /jy2ActualSumMonthQty/);
   assert.match(source, /structureRerenderPending/);
   assert.match(source, /onDetailFieldChanged/);
