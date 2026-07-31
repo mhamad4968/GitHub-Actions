@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-qty-auto-budget-tint
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-month-qty-sum
+  // Phase2c-month-qty-sum: 費目/種別/親の月次数量＝子のセッション数量SUM（Excel寄せ）。
+  // 金額SUMは従来どおり。総計行の数量は単位混在のため「－」維持。
   // Phase2c-qty-auto-budget: 単価の右に明細数量列。実行予算額＝ROUND(単価×数量)
   // 自動のみ（手入力撤去）。費目/種別/詳細の3段階薄色分け。
   // Phase2c-detail-save-guard: 詳細/単価/行構造の未保存時に「予実を保存」を
@@ -6780,14 +6782,24 @@
     tr.appendChild(
       jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(row.finalBudget)),
     );
+    const parentMonthQtyState =
+      parentHimokuOpts && parentHimokuOpts.monthQtyState
+        ? parentHimokuOpts.monthQtyState
+        : null;
     for (const month of months) {
+      const qtySum = jy2ActualSumMonthQty(
+        row.children,
+        month,
+        parentMonthQtyState,
+        row,
+      );
       const qtyCell = jy2Cell(
         documentRef,
         "td",
         "jy2-num jy2-actual-month jy2-actual-month-qty jy2-actual-sum-cell",
-        "－",
+        jy2ActualMonthQtySumDisplay(qtySum),
       );
-      qtyCell.title = "親行の数量は表示しない（子明細の月次数量を参照）";
+      qtyCell.title = "合計（子の月次数量・自動・入力不可）";
       tr.appendChild(qtyCell);
       const monthCell = jy2Cell(
         documentRef,
@@ -7325,7 +7337,12 @@
       tr,
       childrenInGroup,
       months,
-      { unitPriceEmpty: true, planQtyEmpty: true },
+      {
+        unitPriceEmpty: true,
+        planQtyEmpty: true,
+        monthQtyState: opts && opts.monthQtyState,
+        parent,
+      },
     );
     jy2ActualApplyVisualMerge([
       himokuTypeCell,
@@ -7439,7 +7456,12 @@
       tr,
       childrenInGroup,
       months,
-      { unitPriceEmpty: true, planQtyEmpty: true },
+      {
+        unitPriceEmpty: true,
+        planQtyEmpty: true,
+        monthQtyState: opts && opts.monthQtyState,
+        parent,
+      },
     );
     jy2ActualApplyVisualMerge([
       detailCell,
@@ -7484,6 +7506,33 @@
       anyValue = true;
     }
     return anyValue ? total : null;
+  }
+
+  // Excel寄せ: 費目/種別/親の月次数量＝子明細のセッション数量 SUM（入力不可）。
+  function jy2ActualSumMonthQty(children, month, monthQtyState, parent) {
+    if (!monthQtyState || !parent || !parent.stableBlockId) return null;
+    let total = "0";
+    let anyValue = false;
+    for (const child of children || []) {
+      if (!child || !child.rowKey) continue;
+      const raw = monthQtyState.get(
+        parent.stableBlockId,
+        parent.costCategory,
+        child.rowKey,
+        month,
+      );
+      const addend = jy2ActualDecimalAddend(raw);
+      if (addend === null) continue;
+      total = add(total, addend);
+      anyValue = true;
+    }
+    return anyValue ? total : null;
+  }
+
+  function jy2ActualMonthQtySumDisplay(qtySum) {
+    if (qtySum === null || qtySum === undefined) return "－";
+    const text = jy2Comma(qtySum);
+    return text === "" ? "－" : text;
   }
 
   // Excel列: 予算との差＝実行予算額−原価累計（表示のみ）。
@@ -7544,14 +7593,22 @@
         jy2AmountDisplay(finalBudgetSum),
       ),
     );
+    const monthQtyState = opts && opts.monthQtyState;
+    const parentRef = opts && opts.parent;
     for (const month of months) {
+      const qtySum = jy2ActualSumMonthQty(
+        childrenInGroup,
+        month,
+        monthQtyState,
+        parentRef,
+      );
       const qtyCell = jy2Cell(
         documentRef,
         "td",
         "jy2-num jy2-actual-month jy2-actual-month-qty jy2-actual-sum-cell",
-        "－",
+        jy2ActualMonthQtySumDisplay(qtySum),
       );
-      qtyCell.title = "グループ単位の数量は表示しない（明細の月次数量を参照）";
+      qtyCell.title = "合計（子の月次数量・自動・入力不可）";
       tr.appendChild(qtyCell);
       const monthSum = jy2ActualSumMonth(childrenInGroup, month);
       const monthCell = jy2Cell(
@@ -7986,6 +8043,7 @@
         rerender,
         revealDetailKey: costDetailVisibility.reveal,
         onAdded: onDetailStructureAdded,
+        monthQtyState,
       };
       if (row.hasChildren) {
         const resolveHimokuLabel = (child, detailIndex) => {
@@ -8050,8 +8108,13 @@
             onAdded: onDetailStructureAdded,
             revealDetailKey: costDetailVisibility.reveal,
             lastChildRowKeyInGroup: primaryLastKey,
+            monthQtyState,
           };
+        } else {
+          parentHimokuOpts = { monthQtyState };
         }
+      } else {
+        parentHimokuOpts = { monthQtyState };
       }
       body.appendChild(
         jy2ActualRow(

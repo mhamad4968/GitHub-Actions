@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-qty-auto-budget-tint",
-      "fileKey": "1fa1d7a5-166b-4a72-b6ac-f79a44d469bb",
-      "revision": "199",
+      "build": "2026-08-01-ver02-actual-month-qty-sum",
+      "fileKey": "50a4c07f-851c-439f-a15d-93c368853f8a",
+      "revision": "200",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-07-31T22:56:42.730Z",
+      "deployedAt": "2026-07-31T23:04:06.591Z",
       "note": null
     },
     "757": {
