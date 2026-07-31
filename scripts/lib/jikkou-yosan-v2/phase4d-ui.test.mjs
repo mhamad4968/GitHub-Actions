@@ -589,9 +589,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
   assert.ok(childRowMatch, "jy2ActualChildRow body must be present");
+  // dual-detail: name3 は patch 経由（dual 時は name1 も付与）
   assert.match(
     childRowMatch[0],
-    /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*name3: jy2ToFullWidthKana\(value\),/,
+    /name3:\s*jy2ToFullWidthKana\(value\)/,
+  );
+  assert.match(
+    childRowMatch[0],
+    /childDetailModel\.updateDetailRow\(\s*parent\.stableBlockId,\s*child\.rowKey,\s*patch/,
   );
   assert.match(childRowMatch[0], /revealDetailKey\(child\.rowKey\)/);
   assert.match(childRowMatch[0], /onDetailChanged\(\)/);
