@@ -515,11 +515,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-hide-blank-worktype/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-omit-extra-himoku/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_TYPE_DENY/);
   assert.match(source, /jy2CostMgmtIsDeniedType/);
   assert.match(source, /jy2CostMgmtIsBlankWorkTypeCode/);
+  assert.match(source, /jy2CostMgmtIsNoiseHimoku/);
   assert.match(source, /jy2CostMgmtIsNoiseType/);
   assert.match(source, /jy2CostMgmtShouldOmitHimoku/);
   assert.match(source, /jy2CostMgmtShouldOmitType/);
