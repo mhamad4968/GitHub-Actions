@@ -514,19 +514,20 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
-  // Phase2c-c-three-cols: Excel 原価管理明細列（固定4＋単価1）。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-detail-pm/);
+  // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-c-excel-ops-col/);
   assert.match(source, /onDetailFieldChanged/);
   assert.match(source, /scheduleActualRerender/);
   assert.match(source, /fieldOnly:\s*true/);
   assert.match(source, /flushDetailIfDirty/);
   assert.match(source, /liveUnitPrice/);
   assert.match(source, /jy2-actual-detail-pm-btn/);
-  assert.match(source, /詳細列の横の＋／－/);
-  assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 4/);
+  assert.match(source, /「操作」列の＋／－/);
+  assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 5/);
   assert.match(source, /th\("費目"/);
   assert.match(source, /th\("種別（補助）"/);
   assert.match(source, /th\("詳細"/);
+  assert.match(source, /th\("操作"/);
   assert.doesNotMatch(source, /th\("費目・種別・詳細"/);
   assert.doesNotMatch(source, /th\("費目→種別→詳細"/);
   const actualHeadMatch = source.match(
@@ -536,9 +537,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(actualHeadMatch[0], /内訳№/);
   assert.doesNotMatch(actualHeadMatch[0], /th\("区分"/);
   assert.match(source, /jy2-freeze-3/);
+  assert.match(source, /jy2-freeze-4/);
   assert.match(source, /codeLabel\.title = String\(row\.workTypeName\)/);
   // Excel寄せ: 詳細列は手入力セル（└ツリー記号なし・freeze3 overflow visible）
   assert.match(source, /jy2MarkFreeze\(nameCell, 3\)/);
+  assert.match(source, /jy2MarkFreeze\(opsCell, 4\)/);
   assert.doesNotMatch(source, /└ /);
   assert.doesNotMatch(source, /jy2-actual-child-indent/);
   assert.match(source, /詳細列はツリー記号なし/);
@@ -548,14 +551,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-child-delete-btn/);
   assert.match(source, /jy2-actual-child-add-btn/);
   assert.match(source, /removeDetailRow\(\s*parent\.stableBlockId,\s*child\.rowKey/);
-  assert.match(source, /詳細列の横の＋／－/);
+  assert.match(source, /「操作」列の＋／－/);
   // Phase2c-c-excel-unit-price: 単価手入力
   assert.match(source, /jy2-actual-child-unit-price-input/);
   assert.match(
     source,
     /childDetailModel\.updateDetailRow\(parent\.stableBlockId, child\.rowKey, \{\s*unitPrice: value,/,
   );
-  assert.match(source, /詳細列の横の＋／－/);
+  assert.match(source, /「操作」列の＋／－/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
   );
@@ -567,7 +570,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(childRowMatch[0], /revealDetailKey\(child\.rowKey\)/);
   assert.match(childRowMatch[0], /onDetailChanged\(\)/);
   assert.match(childRowMatch[0], /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
-  assert.match(source, /詳細列の横の＋／－/);
+  assert.match(source, /「操作」列の＋／－/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
@@ -600,7 +603,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualCostDetailVisibility/);
   assert.match(source, /shouldShow:\s*\(\)\s*=>\s*true/);
   assert.match(source, /detailQuickAdd/);
-  assert.match(source, /詳細列の横の＋／－/);
+  assert.match(source, /「操作」列の＋／－/);
   assert.doesNotMatch(source, /内訳の品名カタログは隠し/);
   // Phase2c-c-template-types: コード表種別を空枠でも出す
   assert.match(source, /typesByHimokuMap/);
