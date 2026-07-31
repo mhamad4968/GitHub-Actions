@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-decimal-fix2
+  // @JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-child-label
+  // Excel寄せ: 費目グループ下の子行ラベルは費目を重複表示せず、詳細(name3)のみ
+  // （種別は種別列）。displayInteger 空ガード・Phase2c-b-a ＋種別行は維持。
   // Fix2: displayInteger 自体も空・非数を null 返し（旧キャッシュでも落ちにくく）。
   // Fix: jy2AmountDisplay / 費目SUM が空単価・非数で Invalid decimal を投げない。
   // Phase2c-b-a (2026-07-31): 費目グループ行の label セルに「＋種別行」
@@ -6744,8 +6746,8 @@
     tr.dataset.stableBlockId = parent.stableBlockId;
     tr.dataset.costCategory = parent.costCategory;
     tr.dataset.rowKey = child.rowKey;
-    // 左4列: 内訳№/区分/工種番号 は空欄。システム入力工種の位置に費目を
-    // 表示（横スクロール固定領域内）。
+    // 左4列: 内訳№/区分/工種番号 は空欄。固定列の4つ目は Excel「詳細」相当。
+    // 費目はグループヘッダ（▸）、種別は種別列、ここは品名(name3)のみ（Excel通り）。
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2));
@@ -6766,11 +6768,13 @@
       : jy2HasText(name3Raw)
         ? String(name3Raw).trim()
         : "";
-    const nameParts = [name1Resolved, name2Resolved, name3Resolved]
+    // Excel: 費目枠の下では詳細列に品名のみ。ホバーにフルパスを残す。
+    const fullPath = [name1Resolved, name2Resolved, name3Resolved]
       .map((part) => String(part).trim())
-      .filter((part) => part.length > 0);
-    nameLabel.textContent = nameParts.join(" / ") || "（明細）";
-    nameLabel.title = nameParts.join(" / ");
+      .filter((part) => part.length > 0)
+      .join(" / ");
+    nameLabel.textContent = name3Resolved || "－";
+    nameLabel.title = fullPath || nameLabel.textContent;
     nameCell.appendChild(nameLabel);
     tr.appendChild(jy2MarkFreeze(nameCell, 3));
 

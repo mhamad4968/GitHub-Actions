@@ -529,7 +529,9 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   // detailModel.addDetailRow → name1 prefill → moveDetailRow で末尾直後へ寄せる。
   // 書込は App757 の内訳（detailModel）のみで、App758 / keys.mjs / actuals-matrix
   // pivot は一切触らない。永続化は sticky トップの「一時保存」に案内する。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b/);
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-b-child-label/);
+  // Excel寄せ: 費目グループ下の子行ラベルは品名(name3)のみ（費目はヘッダ・種別は種別列）。
+  assert.match(source, /nameLabel\.textContent = name3Resolved \|\| ["']－["']/);
   assert.match(source, /jy2ActualHimokuGroupRow/);
   assert.match(source, /jy2-actual-himoku-group-row/);
   assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
