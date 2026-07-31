@@ -507,7 +507,6 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
   // Phase2b (2026-07-31): 月次「数量｜金額」の 2 列 UI・実行予算額（暫定）改称・
   // セッション数量 Map・qty→ROUND(単価×qty) 自動計算ヘルパを束ねに保持。
-  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2b/);
   assert.match(source, /jy2ActualMonthQtyState/);
   assert.match(source, /jy2RoundYenQtyTimesPrice/);
   assert.match(source, /__jy2ActualMonthQty/);
@@ -524,6 +523,21 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*child\.unitPrice\)/,
   );
+  // Phase2c-a (2026-07-31): expand時の費目(name1)視覚グループ化。表示専用の
+  // 灰色 SUM 費目ヘッダ行を挿入するだけで、書込・キー変更は一切行わない。
+  assert.match(source, /@JY_V2_BUILD 2026-07-31-ver02-actual-excel-phase2c-a/);
+  assert.match(source, /jy2ActualHimokuGroupRow/);
+  assert.match(source, /jy2-actual-himoku-group-row/);
+  assert.match(source, /dataset\.virtual\s*=\s*["']himoku-group["']/);
+  assert.match(source, /費目合計（表示専用・入力不可）/);
+  // 表示専用（書込みなし）: helper 内で App758/keys.mjs 系の書込 API を
+  // 呼ばないこと（保険 assertion）。次の helper `jy2ActualSumField` を境界に切り出す。
+  const helperMatch = source.match(
+    /function jy2ActualHimokuGroupRow[\s\S]*?function jy2ActualSumField/,
+  );
+  assert.ok(helperMatch, "jy2ActualHimokuGroupRow body must be present");
+  assert.doesNotMatch(helperMatch[0], /actualsModel\.update/);
+  assert.doesNotMatch(helperMatch[0], /commit\(/);
 });
 
 test("phase 4d sources never target customize/736 / App 735/736 / kintone REST", () => {
@@ -581,6 +595,8 @@ test("rebuild bundles actuals-matrix before the UI, 736 untouched", () => {
       // 2026-07-29-ver02-actual-detail-expand: child row + expand UI must be bundled.
       "jy2ActualChildRow",
       "jy2ActualExpandState",
+      // Phase2c-a (2026-07-31): 表示専用の費目視覚グループ行も bundled。
+      "jy2ActualHimokuGroupRow",
     ]) {
       assert.match(bundle, new RegExp(symbol));
     }

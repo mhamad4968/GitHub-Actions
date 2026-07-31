@@ -5285,3 +5285,19 @@ npm run cio:morning:ready
 **触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
 
 ---
+
+### 2026-07-31 JST — **756 Phase2c-a LIVE**
+
+**要約**: BUILD phase2c-a LIVE rev170。展開時費目視覚グループ（表示専用SUM）。書込なし。次=目視→2c-b。
+
+**次の1手**: **2026-07-31** 浜田が依頼者へ対面で4問確認 → 回答をチャットへ。実装・deploy は GO 後のみ。完了済を GO 待ちに出さない。
+
+**Git**: `bccf61d9` — 
+
+**BUILD**: 2026-07-31-ver02-actual-excel-phase2c-a rev170
+
+**GO待ち**: 756 Phase2c-a visual; then 2c-b
+
+**触らない**: 688(except WBGT)/677-679/SKYSEA/~8/3/712/736
+
+---

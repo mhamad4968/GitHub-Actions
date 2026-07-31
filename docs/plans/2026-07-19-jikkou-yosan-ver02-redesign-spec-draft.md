@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-07-31 夜（工事原価管理・Excel Phase2c-a 実装／未deploy）**: expand時に明細を**費目(name1)で視覚グループ化**。`jy2ActualHimokuGroupRow`（灰色SUM・`dataset.virtual="himoku-group"`・`▸ 費目名`）を挿入するだけの表示専用機能で、`row.children` を既存順で走査し直前の name1 と label が変わったタイミングで先頭にヘッダ行を追加する。App757/758 のキー・save-model・actuals-matrix 書込・子行のソートは**一切変更なし**（保険 assertion で helper 内から `actualsModel.update*` / `commit(` が呼ばれないことを検証）。BUILD `2026-07-31-ver02-actual-excel-phase2c-a`。正本 `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` Phase2c-a（親コミット待ち）。
 **2026-07-31 夜（工事原価管理・Excel Phase2b LIVE）**: 月次を**数量＋金額**の2列化。数量入力→`ROUND(単価×数量,0)`を既存月金額として保存。数量自体は App758 未保存（セッション Map・再読込で消える）。金額直入れ時は数量 Map をクリア。最終予算ヘッダを**実行予算額（暫定）**にラベル寄せ（書込は finalBudget）。キー非変更。BUILD `2026-07-31-ver02-actual-excel-phase2b`。tag `backup/756-before-excel-table-phase2b-2026-07-31`。正本 Phase2b。  
 **2026-07-31 夜（工事原価管理・Excel Phase2a LIVE）**: UIのみ。**数量列・備考列を再表示**（いずれも読取／備考は内訳由来表示）。親・計の月セルに灰色 `jy2-actual-sum-cell`（合計・入力不可の見た目）。Y12 親+展開・App758 キー／保存は**変更なし**。BUILD `2026-07-31-ver02-actual-excel-phase2a` LIVE rev168。正本 `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` Phase2a。tag `backup/756-before-excel-table-phase2a-2026-07-31`。Y9 更新（数量・備考を工事原価管理UIに再掲）。  
 **2026-07-31（工事原価管理・Excel表構造寄せ SPEC）**: 浜田説明反映。正本 `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md`（Phase1＝仕様。Phase2a＝上記）。Excelどおり階層は後続。メモ `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`。  
