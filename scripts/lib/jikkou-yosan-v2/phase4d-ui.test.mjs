@@ -515,11 +515,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-unit-price-comma/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-10300-scaffold/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
   assert.match(source, /Phase2c-unit-price-comma/);
+  assert.match(source, /Phase2c-excel-10300-scaffold/);
   assert.match(source, /jy2CommaNumberInput/);
   assert.match(source, /jy2StripCommaNumber/);
   assert.match(source, /patch\.quantity = ["']1["']/);
@@ -531,7 +532,9 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2CostMgmtHimokuTemplate/);
   assert.match(source, /jy2CostMgmtPrimaryHimokuLabel/);
   assert.match(source, /"10200":\s*Object\.freeze\(\["塗装工事"\]\)/);
+  assert.match(source, /"10300":\s*Object\.freeze\(\["足場工事"\]\)/);
   assert.match(source, /塗装工事/);
+  assert.match(source, /足場工事/);
   assert.match(source, /jy2-actual-himoku-ops-add-btn/);
   assert.match(source, /#R-EXCEL-UI-09/);
   assert.match(source, /dualDetailCells:\s*true/);
