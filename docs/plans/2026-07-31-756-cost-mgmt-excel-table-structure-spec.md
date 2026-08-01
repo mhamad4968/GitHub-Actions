@@ -255,4 +255,5 @@
 | 2026-08-01 | Excel 13100｜諸会費（種別なし・詳細2セル）。12900同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-13100-dues` |
 | 2026-08-01 | Excel 13620｜会議費（種別なし・詳細2セル）。13100同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-13620-meeting` |
 | 2026-08-01 | Phase2c-soft-save-timing: 一時保存成功時はフルreloadせず親revision+App757再取得。console [jy2-save-timing]。版確定/競合は従来reload。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-timing` |
-| 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・12800・13500・13600（浜田見積・残り約10枠。次セッションで Excel 正1つずつ）。#R-EXCEL-UI-09 |
+| 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
+| 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・13500・13600（浜田見積・残り約9枠。次セッションで Excel 正1つずつ）。#R-EXCEL-UI-09 |

@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-soft-save-timing",
-      "fileKey": "6389266e-4fc5-4cb3-abaa-93dd38cac683",
-      "revision": "273",
+      "build": "2026-08-01-ver02-actual-excel-12800-compensation",
+      "fileKey": "1d1ad5cd-c93d-4182-8a5d-03ab6a7277d7",
+      "revision": "274",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T10:48:50.836Z",
+      "deployedAt": "2026-08-01T10:52:16.982Z",
       "note": null
     },
     "757": {

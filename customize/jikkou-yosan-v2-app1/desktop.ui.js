@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-soft-save-timing
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12800-compensation
+  // Phase2c-excel-12800-compensation: Excel正 12800｜補償費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-soft-save-timing: 一時保存成功時はフルreloadせず親revision+App757再取得。console [jy2-save-timing]。版確定/競合は従来reload。#R-PERF-01
   // Phase2c-excel-13620-meeting: Excel正 13620｜会議費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-13100-dues: Excel正 13100｜諸会費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -210,7 +211,6 @@
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
-    "12800",
     "13500", "13600",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
@@ -237,6 +237,7 @@
     "12500": Object.freeze(["借上げ自動車費"]),
     "12600": Object.freeze(["履行保証保険料"]),
     "12700": Object.freeze(["建退共証紙購入費"]),
+    "12800": Object.freeze(["補償費"]),
     "12900": Object.freeze(["諸雑費"]),
     "13100": Object.freeze(["諸会費"]),
     "13620": Object.freeze(["会議費"]),
@@ -316,6 +317,7 @@
     "借上げ自動車費": Object.freeze(["借上げ自動車費"]),
     "履行保証保険料": Object.freeze(["履行保証保険料"]),
     "建退共証紙購入費": Object.freeze(["建退共証紙購入費"]),
+    "補償費": Object.freeze(["補償費"]),
     "諸雑費": Object.freeze(["諸雑費"]),
     "諸会費": Object.freeze(["諸会費"]),
     "会議費": Object.freeze(["会議費"]),
@@ -340,6 +342,7 @@
     "借上げ自動車費",
     "履行保証保険料",
     "建退共証紙購入費",
+    "補償費",
     "諸雑費",
     "諸会費",
     "会議費",
@@ -457,6 +460,12 @@
       workTypeCode: "12700",
       workTypeName: "（塗）建退共証紙購入費",
       nameAliases: Object.freeze(["建退共証紙購入費", "（塗）建退共証紙購入費"]),
+    }),
+    Object.freeze({
+      shortName: "補償費",
+      workTypeCode: "12800",
+      workTypeName: "（塗）補償費",
+      nameAliases: Object.freeze(["補償費", "（塗）補償費"]),
     }),
     Object.freeze({
       shortName: "諸雑費",
@@ -1205,7 +1214,7 @@
     return false;
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
-    "保険料", "労災保険料", "法定福利費", "雑費", "補償費",
+    "保険料", "労災保険料", "法定福利費", "雑費",
     "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
     "工事安全専任管理者", "出向工事安全専任管理者",
     "線閉責任者", "外注線閉責任者",
