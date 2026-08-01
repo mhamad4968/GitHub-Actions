@@ -243,3 +243,4 @@
 | 2026-08-01 | 建設機械オペレーターは種別下の詳細2セル（Excel正）。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-excel-operator-dual-detail` |
 | 2026-08-01 | 種別あり費目の詳細をすべて2セル化（10900含む）。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-typed-dual-detail` |
 | 2026-08-01 | 建設機械オペレーター枠に費目「その他労務」→昼間／夜間を追加。#R-EXCEL-UI-12。BUILD `2026-08-01-ver02-actual-excel-other-labor` |
+| 2026-08-01 | Excel 12400｜旅費交通費→出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費→詳細2セル（11600同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-12400-travel` |
