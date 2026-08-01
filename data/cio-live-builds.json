@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-12400-travel",
-      "fileKey": "8063e904-f781-43b3-995e-8d07cae302cb",
-      "revision": "261",
+      "build": "2026-08-01-ver02-actual-excel-12400-type-strip",
+      "fileKey": "7634fc09-3ffd-4041-8dde-c82ee177a592",
+      "revision": "262",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T08:03:16.785Z",
+      "deployedAt": "2026-08-01T08:08:17.448Z",
       "note": null
     },
     "757": {
