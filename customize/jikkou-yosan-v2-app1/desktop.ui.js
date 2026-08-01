@@ -2,8 +2,10 @@
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
+  // Phase2c-excel-13500-guide: Excel正 13500｜重機誘導員。種別=昼間／夜間 → 詳細2セル（11300同型）。omit解除＋OVERRIDE＋ENSURE登録（AUTO_LINK_OFF中はENSURE非実行）。#R-EXCEL-UI-09/12/14
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-excel-13500-guide
   // Phase2c-actual-auto-link-off: 内訳↔原価管理の自動連携（ENSURE/PLACE/sanitize）を一時無効。浜田GO・明日以降に方針決定。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-auto-link-off
+
   // Phase2c-actual-cost-mgmt-harden: 予実flush / revealを版スコープ / ENSUREでdetailSavePending立てない / revealを現行行に剪定。#R-SOFT-SAVE-02
   // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
   // Phase2c-excel-11300-traffic: Excel正 11300｜交通整理員賃金。種別=昼間／夜間 → 詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -227,10 +229,12 @@
     "11400": Object.freeze({
       外注労務費: Object.freeze(["外注停電責任者", "外注検電接地作業者"]),
     }),
+    "13500": Object.freeze({
+      外注労務費: Object.freeze(["外注重機誘導員"]),
+    }),
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11400",
-    "13500",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
@@ -267,6 +271,7 @@
     "11100": Object.freeze(["線閉責任者賃金"]),
     "11200": Object.freeze(["列車見張員賃金"]),
     "11300": Object.freeze(["交通整理員賃金"]),
+    "13500": Object.freeze(["重機誘導員"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
     "14300": Object.freeze(["追加工事③"]),
@@ -290,6 +295,9 @@
     }),
     "11300": Object.freeze({
       "交通整理員賃金": Object.freeze(["昼間", "夜間"]),
+    }),
+    "13500": Object.freeze({
+      "重機誘導員": Object.freeze(["昼間", "夜間"]),
     }),
     "11600": Object.freeze({
       "レンタル": Object.freeze(["建設機械", "仮設資材･足場資材"]),
@@ -317,6 +325,7 @@
     "線閉責任者賃金": Object.freeze(["昼間", "夜間"]),
     "列車見張員賃金": Object.freeze(["昼間", "夜間"]),
     "交通整理員賃金": Object.freeze(["昼間", "夜間"]),
+    "重機誘導員": Object.freeze(["昼間", "夜間"]),
     "レンタル": Object.freeze(["建設機械", "仮設資材･足場資材"]),
     "旅費交通費": Object.freeze([
       "出張旅費特例",
@@ -586,6 +595,16 @@
       workTypeCode: "13100",
       workTypeName: "（塗）諸会費",
       nameAliases: Object.freeze(["諸会費", "（塗）諸会費"]),
+    }),
+    Object.freeze({
+      shortName: "重機誘導員",
+      workTypeCode: "13500",
+      workTypeName: "（塗）重機誘導員",
+      nameAliases: Object.freeze([
+        "重機誘導員",
+        "（塗）重機誘導員",
+        "外注重機誘導員",
+      ]),
     }),
     Object.freeze({
       shortName: "交際費",
@@ -1554,7 +1573,6 @@
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
     "保険料", "労災保険料", "法定福利費", "雑費",
-    "重機誘導員", "外注重機誘導員",
     "検電接地", "外注停電責任者", "外注検電接地作業者",
   ]);
   function jy2CostMgmtShouldOmitWorkType(workTypeCode, workTypeName) {

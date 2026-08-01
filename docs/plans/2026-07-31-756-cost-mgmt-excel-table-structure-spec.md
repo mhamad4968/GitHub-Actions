@@ -11,7 +11,7 @@
 **親 SPEC**: [`2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md`](2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §9（Y12 を本 SPEC で上書き方向）  
 **現行 LIVE（2026-08-01 夜・最終）**: BUILD `2026-08-01-ver02-actual-excel-dedupe-coded` / rev **286** / fileKey `5790d380-0946-4361-a595-20c38d946311`  
 **夕反省 GO**: `docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md`（配置・二重・区分・受入ミニチェック）  
-**OMIT 残（コード）**: **11400**・**13500**（Excel 正で都度解除）  
+**OMIT 残（コード）**: **11400**（Excel 正で都度解除）。**13500** は 2026-08-02 解除（重機誘導員・昼間／夜間）  
 **ロールバック**: git tag `backup/756-before-actual-detail-expand-2026-07-29`（必要時は当該 BUILD 前の tag／commit）  
 **非対象**: 735/736 書込、688（WBGT以外）、677–679、SKYSEA、712 deploy、736 触改
 
@@ -264,6 +264,7 @@
 | 2026-08-02 | **#R-SOFT-SAVE-01**: App757への一時保存は成功していたが MANUAL_ONLY が sessionStorage reveal のみ依存し reload 後に詳細が消えて「未保存」に見えた。leaf内容あり行を自動 reveal＋sticky右に保存/更新日時。BUILD `2026-08-02-ver02-actual-soft-save-visible` |
 | 2026-08-02 | **#R-SOFT-SAVE-02**: AI監査是正。予実保存前に入力flush／revealキーを `budget_version_id` スコープ＋現行行剪定／ENSURE正規化では `detailSavePending` を立てない。BUILD `2026-08-02-ver02-actual-cost-mgmt-harden` |
 | 2026-08-02 | **#R-EXCEL-LINK-00**: 内訳↔原価管理の自動連携を一時無効（`JY2_COST_MGMT_AUTO_LINK_DISABLED`）。ENSURE空枠追加・PLACE並べ替え・strip/sanitize 停止。MANUAL_ONLY維持。方針は明日以降。BUILD `2026-08-02-ver02-actual-auto-link-off` |
+| 2026-08-02 | Excel 13500｜重機誘導員→昼間／夜間→詳細2セル（11300同型）。omit解除＋HIMOKU/TYPES OVERRIDE＋ENSURE登録（AUTO_LINK_OFF中はENSURE非実行）。OMIT残は11400のみ。#R-EXCEL-UI-09/12/14。BUILD `2026-08-02-ver02-actual-excel-13500-guide` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |
