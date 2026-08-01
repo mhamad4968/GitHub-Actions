@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11300-traffic
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-dedupe-coded
+  // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
   // Phase2c-excel-11300-traffic: Excel正 11300｜交通整理員賃金。種別=昼間／夜間 → 詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-11200-watchman: Excel正 11200｜列車見張員賃金。種別=昼間／夜間 → 詳細2セル（11100同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-11100-senpei: Excel正 11100｜線閉責任者賃金。種別=昼間／夜間 → 詳細2セル（11000同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -894,7 +895,7 @@
       } catch {
         break;
       }
-      const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
+      const block = jy2CostMgmtFindActiveCodedFrameBlock(blocks, frame);
       if (!block || block.status === "retired") continue;
       const afterIndex = blocks.findIndex(
         (candidate) => candidate && candidate.stableBlockId === afterId,
@@ -1108,11 +1109,16 @@
     if (!Array.isArray(blocks) || !frame) return null;
     const expectedCode = String(frame.workTypeCode || "").trim();
     if (expectedCode) {
-      const byCode = blocks.find((block) => {
+      const byCode = blocks.filter((block) => {
         if (!block || block.status === "retired") return false;
         return String(block.workTypeCode || "").trim() === expectedCode;
       });
-      if (byCode) return byCode;
+      if (byCode.length > 0) {
+        const named = byCode.find((block) =>
+          jy2CostMgmtFrameNameMatches(block.workTypeName, frame),
+        );
+        return named || byCode[0];
+      }
     }
     // 名称一致は「コード空／－」のレガシーだけ。別コード付きブロックを誤修復しない。
     return (
@@ -1127,6 +1133,45 @@
         return jy2CostMgmtFrameNameMatches(block.workTypeName, frame);
       }) || null
     );
+  }
+  // 同一システム工種コードが複数あるとき、正規1件以外の stableBlockId（原価管理では非表示）。
+  function jy2CostMgmtDuplicateCodedBlockIdSet(blocks) {
+    const omitIds = new Set();
+    if (!Array.isArray(blocks)) return omitIds;
+    const byCode = new Map();
+    for (const block of blocks) {
+      if (!block || block.status === "retired") continue;
+      const code = String(block.workTypeCode || "").trim();
+      if (!code || jy2CostMgmtIsBlankWorkTypeCode(code)) continue;
+      const list = byCode.get(code);
+      if (list) list.push(block);
+      else byCode.set(code, [block]);
+    }
+    for (const [code, list] of byCode) {
+      if (!list || list.length < 2) continue;
+      const frame =
+        JY2_COST_MGMT_ENSURE_CODED_FRAMES.find(
+          (candidate) =>
+            candidate && String(candidate.workTypeCode || "").trim() === code,
+        ) || null;
+      let canonical = list[0];
+      if (frame) {
+        const named = list.find((block) =>
+          jy2CostMgmtFrameNameMatches(block.workTypeName, frame),
+        );
+        if (named) canonical = named;
+      }
+      for (const block of list) {
+        if (
+          block &&
+          block.stableBlockId &&
+          block.stableBlockId !== canonical.stableBlockId
+        ) {
+          omitIds.add(block.stableBlockId);
+        }
+      }
+    }
+    return omitIds;
   }
   // App757 由来で区分 null のままだと projectionBlocks から落ちて原価管理に出ない。
   function jy2CostMgmtRepairNullCostCategories(detailModel) {
@@ -1179,6 +1224,9 @@
       const block = jy2CostMgmtFindActiveCodedFrameBlock(blocks, frame);
       const expectedCode = String(frame.workTypeCode || "").trim();
       const expectedName = String(frame.workTypeName || "").trim();
+      const expectedCategory =
+        jy2ResolveCostCategoryFromWorkType(expectedCode, expectedName) ||
+        "施工";
       if (block) {
         const headerPatch = {};
         const currentCode = String(block.workTypeCode || "").trim();
@@ -1189,8 +1237,8 @@
         if (expectedName && currentName !== expectedName) {
           headerPatch.workTypeName = expectedName;
         }
-        if (block.costCategory !== "施工") {
-          headerPatch.costCategory = "施工";
+        if (block.costCategory !== expectedCategory) {
+          headerPatch.costCategory = expectedCategory;
         }
         if (Object.keys(headerPatch).length > 0) {
           try {
@@ -1209,7 +1257,7 @@
         detailModel.updateBlockHeader(id, {
           workTypeName: frame.workTypeName,
           workTypeCode: frame.workTypeCode || null,
-          costCategory: "施工",
+          costCategory: expectedCategory,
         });
         changes += 1;
       } catch (error) {
@@ -10113,6 +10161,7 @@
       budgetAttrsByBlockId,
       detailRowsByBlockId,
     });
+    const omitDuplicateCodedIds = jy2CostMgmtDuplicateCodedBlockIdSet(blocks);
     let totals = actualsModel.sectionTotals(blocks, {
       contractTotal1,
       detailRowsByBlockId,
@@ -10121,7 +10170,11 @@
     if (JY2_ACTUAL_DETAIL_MANUAL_ONLY) {
       const visibleSection = {};
       for (const category of ACTUAL_COST_CATEGORY_KEYS) {
-        const sectionRows = rows.filter((row) => row.costCategory === category);
+        const sectionRows = rows.filter(
+          (row) =>
+            row.costCategory === category &&
+            !(row.stableBlockId && omitDuplicateCodedIds.has(row.stableBlockId)),
+        );
         let finalBudget = "0";
         let actual = "0";
         const monthly = {};
@@ -10284,6 +10337,13 @@
         continue;
       }
       if (jy2CostMgmtShouldOmitWorkType(row.workTypeCode, row.workTypeName)) continue;
+      // 同一工種コードの二重枠（ENSURE追加＋既存 等）は正規1件以外を出さない
+      if (
+        row.stableBlockId &&
+        omitDuplicateCodedIds.has(row.stableBlockId)
+      ) {
+        continue;
+      }
       const detailRows = detailRowsByBlockId.get(row.stableBlockId) || [];
       const hierarchyEntry = jy2ResolveNameHierarchy({
         workTypeCode: row.workTypeCode,

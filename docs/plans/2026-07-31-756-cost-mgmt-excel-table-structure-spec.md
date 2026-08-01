@@ -267,4 +267,5 @@
 | 2026-08-01 | Excel 11100｜線閉責任者賃金→昼間／夜間→詳細2セル（11000同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-11100-senpei` |
 | 2026-08-01 | Excel 11200｜列車見張員賃金→昼間／夜間→詳細2セル（11100同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-11200-watchman` |
 | 2026-08-01 | Excel 11300｜交通整理員賃金→昼間／夜間→詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-11300-traffic` |
+| 2026-08-01 | 同一システム工種コードの重複枠は正規1件のみ表示（11100二重など）。ENSURE区分はコード表。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-dedupe-coded` |
 | 2026-08-01 | セッション締め時点の OMIT 残: 11400・13500（浜田見積）。#R-EXCEL-UI-09 |
