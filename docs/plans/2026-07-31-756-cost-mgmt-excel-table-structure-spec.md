@@ -270,6 +270,7 @@
 | 2026-08-02 | Excel 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14。BUILD `2026-08-02-ver02-actual-excel-90200-prior-branch` |
 | 2026-08-02 | 表直上に実行予算額／月次数量／月次金額の全合計 sticky バーを仮置き（給与除く・施工計+保安計同趣旨）。浜田確認後に位置・項目を相談。#R-EXCEL-UI-15。BUILD `2026-08-02-ver02-actual-sticky-totals-bar` |
 | 2026-08-02 | sticky合計バー訂正: 月次は月単位（各月の数量・金額）。実行予算額のみ全合計。#R-EXCEL-UI-15。BUILD `2026-08-02-ver02-actual-sticky-totals-month` |
+| 2026-08-02 | sticky合計バーは既定クローズ。summaryに実行予算額を出し、クリックで月次まで展開。#R-EXCEL-UI-15。BUILD `2026-08-02-ver02-actual-sticky-totals-collapse` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |

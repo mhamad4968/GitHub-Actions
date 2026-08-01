@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（合計バー開閉・#R-EXCEL-UI-15）**: sticky合計バーは **既定クローズ**。見出しに実行予算額（全合計）を出し、クリックで月次数量・金額を展開。BUILD `2026-08-02-ver02-actual-sticky-totals-collapse`。  
 **2026-08-02（合計バー月単位・#R-EXCEL-UI-15）**: sticky合計バーの月次を **月ごとの数量・金額** に訂正（全期間1本合計はやめる）。実行予算額は全合計のまま。LIVE **rev295** / BUILD `2026-08-02-ver02-actual-sticky-totals-month`。  
 **2026-08-02（合計バー仮置き・#R-EXCEL-UI-15）**: 工事原価管理の表直上に sticky で合計バーを仮置き（給与手当除く・表下の施工計+保安計と同趣旨）。LIVE **rev294** / BUILD `2026-08-02-ver02-actual-sticky-totals-bar`。  
 **2026-08-02（Excel 90200・#R-EXCEL-UI-09/07/14）**: システム工種 **90200**｜費目 **前期支店共通原価**｜種別なし TYPELESS → 詳細2セル。並びは **13620 会議費の下**。LIVE **rev293** / BUILD `2026-08-02-ver02-actual-excel-90200-prior-branch`。  
