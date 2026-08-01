@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10800-after-10700
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10900-after-10800
+  // Phase2c-excel-10900-after-10800: 10900工事管理者賃金（出向工事管理者）を10800鎌ヶ谷の直後へ。名称枠はその後ろ。#R-EXCEL-UI-09
   // Phase2c-excel-10800-after-10700: 10800鎌ヶ谷資材使用料を10700塗装附帯工事の直後へ。名称枠はその後ろ。#R-EXCEL-UI-09
   // Phase2c-excel-11000-safety-manager: Excel正 11000｜工事安全専任管理者賃金。種別=昼間／夜間 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-13600-entertainment: Excel正 13600｜交際費。種別=得意先接待交際費（甲）／（乙）／その他接待交際費 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -641,7 +642,50 @@
       return 0;
     }
   }
-  // 種別のみ枠を 10800（無ければ10700）の直後へ（軌道→…→追加工事⑤の順）。
+  // 10900｜工事管理者賃金（出向工事管理者）を 10800（無ければ10700）の直後へ。
+  function jy2CostMgmtPlaceManagerWageAfterKamagaya(detailModel) {
+    if (
+      !detailModel ||
+      typeof detailModel.moveBlockAfter !== "function" ||
+      typeof detailModel.snapshot !== "function"
+    ) {
+      return 0;
+    }
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    const anchor =
+      jy2CostMgmtFindKamagayaAnchor(blocks) ||
+      jy2CostMgmtFindPaintAncillaryAnchor(blocks);
+    const block = jy2CostMgmtFindManagerWageAnchor(blocks);
+    if (!anchor || !block || block.status === "retired") return 0;
+    if (anchor.stableBlockId === block.stableBlockId) return 0;
+    const afterIndex = blocks.findIndex(
+      (candidate) => candidate && candidate.stableBlockId === anchor.stableBlockId,
+    );
+    const blockIndex = blocks.findIndex(
+      (candidate) =>
+        candidate && candidate.stableBlockId === block.stableBlockId,
+    );
+    if (afterIndex >= 0 && blockIndex === afterIndex + 1) return 0;
+    try {
+      detailModel.moveBlockAfter(block.stableBlockId, anchor.stableBlockId);
+      return 1;
+    } catch (error) {
+      if (typeof console !== "undefined" && console.error) {
+        console.error(
+          "jy2CostMgmtPlaceManagerWageAfterKamagaya failed:",
+          block,
+          error,
+        );
+      }
+      return 0;
+    }
+  }
+  // 種別のみ枠を 10900（無ければ10800／10700）の直後へ（軌道→…→追加工事⑤の順）。
   // 戻り値＝位置を動かした件数。
   function jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel) {
     if (
@@ -658,6 +702,7 @@
       return 0;
     }
     const anchor =
+      jy2CostMgmtFindManagerWageAnchor(blocks) ||
       jy2CostMgmtFindKamagayaAnchor(blocks) ||
       jy2CostMgmtFindPaintAncillaryAnchor(blocks);
     if (!anchor) return 0;
@@ -1139,9 +1184,11 @@
     );
     const sanitizedTypelessName2Ditto =
       jy2CostMgmtSanitizeTypelessName2Ditto(detailModel);
-    // 10700 → 10800 → 名称枠（軌道…）→ … → 10900 → オペレーター → その他コード枠
+    // 10700 → 10800 → 10900 → 名称枠（軌道…）→ オペレーター → その他コード枠
     const movedKamagaya =
       jy2CostMgmtPlaceKamagayaAfterPaintAncillary(detailModel);
+    const movedManager =
+      jy2CostMgmtPlaceManagerWageAfterKamagaya(detailModel);
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedDayNight =
@@ -1156,6 +1203,7 @@
       stripped +
       sanitizedTypelessName2Ditto +
       movedKamagaya +
+      movedManager +
       movedTypeOnly +
       movedDayNight +
       movedCoded
