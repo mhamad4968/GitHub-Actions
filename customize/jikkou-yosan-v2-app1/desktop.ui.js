@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10600-repair
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10700-ancillary
+  // Phase2c-excel-10700-ancillary: Excel正 10700｜塗装附帯工事（種別なし・詳細2セル）。
+  // 10200〜10600と同型（#R-EXCEL-UI-09）。
   // Phase2c-excel-10600-repair: Excel正 10600｜修繕等工事（種別なし・詳細2セル）。
   // 10200〜10400と同型（#R-EXCEL-UI-09）。
   // Phase2c-month-qty-default-one: 月次金額を入れたとき数量が空なら 1 を表示。
@@ -154,6 +156,7 @@
     "10300": Object.freeze(["足場工事"]),
     "10400": Object.freeze(["塗装・足場工事"]),
     "10600": Object.freeze(["修繕等工事"]),
+    "10700": Object.freeze(["塗装附帯工事"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -163,6 +166,7 @@
     "足場工事",
     "塗装・足場工事",
     "修繕等工事",
+    "塗装附帯工事",
   ]);
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
