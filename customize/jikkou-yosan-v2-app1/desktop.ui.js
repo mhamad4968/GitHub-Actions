@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11400-omit-block
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-omit-pending-frames
+  // Phase2c-excel-omit-pending-frames: 浜田: 11700〜経費・旅費/保険/交際・11000〜13500保安外注は原価管理から一旦全消し。必要枠は後でExcel正で足す。内訳は残す。#R-EXCEL-UI-09
   // Phase2c-excel-11400-omit-block: Excel正に11400枠なし → 工事原価管理から工種11400を丸ごと非表示（外注停電責任者・外注検電接地作業者）。内訳App757は触らない。#R-EXCEL-UI-09
   // Phase2c-excel-11600-code-repair: （塗）レンタルが10300のまま残るとENSUREスキップ＆費目が足場工事になる → コードを11600へ修復。HIMOKU_BY_NAME優先。#R-EXCEL-UI-09/12。
   // Phase2c-excel-11600-ensure: 内訳に11600が無いとOVERRIDEだけでは原価管理に出ない。ENSUREで空ブロック追加しオペレーター直後へ（10800も同列）。#R-EXCEL-UI-09/12。
@@ -186,7 +187,11 @@
       外注労務費: Object.freeze(["外注停電責任者", "外注検電接地作業者"]),
     }),
   });
-  const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze(["11400"]);
+  const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
+    "11000", "11100", "11200", "11300", "11400", "11700", "11800", "11900",
+    "12000", "12100", "12200", "12300", "12400", "12600", "12700", "12800",
+    "12900", "13100", "13500", "13600", "13620",
+  ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
     "10100": Object.freeze(["その他材料費"]),
@@ -953,9 +958,24 @@
     if (!allowed.includes(himokuLabel)) return true;
     return false;
   }
-  function jy2CostMgmtShouldOmitWorkType(workTypeCode) {
+  const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
+    "運送費", "産業廃棄物処理", "租税公課", "地代家賃", "消耗品費", "事務費", "通信費",
+    "旅費交通費", "出張旅費特例", "３万円未満公共交通機関特例", "その他旅費交通費",
+    "保険料", "労災保険料", "法定福利費", "雑費", "諸会費", "会議費", "補償費",
+    "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
+    "工事安全専任管理者", "出向工事安全専任管理者",
+    "線閉責任者", "外注線閉責任者",
+    "列車見張員", "外注列車見張員",
+    "交通整理員", "外注交通整理員", "交通整理員等",
+    "重機誘導員", "外注重機誘導員",
+    "検電接地", "外注停電責任者", "外注検電接地作業者",
+  ]);
+  function jy2CostMgmtShouldOmitWorkType(workTypeCode, workTypeName) {
     const code = String(workTypeCode || "").trim();
-    return Boolean(code && JY2_COST_MGMT_WORK_TYPE_OMIT.includes(code));
+    if (code && JY2_COST_MGMT_WORK_TYPE_OMIT.includes(code)) return true;
+    const short = jy2CostMgmtExcelShortName(workTypeName);
+    if (short && JY2_COST_MGMT_WORK_TYPE_NAME_OMIT.includes(short)) return true;
+    return false;
   }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
     if (jy2CostMgmtIsFlatHimoku(himokuLabel)) return [];
@@ -9642,7 +9662,7 @@
       ) {
         continue;
       }
-      if (jy2CostMgmtShouldOmitWorkType(row.workTypeCode)) continue;
+      if (jy2CostMgmtShouldOmitWorkType(row.workTypeCode, row.workTypeName)) continue;
       const detailRows = detailRowsByBlockId.get(row.stableBlockId) || [];
       const hierarchyEntry = jy2ResolveNameHierarchy({
         workTypeCode: row.workTypeCode,

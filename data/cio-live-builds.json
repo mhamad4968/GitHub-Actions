@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-11400-omit-block",
-      "fileKey": "b49232bf-cc89-4555-94eb-124f66d1d5bd",
-      "revision": "251",
+      "build": "2026-08-01-ver02-actual-excel-omit-pending-frames",
+      "fileKey": "30cf6c95-3ae0-4f30-ad57-71a75cf0941d",
+      "revision": "252",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T07:18:22.998Z",
+      "deployedAt": "2026-08-01T07:23:33.823Z",
       "note": null
     },
     "757": {

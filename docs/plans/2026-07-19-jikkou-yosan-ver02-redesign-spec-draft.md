@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・経費・旅費/保険/交際・保安外注 一旦全消し）**: 浜田指示 — **11000〜11300・11400・11700〜12400・12600〜12900・13100・13500・13600・13620**（経費・旅費/保険/交際・保安外注）を工事原価管理から一旦非表示。`JY2_COST_MGMT_WORK_TYPE_OMIT`（21コード）＋`JY2_COST_MGMT_WORK_TYPE_NAME_OMIT`（短名称フォールバック）。内訳 App757 は非破壊。必要枠は後で Excel 正で再追加。BUILD `2026-08-01-ver02-actual-excel-omit-pending-frames`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11400 枠丸ごと非表示）**: Excel原価管理明細に **11400** 枠なし → 工事原価管理から工種 **11400** を丸ごと非表示（外注停電責任者・外注検電接地作業者）。`JY2_COST_MGMT_WORK_TYPE_OMIT`＋`TYPE_DENY` 二重。内訳 App757 は非破壊。BUILD `2026-08-01-ver02-actual-excel-11400-omit-block`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11400 外注検電接地作業者非表示）**: 工種 **11400**／費目 **外注労務費** の種別 **外注検電接地作業者** を原価管理 UI から非表示（依頼者）。**外注停電責任者** は残す。`JY2_COST_MGMT_TYPE_DENY` 経由。BUILD `2026-08-01-ver02-actual-excel-11400-omit-kenden`。#R-EXCEL-UI-12。  
 **2026-08-01 午後（工事原価管理・11600 コード修復）**: （塗）レンタルが Excel 誤植 **10300** のままだと ENSURE が名称一致でスキップし、表示費目が足場工事になる。ENSURE で **11600 へ修復**＋HIMOKU_BY_NAME 優先。BUILD `2026-08-01-ver02-actual-excel-11600-code-repair`。#R-EXCEL-UI-09/12。  
