@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-07-31T22:04:33.387Z",
+  "scoredAt": "2026-08-01T06:31:24.825Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。",
+  "topTask": "**新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約26）。一時保存→App757／予実保存→App758 は維持。",
   "tasks": [
     {
-      "id": "checkpoint:**2026-08-01**_新チャットで_**756_操作＋／－のブロック単位",
-      "text": "**2026-08-01** 新チャットで **756 操作＋／－のブロック単位再描画**（`…excel-struct-raf` 本直し）→ 工事原価管理を Excel どおりに修正継続。`00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap。",
+      "id": "checkpoint:**新チャット**で_`00-NEW-SESSION-STARTER`_貼付→b",
+      "text": "**新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約26）。一時保存→App757／予実保存→App758 は維持。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

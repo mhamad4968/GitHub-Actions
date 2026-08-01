@@ -37,7 +37,11 @@ export function updateCheckpointGitHead(root, { hash, suffix = 'push 済' }) {
   if (!lineRe.test(text)) return false;
   const updated = text.replace(lineRe, line);
   if (updated === text) return false;
-  fs.writeFileSync(p, updated, 'utf8');
+  // *.md = eol=crlf（.gitattributes）。LF 書戻しは cio-eol-check で wake commit を落とす
+  const out = updated.includes('\r\n')
+    ? updated
+    : updated.replace(/\r?\n/g, '\r\n');
+  fs.writeFileSync(p, out, 'utf8');
   return true;
 }
 

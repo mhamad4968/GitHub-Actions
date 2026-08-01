@@ -1,8 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-01 10:31 JST — **セッション締め（full CLOSE・午前）**。756 原価管理 Excel 枠寄せ（塗装系〜オペレーター／その他労務・詳細2セル・＋修正）。浜田: 残り約26枠は明日以降。
 **次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約26）。一時保存→App757／予実保存→App758 は維持。
-
-**Git**: **`9e9ffc52`** = `origin/main` — push 済（R44 parent）
+**Git**: close-git で更新（ahead 解消は浜田 push 判断）
 
 **本日状態（要約）**: 756 LIVE **rev244** `…-excel-other-labor`。種別あり詳細2セル統一・名称枠確保・＋で詳細左が消える不具合修正。R63 クリーン。
 
@@ -49,7 +48,6 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-
 ## 2026-08-01
 
 ### 2026-08-01 午前（セッション締め）
@@ -57,12 +55,14 @@
 - 浜田: 残り約26枠は明日以降。新チャットで続行
 - close-git / clock:clear（本締め）
 
+
 ## 2026-07-31
 
 ### 2026-07-31 夜（セッション締め）
 - 756: 操作列・＋詳細行撤去・struct-raf・SPEC・ops ルール（4h硬拒否）
 - Desktop AI緊急用 最新同期・verify OK
 - 明日: ブロック単位再描画＋Excelどおり修正継続
+
 
 
 
@@ -80,22 +80,5 @@
 
 
 
-## 2026-07-29
 
-### 2026-07-29 夜（セッション締め）
-- Desktop AI緊急用: 古いファイル削除相当の最新入替（`session-starter:sync-desktop` + verify）
-- 確認資料クローズ → 要望実装（税列・属性列・明細展開）・ops 規則化・SPEC Y12 追記・push 済
-
-### 2026-07-29 夜（756 明細展開 Y12）
-- BUILD `actual-detail-expand` → fix `actual-detail-expand-fix` LIVE **rev167**
-- App758 `detail_row_key` 追加。親＝内訳№合計／子＝明細入力
-- ロールバック: `backup/756-before-actual-detail-expand-2026-07-29`
-
-### 2026-07-29 夕（確認資料・要望）
-- #REF!／工事原価管理方針／丸め・給与一旦このまま／コード整理HOLD
-- 総括消費税率・金額税込削除／工事原価管理 消費税・単位・数量・金額・備考削除
-
-### 2026-07-29 夜（運用改善）
-- A1–F3 浜田全承認 → `cio-ops-hard-request-clarity.mdc` 等。憲法本文は未変更
-
-
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-01.md -->

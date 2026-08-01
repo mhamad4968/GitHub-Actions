@@ -31,6 +31,15 @@ function toLf(s) {
   return String(s || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 }
 
+/**
+ * *.md は .gitattributes eol=crlf — 処理は LF で行い、書戻しは CRLF。
+ * 2026-08-01 WAKE: LF 書戻し → cio-eol-check → wake:handoff-commit NG の再発防止。
+ */
+function writeMdCrlf(abs, content) {
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, toLf(content).replace(/\n/g, '\r\n'), 'utf8');
+}
+
 /** 凍結ゾーン行数超過の再発防止: 連続空行を1行に、末尾空行を除去（内容は落とさない） */
 function compactPreambleBlankLines(preamble) {
   return toLf(preamble)
@@ -106,7 +115,7 @@ function main() {
         '\n' +
         sections.map((s) => s.title + '\n' + s.body.join('\n')).join('\n\n') +
         '\n';
-      fs.writeFileSync(CHECKPOINT, rebuilt, 'utf8');
+      writeMdCrlf(CHECKPOINT, rebuilt);
       preamble = compacted.replace(/\n+$/g, '');
       console.log(
         `[cio:checkpoint:rollup] compacted preamble ${preambleLinesBefore} → ${preamble.split('\n').length}`,
@@ -174,11 +183,13 @@ function main() {
 
   fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
   if (!fs.existsSync(archivePath)) {
-    fs.writeFileSync(archivePath, archiveDoc, 'utf8');
+    writeMdCrlf(archivePath, archiveDoc);
   } else {
-    fs.appendFileSync(archivePath, '\n\n---\n\n' + archiveDoc.split('\n').slice(2).join('\n'), 'utf8');
+    const appendBody =
+      '\n\n---\n\n' + archiveDoc.split('\n').slice(2).join('\n');
+    fs.appendFileSync(archivePath, toLf(appendBody).replace(/\n/g, '\r\n'), 'utf8');
   }
-  fs.writeFileSync(CHECKPOINT, newCheckpoint, 'utf8');
+  writeMdCrlf(CHECKPOINT, newCheckpoint);
   // D-CHKPT-02: preamble 保持でも古い Git 行が残る場合は stamp（commit は WAKE heal / close-git）
   const heal = healCheckpointGitWorktree(root, { target: 'origin' });
   if (heal.healed) {
