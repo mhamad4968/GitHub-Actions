@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-omit-pending-frames",
-      "fileKey": "30cf6c95-3ae0-4f30-ad57-71a75cf0941d",
-      "revision": "252",
+      "build": "2026-08-01-ver02-actual-excel-11700-transport",
+      "fileKey": "2c41e76b-b7b5-4c1a-8817-7716405e320f",
+      "revision": "253",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T07:23:33.823Z",
+      "deployedAt": "2026-08-01T07:26:09.256Z",
       "note": null
     },
     "757": {
