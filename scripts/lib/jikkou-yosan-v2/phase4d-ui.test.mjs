@@ -515,15 +515,24 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-dual-commit-live/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-other-labor/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /jy2BindDetailPmMouseDown/);
   assert.match(source, /jy2CommitChildDetailInputsFromRow/);
   assert.match(source, /commitOnInput:\s*true/);
+  assert.match(source, /Phase2c-excel-other-labor/);
   assert.match(source, /Phase2c-dual-commit-live/);
   assert.match(source, /Phase2c-flush-before-plus/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-fix-flat-plus-strip/);
+  assert.match(
+    source,
+    /JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[\s\S]*?"建設機械オペレーター":\s*Object\.freeze\(\[\s*"建設機械オペレーター",\s*"その他労務",?\s*\]\)/,
+  );
+  assert.match(
+    source,
+    /JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU[\s\S]*?"その他労務":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/,
+  );
   assert.match(source, /Phase2c-qty-default-one/);
   assert.match(source, /Phase2c-month-qty-default-one/);
   assert.match(source, /Phase2c-unit-price-comma/);
@@ -571,10 +580,6 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(
     source,
     /"建設機械オペレーター":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/,
-  );
-  assert.match(
-    source,
-    /"建設機械オペレーター":\s*Object\.freeze\(\["建設機械オペレーター"\]\)/,
   );
   {
     const typelessMatch = source.match(
