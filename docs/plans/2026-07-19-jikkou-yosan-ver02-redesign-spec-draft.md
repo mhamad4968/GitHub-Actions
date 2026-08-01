@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（内訳↔原価管理 自動連携オフ・#R-EXCEL-LINK-00）**: 浜田GO。`JY2_COST_MGMT_AUTO_LINK_DISABLED=true` で ENSURE（空枠追加）／PLACE／strip・sanitize を一時停止。削除した名称枠が原価管理オープンで復活しない。MANUAL_ONLY維持。方針決定は明日以降。LIVE **rev289** / BUILD `2026-08-02-ver02-actual-auto-link-off`。  
 **2026-08-02（工事原価管理ハードニング・#R-SOFT-SAVE-02）**: AI監査是正。①「予実を保存」前にフォーカス中セルを flush（一時保存と同型）。②revealキーを `{ budget_version_id, keys }` で版スコープ＋現行行剪定（版コピー後の漏洩防止）。③ENSURE/sanitize の正規化だけでは `detailSavePending` を立てず、原価管理を開いただけで予実保存がブロックされない。LIVE **rev288** / BUILD `2026-08-02-ver02-actual-cost-mgmt-harden`。  
 **2026-08-02（一時保存が見えない誤認・#R-SOFT-SAVE-01）**: App757 への書込は成功していたが、MANUAL_ONLY が sessionStorage reveal のみ依存し reload 後に詳細が消えて「未保存」に見えた。leaf 内容あり行を自動 reveal＋sticky 右に保存/更新日時。LIVE **rev287** / BUILD `2026-08-02-ver02-actual-soft-save-visible`。  
 **2026-08-01 夜（最終・夕反省全承認＋仕様同期）**: 浜田 — 運用改善 A/S/O/C/M **すべて承認**（憲法本文変更なし）。GO `docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md`／runbook `cio-ops-2026-08-01-evening-improvements.md`。LIVE **rev286** `…-dedupe-coded`。配置順 #R-EXCEL-PLACE-01／二重非表示 S-DEDUP-01／ENSURE 区分 resolve C-EXCEL-01／受入ミニチェック O-756-01。**OMIT 残: 11400・13500**。正本表構造 SPEC 同期済。  

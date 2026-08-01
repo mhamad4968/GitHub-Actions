@@ -2,8 +2,9 @@
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
+  // Phase2c-actual-auto-link-off: 内訳↔原価管理の自動連携（ENSURE/PLACE/sanitize）を一時無効。浜田GO・明日以降に方針決定。#R-EXCEL-LINK-00
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-auto-link-off
   // Phase2c-actual-cost-mgmt-harden: 予実flush / revealを版スコープ / ENSUREでdetailSavePending立てない / revealを現行行に剪定。#R-SOFT-SAVE-02
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-cost-mgmt-harden
   // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
   // Phase2c-excel-11300-traffic: Excel正 11300｜交通整理員賃金。種別=昼間／夜間 → 詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-11200-watchman: Excel正 11200｜列車見張員賃金。種別=昼間／夜間 → 詳細2セル（11100同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -214,6 +215,10 @@
   // true: 既存内訳由来の詳細は隠し、reveal（＋追加）した行だけ表示・手入力。
   // false: 全詳細行を表示（来週内訳連動方針後）。
   const JY2_ACTUAL_DETAIL_MANUAL_ONLY = true;
+  // 浜田GO 2026-08-02: 内訳↔原価管理の自動連携を一時無効（明日以降に持ち方を決定）。
+  // true のとき ENSURE（空枠追加）/ PLACE（並べ替え）/ strip・sanitize を一切走らせない。
+  // MANUAL_ONLY（内訳詳細を原価管理に出さない）は別フラグで維持。
+  const JY2_COST_MGMT_AUTO_LINK_DISABLED = true;
   // 材料費下の種別「その他材料費」は Excel では費目へ出すため種別行では抑止。
   const JY2_COST_MGMT_TYPE_DENY = Object.freeze({
     "10100": Object.freeze({
@@ -1273,6 +1278,12 @@
   // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700直後（名称枠）／その後10800・10900／オペレーター直後へ並べる。
   // 詳細行は載せず費目枠だけ（＋で追加するまで）。戻り値＝変化件数。
   function jy2CostMgmtEnsureTypeOnlyFrames(detailModel, detailVisibility) {
+    if (JY2_COST_MGMT_AUTO_LINK_DISABLED) {
+      if (typeof console !== "undefined" && console.info) {
+        console.info("[jy2-actual-auto-link-off] ENSURE/PLACE/sanitize skipped");
+      }
+      return 0;
+    }
     if (
       !detailModel ||
       !detailModel.allowedOperations ||
