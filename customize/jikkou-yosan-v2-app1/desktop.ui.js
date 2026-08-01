@@ -2,8 +2,9 @@
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
-  // Phase2c-excel-11400-ground: Excel正 11400｜検電接地。種別=停電責任者／検電接地作業者 → 詳細2セル。omit解除＋OVERRIDE＋ENSURE。並び=13500直前。#R-EXCEL-UI-09/12/14
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-excel-11400-ground
+  // Phase2c-excel-11500-other-security: Excel正 11500｜その他保安費（種別なしTYPELESS・詳細2セル）。並び=11400直下＝11600直前。#R-EXCEL-UI-09/07/14
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-excel-11500-other-security
+  // Phase2c-excel-11400-ground: Excel正 11400｜検電接地。種別=停電責任者／検電接地作業者 → 詳細2セル。並び=11600直前。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-13500-guide: Excel正 13500｜重機誘導員。種別=昼間／夜間 → 詳細2セル（11300同型）。omit解除＋OVERRIDE＋ENSURE登録（AUTO_LINK_OFF中はENSURE非実行）。#R-EXCEL-UI-09/12/14
 
   // Phase2c-actual-auto-link-off: 内訳↔原価管理の自動連携（ENSURE/PLACE/sanitize）を一時無効。浜田GO・明日以降に方針決定。#R-EXCEL-LINK-00
@@ -274,6 +275,7 @@
     "11200": Object.freeze(["列車見張員賃金"]),
     "11300": Object.freeze(["交通整理員賃金"]),
     "11400": Object.freeze(["検電接地"]),
+    "11500": Object.freeze(["その他保安費"]),
     "13500": Object.freeze(["重機誘導員"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
@@ -426,6 +428,7 @@
     "諸雑費",
     "諸会費",
     "会議費",
+    "その他保安費",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -512,6 +515,18 @@
         "（塗）交通整理員等",
         "外注交通整理員",
       ]),
+    }),
+    Object.freeze({
+      shortName: "検電接地",
+      workTypeCode: "11400",
+      workTypeName: "（塗）検電接地",
+      nameAliases: Object.freeze(["検電接地", "（塗）検電接地"]),
+    }),
+    Object.freeze({
+      shortName: "その他保安費",
+      workTypeCode: "11500",
+      workTypeName: "（塗）その他保安費",
+      nameAliases: Object.freeze(["その他保安費", "（塗）その他保安費"]),
     }),
     Object.freeze({
       shortName: "レンタル",
@@ -602,15 +617,6 @@
       workTypeCode: "13100",
       workTypeName: "（塗）諸会費",
       nameAliases: Object.freeze(["諸会費", "（塗）諸会費"]),
-    }),
-    Object.freeze({
-      shortName: "検電接地",
-      workTypeCode: "11400",
-      workTypeName: "（塗）検電接地",
-      nameAliases: Object.freeze([
-        "検電接地",
-        "（塗）検電接地",
-      ]),
     }),
     Object.freeze({
       shortName: "重機誘導員",

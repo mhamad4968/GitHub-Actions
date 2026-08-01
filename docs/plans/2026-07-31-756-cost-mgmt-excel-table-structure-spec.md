@@ -266,6 +266,7 @@
 | 2026-08-02 | **#R-EXCEL-LINK-00**: 内訳↔原価管理の自動連携を一時無効（`JY2_COST_MGMT_AUTO_LINK_DISABLED`）。ENSURE空枠追加・PLACE並べ替え・strip/sanitize 停止。MANUAL_ONLY維持。方針は明日以降。BUILD `2026-08-02-ver02-actual-auto-link-off` |
 | 2026-08-02 | Excel 13500｜重機誘導員→昼間／夜間→詳細2セル（11300同型）。omit解除＋HIMOKU/TYPES OVERRIDE＋ENSURE登録（AUTO_LINK_OFF中はENSURE非実行）。OMIT残は11400のみ。#R-EXCEL-UI-09/12/14。BUILD `2026-08-02-ver02-actual-excel-13500-guide` |
 | 2026-08-02 | Excel 11400｜検電接地→停電責任者／検電接地作業者→詳細2セル。omit解除。並び=13500直前。旧外注*は TYPE_DENY。OMIT残なし。#R-EXCEL-UI-09/12/14。BUILD `2026-08-02-ver02-actual-excel-11400-ground` |
+| 2026-08-02 | Excel 11400並び訂正＝11600直前。Excel 11500｜その他保安費（種別なしTYPELESS）を11400直下へ追加。#R-EXCEL-UI-09/07/14。BUILD `2026-08-02-ver02-actual-excel-11500-other-security` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |

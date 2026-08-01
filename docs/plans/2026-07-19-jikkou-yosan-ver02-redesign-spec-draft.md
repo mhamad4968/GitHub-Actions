@@ -2,7 +2,8 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
-**2026-08-02（Excel 11400・#R-EXCEL-UI-09/12/14）**: システム工種 **11400**｜費目 **検電接地**｜種別 **停電責任者／検電接地作業者** → 詳細2セル。OMIT解除。並びは **13500 重機誘導員の直前**。旧「外注労務費＞外注停電責任者／外注検電接地作業者」は TYPE_DENY。LIVE **rev291** / BUILD `2026-08-02-ver02-actual-excel-11400-ground`。  
+**2026-08-02（Excel 11500＋11400並び訂正・#R-EXCEL-UI-09/07/14）**: 11400 検電接地の位置を **11600 レンタル直前**へ訂正。新規 **11500｜その他保安費**（種別なし TYPELESS・詳細2セル）を **11400 直下**に追加。並び＝11400→11500→11600。LIVE **rev292** / BUILD `2026-08-02-ver02-actual-excel-11500-other-security`。  
+**2026-08-02（Excel 11400・#R-EXCEL-UI-09/12/14）**: システム工種 **11400**｜費目 **検電接地**｜種別 **停電責任者／検電接地作業者** → 詳細2セル。OMIT解除。旧「外注労務費＞外注停電責任者／外注検電接地作業者」は TYPE_DENY。LIVE **rev291** / BUILD `2026-08-02-ver02-actual-excel-11400-ground`。  
 **2026-08-02（Excel 13500・#R-EXCEL-UI-09/12/14）**: システム工種 **13500**｜費目 **重機誘導員**｜種別 **昼間／夜間** → 詳細2セル（11300同型）。コードOMIT・名称OMIT解除。旧コード表「外注労務費＞外注重機誘導員」は TYPE_DENY。AUTO_LINK_OFF中のため ENSURE は登録のみ。LIVE **rev290** / BUILD `2026-08-02-ver02-actual-excel-13500-guide`。  
 **2026-08-02（内訳↔原価管理 自動連携オフ・#R-EXCEL-LINK-00）**: 浜田GO。`JY2_COST_MGMT_AUTO_LINK_DISABLED=true` で ENSURE（空枠追加）／PLACE／strip・sanitize を一時停止。削除した名称枠が原価管理オープンで復活しない。MANUAL_ONLY維持。方針決定は明日以降。LIVE **rev289** / BUILD `2026-08-02-ver02-actual-auto-link-off`。  
 **2026-08-02（工事原価管理ハードニング・#R-SOFT-SAVE-02）**: AI監査是正。①「予実を保存」前にフォーカス中セルを flush（一時保存と同型）。②revealキーを `{ budget_version_id, keys }` で版スコープ＋現行行剪定（版コピー後の漏洩防止）。③ENSURE/sanitize の正規化だけでは `detailSavePending` を立てず、原価管理を開いただけで予実保存がブロックされない。LIVE **rev288** / BUILD `2026-08-02-ver02-actual-cost-mgmt-harden`。  
