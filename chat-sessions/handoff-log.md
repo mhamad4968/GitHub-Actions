@@ -5422,3 +5422,19 @@ npm run cio:morning:ready
 **触らない**: 688/677-679/SKYSEA/736/712deploy禁止
 
 ---
+
+### 2026-08-01 JST — **2026-08-01 本日最終締め（SPEC同期＋夕反省GO反映）**
+
+**要約**: 756 LIVE rev286。表構造SPEC/redesign同期。夕反省全承認・Desktop最新・OMIT残11400・13500。
+
+**次の1手**: 新チャットで00-NEW-SESSION-STARTER貼付→bootstrap → 756 Excel枠続行（OMIT残11400・13500・O-756-01）
+
+**Git**: `def30ccb` — final close; specs synced; evening GO applied
+
+**BUILD**: 756 2026-08-01-ver02-actual-excel-dedupe-coded rev286
+
+**GO待ち**: なし
+
+**触らない**: 688/677-679/SKYSEA/736/712deploy禁止
+
+---

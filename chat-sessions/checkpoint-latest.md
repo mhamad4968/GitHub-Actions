@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-01 20:45 JST — **セッション締め（full CLOSE・夜最終）**。756 Excel枠 11000〜11300（昼間／夜間）・名称枠を10700直後・11100二重非表示。浜田: OMIT残 11400・13500 は次セッション。
-**次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500）。一時保存→App757／予実保存→App758 は維持。
-**Git**: **`a860fe73`** = `origin/main` — push 済（R44 parent）
+**最終更新**: 2026-08-01 20:55 JST — **本日最終締め（full CLOSE）**。756 LIVE rev286／夕反省全承認反映／SPEC同期／Desktop最新。浜田: OMIT残 11400・13500 は次セッション。
+**次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500。受入 O-756-01）。一時保存→App757／予実保存→App758 は維持。
+**Git**: close-git で更新
 
-**本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び修正・11000〜11300・dedupe。R63 クリーン。GitHub Actions 本日 success。
+**本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び・11000〜11300・dedupe・夕反省GO全反映。R63 クリーン。GHA success。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-01）
 | App | BUILD | rev |
@@ -12,14 +12,15 @@
 
 **継続メモ**:
 1. **756 工事原価管理**: Excel「原価管理明細」枠。済=塗装系・名称枠・10800/10900・11000〜11300・経費系多数。**OMIT残: 11400・13500**。
-2. 同一工種コードの二重枠は表示側で正規1件（内訳非破壊）。ENSURE区分はコード表。
-3. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
+2. 同一工種コードの二重枠は表示側で正規1件（内訳非破壊）。ENSURE区分はコード表。配置 #R-EXCEL-PLACE-01。
+3. 夕反省 GO: `2026-08-01-evening-reflection-hamada-go`／runbook `cio-ops-2026-08-01-evening-improvements`。
+4. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
 
 **GO待ち**: なし。新アプリ＝相談・GO後のみ。
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**。
 
-**調査正本**: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md`（#R-EXCEL-UI-09〜14）
+**調査正本**: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md`（#R-EXCEL-UI-09〜14 / PLACE-01 / S-DEDUP-01）
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
@@ -51,19 +52,17 @@
 
 ## 2026-08-01
 
-### 2026-08-01 夜（最終締め）
-- 756: LIVE rev286 `…-dedupe-coded`。11000〜11300・名称枠10700直後・11100二重非表示。R63 clean。GHA success
+### 2026-08-01 夜（本日最終締め）
+- 756: LIVE rev286 `…-dedupe-coded`。SPEC/redesign 同期。夕反省全承認反映済。Desktop 最新。R63 clean
 - 浜田: OMIT残 11400・13500 は次セッション。新チャットで続行
 - close-git / clock:clear（本締め）
 
 ### 2026-08-01 午後（最終締め）
 - 756: LIVE rev270 `…-12900-misc`。詳細左persist／列幅／12600・12700・12900。R63 clean
-- 浜田: 残り約12枠は次セッション。新チャットで続行
 - close-git / clock:clear（本締め）
 
 ### 2026-08-01 午前（セッション締め）
-- 756: Excel 原価管理明細寄せ（10200〜10700・名称枠・10900・オペレーター＋その他労務・詳細2セル・＋修正）LIVE rev244
-- 浜田: 残り約26枠は明日以降。新チャットで続行
+- 756: Excel 原価管理明細寄せ LIVE rev244
 - close-git / clock:clear（本締め）
 
 
@@ -72,13 +71,12 @@
 ### 2026-07-31 夜（セッション締め）
 - 756: 操作列・＋詳細行撤去・struct-raf・SPEC・ops ルール（4h硬拒否）
 - Desktop AI緊急用 最新同期・verify OK
-- 明日: ブロック単位再描画＋Excelどおり修正継続
 
 
 
 ## 2026-07-30
 
 ### 2026-07-30 夜（セッション締め）
-- Desktop AI緊急用: 旧ファイル prune＋最新入替（`session-starter:sync-desktop` + verify）
-- 夕反省GO全承認反映済・SPEC対面待ちスタンプ・CI緑
+- Desktop AI緊急用: 旧ファイル prune＋最新入替
+- 夕反省GO全承認反映済・CI緑
 - close-git / clock:clear

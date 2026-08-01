@@ -1,4 +1,4 @@
-SESSION-CLOSE-REPORT 2026-08-01（夜・最終締め）
+SESSION-CLOSE-REPORT 2026-08-01（夜・本日最終締め）
 ========================================
 
 ■ レーン
@@ -7,26 +7,27 @@ SESSION-CLOSE-REPORT 2026-08-01（夜・最終締め）
 ■ LIVE
 - BUILD: 2026-08-01-ver02-actual-excel-dedupe-coded
 - rev: 286
-- R63: clean（pending stamp クリア済）
+- fileKey: 5790d380-0946-4361-a595-20c38d946311
+- R63: clean
 
-■ 本日できたこと（午前〜夜・目視OKまで）
+■ 本日できたこと（午前〜夜・最終）
 【午前】
 - 10200〜10700 種別なし・詳細2セル／名称枠／10900／オペレーター＋その他労務／詳細2セル統一／＋詳細左消失修正
 【午後】
 - 11600〜12900 系枠・TYPELESS詳細左persist／列幅／12600・12700・12900 等
-【夜・本セッション】
+【夜】
 - 並び: 10700→名称枠（軌道〜追加工事）→10800→10900
-- Excel枠追加（昼間／夜間）: 11000 工事安全専任管理者賃金／11100 線閉責任者賃金／11200 列車見張員賃金／11300 交通整理員賃金
-- 11100 二重表示を非表示化（同一工種コードは正規1件・内訳非破壊）＋ENSURE区分をコード表（11100=保安）に修正
-- soft-save／単価列／13600 交際費 等（前ターン継続分含む）
-- SPEC・kintone-apps・cio-live-builds 同期・commit/push 済み
-- GitHub Actions（本日 push）: constitution-gates / kintone-customize-deploy とも success（API再deployはスキップ経路）
+- Excel枠追加（昼間／夜間）: 11000／11100／11200／11300
+- 11100 二重表示の非表示化＋ENSURE区分をコード表（保安）へ
+- 夕反省改善案を浜田が全承認 → GO記録・runbook・薄い.mdc・SPEC・受入#12・針テスト反映
+- Desktop AI緊急用: 旧版prune＋最新同期（verify OK）
+- 仕様同期: 756表構造SPEC（LIVE/配置/二重/UI-11/UI-12）＋redesign草案スタンプ
+- GitHub Actions 本日 success／working tree 最終締め時に確認
 
 ■ 未了・次セッション
 OMIT残（コード）:
 - 11400（Excel正に枠なし＝現状OMIT維持）
 - 13500（その他保安費系・浜田見積）
-※ 必要枠は Excel 正で1枠ずつ解除＋費目／種別指定して追加。
 
 その他:
 - 旅費交通費・交際費など SPEC 受入チェック未了
@@ -36,7 +37,11 @@ OMIT残（コード）:
 ■ 次セッション第1手
 1. Desktop AI緊急用 `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付
 2. bootstrap OK
-3. 756 原価管理を開き、Excel 正で次の未実装枠（OMIT残）を1つずつ
+3. 756 原価管理を開き、Excel 正で次の未実装枠（OMIT残）を1つずつ（O-756-01 ミニチェック）
 
 ■ 触らない
 - 736 / 712 deploy禁止 / 677–679 / 688 heat以外
+
+■ GO 正本
+- docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md
+- docs/runbooks/cio-ops-2026-08-01-evening-improvements.md
