@@ -5427,7 +5427,7 @@ npm run cio:morning:ready
 
 **要約**: 756 LIVE rev286。表構造SPEC/redesign同期。夕反省全承認・Desktop最新・OMIT残11400・13500。
 
-**次の1手**: 新チャットで00-NEW-SESSION-STARTER貼付→bootstrap → 756 Excel枠続行（OMIT残11400・13500・O-756-01）
+**次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500。受入 O-756-01）。一時保存→App757／予実保存→App758 は維持。
 
 **Git**: `def30ccb` — final close; specs synced; evening GO applied
 
