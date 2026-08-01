@@ -229,3 +229,4 @@
 | 2026-08-01 | 種別のみ枠が内訳に無いとき空ブロック自動追加。BUILD `2026-08-01-ver02-actual-excel-type-only-ensure` |
 | 2026-08-01 | 種別のみ枠を 10700｜塗装附帯工事 の直後へ並べ替え。BUILD `2026-08-01-ver02-actual-excel-type-only-order` |
 | 2026-08-01 | 軌道工事〜追加工事⑤を種別なし・詳細2セルへ訂正（10700同型）。BUILD `2026-08-01-ver02-actual-excel-nameless-typeless` |
+| 2026-08-01 | 軌道工事等は費目枠のみ（空詳細行は出さない。＋まで）。BUILD `2026-08-01-ver02-actual-excel-nameless-no-empty-detail` |
