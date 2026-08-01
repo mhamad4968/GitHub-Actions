@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・12500 借上げ自動車費）**: Excel正 **12500｜費目=借上げ自動車費｜種別なし・詳細2セル**（11700/11800/11900/12000/12100/12200/12300 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT` から 12500 を解除（該当時）、`WORK_TYPE_NAME_OMIT` から 借上げ自動車費 を解除（該当時）。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES（workTypeName=`（塗）借上げ自動車費`）。LIVE BUILD `2026-08-01-ver02-actual-excel-12500-car`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・12400 種別（塗）除去）**: App757/Hierarchy の（塗）種別名を Excel 短名へ正規化（出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費）。name1 偽費目畳み込み＋`jy2CostMgmtShouldOmitType` で（塗）重複省略。LIVE BUILD `2026-08-01-ver02-actual-excel-12400-type-strip`。#R-EXCEL-UI-12。  
 **2026-08-01 午後（工事原価管理・12400 旅費交通費）**: Excel正 **12400｜費目=旅費交通費｜種別=出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費 → 詳細2セル**（11600 レンタル同型・typeless ではない）。`JY2_COST_MGMT_WORK_TYPE_OMIT` から 12400 を解除、`WORK_TYPE_NAME_OMIT` から 旅費交通費／出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費 を解除。HIMOKU_OVERRIDE＋TYPES_OVERRIDE＋ENSURE_CODED_FRAMES（workTypeName=`（塗）旅費交通費`）。LIVE BUILD `2026-08-01-ver02-actual-excel-12400-travel`。#R-EXCEL-UI-09/12/14。  
 **2026-08-01 午後（工事原価管理・12300 通信費）**: Excel正 **12300｜費目=通信費｜種別なし・詳細2セル**（11700/11800/11900/12000/12100/12200 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT` から 12300 を解除、`WORK_TYPE_NAME_OMIT` から 通信費 を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES（workTypeName=`（塗）通信費`）。LIVE BUILD `2026-08-01-ver02-actual-excel-12300-comms`。#R-EXCEL-UI-09。  
