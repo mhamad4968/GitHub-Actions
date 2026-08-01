@@ -93,6 +93,8 @@
 
 **揃え位置（#R-EXCEL-UI-08）**: 費目名＝**左**（親行・グループ行とも `padding-left:6px`）。種別名＝左＋一段インデント。詳細テキスト＝左。数量・単価・金額・各SUM＝**右**（tabular nums）。操作列＝中央。例外行を作らない。
 
+**Excel費目枠オーバーライド（#R-EXCEL-UI-09）**: コード表の constructionMenu（材料費・外注費…）より **原価管理明細の費目枠が正**。例: **10200 → 費目「塗装工事」のみ**（種別なし・詳細2セル＝その他材料費と同型）。`JY2_COST_MGMT_HIMOKU_OVERRIDE` ＋ `TYPELESS`。空のときは操作列＋で最初の詳細を追加。共通仕様（SUM/色/太字/揃え）は #R-EXCEL-UI-06〜08 を継承し、差分だけ足す。
+
 ### 2.3 計算（Excel 検証済み）
 
 | 項目 | 式・規則 |
@@ -210,3 +212,4 @@
 | 2026-08-01 | 費目行も計画数量SUM＋実行予算SUM（結合は種別〜単価）。親行の既定費目は当該費目の子だけ集計。BUILD `2026-08-01-ver02-actual-himoku-qty-amt-sum` |
 | 2026-08-01 | 費目名太字を親行・グループ行で統一。種別なし費目（その他材料費）もSUM/色/太字は他費目と同一（#R-EXCEL-UI-06/07）。BUILD `2026-08-01-ver02-actual-himoku-label-unify` |
 | 2026-08-01 | 揃え位置統一（費目名左・数量/金額右）。#R-EXCEL-UI-08。BUILD `2026-08-01-ver02-actual-himoku-align-unify` |
+| 2026-08-01 | Excel 10200｜塗装工事（種別なし・詳細2セル）。HIMOKU_OVERRIDE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10200-paint` |

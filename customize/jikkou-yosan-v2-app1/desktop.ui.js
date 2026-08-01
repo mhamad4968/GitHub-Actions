@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-himoku-align-unify
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10200-paint
+  // Phase2c-excel-10200-paint: Excel正 10200｜塗装工事（種別なし・詳細2セル）。
+  // コード表 constructionMenu（外注費等）は原価管理では HIMOKU_OVERRIDE で置換。
   // Phase2c-himoku-align-unify: 揃え位置も統一。費目名=左、数量/金額/SUM=右。
   // 親行・費目グループ・種別なし費目で同じ（#R-EXCEL-UI-08）。
   // Phase2c-himoku-label-unify: 費目名は親行・費目グループ行とも太字（ラベルのみ）。
@@ -132,9 +134,17 @@
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
     "10100": Object.freeze(["その他材料費"]),
   });
-  // Excel: 費目の下に種別行なし・詳細だけ（その他材料費）。
+  // Excel原価管理明細正: 工種の費目枠をコード表（constructionMenu 等）から置換。
+  // #R-EXCEL-UI-09: 共通仕様（SUM/色/太字/揃え）＋差分だけ。個別その場直し禁止。
+  const JY2_COST_MGMT_HIMOKU_OVERRIDE = Object.freeze({
+    "10200": Object.freeze(["塗装工事"]),
+  });
+  // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
-  const JY2_COST_MGMT_TYPELESS_HIMOKU = Object.freeze(["その他材料費"]);
+  const JY2_COST_MGMT_TYPELESS_HIMOKU = Object.freeze([
+    "その他材料費",
+    "塗装工事",
+  ]);
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
     const denyList =
@@ -150,13 +160,27 @@
     return Boolean(text && JY2_COST_MGMT_TYPELESS_HIMOKU.includes(text));
   }
   function jy2CostMgmtHimokuTemplate(workTypeCode, templateHimoku) {
-    const base = Array.isArray(templateHimoku) ? [...templateHimoku] : [];
-    const extra =
-      JY2_COST_MGMT_HIMOKU_EXTRA[String(workTypeCode || "")] || [];
+    const code = String(workTypeCode || "");
+    const override = JY2_COST_MGMT_HIMOKU_OVERRIDE[code];
+    const base =
+      override && override.length > 0
+        ? [...override]
+        : Array.isArray(templateHimoku)
+          ? [...templateHimoku]
+          : [];
+    const extra = JY2_COST_MGMT_HIMOKU_EXTRA[code] || [];
     for (const himoku of extra) {
       if (himoku && !base.includes(himoku)) base.push(himoku);
     }
     return base;
+  }
+  function jy2CostMgmtPrimaryHimokuLabel(workTypeCode, hierarchyEntry, row) {
+    const template = jy2CostMgmtHimokuTemplate(
+      workTypeCode,
+      jy2HimokuChoicesForEntry(hierarchyEntry),
+    );
+    if (template.length > 0) return template[0];
+    return jy2ActualPrimaryHimokuLabel(hierarchyEntry, row);
   }
   // ダッシュ類（半角/全角/類似）・空・（種別未設定）は通常は種別行に出さない。
   function jy2CostMgmtIsDashLike(text) {
@@ -6880,6 +6904,58 @@
       jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
       4,
     );
+    // 種別なし既定費目が空のとき: 操作列＋で最初の詳細（2セル）を追加
+    if (
+      parentHimokuOpts &&
+      parentHimokuOpts.detailQuickAdd === true &&
+      parentHimokuOpts.detailModel &&
+      parentHimokuOpts.canEditBudget === true &&
+      typeof parentHimokuOpts.onAdded === "function" &&
+      primaryHimokuLabel
+    ) {
+      const ops = documentRef.createElement("span");
+      ops.className = "jy2-actual-child-ops";
+      ops.setAttribute("aria-label", "詳細行の追加");
+      const addBtn = documentRef.createElement("button");
+      addBtn.type = "button";
+      addBtn.className =
+        "jy2-actual-detail-pm-btn jy2-actual-himoku-ops-add-btn";
+      addBtn.textContent = "＋";
+      addBtn.setAttribute("aria-label", "詳細行を追加");
+      addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
+      addBtn.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      addBtn.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const patch = { name1: primaryHimokuLabel };
+          const newKey = jy2ActualInsertDetailNear(
+            parentHimokuOpts.detailModel,
+            row.stableBlockId,
+            parentHimokuOpts.lastChildRowKeyInGroup || null,
+            patch,
+            parentHimokuOpts.expandState,
+          );
+          if (typeof parentHimokuOpts.revealDetailKey === "function") {
+            parentHimokuOpts.revealDetailKey(newKey);
+          }
+          parentHimokuOpts.onAdded();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const message =
+            (error && error.message) || "詳細行の追加に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      ops.appendChild(addBtn);
+      parentOpsCell.appendChild(ops);
+    }
     const parentUnitCell = jy2Cell(
       documentRef,
       "td",
@@ -7588,6 +7664,58 @@
       jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
       4,
     );
+    // 種別なし費目が空のとき: 操作列＋で最初の詳細（2セル）を追加
+    if (
+      opts &&
+      opts.detailQuickAdd === true &&
+      opts.detailModel &&
+      opts.canEditBudget === true &&
+      typeof opts.onAdded === "function"
+    ) {
+      const ops = documentRef.createElement("span");
+      ops.className = "jy2-actual-child-ops";
+      ops.setAttribute("aria-label", "詳細行の追加");
+      const addBtn = documentRef.createElement("button");
+      addBtn.type = "button";
+      addBtn.className =
+        "jy2-actual-detail-pm-btn jy2-actual-himoku-ops-add-btn";
+      addBtn.textContent = "＋";
+      addBtn.setAttribute("aria-label", "詳細行を追加");
+      addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
+      addBtn.addEventListener("mousedown", (event) => {
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      addBtn.addEventListener("click", (event) => {
+        try {
+          if (event && typeof event.stopPropagation === "function") {
+            event.stopPropagation();
+          }
+          const patch = {};
+          if (label && label !== "（未分類）") patch.name1 = label;
+          const newKey = jy2ActualInsertDetailNear(
+            opts.detailModel,
+            parent.stableBlockId,
+            opts.lastChildRowKeyInGroup || null,
+            patch,
+            opts.expandState,
+          );
+          if (typeof opts.revealDetailKey === "function") {
+            opts.revealDetailKey(newKey);
+          }
+          opts.onAdded();
+        } catch (error) {
+          const view = documentRef && documentRef.defaultView;
+          const message =
+            (error && error.message) || "詳細行の追加に失敗しました";
+          if (view && typeof view.alert === "function") view.alert(message);
+          else if (typeof console !== "undefined" && console.error) {
+            console.error(message, error);
+          }
+        }
+      });
+      ops.appendChild(addBtn);
+      himokuOpsCell.appendChild(ops);
+    }
     tr.appendChild(himokuTypeCell);
     tr.appendChild(himokuDetailCell);
     tr.appendChild(himokuOpsCell);
@@ -8393,7 +8521,13 @@
         workTypeCode: row.workTypeCode,
         workTypeName: row.workTypeName,
       });
-      const primaryHimokuLabel = jy2ActualPrimaryHimokuLabel(
+      const costHimokuTemplate = jy2CostMgmtHimokuTemplate(
+        row.workTypeCode,
+        jy2HimokuChoicesForEntry(hierarchyEntry),
+      );
+      // Excel正の費目枠を優先（例: 10200→塗装工事。コード表外注費は使わない）
+      const primaryHimokuLabel = jy2CostMgmtPrimaryHimokuLabel(
+        row.workTypeCode,
         hierarchyEntry,
         row,
       );
@@ -8434,10 +8568,6 @@
             ? resolvedName2
             : "（種別未設定）";
         };
-        const templateHimoku = jy2CostMgmtHimokuTemplate(
-          row.workTypeCode,
-          jy2HimokuChoicesForEntry(hierarchyEntry),
-        );
         typesByHimokuMap =
           hierarchyEntry && hierarchyEntry.typesByHimoku
             ? hierarchyEntry.typesByHimoku
@@ -8449,7 +8579,7 @@
           }
           return bucket.get(himokuLabel);
         };
-        for (const h of templateHimoku) ensureHimoku(h);
+        for (const h of costHimokuTemplate) ensureHimoku(h);
         row.children.forEach((child) => {
           const detailIndex = detailRows.findIndex(
             (candidate) => candidate && candidate.rowKey === child.rowKey,
@@ -8470,6 +8600,10 @@
             primaryChildren.length > 0
               ? primaryChildren[primaryChildren.length - 1].rowKey
               : null;
+          const primaryVisible = jy2ActualChildrenForBudgetSum(
+            primaryChildren,
+            costDetailVisibility.shouldShow,
+          );
           parentHimokuOpts = {
             primaryHimokuLabel,
             himokuChildren: primaryChildren,
@@ -8480,6 +8614,12 @@
             shouldShowDetail: costDetailVisibility.shouldShow,
             lastChildRowKeyInGroup: primaryLastKey,
             monthQtyState,
+            expandState,
+            // 種別なし既定費目で表示中詳細が無いとき＋
+            detailQuickAdd:
+              canEditBudget &&
+              jy2CostMgmtIsTypeLessHimoku(primaryHimokuLabel) &&
+              primaryVisible.length === 0,
           };
         } else {
           parentHimokuOpts = {
@@ -8489,8 +8629,20 @@
         }
       } else {
         parentHimokuOpts = {
-          monthQtyState,
+          primaryHimokuLabel,
+          himokuChildren: [],
+          detailModel,
+          canEditBudget,
+          onAdded: onDetailStructureAdded,
+          revealDetailKey: costDetailVisibility.reveal,
           shouldShowDetail: costDetailVisibility.shouldShow,
+          lastChildRowKeyInGroup: null,
+          monthQtyState,
+          expandState,
+          detailQuickAdd:
+            canEditBudget &&
+            Boolean(primaryHimokuLabel) &&
+            jy2CostMgmtIsTypeLessHimoku(primaryHimokuLabel),
         };
       }
       const parentTr = jy2ActualRow(
@@ -8508,10 +8660,6 @@
         parentTr.classList.add("jy2-actual-himoku-block-end");
         continue;
       }
-      const costHimokuTemplate = jy2CostMgmtHimokuTemplate(
-        row.workTypeCode,
-        jy2HimokuChoicesForEntry(hierarchyEntry),
-      );
       for (const himokuLabel of himokuOrder) {
         const typeMap = bucket.get(himokuLabel) || new Map();
         if (jy2CostMgmtShouldOmitHimoku(himokuLabel, costHimokuTemplate)) {
@@ -8554,6 +8702,10 @@
         let himokuBlockEndRow =
           himokuLabel === primaryHimokuLabel ? parentTr : null;
         if (himokuLabel !== primaryHimokuLabel) {
+          const typelessVisible = jy2ActualChildrenForBudgetSum(
+            himokuChildren,
+            costDetailVisibility.shouldShow,
+          );
           himokuBlockEndRow = body.appendChild(
             jy2ActualHimokuGroupRow(
               documentRef,
@@ -8561,7 +8713,14 @@
               himokuLabel,
               himokuChildren,
               months,
-              { ...groupOpts, lastChildRowKeyInGroup: lastHimokuKey },
+              {
+                ...groupOpts,
+                lastChildRowKeyInGroup: lastHimokuKey,
+                detailQuickAdd:
+                  canEditBudget &&
+                  Boolean(typelessFlatEntries) &&
+                  typelessVisible.length === 0,
+              },
             ),
           );
         }

@@ -515,12 +515,18 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-himoku-align-unify/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-10200-paint/);
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
+  assert.match(source, /JY2_COST_MGMT_HIMOKU_OVERRIDE/);
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU/);
   assert.match(source, /jy2CostMgmtIsTypeLessHimoku/);
   assert.match(source, /jy2CostMgmtHimokuTemplate/);
+  assert.match(source, /jy2CostMgmtPrimaryHimokuLabel/);
+  assert.match(source, /"10200":\s*Object\.freeze\(\["塗装工事"\]\)/);
+  assert.match(source, /塗装工事/);
+  assert.match(source, /jy2-actual-himoku-ops-add-btn/);
+  assert.match(source, /#R-EXCEL-UI-09/);
   assert.match(source, /dualDetailCells:\s*true/);
   assert.match(source, /jy2-actual-dual-detail-row/);
   assert.match(source, /jy2CostMgmtIsBlankWorkTypeCode/);
