@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-13100-dues
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-13620-meeting
+  // Phase2c-excel-13620-meeting: Excel正 13620｜会議費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-13100-dues: Excel正 13100｜諸会費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12900-misc: Excel正 12900｜諸雑費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-typeless-name2-persist: TYPELESS詳細左は空name2を〃にしない・〃は継承表示しない・費目ミラークリア廃止。#R-EXCEL-UI-14
@@ -209,7 +210,7 @@
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
     "12800",
-    "13500", "13600", "13620",
+    "13500", "13600",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
@@ -237,6 +238,7 @@
     "12700": Object.freeze(["建退共証紙購入費"]),
     "12900": Object.freeze(["諸雑費"]),
     "13100": Object.freeze(["諸会費"]),
+    "13620": Object.freeze(["会議費"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
@@ -315,6 +317,7 @@
     "建退共証紙購入費": Object.freeze(["建退共証紙購入費"]),
     "諸雑費": Object.freeze(["諸雑費"]),
     "諸会費": Object.freeze(["諸会費"]),
+    "会議費": Object.freeze(["会議費"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -338,6 +341,7 @@
     "建退共証紙購入費",
     "諸雑費",
     "諸会費",
+    "会議費",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -464,6 +468,12 @@
       workTypeCode: "13100",
       workTypeName: "（塗）諸会費",
       nameAliases: Object.freeze(["諸会費", "（塗）諸会費"]),
+    }),
+    Object.freeze({
+      shortName: "会議費",
+      workTypeCode: "13620",
+      workTypeName: "（塗）会議費",
+      nameAliases: Object.freeze(["会議費", "（塗）会議費"]),
     }),
   ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
@@ -1194,7 +1204,7 @@
     return false;
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
-    "保険料", "労災保険料", "法定福利費", "雑費", "会議費", "補償費",
+    "保険料", "労災保険料", "法定福利費", "雑費", "補償費",
     "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
     "工事安全専任管理者", "出向工事安全専任管理者",
     "線閉責任者", "外注線閉責任者",

@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-13100-dues/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-13620-meeting/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /jy2BindDetailPmMouseDown/);
   assert.match(source, /jy2CommitChildDetailInputsFromRow/);
@@ -523,6 +523,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-other-labor/);
   assert.match(source, /Phase2c-excel-12900-misc/);
   assert.match(source, /Phase2c-excel-13100-dues/);
+  assert.match(source, /Phase2c-excel-13620-meeting/);
   assert.match(source, /Phase2c-excel-detail-col-wide/);
   assert.match(source, /Phase2c-excel-12700-kentaikyo/);
   assert.match(source, /Phase2c-excel-12600-bond/);
@@ -544,6 +545,10 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(
     source,
     /"13100":\s*Object\.freeze\(\["諸会費"\]\)/,
+  );
+  assert.match(
+    source,
+    /"13620":\s*Object\.freeze\(\["会議費"\]\)/,
   );
   assert.match(
     source,
