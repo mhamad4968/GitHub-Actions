@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10400-paint-scaffold
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-month-qty-default-one
+  // Phase2c-month-qty-default-one: 月次金額を入れたとき数量が空なら 1 を表示。
+  // （金額は保存。数量はセッションのみ。既存数量は上書きしない）
   // Phase2c-excel-10400-paint-scaffold: Excel正 10400｜塗装・足場工事（種別なし・詳細2セル）。
   // 10200/10300と同型（#R-EXCEL-UI-09）。
   // Phase2c-excel-10300-scaffold: Excel正 10300｜足場工事（種別なし・詳細2セル）。
@@ -7571,7 +7573,7 @@
     // Phase2b (2026-07-31): 月次は「数量｜金額」の2セル。
     // - 数量: pane 上のセッション Map で保持（App758 に保存しない・再読込で消える）。
     //   commit 時に単価×数量を丸めて金額 amount へ書き戻す（qty→amount 一方向）。
-    // - 金額: 直接入力（従来通り）。commit 時にセッション数量を消す（override＝qty 無効化）。
+    // - 金額: 直接入力可。空数量なら 1 を自動表示（手直し可）。金額クリア時は数量も消す。
     for (const month of months) {
       // 数量セル
       const qtyCell = jy2Cell(
@@ -7615,7 +7617,7 @@
           }
         });
         qtyInput.title =
-          "数量（セッション保持・再読込で消える／金額は保存される）";
+          "数量（セッション保持・再読込で消える）。金額入力時は空なら 1。違う場合は手直し";
         qtyCell.appendChild(qtyInput);
       } else {
         qtyCell.textContent = "－";
@@ -7626,18 +7628,38 @@
       const cell = jy2Cell(documentRef, "td", "jy2-num jy2-actual-month", "");
       if (editable) {
         cell.appendChild(
-          jy2TextInput(documentRef, child.monthly[month], (value) => {
-            // 直接金額入力は override 扱い → セッション数量を消す
-            // （qty×unit で復元不能な値が入りうるため。DeepSeek 盲点2）
+          jy2CommaNumberInput(documentRef, child.monthly[month], (value) => {
+            const cleaned = jy2StripCommaNumber(value);
             if (monthQtyState) {
-              monthQtyState.clear(
+              const currentQty = monthQtyState.get(
                 parent.stableBlockId,
                 parent.costCategory,
                 child.rowKey,
                 month,
               );
+              if (cleaned === "") {
+                // 金額クリア → デフォルト数量も消す
+                monthQtyState.clear(
+                  parent.stableBlockId,
+                  parent.costCategory,
+                  child.rowKey,
+                  month,
+                );
+              } else if (
+                currentQty == null ||
+                String(currentQty).trim() === ""
+              ) {
+                // 金額入力＆数量空 → 1（必要なら手直し）
+                monthQtyState.set(
+                  parent.stableBlockId,
+                  parent.costCategory,
+                  child.rowKey,
+                  month,
+                  "1",
+                );
+              }
             }
-            commit({ [month]: value });
+            commit({ [month]: cleaned });
           }),
         );
       } else {

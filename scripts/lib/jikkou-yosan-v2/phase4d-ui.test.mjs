@@ -515,16 +515,22 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-10400-paint-scaffold/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-month-qty-default-one/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
+  assert.match(source, /Phase2c-month-qty-default-one/);
   assert.match(source, /Phase2c-unit-price-comma/);
   assert.match(source, /Phase2c-excel-10300-scaffold/);
   assert.match(source, /Phase2c-excel-10400-paint-scaffold/);
   assert.match(source, /jy2CommaNumberInput/);
   assert.match(source, /jy2StripCommaNumber/);
   assert.match(source, /patch\.quantity = ["']1["']/);
+  // 月次金額→数量1（セッション set の "1"）
+  assert.match(
+    source,
+    /monthQtyState\.set\(\s*parent\.stableBlockId,\s*parent\.costCategory,\s*child\.rowKey,\s*month,\s*["']1["']/,
+  );
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_OVERRIDE/);

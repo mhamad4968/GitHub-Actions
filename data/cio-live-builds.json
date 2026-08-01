@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-10400-paint-scaffold",
-      "fileKey": "db09676a-d0aa-4fe7-b91d-fb5c744f05ee",
-      "revision": "226",
+      "build": "2026-08-01-ver02-actual-month-qty-default-one",
+      "fileKey": "d9f977e1-6935-4d30-8658-0a9086d47807",
+      "revision": "227",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T00:15:09.007Z",
+      "deployedAt": "2026-08-01T00:17:12.719Z",
       "note": null
     },
     "757": {
