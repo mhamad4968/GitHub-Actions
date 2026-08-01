@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12700-kentaikyo
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-detail-col-wide
+  // Phase2c-excel-detail-col-wide: 詳細列(freeze-3)と種別/詳細左(freeze-2)を広げて見切れ解消。#R-EXCEL-UI-01
   // Phase2c-excel-12700-kentaikyo: Excel正 12700｜建退共証紙購入費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12600-bond: Excel正 12600｜履行保証保険料（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-typeless-name2-show: TYPELESS費目で name2===費目名でも詳細左を空にしない。取り違えシード(name2=費目)は読み込み時にクリア。#R-EXCEL-UI-14
@@ -1606,11 +1607,12 @@
       ".jy2-actual-child-row .jy2-freeze{background:#ffffff}",
       ".jy2-actual-child-row td.jy2-actual-child-name{color:#475569;font-size:11px;padding-left:6px;overflow:visible;white-space:normal}",
       ".jy2-actual-table .jy2-actual-child-row td.jy2-actual-child-name{padding-left:6px}",
-      ".jy2-actual-table .jy2-actual-child-name-input{display:block;width:100%;min-width:5rem;box-sizing:border-box}",
-      ".jy2-actual-table .jy2-actual-type-detail-slot .jy2-actual-child-name-input{display:block;width:100%;min-width:6rem;box-sizing:border-box}",
+      ".jy2-actual-table .jy2-actual-child-name-input{display:block;width:100%;min-width:10rem;box-sizing:border-box}",
+      ".jy2-actual-table .jy2-actual-type-detail-slot .jy2-actual-child-name-input{display:block;width:100%;min-width:12rem;box-sizing:border-box}",
       /* Excelその他材料費: 詳細2セル（種別列=左・詳細列=右） */
-      ".jy2-actual-table .jy2-actual-dual-detail-row .jy2-actual-dual-detail-input{display:block;width:100%;min-width:4.5rem;box-sizing:border-box}",
+      ".jy2-actual-table .jy2-actual-dual-detail-row .jy2-actual-dual-detail-input{display:block;width:100%;min-width:12rem;box-sizing:border-box}",
       ".jy2-actual-table .jy2-actual-dual-detail-left{padding-left:6px}",
+      ".jy2-actual-table .jy2-freeze-2.jy2-actual-dual-detail-left{overflow:visible;text-overflow:clip}",
       ".jy2-actual-table .jy2-actual-child-qty-input{display:block;width:100%;min-width:3.5rem;box-sizing:border-box;text-align:right}",
       ".jy2-actual-child-ops{display:inline-flex;gap:2px;flex-shrink:0;align-items:center;justify-content:center;width:100%}",
       ".jy2-actual-ops-cell{text-align:center;padding:2px 3px!important;vertical-align:middle}",
@@ -1653,15 +1655,15 @@
       ".jy2-actual-table thead tr:last-child th{background:#f1f5f9;font-size:10px}",
       ".jy2-actual-table .jy2-freeze{position:sticky;top:auto;z-index:3;background:#fff}",
       ".jy2-actual-table thead .jy2-freeze{z-index:4;background:#f1f5f9}",
-      /* freeze幅: 工種4.2 | 費目12 | 種別12 | 詳細7.5 | 操作2.6（leftは累積） */
+      /* freeze幅: 工種4.2 | 費目12 | 種別14 | 詳細16 | 操作2.6（leftは累積） */
       ".jy2-actual-table .jy2-freeze-0{left:0;min-width:4.2rem;width:4.2rem}",
       ".jy2-actual-table .jy2-freeze-1{left:4.2rem;min-width:12rem;width:12rem;max-width:12rem;overflow:hidden;text-overflow:ellipsis}",
-      ".jy2-actual-table .jy2-freeze-2{left:16.2rem;min-width:12rem;width:12rem;max-width:12rem;overflow:hidden;text-overflow:ellipsis}",
+      ".jy2-actual-table .jy2-freeze-2{left:16.2rem;min-width:14rem;width:14rem;max-width:14rem;overflow:hidden;text-overflow:ellipsis}",
       /* 詳細列は手入力セルのため ellipsis で入力を潰さない */
-      ".jy2-actual-table .jy2-freeze-3{left:28.2rem;min-width:7.5rem;max-width:11rem;overflow:visible}",
+      ".jy2-actual-table .jy2-freeze-3{left:30.2rem;min-width:16rem;width:16rem;max-width:20rem;overflow:visible}",
       ".jy2-actual-table thead .jy2-freeze-3{overflow:hidden;text-overflow:ellipsis}",
       /* 操作列（＋／－）: 詳細の右・最終固定列 */
-      ".jy2-actual-table .jy2-freeze-4{left:35.7rem;min-width:2.6rem;max-width:3rem;overflow:visible;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
+      ".jy2-actual-table .jy2-freeze-4{left:46.2rem;min-width:2.6rem;max-width:3rem;overflow:visible;box-shadow:2px 0 5px rgba(15,23,42,.1)}",
       ".jy2-actual-table thead .jy2-freeze-4{overflow:hidden;text-overflow:ellipsis;text-align:center}",
       ".jy2-actual-table .jy2-total-row .jy2-freeze,.jy2-actual-table .jy2-freeze-span{background:#f5ebe0;z-index:4}",
       ".jy2-actual-table tr:hover td:not(.jy2-freeze){background:#f8fafc}",

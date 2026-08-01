@@ -249,3 +249,4 @@
 | 2026-08-01 | TYPELESS費目で name2===費目名でも詳細左を空にしない。取り違えシード(name2=費目)は読み込み時にクリア。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-show` |
 | 2026-08-01 | Excel 12600｜履行保証保険料（種別なし・詳細2セル）。12500同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12600-bond` |
 | 2026-08-01 | Excel 12700｜建退共証紙購入費（種別なし・詳細2セル）。12600同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12700-kentaikyo` |
+| 2026-08-01 | 詳細列・種別/詳細左の列幅拡大（freeze-2/3）。長い詳細テキストの見切れ解消。#R-EXCEL-UI-01。BUILD `2026-08-01-ver02-actual-excel-detail-col-wide` |

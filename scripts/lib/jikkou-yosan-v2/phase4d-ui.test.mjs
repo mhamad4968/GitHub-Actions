@@ -515,12 +515,13 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-12700-kentaikyo/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-detail-col-wide/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /jy2BindDetailPmMouseDown/);
   assert.match(source, /jy2CommitChildDetailInputsFromRow/);
   assert.match(source, /commitOnInput:\s*true/);
   assert.match(source, /Phase2c-excel-other-labor/);
+  assert.match(source, /Phase2c-excel-detail-col-wide/);
   assert.match(source, /Phase2c-excel-12700-kentaikyo/);
   assert.match(source, /Phase2c-excel-12600-bond/);
   assert.match(source, /Phase2c-excel-typeless-name2-show/);
@@ -675,10 +676,10 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-himoku-align-unify/);
   assert.match(
     source,
-    /\.jy2-freeze-2\{left:16\.2rem;min-width:12rem;width:12rem;max-width:12rem/,
+    /\.jy2-freeze-2\{left:16\.2rem;min-width:14rem;width:14rem;max-width:14rem/,
   );
-  assert.match(source, /\.jy2-freeze-3\{left:28\.2rem/);
-  assert.match(source, /\.jy2-freeze-4\{left:35\.7rem/);
+  assert.match(source, /\.jy2-freeze-3\{left:30\.2rem;min-width:16rem;width:16rem/);
+  assert.match(source, /\.jy2-freeze-4\{left:46\.2rem/);
   assert.match(source, /jy2ActualChildrenForBudgetSum/);
   assert.match(source, /himokuChildren:\s*primaryChildren/);
   assert.match(source, /Phase2c-himoku-qty-amt-sum/);
