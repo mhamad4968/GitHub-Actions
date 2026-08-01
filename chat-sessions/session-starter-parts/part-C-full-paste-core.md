@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-07-28 手動是正）】
-- 進行中 plan: docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md（756 U37–U39 / #R-UI-VIS-01）
-- 当日コミット (上位 3):
-  - feat(ops): implement 2026-07-28 evening GO (#R-UI-VIS-01, #D-GHA-01)
-  - fix(github): apply globals 17.8.0 and restore close-git R41 markers
-  - docs(ops): align MCP stamp wording in brief-card and RULES-INDEX
+【今やってる主タスク（2026-08-01 午後締め反映・WAKE 是正）】
+- 進行中: **756 原価管理明細**を Excel 正で枠寄せ継続（残り約12。OMIT: 11000〜11400・12800・13100・13500・13600・13620）
+- LIVE: App756 rev**270** BUILD `2026-08-01-ver02-actual-excel-12900-misc`／一時保存→App757／予実保存→App758 は維持
+- 調査正本: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md`（#R-EXCEL-UI-09〜14）
+- 当日コミット (上位 3・参考):
+  - chore(handoff): sync bridge + WAKE artifacts after cold-start
+  - feat(756): add Excel cost frame 12900 miscellaneous expenses typeless
+  - fix(756): persist typeless detail-left without ditto wipe
