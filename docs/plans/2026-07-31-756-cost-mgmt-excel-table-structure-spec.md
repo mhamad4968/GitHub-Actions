@@ -258,4 +258,5 @@
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |
+| 2026-08-01 | 単価列を拡大（カンマ付き金額の見切れ解消）。数量は狭め・実行予算額は広め維持。#R-EXCEL-UI-01。BUILD `2026-08-01-ver02-actual-unit-price-wider` |
 | 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・13500・13600（浜田見積・残り約9枠。次セッションで Excel 正1つずつ）。#R-EXCEL-UI-09 |
