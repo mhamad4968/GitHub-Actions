@@ -252,4 +252,5 @@
 | 2026-08-01 | TYPELESS詳細左は空name2を〃にしない・〃は継承表示しない・費目ミラークリア廃止。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-persist` |
 | 2026-08-01 | 詳細列・種別/詳細左の列幅拡大（freeze-2/3）。長い詳細テキストの見切れ解消。#R-EXCEL-UI-01。BUILD `2026-08-01-ver02-actual-excel-detail-col-wide` |
 | 2026-08-01 | Excel 12900｜諸雑費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12900-misc` |
-| 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・12800・13100・13500・13600・13620（浜田見積・残り約12枠。次セッションで Excel 正1つずつ）。#R-EXCEL-UI-09 |
+| 2026-08-01 | Excel 13100｜諸会費（種別なし・詳細2セル）。12900同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-13100-dues` |
+| 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・12800・13500・13600・13620（浜田見積・残り約11枠。次セッションで Excel 正1つずつ）。#R-EXCEL-UI-09 |
