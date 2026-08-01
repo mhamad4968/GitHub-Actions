@@ -97,7 +97,7 @@
 
 **種別なしの詳細2セル（#R-EXCEL-UI-10）**: 列は増やさない。Excelどおり **種別列＝詳細左（name2）・詳細列＝詳細右（name3）**。全行に列を足すと表が膨らみ、通常費目の種別と混線する。一時保存前はフォーカス中 input を明示 commit（`jy2FlushActiveInputBeforeSave`）。
 
-**種別（補助）のみ・コード空枠（#R-EXCEL-UI-11）**: Excelでシステム工種番号が空の枠（**軌道工事・調査設計費・外注試験費・交通規制費・追加工事①〜⑤**）。費目枠＝名称。種別SUM行なし・費目直下に平坦。入力は **種別列＝name2 のみ**（詳細列は使わない。TYPELESSの詳細2セルとは差分だけ）。`HIMOKU_OVERRIDE_BY_NAME` ＋ `TYPE_ONLY`（追加工事はコード 14100〜14500 があればコード側 OVERRIDE も可）。空のときは操作列＋。共通仕様は #R-EXCEL-UI-06〜08 を継承。
+**種別（補助）のみ・コード空枠（#R-EXCEL-UI-11）**: Excelでシステム工種番号が空の枠（**軌道工事・調査設計費・外注試験費・交通規制費・追加工事①〜⑤**）。費目枠＝名称。種別SUM行なし・費目直下に平坦。入力は **種別列＝name2 のみ**（詳細列は使わない。TYPELESSの詳細2セルとは差分だけ）。`HIMOKU_OVERRIDE_BY_NAME` ＋ `TYPE_ONLY`（追加工事はコード 14100〜14500 があればコード側 OVERRIDE も可）。空のときは操作列＋。共通仕様は #R-EXCEL-UI-06〜08 を継承。**内訳にブロックが無いときは原価管理表示時に空ブロックを自動追加**（`jy2CostMgmtEnsureTypeOnlyFrames`・一時保存で App757 へ。廃止済みは再作成しない）。
 
 ### 2.3 計算（Excel 検証済み）
 
@@ -226,3 +226,4 @@
 | 2026-08-01 | Excel 10600｜修繕等工事（種別なし・詳細2セル）。同型。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10600-repair` |
 | 2026-08-01 | Excel 10700｜塗装附帯工事（種別なし・詳細2セル）。同型。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10700-ancillary` |
 | 2026-08-01 | Excel 種別のみ枠（軌道工事・調査設計費・外注試験費・交通規制費・追加工事①〜⑤）。コード空可。#R-EXCEL-UI-11。BUILD `2026-08-01-ver02-actual-excel-type-only-frames` |
+| 2026-08-01 | 種別のみ枠が内訳に無いとき空ブロック自動追加。BUILD `2026-08-01-ver02-actual-excel-type-only-ensure` |

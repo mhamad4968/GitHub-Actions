@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-frames/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-ensure/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
@@ -526,6 +526,9 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-10600-repair/);
   assert.match(source, /Phase2c-excel-10700-ancillary/);
   assert.match(source, /Phase2c-excel-type-only-frames/);
+  assert.match(source, /Phase2c-excel-type-only-ensure/);
+  assert.match(source, /jy2CostMgmtEnsureTypeOnlyFrames/);
+  assert.match(source, /JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES/);
   assert.match(source, /jy2CommaNumberInput/);
   assert.match(source, /jy2StripCommaNumber/);
   assert.match(source, /patch\.quantity = ["']1["']/);
