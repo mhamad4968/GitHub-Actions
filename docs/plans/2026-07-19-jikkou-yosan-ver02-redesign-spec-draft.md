@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・11900 租税公課）**: Excel正 **11900｜費目=租税公課｜種別なし・詳細2セル**（11700/11800 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11900／租税公課を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11900-tax`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11800 産業廃棄物処理）**: Excel正 **11800｜費目=産業廃棄物処理｜種別なし・詳細2セル**（11700 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11800／産業廃棄物処理を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11800-waste`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11700 運送費）**: Excel正 **11700｜費目=運送費｜種別なし・詳細2セル**（10800 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11700／運送費を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11700-transport`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・経費・旅費/保険/交際・保安外注 一旦全消し）**: 浜田指示 — **11000〜11300・11400・11700〜12400・12600〜12900・13100・13500・13600・13620**（経費・旅費/保険/交際・保安外注）を工事原価管理から一旦非表示。`JY2_COST_MGMT_WORK_TYPE_OMIT`（21コード）＋`JY2_COST_MGMT_WORK_TYPE_NAME_OMIT`（短名称フォールバック）。内訳 App757 は非破壊。必要枠は後で Excel 正で再追加。BUILD `2026-08-01-ver02-actual-excel-omit-pending-frames`。#R-EXCEL-UI-09。  
