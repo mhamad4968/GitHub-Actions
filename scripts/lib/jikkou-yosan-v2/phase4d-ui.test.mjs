@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-10700-ancillary/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-frames/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
@@ -525,6 +525,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-10400-paint-scaffold/);
   assert.match(source, /Phase2c-excel-10600-repair/);
   assert.match(source, /Phase2c-excel-10700-ancillary/);
+  assert.match(source, /Phase2c-excel-type-only-frames/);
   assert.match(source, /jy2CommaNumberInput/);
   assert.match(source, /jy2StripCommaNumber/);
   assert.match(source, /patch\.quantity = ["']1["']/);
@@ -536,8 +537,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /JY2_ACTUAL_DETAIL_MANUAL_ONLY/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_EXTRA/);
   assert.match(source, /JY2_COST_MGMT_HIMOKU_OVERRIDE/);
+  assert.match(source, /JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME/);
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU/);
+  assert.match(source, /JY2_COST_MGMT_TYPE_ONLY_HIMOKU/);
   assert.match(source, /jy2CostMgmtIsTypeLessHimoku/);
+  assert.match(source, /jy2CostMgmtIsTypeOnlyHimoku/);
+  assert.match(source, /jy2CostMgmtIsFlatHimoku/);
+  assert.match(source, /jy2CostMgmtAllowBlankWorkType/);
+  assert.match(source, /jy2CostMgmtExcelShortName/);
   assert.match(source, /jy2CostMgmtHimokuTemplate/);
   assert.match(source, /jy2CostMgmtPrimaryHimokuLabel/);
   assert.match(source, /"10200":\s*Object\.freeze\(\["塗装工事"\]\)/);
@@ -545,15 +552,25 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /"10400":\s*Object\.freeze\(\["塗装・足場工事"\]\)/);
   assert.match(source, /"10600":\s*Object\.freeze\(\["修繕等工事"\]\)/);
   assert.match(source, /"10700":\s*Object\.freeze\(\["塗装附帯工事"\]\)/);
+  assert.match(source, /"14100":\s*Object\.freeze\(\["追加工事①"\]\)/);
   assert.match(source, /塗装工事/);
   assert.match(source, /足場工事/);
   assert.match(source, /塗装・足場工事/);
   assert.match(source, /修繕等工事/);
   assert.match(source, /塗装附帯工事/);
+  assert.match(source, /軌道工事/);
+  assert.match(source, /調査設計費/);
+  assert.match(source, /外注試験費/);
+  assert.match(source, /交通規制費/);
+  assert.match(source, /追加工事①/);
+  assert.match(source, /追加工事⑤/);
   assert.match(source, /jy2-actual-himoku-ops-add-btn/);
   assert.match(source, /#R-EXCEL-UI-09/);
-  assert.match(source, /dualDetailCells:\s*true/);
+  assert.match(source, /#R-EXCEL-UI-11/);
+  assert.match(source, /dualDetailCells:\s*flatTypeLess/);
+  assert.match(source, /typeOnlyLeaf:\s*flatTypeOnly/);
   assert.match(source, /jy2-actual-dual-detail-row/);
+  assert.match(source, /jy2-actual-type-only-row/);
   assert.match(source, /jy2CostMgmtIsBlankWorkTypeCode/);
   assert.match(source, /jy2CostMgmtIsNoiseHimoku/);
   assert.match(source, /jy2CostMgmtIsNoiseType/);

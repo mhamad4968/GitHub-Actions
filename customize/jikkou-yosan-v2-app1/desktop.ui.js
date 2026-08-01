@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10700-ancillary
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-frames
+  // Phase2c-excel-type-only-frames: Excel正・システム工種コードなし枠
+  // （軌道工事・調査設計費・外注試験費・交通規制費・追加工事①〜⑤）。
+  // 種別（補助）のみ＝費目下に平坦・name2入力（詳細2セルではない）。#R-EXCEL-UI-11。
   // Phase2c-excel-10700-ancillary: Excel正 10700｜塗装附帯工事（種別なし・詳細2セル）。
   // 10200〜10600と同型（#R-EXCEL-UI-09）。
   // Phase2c-excel-10600-repair: Excel正 10600｜修繕等工事（種別なし・詳細2セル）。
@@ -30,7 +33,8 @@
   // Phase2c-excel-sonota-himoku: 「その他材料費」は費目。種別行なし・詳細を表示。
   // Phase2c-himoku-end-rule: 費目ブロック最終行の下に薄いグレー区切り線。
   // Phase2c-omit-extra-himoku: （未分類）等の余分な費目枠は出さない。
-  // Phase2c-hide-blank-worktype: システム工種が空/「－」の親行は原価管理に出さない。
+  // Phase2c-hide-blank-worktype: システム工種が空/「－」の親行は原則出さない。
+  // 例外: Excel正の名称枠（TYPE_ONLY 等・#R-EXCEL-UI-11）はコード空でも出す。
   // Phase2c-row-tint-green-blue: 費目行=薄緑・種別行=薄青・詳細=ほぼ白（階層識別）。
   // Phase2c-hide-dash-type: 種別「－」「（種別未設定）」行は原価管理に出さない。
   // Phase2c-type-col-wide: 種別列(freeze-2) 5.5〜7rem → 12rem。見切れ解消。
@@ -157,6 +161,23 @@
     "10400": Object.freeze(["塗装・足場工事"]),
     "10600": Object.freeze(["修繕等工事"]),
     "10700": Object.freeze(["塗装附帯工事"]),
+    "14100": Object.freeze(["追加工事①"]),
+    "14200": Object.freeze(["追加工事②"]),
+    "14300": Object.freeze(["追加工事③"]),
+    "14400": Object.freeze(["追加工事④"]),
+    "14500": Object.freeze(["追加工事⑤"]),
+  });
+  // システム工種コードが空の Excel 枠（名称で費目枠を決める）。
+  const JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME = Object.freeze({
+    "軌道工事": Object.freeze(["軌道工事"]),
+    "調査設計費": Object.freeze(["調査設計費"]),
+    "外注試験費": Object.freeze(["外注試験費"]),
+    "交通規制費": Object.freeze(["交通規制費"]),
+    "追加工事①": Object.freeze(["追加工事①"]),
+    "追加工事②": Object.freeze(["追加工事②"]),
+    "追加工事③": Object.freeze(["追加工事③"]),
+    "追加工事④": Object.freeze(["追加工事④"]),
+    "追加工事⑤": Object.freeze(["追加工事⑤"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -168,6 +189,24 @@
     "修繕等工事",
     "塗装附帯工事",
   ]);
+  // Excel: 費目の下に種別（補助）だけ（詳細列なし・種別列=name2）。#R-EXCEL-UI-11。
+  // 種別SUM行は出さず、費目直下に平坦（TYPELESSと同型の共通経路＋差分だけ）。
+  const JY2_COST_MGMT_TYPE_ONLY_HIMOKU = Object.freeze([
+    "軌道工事",
+    "調査設計費",
+    "外注試験費",
+    "交通規制費",
+    "追加工事①",
+    "追加工事②",
+    "追加工事③",
+    "追加工事④",
+    "追加工事⑤",
+  ]);
+  function jy2CostMgmtExcelShortName(workTypeName) {
+    return String(workTypeName || "")
+      .trim()
+      .replace(/^（塗）/, "");
+  }
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
     const denyList =
@@ -182,9 +221,33 @@
     const text = String(himokuLabel || "").trim();
     return Boolean(text && JY2_COST_MGMT_TYPELESS_HIMOKU.includes(text));
   }
-  function jy2CostMgmtHimokuTemplate(workTypeCode, templateHimoku) {
+  function jy2CostMgmtIsTypeOnlyHimoku(himokuLabel) {
+    const text = String(himokuLabel || "").trim();
+    return Boolean(text && JY2_COST_MGMT_TYPE_ONLY_HIMOKU.includes(text));
+  }
+  // 種別SUM行を挟まない費目（詳細2セル or 種別のみ）。
+  function jy2CostMgmtIsFlatHimoku(himokuLabel) {
+    return (
+      jy2CostMgmtIsTypeLessHimoku(himokuLabel) ||
+      jy2CostMgmtIsTypeOnlyHimoku(himokuLabel)
+    );
+  }
+  function jy2CostMgmtAllowBlankWorkType(row) {
+    const shortName = jy2CostMgmtExcelShortName(row && row.workTypeName);
+    if (!shortName) return false;
+    if (JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[shortName]) return true;
+    return JY2_COST_MGMT_TYPE_ONLY_HIMOKU.includes(shortName);
+  }
+  function jy2CostMgmtHimokuTemplate(workTypeCode, templateHimoku, workTypeName) {
     const code = String(workTypeCode || "");
-    const override = JY2_COST_MGMT_HIMOKU_OVERRIDE[code];
+    const shortName = jy2CostMgmtExcelShortName(workTypeName);
+    const byCode = JY2_COST_MGMT_HIMOKU_OVERRIDE[code];
+    const byName =
+      shortName && JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[shortName]
+        ? JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[shortName]
+        : null;
+    const override =
+      byCode && byCode.length > 0 ? byCode : byName && byName.length > 0 ? byName : null;
     const base =
       override && override.length > 0
         ? [...override]
@@ -201,6 +264,7 @@
     const template = jy2CostMgmtHimokuTemplate(
       workTypeCode,
       jy2HimokuChoicesForEntry(hierarchyEntry),
+      row && row.workTypeName,
     );
     if (template.length > 0) return template[0];
     return jy2ActualPrimaryHimokuLabel(hierarchyEntry, row);
@@ -226,8 +290,8 @@
     if (jy2CostMgmtIsDeniedType(workTypeCode, himokuLabel, typeLabel)) {
       return true;
     }
-    // 種別なし費目: ノイズ種別行は描画しないが、子詳細は別経路で出す
-    if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) return true;
+    // 平坦費目: 種別SUM行は描画しない（子は別経路）
+    if (jy2CostMgmtIsFlatHimoku(himokuLabel)) return true;
     return jy2CostMgmtIsNoiseType(typeLabel);
   }
   function jy2CostMgmtShouldOmitHimoku(himokuLabel, himokuTemplate) {
@@ -238,7 +302,7 @@
     return false;
   }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
-    if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) return [];
+    if (jy2CostMgmtIsFlatHimoku(himokuLabel)) return [];
     const raw =
       typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
         ? typesByHimoku[himokuLabel]
@@ -7170,6 +7234,7 @@
       onDetailChanged,
       onDetailFieldChanged,
       dualDetailCells = false,
+      typeOnlyLeaf = false,
       himokuLabel: dualHimokuLabel = "",
     } = childDetailOpts;
     const notifyFieldChanged = () => {
@@ -7205,11 +7270,13 @@
     const tr = documentRef.createElement("tr");
     tr.className = "jy2-actual-child-row";
     if (dualDetailCells) tr.classList.add("jy2-actual-dual-detail-row");
+    if (typeOnlyLeaf) tr.classList.add("jy2-actual-type-only-row");
     tr.dataset.stableBlockId = parent.stableBlockId;
     tr.dataset.costCategory = parent.costCategory;
     tr.dataset.rowKey = child.rowKey;
     // 通常: freeze0–2=空、freeze3=詳細(name3)。詳細列はツリー記号なし。
     // dual: freeze2=詳細左(name2)・freeze3=詳細右(name3) — Excelその他材料費。
+    // typeOnly: freeze2=種別(name2)・freeze3=空 — Excel 軌道工事等。
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
     const name1Resolved =
@@ -7219,7 +7286,7 @@
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name2") ?? "";
     // 費目名が name2 に入っている取り違えは左セルに出さない
     if (
-      dualDetailCells &&
+      (dualDetailCells || typeOnlyLeaf) &&
       dualHimokuLabel &&
       String(name2Resolved).trim() === String(dualHimokuLabel).trim()
     ) {
@@ -7235,7 +7302,7 @@
       ? name2Resolved
       : jy2HasText(name2Raw) &&
           !(
-            dualDetailCells &&
+            (dualDetailCells || typeOnlyLeaf) &&
             dualHimokuLabel &&
             String(name2Raw).trim() === String(dualHimokuLabel).trim()
           )
@@ -7248,8 +7315,10 @@
         : "";
     const fullPath = [
       name1Resolved || dualHimokuLabel,
-      dualDetailCells ? name2InputValue || name2Resolved : name2Resolved,
-      name3Resolved,
+      dualDetailCells || typeOnlyLeaf
+        ? name2InputValue || name2Resolved
+        : name2Resolved,
+      typeOnlyLeaf ? "" : name3Resolved,
     ]
       .map((part) => String(part).trim())
       .filter((part) => part.length > 0)
@@ -7260,7 +7329,9 @@
       "td",
       dualDetailCells
         ? "jy2-actual-child-name jy2-actual-dual-detail-left"
-        : "",
+        : typeOnlyLeaf
+          ? "jy2-actual-child-name jy2-actual-type-only-name"
+          : "",
       "",
     );
     const nameCell = jy2Cell(
@@ -7268,11 +7339,13 @@
       "td",
       dualDetailCells
         ? "jy2-actual-child-name jy2-actual-dual-detail-right"
-        : "jy2-actual-child-name",
+        : typeOnlyLeaf
+          ? ""
+          : "jy2-actual-child-name",
       "",
     );
     if (childCanEditBudget && childDetailModel) {
-      if (dualDetailCells) {
+      if (dualDetailCells || typeOnlyLeaf) {
         const name2Input = jy2TextInput(
           documentRef,
           name2InputValue,
@@ -7281,7 +7354,10 @@
               parent.stableBlockId,
               child.rowKey,
               {
-                name1: dualHimokuLabel || name1Resolved || "その他材料費",
+                name1:
+                  dualHimokuLabel ||
+                  name1Resolved ||
+                  (typeOnlyLeaf ? "（未分類）" : "その他材料費"),
                 name2: jy2ToFullWidthKana(value),
               },
             );
@@ -7292,44 +7368,52 @@
           },
           { fullTitle: true },
         );
-        name2Input.className =
-          "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input";
-        name2Input.placeholder = "詳細（左）";
-        name2Input.title = "詳細左セル（例: エンドポイント）";
+        name2Input.className = typeOnlyLeaf
+          ? "jy2-input jy2-actual-child-name-input jy2-actual-type-only-input"
+          : "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input";
+        name2Input.placeholder = typeOnlyLeaf
+          ? "種別（補助）"
+          : "詳細（左）";
+        name2Input.title = typeOnlyLeaf
+          ? "種別（補助）を手入力"
+          : "詳細左セル（例: エンドポイント）";
         leftDetailCell.appendChild(name2Input);
       }
-      const name3Input = jy2TextInput(
-        documentRef,
-        name3InputValue,
-        (value) => {
-          const patch = {
-            name3: jy2ToFullWidthKana(value),
-          };
-          if (dualDetailCells) {
-            patch.name1 = dualHimokuLabel || name1Resolved || "その他材料費";
-          }
-          childDetailModel.updateDetailRow(
-            parent.stableBlockId,
-            child.rowKey,
-            patch,
-          );
-          if (typeof revealDetailKey === "function") {
-            revealDetailKey(child.rowKey);
-          }
-          notifyFieldChanged();
-        },
-        { fullTitle: true },
-      );
-      name3Input.className = dualDetailCells
-        ? "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input"
-        : "jy2-input jy2-actual-child-name-input";
-      name3Input.placeholder = dualDetailCells
-        ? "詳細（右）"
-        : "詳細（手入力）";
-      if (dualDetailCells) {
-        name3Input.title = "詳細右セル（例: 塗装表示記録･数字シール）";
-      } else if (fullPath) {
-        name3Input.title = fullPath;
+      if (!typeOnlyLeaf) {
+        const name3Input = jy2TextInput(
+          documentRef,
+          name3InputValue,
+          (value) => {
+            const patch = {
+              name3: jy2ToFullWidthKana(value),
+            };
+            if (dualDetailCells) {
+              patch.name1 = dualHimokuLabel || name1Resolved || "その他材料費";
+            }
+            childDetailModel.updateDetailRow(
+              parent.stableBlockId,
+              child.rowKey,
+              patch,
+            );
+            if (typeof revealDetailKey === "function") {
+              revealDetailKey(child.rowKey);
+            }
+            notifyFieldChanged();
+          },
+          { fullTitle: true },
+        );
+        name3Input.className = dualDetailCells
+          ? "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input"
+          : "jy2-input jy2-actual-child-name-input";
+        name3Input.placeholder = dualDetailCells
+          ? "詳細（右）"
+          : "詳細（手入力）";
+        if (dualDetailCells) {
+          name3Input.title = "詳細右セル（例: 塗装表示記録･数字シール）";
+        } else if (fullPath) {
+          name3Input.title = fullPath;
+        }
+        nameCell.appendChild(name3Input);
       }
       opsEl = documentRef.createElement("span");
       opsEl.className = "jy2-actual-child-ops";
@@ -7350,8 +7434,11 @@
             event.stopPropagation();
           }
           const patch = {};
-          if (dualDetailCells) {
-            patch.name1 = dualHimokuLabel || name1Resolved || "その他材料費";
+          if (dualDetailCells || typeOnlyLeaf) {
+            patch.name1 =
+              dualHimokuLabel ||
+              name1Resolved ||
+              (typeOnlyLeaf ? "（未分類）" : "その他材料費");
           } else {
             if (name1Resolved) patch.name1 = name1Resolved;
             if (name2Resolved && name2Resolved !== "－") {
@@ -7425,7 +7512,6 @@
       });
       opsEl.appendChild(addSibling);
       opsEl.appendChild(deleteBtn);
-      nameCell.appendChild(name3Input);
     } else if (dualDetailCells) {
       const leftLabel = documentRef.createElement("span");
       leftLabel.textContent = name2InputValue || name2Resolved || "";
@@ -7434,6 +7520,10 @@
       nameLabel.textContent = name3Resolved || "";
       nameLabel.title = fullPath || nameLabel.textContent;
       nameCell.appendChild(nameLabel);
+    } else if (typeOnlyLeaf) {
+      const leftLabel = documentRef.createElement("span");
+      leftLabel.textContent = name2InputValue || name2Resolved || "";
+      leftDetailCell.appendChild(leftLabel);
     } else {
       const nameLabel = documentRef.createElement("span");
       nameLabel.textContent = name3Resolved || "－";
@@ -8641,8 +8731,12 @@
     table.appendChild(jy2ActualHead(documentRef, months));
     const body = documentRef.createElement("tbody");
     for (const row of rows) {
-      // Excel原価管理: システム工種コードが無い／「－」だけの親行は出さない
-      if (jy2CostMgmtIsBlankWorkTypeCode(row.workTypeCode)) {
+      // Excel原価管理: システム工種コードが無い／「－」だけの親行は原則出さない。
+      // 例外: 名称枠（軌道工事・追加工事① 等・#R-EXCEL-UI-11）は出す。
+      if (
+        jy2CostMgmtIsBlankWorkTypeCode(row.workTypeCode) &&
+        !jy2CostMgmtAllowBlankWorkType(row)
+      ) {
         continue;
       }
       const detailRows = detailRowsByBlockId.get(row.stableBlockId) || [];
@@ -8653,6 +8747,7 @@
       const costHimokuTemplate = jy2CostMgmtHimokuTemplate(
         row.workTypeCode,
         jy2HimokuChoicesForEntry(hierarchyEntry),
+        row.workTypeName,
       );
       // Excel正の費目枠を優先（例: 10200→塗装工事。コード表外注費は使わない）
       const primaryHimokuLabel = jy2CostMgmtPrimaryHimokuLabel(
@@ -8744,10 +8839,10 @@
             lastChildRowKeyInGroup: primaryLastKey,
             monthQtyState,
             expandState,
-            // 種別なし既定費目で表示中詳細が無いとき＋
+            // 平坦費目（種別なし／種別のみ）で表示中詳細が無いとき＋
             detailQuickAdd:
               canEditBudget &&
-              jy2CostMgmtIsTypeLessHimoku(primaryHimokuLabel) &&
+              jy2CostMgmtIsFlatHimoku(primaryHimokuLabel) &&
               primaryVisible.length === 0,
           };
         } else {
@@ -8771,7 +8866,7 @@
           detailQuickAdd:
             canEditBudget &&
             Boolean(primaryHimokuLabel) &&
-            jy2CostMgmtIsTypeLessHimoku(primaryHimokuLabel),
+            jy2CostMgmtIsFlatHimoku(primaryHimokuLabel),
         };
       }
       const parentTr = jy2ActualRow(
@@ -8798,17 +8893,19 @@
         for (const entries of typeMap.values()) {
           for (const entry of entries) himokuChildren.push(entry.child);
         }
-        // Excel: その他材料費など「種別なし・詳細だけ」の費目
+        // Excel: 平坦費目（種別なし・詳細2セル／種別のみ）
         // （SUM用の子リストも先に確定。材料費側の寄せ行を含む）
-        let typelessFlatEntries = null;
-        if (jy2CostMgmtIsTypeLessHimoku(himokuLabel)) {
-          typelessFlatEntries = [];
+        let flatHimokuEntries = null;
+        const flatTypeLess = jy2CostMgmtIsTypeLessHimoku(himokuLabel);
+        const flatTypeOnly = jy2CostMgmtIsTypeOnlyHimoku(himokuLabel);
+        if (flatTypeLess || flatTypeOnly) {
+          flatHimokuEntries = [];
           const seenKeys = new Set();
           const pushEntry = (entry) => {
             const key = entry && entry.child && entry.child.rowKey;
             if (!key || seenKeys.has(key)) return;
             seenKeys.add(key);
-            typelessFlatEntries.push(entry);
+            flatHimokuEntries.push(entry);
           };
           for (const entries of typeMap.values()) {
             for (const entry of entries || []) pushEntry(entry);
@@ -8821,7 +8918,7 @@
               for (const entry of fromType) pushEntry(entry);
             }
           }
-          himokuChildren = typelessFlatEntries.map((entry) => entry.child);
+          himokuChildren = flatHimokuEntries.map((entry) => entry.child);
         }
         const lastHimokuKey =
           himokuChildren.length > 0
@@ -8831,7 +8928,7 @@
         let himokuBlockEndRow =
           himokuLabel === primaryHimokuLabel ? parentTr : null;
         if (himokuLabel !== primaryHimokuLabel) {
-          const typelessVisible = jy2ActualChildrenForBudgetSum(
+          const flatVisible = jy2ActualChildrenForBudgetSum(
             himokuChildren,
             costDetailVisibility.shouldShow,
           );
@@ -8847,14 +8944,14 @@
                 lastChildRowKeyInGroup: lastHimokuKey,
                 detailQuickAdd:
                   canEditBudget &&
-                  Boolean(typelessFlatEntries) &&
-                  typelessVisible.length === 0,
+                  Boolean(flatHimokuEntries) &&
+                  flatVisible.length === 0,
               },
             ),
           );
         }
-        if (typelessFlatEntries) {
-          for (const { child, detailIndex } of typelessFlatEntries) {
+        if (flatHimokuEntries) {
+          for (const { child, detailIndex } of flatHimokuEntries) {
             if (!child || !child.rowKey) continue;
             // Excel正の詳細は手動のみモードでも表示
             if (typeof costDetailVisibility.reveal === "function") {
@@ -8878,7 +8975,8 @@
                   revealDetailKey: costDetailVisibility.reveal,
                   onDetailChanged: onDetailStructureAdded,
                   onDetailFieldChanged,
-                  dualDetailCells: true,
+                  dualDetailCells: flatTypeLess,
+                  typeOnlyLeaf: flatTypeOnly,
                   himokuLabel,
                 },
               ),
