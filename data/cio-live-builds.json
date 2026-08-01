@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-11400-omit-kenden",
-      "fileKey": "1fd7f157-66ac-49cb-912d-0df1cb9b57d0",
-      "revision": "250",
+      "build": "2026-08-01-ver02-actual-excel-11400-omit-block",
+      "fileKey": "b49232bf-cc89-4555-94eb-124f66d1d5bd",
+      "revision": "251",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T07:14:26.807Z",
+      "deployedAt": "2026-08-01T07:18:22.998Z",
       "note": null
     },
     "757": {

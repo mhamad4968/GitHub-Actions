@@ -1,8 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11400-omit-kenden
-  // Phase2c-excel-11400-omit-kenden: 11400 の種別「外注検電接地作業者」は原価管理で非表示（依頼者）。外注停電責任者は残す。#R-EXCEL-UI-12。
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11400-omit-block
+  // Phase2c-excel-11400-omit-block: Excel正に11400枠なし → 工事原価管理から工種11400を丸ごと非表示（外注停電責任者・外注検電接地作業者）。内訳App757は触らない。#R-EXCEL-UI-09
   // Phase2c-excel-11600-code-repair: （塗）レンタルが10300のまま残るとENSUREスキップ＆費目が足場工事になる → コードを11600へ修復。HIMOKU_BY_NAME優先。#R-EXCEL-UI-09/12。
   // Phase2c-excel-11600-ensure: 内訳に11600が無いとOVERRIDEだけでは原価管理に出ない。ENSUREで空ブロック追加しオペレーター直後へ（10800も同列）。#R-EXCEL-UI-09/12。
   // Phase2c-excel-11600-rental: Excel正 11600｜レンタル。種別=建設機械／仮設資材･足場資材 → 詳細2セル。コード表の仮設機械経費は原価管理では使わない（#R-EXCEL-UI-09/12）。
@@ -183,9 +183,10 @@
       材料費: Object.freeze(["その他材料費"]),
     }),
     "11400": Object.freeze({
-      外注労務費: Object.freeze(["外注検電接地作業者"]),
+      外注労務費: Object.freeze(["外注停電責任者", "外注検電接地作業者"]),
     }),
   });
+  const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze(["11400"]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
     "10100": Object.freeze(["その他材料費"]),
@@ -951,6 +952,10 @@
     if (allowed.length === 0) return true;
     if (!allowed.includes(himokuLabel)) return true;
     return false;
+  }
+  function jy2CostMgmtShouldOmitWorkType(workTypeCode) {
+    const code = String(workTypeCode || "").trim();
+    return Boolean(code && JY2_COST_MGMT_WORK_TYPE_OMIT.includes(code));
   }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
     if (jy2CostMgmtIsFlatHimoku(himokuLabel)) return [];
@@ -9637,6 +9642,7 @@
       ) {
         continue;
       }
+      if (jy2CostMgmtShouldOmitWorkType(row.workTypeCode)) continue;
       const detailRows = detailRowsByBlockId.get(row.stableBlockId) || [];
       const hierarchyEntry = jy2ResolveNameHierarchy({
         workTypeCode: row.workTypeCode,
