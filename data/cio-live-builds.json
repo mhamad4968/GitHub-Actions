@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-12800-compensation",
-      "fileKey": "1d1ad5cd-c93d-4182-8a5d-03ab6a7277d7",
-      "revision": "274",
+      "build": "2026-08-01-ver02-actual-excel-12800-col-widths",
+      "fileKey": "2fd32ba2-5434-49b0-b583-0e8099b55f51",
+      "revision": "275",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T10:52:16.982Z",
+      "deployedAt": "2026-08-01T11:02:52.189Z",
       "note": null
     },
     "757": {

@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12800-compensation
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12800-col-widths
+  // Phase2c-excel-12800-col-widths: 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量狭・実行予算額広。#R-EXCEL-UI-09/01
   // Phase2c-excel-12800-compensation: Excel正 12800｜補償費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-soft-save-timing: 一時保存成功時はフルreloadせず親revision+App757再取得。console [jy2-save-timing]。版確定/競合は従来reload。#R-PERF-01
   // Phase2c-excel-13620-meeting: Excel正 13620｜会議費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -896,12 +897,56 @@
       });
       if (byCode) return byCode;
     }
+    // 名称一致は「コード空／－」のレガシーだけ。別コード付きブロックを誤修復しない。
     return (
       blocks.find((block) => {
         if (!block || block.status === "retired") return false;
+        if (
+          expectedCode &&
+          !jy2CostMgmtIsBlankWorkTypeCode(block.workTypeCode)
+        ) {
+          return false;
+        }
         return jy2CostMgmtFrameNameMatches(block.workTypeName, frame);
       }) || null
     );
+  }
+  // App757 由来で区分 null のままだと projectionBlocks から落ちて原価管理に出ない。
+  function jy2CostMgmtRepairNullCostCategories(detailModel) {
+    if (
+      !detailModel ||
+      typeof detailModel.updateBlockHeader !== "function" ||
+      typeof detailModel.snapshot !== "function"
+    ) {
+      return 0;
+    }
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    let repaired = 0;
+    for (const block of blocks) {
+      if (!block || block.status === "retired") continue;
+      if (block.costCategory === "施工" || block.costCategory === "保安") continue;
+      const resolved = jy2ResolveCostCategoryFromWorkType(
+        block.workTypeCode,
+        block.workTypeName,
+      );
+      if (resolved !== "施工" && resolved !== "保安") continue;
+      try {
+        detailModel.updateBlockHeader(block.stableBlockId, {
+          costCategory: resolved,
+        });
+        repaired += 1;
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error("jy2CostMgmtRepairNullCostCategories failed:", block, error);
+        }
+      }
+    }
+    return repaired;
   }
   // コード付き枠: 名称一致だが誤コード（例 10300）のレガシー行は修復。retired は対象外。
   function jy2CostMgmtEnsureCodedFrameList(detailModel, frames, logLabel) {
@@ -970,6 +1015,7 @@
     ) {
       return 0;
     }
+    const repairedCategories = jy2CostMgmtRepairNullCostCategories(detailModel);
     const addedTypeOnly = jy2CostMgmtEnsureFrameList(
       detailModel,
       JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES,
@@ -998,6 +1044,7 @@
     const movedCoded =
       jy2CostMgmtPlaceCodedFramesAfterOperator(detailModel);
     return (
+      repairedCategories +
       addedTypeOnly +
       addedDayNight +
       addedCoded +
@@ -1655,7 +1702,12 @@
       ".jy2-actual-table .jy2-actual-dual-detail-row .jy2-actual-dual-detail-input{display:block;width:100%;min-width:12rem;box-sizing:border-box}",
       ".jy2-actual-table .jy2-actual-dual-detail-left{padding-left:6px}",
       ".jy2-actual-table .jy2-freeze-2.jy2-actual-dual-detail-left{overflow:visible;text-overflow:clip}",
-      ".jy2-actual-table .jy2-actual-child-qty-input{display:block;width:100%;min-width:3.5rem;box-sizing:border-box;text-align:right}",
+      /* 単価・数量は狭め、実行予算額は金額桁を見やすく広め（浜田 2026-08-01） */
+      ".jy2-actual-table th.jy2-actual-col-unit-price,.jy2-actual-table td.jy2-actual-col-unit-price,.jy2-actual-table .jy2-actual-group-unit-price{min-width:3.25rem;width:3.25rem;max-width:4rem;padding:2px 3px!important;box-sizing:border-box}",
+      ".jy2-actual-table th.jy2-actual-col-plan-qty,.jy2-actual-table td.jy2-actual-col-plan-qty,.jy2-actual-table .jy2-actual-group-plan-qty{min-width:2.5rem;width:2.5rem;max-width:3.25rem;padding:2px 3px!important;box-sizing:border-box}",
+      ".jy2-actual-table th.jy2-actual-col-budget,.jy2-actual-table td.jy2-actual-col-budget,.jy2-actual-table td.jy2-actual-auto-budget{min-width:7.5rem;width:7.5rem;max-width:9.5rem;padding:2px 6px!important;box-sizing:border-box;white-space:nowrap}",
+      ".jy2-actual-table .jy2-actual-child-unit-price-input{display:block;width:100%;min-width:0;box-sizing:border-box;text-align:right}",
+      ".jy2-actual-table .jy2-actual-child-qty-input{display:block;width:100%;min-width:0;box-sizing:border-box;text-align:right}",
       ".jy2-actual-child-ops{display:inline-flex;gap:2px;flex-shrink:0;align-items:center;justify-content:center;width:100%}",
       ".jy2-actual-ops-cell{text-align:center;padding:2px 3px!important;vertical-align:middle}",
       ".jy2-actual-child-ops .jy2-actual-detail-pm-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;margin:0;font-size:12px;font-weight:700;line-height:1;border:1px solid #64748b;border-radius:3px;background:#fff;color:#0f172a;cursor:pointer}",
@@ -5870,12 +5922,16 @@
     const opsHead = th("操作", { rowSpan: 2, freeze: 4 });
     opsHead.title = "詳細行の追加（＋）・削除（－）。構造は一時保存で App757 へ";
     top.appendChild(opsHead);
-    top.appendChild(th("単価", { rowSpan: 2 }));
+    const unitPriceHead = th("単価", { rowSpan: 2 });
+    unitPriceHead.classList.add("jy2-actual-col-unit-price");
+    top.appendChild(unitPriceHead);
     const planQtyHead = th("数量", { rowSpan: 2 });
+    planQtyHead.classList.add("jy2-actual-col-plan-qty");
     planQtyHead.title =
       "明細の計画数量（App757）。実行予算額＝ROUND(単価×数量)。月次数量とは別";
     top.appendChild(planQtyHead);
     const finalHead = th("実行予算額", { rowSpan: 2 });
+    finalHead.classList.add("jy2-actual-col-budget");
     finalHead.title = "ROUND(単価×数量) 自動（入力不可）。親＝子合計";
     top.appendChild(finalHead);
     for (const month of months) {
@@ -8197,7 +8253,7 @@
     const parentFinalCell = jy2Cell(
       documentRef,
       "td",
-      "jy2-amount jy2-actual-sum-cell",
+      "jy2-amount jy2-actual-sum-cell jy2-actual-col-budget",
       jy2AmountDisplay(parentFinalBudget),
     );
     parentFinalCell.title =
@@ -8693,7 +8749,12 @@
     if (opsEl) opsCell.appendChild(opsEl);
     tr.appendChild(jy2MarkFreeze(opsCell, 4));
 
-    const unitPriceCell = jy2Cell(documentRef, "td", "jy2-num", "");
+    const unitPriceCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-col-unit-price",
+      "",
+    );
     const unitPriceRaw =
       detailIndex >= 0 && detailRows?.[detailIndex]
         ? detailRows[detailIndex].unitPrice
@@ -8774,7 +8835,12 @@
     }
     tr.appendChild(unitPriceCell);
 
-    const planQtyCell = jy2Cell(documentRef, "td", "jy2-num", "");
+    const planQtyCell = jy2Cell(
+      documentRef,
+      "td",
+      "jy2-num jy2-actual-col-plan-qty",
+      "",
+    );
     const planQtyRaw =
       detailIndex >= 0 && detailRows?.[detailIndex]
         ? detailRows[detailIndex].quantity
@@ -8820,7 +8886,7 @@
     const finalCell = jy2Cell(
       documentRef,
       "td",
-      "jy2-amount jy2-actual-auto-budget",
+      "jy2-amount jy2-actual-auto-budget jy2-actual-col-budget",
       autoBudget === null ? "－" : jy2AmountDisplay(autoBudget),
     );
     finalCell.title = "実行予算額＝ROUND(単価×数量)（自動・入力不可）";
@@ -9416,7 +9482,7 @@
     const finalBudgetCell = jy2Cell(
       documentRef,
       "td",
-      "jy2-amount jy2-actual-sum-cell",
+      "jy2-amount jy2-actual-sum-cell jy2-actual-col-budget",
       jy2AmountDisplay(finalBudgetSum),
     );
     finalBudgetCell.title =

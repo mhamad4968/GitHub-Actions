@@ -515,7 +515,10 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-12800-compensation/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-12800-col-widths/);
+  assert.match(source, /jy2CostMgmtRepairNullCostCategories/);
+  assert.match(source, /jy2-actual-col-unit-price/);
+  assert.match(source, /jy2-actual-col-budget/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /\[jy2-save-timing\]/);
   assert.match(source, /softSaveReady/);
@@ -529,6 +532,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-13100-dues/);
   assert.match(source, /Phase2c-excel-13620-meeting/);
   assert.match(source, /Phase2c-excel-12800-compensation/);
+  assert.match(source, /Phase2c-excel-12800-col-widths/);
   assert.match(source, /Phase2c-excel-detail-col-wide/);
   assert.match(source, /Phase2c-excel-12700-kentaikyo/);
   assert.match(source, /Phase2c-excel-12600-bond/);
