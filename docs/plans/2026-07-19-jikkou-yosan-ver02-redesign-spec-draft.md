@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・11600 コード修復）**: （塗）レンタルが Excel 誤植 **10300** のままだと ENSURE が名称一致でスキップし、表示費目が足場工事になる。ENSURE で **11600 へ修復**＋HIMOKU_BY_NAME 優先。BUILD `2026-08-01-ver02-actual-excel-11600-code-repair`。#R-EXCEL-UI-09/12。  
 **2026-08-01 午後（工事原価管理・11600 ENSURE）**: 内訳未存在だと OVERRIDE だけでは枠が出ないため、10800/11600 を ENSURE で空ブロック追加しオペレーター直後へ。BUILD `2026-08-01-ver02-actual-excel-11600-ensure`。  
 **2026-08-01 午後（工事原価管理・11600 レンタル）**: Excel正 **11600｜費目=レンタル｜種別=建設機械／仮設資材･足場資材 → 詳細2セル**。コード表の仮設機械経費は原価管理では使わない。LIVE BUILD `2026-08-01-ver02-actual-excel-11600-rental`。#R-EXCEL-UI-09/12。  
 **2026-08-01 午後（工事原価管理・保存後縮小）**: 一時保存／予実保存後の reload 直後に visualViewport が一瞬狭く host max-width が縮むことがある。scale≈1 では layout 幅優先＋settle再同期。BUILD `2026-08-01-ver02-actual-viewport-shrink-fix`。  
