@@ -606,7 +606,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /commitDetailField/);
   // Phase2c-c-excel-unit-price + 計画数量: 単価・数量手入力 → 実行予算自動
   assert.match(source, /jy2-actual-child-unit-price-input/);
-  assert.match(source, /commitDetailField\(\{\s*unitPrice: value\s*\}\)/);
+  assert.match(source, /const patch = \{\s*unitPrice: value\s*\}/);
+  assert.match(source, /commitDetailField\(patch\)/);
   assert.match(source, /commitDetailField\(\{\s*quantity: value\s*\}\)/);
   const childRowMatch = source.match(
     /function jy2ActualChildRow[\s\S]*?return tr;\s*\}/,
