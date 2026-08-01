@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-last-detail-clear
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10900-manager
+  // Phase2c-excel-10900-manager: Excel正 10900｜工事管理者賃金。
+  // 費目=出向工事管理者／その他工事管理者 → 種別=昼間／夜間 → 詳細。#R-EXCEL-UI-12。
+  // （コード表の労務費＋（昼）（夜）は原価管理では使わない）
   // Phase2c-last-detail-clear: ブロック最終明細の－は削除ではなく内容クリア
   // （U12: 明細0行禁止のため。軌道工事等でエラーにならない）。
   // Phase2c-excel-nameless-no-empty-detail: 軌道工事等は費目枠のみ。空の詳細行は出さない
@@ -168,11 +171,19 @@
     "10400": Object.freeze(["塗装・足場工事"]),
     "10600": Object.freeze(["修繕等工事"]),
     "10700": Object.freeze(["塗装附帯工事"]),
+    "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
     "14300": Object.freeze(["追加工事③"]),
     "14400": Object.freeze(["追加工事④"]),
     "14500": Object.freeze(["追加工事⑤"]),
+  });
+  // Excel: 費目ごとの種別（補助）枠。コード表 typesByHimoku より優先。#R-EXCEL-UI-12。
+  const JY2_COST_MGMT_TYPES_OVERRIDE = Object.freeze({
+    "10900": Object.freeze({
+      "出向工事管理者": Object.freeze(["昼間", "夜間"]),
+      "その他工事管理者": Object.freeze(["昼間", "夜間"]),
+    }),
   });
   // システム工種コードが空の Excel 枠（名称で費目枠を決める）。
   const JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME = Object.freeze({
@@ -498,10 +509,17 @@
   }
   function jy2CostMgmtTemplateTypes(workTypeCode, himokuLabel, typesByHimoku) {
     if (jy2CostMgmtIsFlatHimoku(himokuLabel)) return [];
+    const code = String(workTypeCode || "");
+    const himoku = String(himokuLabel || "").trim();
+    const byCode = JY2_COST_MGMT_TYPES_OVERRIDE[code];
+    const fromOverride =
+      byCode && himoku && Array.isArray(byCode[himoku]) ? byCode[himoku] : null;
     const raw =
-      typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
-        ? typesByHimoku[himokuLabel]
-        : [];
+      fromOverride && fromOverride.length > 0
+        ? [...fromOverride]
+        : typesByHimoku && Array.isArray(typesByHimoku[himokuLabel])
+          ? typesByHimoku[himokuLabel]
+          : [];
     return raw.filter(
       (typeLabel) =>
         !jy2CostMgmtShouldOmitType(workTypeCode, himokuLabel, typeLabel),

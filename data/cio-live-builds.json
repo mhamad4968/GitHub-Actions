@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-last-detail-clear",
-      "fileKey": "0bf5ee85-8ec6-4b76-b21e-21ac41c2a529",
-      "revision": "235",
+      "build": "2026-08-01-ver02-actual-excel-10900-manager",
+      "fileKey": "b325dad5-13c4-41f1-a634-c91f846a7753",
+      "revision": "236",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T00:41:56.984Z",
+      "deployedAt": "2026-08-01T00:49:26.860Z",
       "note": null
     },
     "757": {
