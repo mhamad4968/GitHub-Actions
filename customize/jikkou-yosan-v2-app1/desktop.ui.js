@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-himoku-fold-default-closed: 費目▶は詳細があるときだけ。既定クローズ。#R-EXCEL-UI-16
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold-closed
   // Phase2c-actual-himoku-fold: 費目単位▶／▼開閉。閉じ時は費目名+数量/実行予算SUM。空詳細は出さない。＋で開いて追加。#R-EXCEL-UI-16
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold
   // Phase2c-actual-sticky-totals-collapse: 合計バーは既定クローズ・summaryクリックで開く。#R-EXCEL-UI-15
   // Phase2c-actual-sticky-totals-month: sticky合計バーの月次を月単位（数量・金額）に訂正。実行予算は全合計のまま。#R-EXCEL-UI-15
   // Phase2c-actual-sticky-totals-bar: 表直上に実行予算/月次数量/月次金額の全合計stickyバー（仮置き・浜田確認用）。#R-EXCEL-UI-15
@@ -8546,6 +8547,7 @@
       himokuCell.appendChild(himokuLabelSpan);
       if (
         parentHimokuOpts &&
+        parentHimokuOpts.himokuFoldAvailable === true &&
         parentHimokuOpts.himokuFold &&
         parentHimokuOpts.himokuFoldKey &&
         typeof parentHimokuOpts.onHimokuFoldToggle === "function"
@@ -9582,6 +9584,7 @@
     labelCell.appendChild(himokuLabelSpan);
     if (
       opts &&
+      opts.himokuFoldAvailable === true &&
       opts.himokuFold &&
       opts.himokuFoldKey &&
       typeof opts.onHimokuFoldToggle === "function"
@@ -10070,7 +10073,7 @@
     };
   }
 
-  // #R-EXCEL-UI-16: 費目単位の開閉。キー未設定時は defaultOpen（表示できる詳細があるとき開く）。
+  // #R-EXCEL-UI-16: 費目単位の開閉。キー未設定時は defaultOpen（既定 false＝クローズ）。
   function jy2ActualHimokuFoldKey(blockId, himokuLabel) {
     return `${String(blockId || "")}\u0001${String(himokuLabel || "")}`;
   }
@@ -10979,10 +10982,10 @@
             row.stableBlockId,
             primaryHimokuLabel,
           );
-          const primaryIsOpen = himokuFold.isOpen(
-            primaryFoldKey,
-            primaryShowable > 0,
-          );
+          // 既定クローズ。▶は表示できる詳細がある費目だけ
+          const primaryIsOpen =
+            primaryShowable > 0 &&
+            himokuFold.isOpen(primaryFoldKey, false);
           const primaryTemplateTypes = jy2CostMgmtTemplateTypes(
             row.workTypeCode,
             primaryHimokuLabel,
@@ -11006,10 +11009,11 @@
             expandState,
             himokuFold,
             himokuFoldKey: primaryFoldKey,
+            himokuFoldAvailable: primaryShowable > 0,
             himokuIsOpen: primaryIsOpen,
             defaultTypeLabel: primaryDefaultType,
             onHimokuFoldToggle: () => {
-              himokuFold.toggle(primaryFoldKey, primaryShowable > 0);
+              himokuFold.toggle(primaryFoldKey, false);
               rerender();
             },
             // 閉じている／平坦で表示できる詳細が無いとき＋（押下で開いて追加）
@@ -11132,7 +11136,9 @@
           row.stableBlockId,
           himokuLabel,
         );
-        const himokuIsOpen = himokuFold.isOpen(foldKey, himokuShowable > 0);
+        // 既定クローズ。▶は表示できる詳細がある費目だけ
+        const himokuIsOpen =
+          himokuShowable > 0 && himokuFold.isOpen(foldKey, false);
         const templateTypes = jy2CostMgmtTemplateTypes(
           row.workTypeCode,
           himokuLabel,
@@ -11156,10 +11162,11 @@
                 ...groupOpts,
                 lastChildRowKeyInGroup: lastHimokuKey,
                 himokuFoldKey: foldKey,
+                himokuFoldAvailable: himokuShowable > 0,
                 himokuIsOpen,
                 defaultTypeLabel,
                 onHimokuFoldToggle: () => {
-                  himokuFold.toggle(foldKey, himokuShowable > 0);
+                  himokuFold.toggle(foldKey, false);
                   rerender();
                 },
                 // 閉じている／平坦で表示できる詳細が無いとき＋
