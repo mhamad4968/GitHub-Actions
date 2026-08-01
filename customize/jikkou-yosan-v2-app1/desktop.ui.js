@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-operator-day-night
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-operator-dual-detail
+  // Phase2c-excel-operator-dual-detail: 建設機械オペレーターは種別下の詳細が2セル
+  // （Excel正。name2=種別／詳細左・name3=詳細右。#R-EXCEL-UI-12/14）。
   // Phase2c-excel-operator-day-night: Excel正・システム工種なし｜建設機械オペレーター。
   // 費目=建設機械オペレーター → 種別=昼間／夜間 → 詳細。10900 と同型（#R-EXCEL-UI-12）。
   // コード表の労務費＋建設機械オペレーター（種別）は原価管理では使わない。10900 直後へ確保。
@@ -194,6 +196,12 @@
   const JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU = Object.freeze({
     "建設機械オペレーター": Object.freeze(["昼間", "夜間"]),
   });
+  // 種別行の下で詳細2セル（種別列=詳細左・詳細列=詳細右）。#R-EXCEL-UI-14。
+  // name2 は「種別」または「種別／詳細左」で保持（App757 は name1〜3 のみ）。
+  const JY2_COST_MGMT_DUAL_DETAIL_TYPE_HIMOKU = Object.freeze([
+    "建設機械オペレーター",
+  ]);
+  const JY2_COST_MGMT_TYPE_DETAIL_SEP = "／";
   // システム工種コードが空の Excel 枠（名称で費目枠を決める）。
   const JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME = Object.freeze({
     "軌道工事": Object.freeze(["軌道工事"]),
@@ -411,7 +419,13 @@
   }
   function jy2CostMgmtDetailHasLeafContent(row) {
     if (!row) return false;
-    const parts = [row.name2, row.name3, row.quantity, row.unitPrice, row.note];
+    let name2Text = String(row.name2 == null ? "" : row.name2).trim();
+    const himoku = String(row.name1 == null ? "" : row.name1).trim();
+    if (name2Text && jy2CostMgmtIsDualDetailTypeHimoku(himoku)) {
+      // 種別だけの name2（例: 昼間）は詳細内容とみなさない
+      name2Text = jy2CostMgmtSplitTypeDetailName2(name2Text, himoku).leftDetail;
+    }
+    const parts = [name2Text, row.name3, row.quantity, row.unitPrice, row.note];
     return parts.some((value) => {
       const text = String(value == null ? "" : value).trim();
       if (!text) return false;
@@ -568,6 +582,64 @@
   function jy2CostMgmtIsTypeOnlyHimoku(himokuLabel) {
     const text = String(himokuLabel || "").trim();
     return Boolean(text && JY2_COST_MGMT_TYPE_ONLY_HIMOKU.includes(text));
+  }
+  function jy2CostMgmtIsDualDetailTypeHimoku(himokuLabel) {
+    const text = String(himokuLabel || "").trim();
+    return Boolean(text && JY2_COST_MGMT_DUAL_DETAIL_TYPE_HIMOKU.includes(text));
+  }
+  function jy2CostMgmtKnownTypesForHimoku(himokuLabel) {
+    const himoku = String(himokuLabel || "").trim();
+    if (!himoku) return [];
+    const fromHimoku = JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU[himoku];
+    if (Array.isArray(fromHimoku) && fromHimoku.length > 0) {
+      return [...fromHimoku];
+    }
+    for (const byCode of Object.values(JY2_COST_MGMT_TYPES_OVERRIDE)) {
+      if (byCode && Array.isArray(byCode[himoku]) && byCode[himoku].length > 0) {
+        return [...byCode[himoku]];
+      }
+    }
+    return [];
+  }
+  // name2 → { typeLabel, leftDetail }（dual-under-type 用）
+  function jy2CostMgmtSplitTypeDetailName2(name2, himokuLabel) {
+    const raw = String(name2 == null ? "" : name2).trim();
+    const known = jy2CostMgmtKnownTypesForHimoku(himokuLabel);
+    if (!raw) {
+      return { typeLabel: "", leftDetail: "" };
+    }
+    for (const typeLabel of known) {
+      if (!typeLabel) continue;
+      if (raw === typeLabel) {
+        return { typeLabel, leftDetail: "" };
+      }
+      const prefix = typeLabel + JY2_COST_MGMT_TYPE_DETAIL_SEP;
+      if (raw.startsWith(prefix)) {
+        return { typeLabel, leftDetail: raw.slice(prefix.length) };
+      }
+    }
+    const sep = raw.indexOf(JY2_COST_MGMT_TYPE_DETAIL_SEP);
+    if (sep > 0) {
+      return {
+        typeLabel: raw.slice(0, sep),
+        leftDetail: raw.slice(sep + JY2_COST_MGMT_TYPE_DETAIL_SEP.length),
+      };
+    }
+    return { typeLabel: raw, leftDetail: "" };
+  }
+  function jy2CostMgmtJoinTypeDetailName2(typeLabel, leftDetail) {
+    const type = String(typeLabel || "").trim();
+    const left = String(leftDetail == null ? "" : leftDetail).trim();
+    if (!type) return left || null;
+    if (!left) return type;
+    return type + JY2_COST_MGMT_TYPE_DETAIL_SEP + left;
+  }
+  function jy2CostMgmtTypeLabelFromName2(name2, himokuLabel) {
+    if (!jy2CostMgmtIsDualDetailTypeHimoku(himokuLabel)) {
+      return String(name2 || "").trim();
+    }
+    const split = jy2CostMgmtSplitTypeDetailName2(name2, himokuLabel);
+    return split.typeLabel || String(name2 || "").trim();
   }
   // 種別SUM行を挟まない費目（詳細2セル or 種別のみ）。
   function jy2CostMgmtIsFlatHimoku(himokuLabel) {
@@ -7598,7 +7670,11 @@
       dualDetailCells = false,
       typeOnlyLeaf = false,
       himokuLabel: dualHimokuLabel = "",
+      // 種別行下の詳細2セル時: name2 に埋め込む種別ラベル（例: 昼間）
+      dualUnderTypeLabel = "",
     } = childDetailOpts;
+    const underTypeLabel = String(dualUnderTypeLabel || "").trim();
+    const dualUnderType = Boolean(dualDetailCells && underTypeLabel);
     const notifyFieldChanged = () => {
       if (typeof onDetailFieldChanged === "function") {
         onDetailFieldChanged();
@@ -7638,6 +7714,7 @@
     tr.dataset.rowKey = child.rowKey;
     // 通常: freeze0–2=空、freeze3=詳細(name3)。詳細列はツリー記号なし。
     // dual: freeze2=詳細左(name2)・freeze3=詳細右(name3) — Excelその他材料費。
+    // dualUnderType: freeze2=詳細左・freeze3=詳細右。name2 は「種別／詳細左」。
     // typeOnly: freeze2=種別(name2)・freeze3=空 — Excel 軌道工事等。
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "jy2-num", ""), 0));
     tr.appendChild(jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 1));
@@ -7649,6 +7726,7 @@
     // 費目名が name2 に入っている取り違えは左セルに出さない
     if (
       (dualDetailCells || typeOnlyLeaf) &&
+      !dualUnderType &&
       dualHimokuLabel &&
       String(name2Resolved).trim() === String(dualHimokuLabel).trim()
     ) {
@@ -7660,16 +7738,24 @@
       : jy2HasText(name3Raw)
         ? String(name3Raw).trim()
         : "";
-    const name2InputValue = jy2IsDitto(name2Raw)
-      ? name2Resolved
-      : jy2HasText(name2Raw) &&
-          !(
-            (dualDetailCells || typeOnlyLeaf) &&
-            dualHimokuLabel &&
-            String(name2Raw).trim() === String(dualHimokuLabel).trim()
-          )
-        ? String(name2Raw).trim()
-        : "";
+    const dualSplit = dualUnderType
+      ? jy2CostMgmtSplitTypeDetailName2(
+          jy2IsDitto(name2Raw) ? name2Resolved : name2Raw,
+          dualHimokuLabel,
+        )
+      : null;
+    const name2InputValue = dualUnderType
+      ? dualSplit.leftDetail || ""
+      : jy2IsDitto(name2Raw)
+        ? name2Resolved
+        : jy2HasText(name2Raw) &&
+            !(
+              (dualDetailCells || typeOnlyLeaf) &&
+              dualHimokuLabel &&
+              String(name2Raw).trim() === String(dualHimokuLabel).trim()
+            )
+          ? String(name2Raw).trim()
+          : "";
     const name3InputValue = jy2IsDitto(name3Raw)
       ? name3Resolved
       : jy2HasText(name3Raw)
@@ -7677,8 +7763,9 @@
         : "";
     const fullPath = [
       name1Resolved || dualHimokuLabel,
+      dualUnderType ? underTypeLabel : "",
       dualDetailCells || typeOnlyLeaf
-        ? name2InputValue || name2Resolved
+        ? name2InputValue || (dualUnderType ? "" : name2Resolved)
         : name2Resolved,
       typeOnlyLeaf ? "" : name3Resolved,
     ]
@@ -7712,16 +7799,20 @@
           documentRef,
           name2InputValue,
           (value) => {
+            const kana = jy2ToFullWidthKana(value);
+            const patch = {
+              name1:
+                dualHimokuLabel ||
+                name1Resolved ||
+                (typeOnlyLeaf ? "（未分類）" : "その他材料費"),
+              name2: dualUnderType
+                ? jy2CostMgmtJoinTypeDetailName2(underTypeLabel, kana)
+                : kana,
+            };
             childDetailModel.updateDetailRow(
               parent.stableBlockId,
               child.rowKey,
-              {
-                name1:
-                  dualHimokuLabel ||
-                  name1Resolved ||
-                  (typeOnlyLeaf ? "（未分類）" : "その他材料費"),
-                name2: jy2ToFullWidthKana(value),
-              },
+              patch,
             );
             if (typeof revealDetailKey === "function") {
               revealDetailKey(child.rowKey);
@@ -7738,7 +7829,9 @@
           : "詳細（左）";
         name2Input.title = typeOnlyLeaf
           ? "種別（補助）を手入力"
-          : "詳細左セル（例: エンドポイント）";
+          : dualUnderType
+            ? `詳細左セル（種別「${underTypeLabel}」の下）`
+            : "詳細左セル（例: エンドポイント）";
         leftDetailCell.appendChild(name2Input);
       }
       if (!typeOnlyLeaf) {
@@ -7751,6 +7844,14 @@
             };
             if (dualDetailCells) {
               patch.name1 = dualHimokuLabel || name1Resolved || "その他材料費";
+            }
+            if (dualUnderType) {
+              // 右セルだけ直したときも種別を name2 に残す
+              const currentLeft = name2InputValue || "";
+              patch.name2 = jy2CostMgmtJoinTypeDetailName2(
+                underTypeLabel,
+                currentLeft,
+              );
             }
             childDetailModel.updateDetailRow(
               parent.stableBlockId,
@@ -7771,7 +7872,9 @@
           ? "詳細（右）"
           : "詳細（手入力）";
         if (dualDetailCells) {
-          name3Input.title = "詳細右セル（例: 塗装表示記録･数字シール）";
+          name3Input.title = dualUnderType
+            ? `詳細右セル（種別「${underTypeLabel}」の下）`
+            : "詳細右セル（例: 塗装表示記録･数字シール）";
         } else if (fullPath) {
           name3Input.title = fullPath;
         }
@@ -7796,7 +7899,10 @@
             event.stopPropagation();
           }
           const patch = {};
-          if (dualDetailCells || typeOnlyLeaf) {
+          if (dualUnderType) {
+            patch.name1 = dualHimokuLabel || name1Resolved || "";
+            patch.name2 = underTypeLabel;
+          } else if (dualDetailCells || typeOnlyLeaf) {
             patch.name1 =
               dualHimokuLabel ||
               name1Resolved ||
@@ -9194,16 +9300,20 @@
             ? resolvedName1
             : "（未分類）";
         };
-        const resolveTypeLabel = (child, detailIndex) => {
+        const resolveTypeLabel = (child, detailIndex, himokuLabel) => {
           const resolvedName2 =
             detailIndex >= 0
               ? jy2ActualResolveContinuedField(detailRows, detailIndex, "name2")
               : child && child.name2
                 ? String(child.name2).trim()
                 : "";
-          return resolvedName2 && resolvedName2.length > 0
-            ? resolvedName2
-            : "（種別未設定）";
+          const raw =
+            resolvedName2 && resolvedName2.length > 0
+              ? resolvedName2
+              : "（種別未設定）";
+          if (raw === "（種別未設定）") return raw;
+          const fromDual = jy2CostMgmtTypeLabelFromName2(raw, himokuLabel);
+          return fromDual && fromDual.length > 0 ? fromDual : raw;
         };
         typesByHimokuMap =
           hierarchyEntry && hierarchyEntry.typesByHimoku
@@ -9222,7 +9332,7 @@
             (candidate) => candidate && candidate.rowKey === child.rowKey,
           );
           const himokuLabel = resolveHimokuLabel(child, detailIndex);
-          const typeLabel = resolveTypeLabel(child, detailIndex);
+          const typeLabel = resolveTypeLabel(child, detailIndex, himokuLabel);
           const typeMap = ensureHimoku(himokuLabel);
           if (!typeMap.has(typeLabel)) typeMap.set(typeLabel, []);
           typeMap.get(typeLabel).push({ child, detailIndex });
@@ -9449,6 +9559,8 @@
           if (typeChildren.length > 0) {
             lastAnchorInHimoku = typeChildren[typeChildren.length - 1].rowKey;
           }
+          const dualUnderTypeHimoku =
+            jy2CostMgmtIsDualDetailTypeHimoku(himokuLabel);
           for (const { child, detailIndex } of entries) {
             const name3Raw =
               detailIndex >= 0 ? detailRows[detailIndex]?.name3 : null;
@@ -9484,6 +9596,9 @@
                   revealDetailKey: costDetailVisibility.reveal,
                   onDetailChanged: onDetailStructureAdded,
                   onDetailFieldChanged,
+                  dualDetailCells: dualUnderTypeHimoku,
+                  dualUnderTypeLabel: dualUnderTypeHimoku ? typeLabel : "",
+                  himokuLabel,
                 },
               ),
             );
