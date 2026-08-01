@@ -163,6 +163,7 @@
     "test:evening-improvements-2026-07-23": "node scripts/test-evening-improvements-2026-07-23.mjs",
     "test:evening-improvements-2026-07-26": "node scripts/test-evening-improvements-2026-07-26.mjs",
     "test:evening-improvements-2026-07-30": "node scripts/test-evening-improvements-2026-07-30.mjs",
+    "test:evening-improvements-2026-08-01": "node scripts/test-evening-improvements-2026-08-01.mjs",
     "cio:pre-push-local-parity": "node scripts/cio-pre-push-local-parity.mjs",
     "test:evening-improvements-2026-07-28": "node scripts/test-evening-improvements-2026-07-28.mjs",
     "cio:guard-r63-v2": "node scripts/cio-guard-r63-v2-dirty.mjs",

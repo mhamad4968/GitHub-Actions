@@ -1,0 +1,35 @@
+---
+description: 2026-08-01夕反省GO — 756 Excel枠並び/二重/区分・受入ミニチェック・MCP(gh優先)（憲法本文は触らない）
+alwaysApply: false
+globs: "customize/jikkou-yosan-v2-app1/**,docs/plans/2026-07-31-756-*,docs/runbooks/cio-ops-2026-08-01*,docs/runbooks/jikkou-yosan-v2-chrome*"
+---
+
+# 運用改善 — 2026-08-01 GO（夕反省全承認）
+
+> 正本: `docs/runbooks/cio-ops-2026-08-01-evening-improvements.md`  
+> GO: `docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md`  
+> **憲法本文は変更しない。** `alwaysApply: true` にしない。
+
+## A1 / R-EXCEL-PLACE-01
+
+並び替えは業務クラスタ単位。工事がらみ名称枠をコード番号順だけで押し下げない。
+
+## A2 / S-DEDUP-01
+
+新規枠後は同一工種コードの二重を目視。表示 omit は `jy2CostMgmtDuplicateCodedBlockIdSet`。
+
+## A3 / S-CAT-01
+
+保安系は区分も確認。ENSURE の `costCategory` は `jy2ResolveCostCategoryFromWorkType`（施工硬コード禁止）。
+
+## O-756-01 / O-756-02
+
+枠追加ミニチェック（費目／種別／区分／二重／並び）。連続枠は 1枠=1 deploy（まとめは明示時のみ）。
+
+## O-GHA-01 / M-2
+
+日終わり GitHub は `gh run list`。当日 tip に失敗が残っていないことも1行。
+
+## M-1 / M-3
+
+連続枠のコード表は repo Grep 優先。sequential-thinking は仮説1＋根拠行まで。
