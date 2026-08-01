@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-nameless-no-empty-detail
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-last-detail-clear
+  // Phase2c-last-detail-clear: ブロック最終明細の－は削除ではなく内容クリア
+  // （U12: 明細0行禁止のため。軌道工事等でエラーにならない）。
   // Phase2c-excel-nameless-no-empty-detail: 軌道工事等は費目枠のみ。空の詳細行は出さない
   // （＋で追加するまで。自動確保時に name1 を載せない／既存の空詳細は外す）。
   // Phase2c-excel-nameless-typeless: 軌道工事〜追加工事⑤は種別なし・詳細2セル
@@ -7666,7 +7668,26 @@
         "jy2-actual-detail-pm-btn jy2-actual-child-delete-btn";
       deleteBtn.textContent = "－";
       deleteBtn.setAttribute("aria-label", "詳細行を削除");
-      deleteBtn.title = "詳細行を削除（一時保存で App757 へ）";
+      // U12: ブロックに明細が1行は残る。最終行の－は削除ではなく内容クリア。
+      let detailRowCountInBlock = Array.isArray(detailRows)
+        ? detailRows.length
+        : 0;
+      try {
+        const snap = childDetailModel.snapshot();
+        const liveBlock = (snap.blocks || []).find(
+          (candidate) =>
+            candidate && candidate.stableBlockId === parent.stableBlockId,
+        );
+        if (liveBlock && Array.isArray(liveBlock.detailRows)) {
+          detailRowCountInBlock = liveBlock.detailRows.length;
+        }
+      } catch {
+        // keep detailRows length
+      }
+      const isSoleDetailInBlock = detailRowCountInBlock <= 1;
+      deleteBtn.title = isSoleDetailInBlock
+        ? "内容をクリア（工種ブロックには明細が1行残ります）"
+        : "詳細行を削除（一時保存で App757 へ）";
       deleteBtn.addEventListener("mousedown", (event) => {
         if (typeof event.preventDefault === "function") event.preventDefault();
       });
@@ -7680,15 +7701,34 @@
             const ok =
               view && typeof view.confirm === "function"
                 ? view.confirm(
-                    "この行には実行予算または月次実績があります。削除しますか？\n（構造は一時保存で App757 へ。App758 の古い実績キーは残る場合があります）",
+                    isSoleDetailInBlock
+                      ? "この行には実行予算または月次実績があります。内容をクリアしますか？\n（工種ブロックには明細が1行残ります）"
+                      : "この行には実行予算または月次実績があります。削除しますか？\n（構造は一時保存で App757 へ。App758 の古い実績キーは残る場合があります）",
                   )
                 : true;
             if (!ok) return;
           }
-          childDetailModel.removeDetailRow(
-            parent.stableBlockId,
-            child.rowKey,
-          );
+          if (isSoleDetailInBlock) {
+            // U12: 0行にはできない → 費目枠だけの状態へ戻す（内容クリア）
+            childDetailModel.updateDetailRow(
+              parent.stableBlockId,
+              child.rowKey,
+              {
+                name1: null,
+                name2: null,
+                name3: null,
+                unit: null,
+                quantity: null,
+                unitPrice: null,
+                note: null,
+              },
+            );
+          } else {
+            childDetailModel.removeDetailRow(
+              parent.stableBlockId,
+              child.rowKey,
+            );
+          }
           if (typeof onDetailChanged === "function") onDetailChanged();
           else if (typeof rerender === "function") rerender();
         } catch (error) {

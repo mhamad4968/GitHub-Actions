@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-nameless-no-empty-detail/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-last-detail-clear/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
@@ -530,12 +530,14 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-type-only-order/);
   assert.match(source, /Phase2c-excel-nameless-typeless/);
   assert.match(source, /Phase2c-excel-nameless-no-empty-detail/);
+  assert.match(source, /Phase2c-last-detail-clear/);
   assert.match(source, /jy2CostMgmtEnsureTypeOnlyFrames/);
   assert.match(source, /jy2CostMgmtStripEmptyFrameDetailHimoku/);
   assert.match(source, /jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary/);
   assert.match(source, /jy2CostMgmtFindPaintAncillaryAnchor/);
   assert.match(source, /JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES/);
   assert.match(source, /moveBlockAfter/);
+  assert.match(source, /isSoleDetailInBlock/);
   // 軌道工事等は TYPELESS（詳細2セル）。TYPE_ONLY リストは空。
   assert.match(source, /JY2_COST_MGMT_TYPELESS_HIMOKU = Object\.freeze\(\[[\s\S]*軌道工事[\s\S]*追加工事⑤/);
   assert.match(source, /JY2_COST_MGMT_TYPE_ONLY_HIMOKU = Object\.freeze\(\[\]\)/);
