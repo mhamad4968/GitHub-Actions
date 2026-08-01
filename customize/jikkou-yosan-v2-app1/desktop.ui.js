@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-viewport-shrink-fix
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11600-rental
+  // Phase2c-excel-11600-rental: Excel正 11600｜レンタル。種別=建設機械／仮設資材･足場資材 → 詳細2セル。コード表の仮設機械経費は原価管理では使わない（#R-EXCEL-UI-09/12）。
   // Phase2c-viewport-shrink-fix: 保存後reloadで visualViewport が一瞬狭いとき host max-width が縮む再発防止（scale≈1は layout 幅を優先）。
   // Phase2c-excel-10800-kamagaya: Excel正 10800｜鎌ヶ谷資材使用料（種別なし・詳細2セル）。コード表の仮設機械経費＞鎌ヶ谷は原価管理では使わない（#R-EXCEL-UI-09）。
   // Phase2c-excel-other-labor: 建設機械オペレーター枠に費目「その他労務」追加。
@@ -192,6 +193,7 @@
     "10600": Object.freeze(["修繕等工事"]),
     "10700": Object.freeze(["塗装附帯工事"]),
     "10800": Object.freeze(["鎌ヶ谷資材使用料"]),
+    "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
@@ -204,6 +206,9 @@
     "10900": Object.freeze({
       "出向工事管理者": Object.freeze(["昼間", "夜間"]),
       "その他工事管理者": Object.freeze(["昼間", "夜間"]),
+    }),
+    "11600": Object.freeze({
+      "レンタル": Object.freeze(["建設機械", "仮設資材･足場資材"]),
     }),
   });
   // 工種コードに依らない費目→種別（コード空枠用）。#R-EXCEL-UI-12。

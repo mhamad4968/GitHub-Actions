@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-viewport-shrink-fix",
-      "fileKey": "5b75b824-c90d-486f-80f1-ff0136c06229",
-      "revision": "246",
+      "build": "2026-08-01-ver02-actual-excel-11600-rental",
+      "fileKey": "95da10d7-d5d3-4463-b63a-5657a33235eb",
+      "revision": "247",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T06:56:28.060Z",
+      "deployedAt": "2026-08-01T07:00:17.338Z",
       "note": null
     },
     "757": {
