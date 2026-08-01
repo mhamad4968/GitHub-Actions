@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・10800 鎌ヶ谷資材使用料）**: Excel正 **10800｜費目=鎌ヶ谷資材使用料｜種別なし・詳細2セル**（10700 同型）。コード表の仮設機械経費＞鎌ヶ谷は原価管理では使わない（HIMOKU_OVERRIDE＋TYPELESS）。LIVE rev **245** / BUILD `2026-08-01-ver02-actual-excel-10800-kamagaya`。#R-EXCEL-UI-09。  
 **2026-07-31 夜（工事原価管理・操作列／行ops／性能応急 LIVE）**: Excel列（システム工種｜費目｜種別｜詳細｜単価｜…）に **UI専用「操作」列**（freeze・＋／－）。種別ラベル横の **「＋詳細行」は廃止**（空種別は操作＋／詳細クイック入力）。詳細・単価は手入力・フィールド編集は dirty-only。構造変更の全表 rerender は **rAF 延期**（`…excel-struct-raf`）。本直し＝ブロック単位再描画は翌日。App758 keys/save/pivot 不変。構造は一時保存→App757。LIVE rev **194** / BUILD `2026-07-31-ver02-actual-excel-phase2c-c-excel-struct-raf`（chrome-css 修正含む）。#R-EXCEL-UI-01／#R-PERF-01。  
 **2026-07-31 夜（運用・体制ルール）**: 4h超 deploy 硬拒否・App756 deploy前 chrome-css・Violation閾値等。証跡 `docs/approved-changes/2026-07-31-evening-ops-rules-hamada-go.md`。  
 **2026-07-31 夜（工事原価管理・Phase2c-c 種別枠）**: Excel入れ子 — 費目の下に **種別(name2)視覚グループ**（表示専用 SUM）。行追加は **操作列＋**（旧「＋詳細行」文言ボタンは撤去済み）。子は name3 のみ。BUILD 系 `…phase2c-c-*`。  

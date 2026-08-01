@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-other-labor
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10800-kamagaya
+  // Phase2c-excel-10800-kamagaya: Excel正 10800｜鎌ヶ谷資材使用料（種別なし・詳細2セル）。コード表の仮設機械経費＞鎌ヶ谷は原価管理では使わない（#R-EXCEL-UI-09）。
   // Phase2c-excel-other-labor: 建設機械オペレーター枠に費目「その他労務」追加。
   // 各費目とも種別=昼間／夜間→詳細2セル（10900 の出向／その他と同型）。#R-EXCEL-UI-12。
   // Phase2c-dual-commit-live: 詳細左/右は input の都度モデルへ書く。
@@ -189,6 +190,7 @@
     "10400": Object.freeze(["塗装・足場工事"]),
     "10600": Object.freeze(["修繕等工事"]),
     "10700": Object.freeze(["塗装附帯工事"]),
+    "10800": Object.freeze(["鎌ヶ谷資材使用料"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
@@ -246,6 +248,7 @@
     "塗装・足場工事",
     "修繕等工事",
     "塗装附帯工事",
+    "鎌ヶ谷資材使用料",
     "軌道工事",
     "調査設計費",
     "外注試験費",
