@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-01 20:55 JST — **本日最終締め（full CLOSE）**。756 LIVE rev286／夕反省全承認反映／SPEC同期／Desktop最新。浜田: OMIT残 11400・13500 は次セッション。
 **次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500。受入 O-756-01）。一時保存→App757／予実保存→App758 は維持。
-**Git**: **`3b135c9f`** = `origin/main` — push 済
+**Git**: **`7474e69d`** = `origin/main` — push 済
 **本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び・11000〜11300・dedupe・夕反省GO全反映。R63 クリーン。GHA success。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-01）
