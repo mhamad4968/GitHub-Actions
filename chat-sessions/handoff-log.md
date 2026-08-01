@@ -5406,3 +5406,19 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA / 736 / 712deploy禁止
 
 ---
+
+### 2026-08-01 JST — **2026-08-01 夜 最終締め（756 Excel 11000-11300 + dedupe）**
+
+**要約**: 756 LIVE rev286 dedupe-coded。名称枠を10700直後、11000-11300（昼間/夜間）追加、11100二重非表示。GHA本日success。OMIT残11400・13500。
+
+**次の1手**: 新チャットで00-NEW-SESSION-STARTER貼付→bootstrap → 756 原価管理明細の未実装枠をExcel正で続行（OMIT残11400・13500）
+
+**Git**: `f03a6657` — night close; GHA green; tmp-check deleted
+
+**BUILD**: 756 2026-08-01-ver02-actual-excel-dedupe-coded rev286
+
+**GO待ち**: なし
+
+**触らない**: 688/677-679/SKYSEA/736/712deploy禁止
+
+---
