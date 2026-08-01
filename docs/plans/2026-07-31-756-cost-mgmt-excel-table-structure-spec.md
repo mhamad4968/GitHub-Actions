@@ -251,3 +251,4 @@
 | 2026-08-01 | Excel 12700｜建退共証紙購入費（種別なし・詳細2セル）。12600同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12700-kentaikyo` |
 | 2026-08-01 | TYPELESS詳細左は空name2を〃にしない・〃は継承表示しない・費目ミラークリア廃止。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-persist` |
 | 2026-08-01 | 詳細列・種別/詳細左の列幅拡大（freeze-2/3）。長い詳細テキストの見切れ解消。#R-EXCEL-UI-01。BUILD `2026-08-01-ver02-actual-excel-detail-col-wide` |
+| 2026-08-01 | Excel 12900｜諸雑費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12900-misc` |

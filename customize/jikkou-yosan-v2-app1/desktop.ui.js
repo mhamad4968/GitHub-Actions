@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-name2-persist
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12900-misc
+  // Phase2c-excel-12900-misc: Excel正 12900｜諸雑費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-typeless-name2-persist: TYPELESS詳細左は空name2を〃にしない・〃は継承表示しない・費目ミラークリア廃止。#R-EXCEL-UI-14
   // Phase2c-excel-detail-col-wide: 詳細列(freeze-3)と種別/詳細左(freeze-2)を広げて見切れ解消。#R-EXCEL-UI-01
   // Phase2c-excel-12700-kentaikyo: Excel正 12700｜建退共証紙購入費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -207,7 +208,7 @@
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
     "12800",
-    "12900", "13100", "13500", "13600", "13620",
+    "13100", "13500", "13600", "13620",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
@@ -233,6 +234,7 @@
     "12500": Object.freeze(["借上げ自動車費"]),
     "12600": Object.freeze(["履行保証保険料"]),
     "12700": Object.freeze(["建退共証紙購入費"]),
+    "12900": Object.freeze(["諸雑費"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
@@ -309,6 +311,7 @@
     "借上げ自動車費": Object.freeze(["借上げ自動車費"]),
     "履行保証保険料": Object.freeze(["履行保証保険料"]),
     "建退共証紙購入費": Object.freeze(["建退共証紙購入費"]),
+    "諸雑費": Object.freeze(["諸雑費"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -330,6 +333,7 @@
     "借上げ自動車費",
     "履行保証保険料",
     "建退共証紙購入費",
+    "諸雑費",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -444,6 +448,12 @@
       workTypeCode: "12700",
       workTypeName: "（塗）建退共証紙購入費",
       nameAliases: Object.freeze(["建退共証紙購入費", "（塗）建退共証紙購入費"]),
+    }),
+    Object.freeze({
+      shortName: "諸雑費",
+      workTypeCode: "12900",
+      workTypeName: "（塗）諸雑費",
+      nameAliases: Object.freeze(["諸雑費", "（塗）諸雑費", "雑費"]),
     }),
   ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
