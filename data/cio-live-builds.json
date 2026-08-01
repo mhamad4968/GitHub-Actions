@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-02-ver02-actual-sticky-totals-collapse",
-      "fileKey": "eea7a834-bd9f-4716-88cc-b22870422a5a",
-      "revision": "296",
+      "build": "2026-08-02-ver02-actual-himoku-fold",
+      "fileKey": "946d69e7-17b7-43ed-b0dd-377a1c4ec9d4",
+      "revision": "297",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T23:43:38.925Z",
+      "deployedAt": "2026-08-01T23:54:27.336Z",
       "note": null
     },
     "757": {

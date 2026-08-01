@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（費目開閉・#R-EXCEL-UI-16）**: 費目単位で **▶／▼** 開閉。閉じ時は費目名＋計画数量/実行予算SUMのみ。空詳細は出さない。操作列＋は費目を開いて詳細追加。BUILD `2026-08-02-ver02-actual-himoku-fold`。  
 **2026-08-02（合計バー開閉・#R-EXCEL-UI-15）**: sticky合計バーは **既定クローズ**。見出しに実行予算額（全合計）を出し、クリックで月次数量・金額を展開。BUILD `2026-08-02-ver02-actual-sticky-totals-collapse`。  
 **2026-08-02（合計バー月単位・#R-EXCEL-UI-15）**: sticky合計バーの月次を **月ごとの数量・金額** に訂正（全期間1本合計はやめる）。実行予算額は全合計のまま。LIVE **rev295** / BUILD `2026-08-02-ver02-actual-sticky-totals-month`。  
 **2026-08-02（合計バー仮置き・#R-EXCEL-UI-15）**: 工事原価管理の表直上に sticky で合計バーを仮置き（給与手当除く・表下の施工計+保安計と同趣旨）。LIVE **rev294** / BUILD `2026-08-02-ver02-actual-sticky-totals-bar`。  

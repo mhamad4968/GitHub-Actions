@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-himoku-fold: 費目単位▶／▼開閉。閉じ時は費目名+数量/実行予算SUM。空詳細は出さない。＋で開いて追加。#R-EXCEL-UI-16
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold
   // Phase2c-actual-sticky-totals-collapse: 合計バーは既定クローズ・summaryクリックで開く。#R-EXCEL-UI-15
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-sticky-totals-collapse
   // Phase2c-actual-sticky-totals-month: sticky合計バーの月次を月単位（数量・金額）に訂正。実行予算は全合計のまま。#R-EXCEL-UI-15
   // Phase2c-actual-sticky-totals-bar: 表直上に実行予算/月次数量/月次金額の全合計stickyバー（仮置き・浜田確認用）。#R-EXCEL-UI-15
   // Phase2c-excel-11500-other-security: Excel正 11500｜その他保安費（種別なしTYPELESS・詳細2セル）。並び=11400直下＝11600直前。#R-EXCEL-UI-09/07/14
@@ -2121,6 +2122,12 @@
       ".jy2-actual-table .jy2-actual-himoku-group-row .jy2-freeze{background:#e8f5e9!important}",
       /* #R-EXCEL-UI-06/08: 費目名=太字・左揃え・余白同一（親行＝グループ行＝種別なし） */
       ".jy2-actual-table .jy2-actual-parent-himoku,.jy2-actual-table .jy2-actual-himoku-group-label{font-weight:700;text-align:left;padding-left:6px;vertical-align:middle}",
+      /* #R-EXCEL-UI-16: 費目開閉▶／▼ */
+      ".jy2-actual-table .jy2-actual-parent-himoku,.jy2-actual-table .jy2-actual-himoku-group-label{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}",
+      ".jy2-actual-himoku-fold-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;margin:0;border:1px solid #64748b;border-radius:3px;background:#fff;color:#0f172a;font-size:10px;line-height:1;cursor:pointer}",
+      ".jy2-actual-himoku-fold-btn:hover{background:#e2e8f0}",
+      ".jy2-actual-himoku-fold-label{min-width:0;overflow:hidden;text-overflow:ellipsis}",
+      ".jy2-actual-table tr[data-himoku-open='false'] .jy2-actual-himoku-fold-btn{border-color:#94a3b8;color:#475569}",
       /* 種別行 = 薄青。種別名は一段インデント左揃え */
       ".jy2-actual-table .jy2-actual-type-group-row td{background:#e3f2fd!important;color:#334155}",
       ".jy2-actual-table .jy2-actual-type-group-row .jy2-freeze{background:#e3f2fd!important}",
@@ -8534,8 +8541,23 @@
     if (primaryHimokuLabel) {
       himokuCell.title = `費目「${primaryHimokuLabel}」（Excel: 工種と同一行）`;
       const himokuLabelSpan = documentRef.createElement("span");
+      himokuLabelSpan.className = "jy2-actual-himoku-fold-label";
       himokuLabelSpan.textContent = primaryHimokuLabel;
       himokuCell.appendChild(himokuLabelSpan);
+      if (
+        parentHimokuOpts &&
+        parentHimokuOpts.himokuFold &&
+        parentHimokuOpts.himokuFoldKey &&
+        typeof parentHimokuOpts.onHimokuFoldToggle === "function"
+      ) {
+        const himokuIsOpen = parentHimokuOpts.himokuIsOpen === true;
+        tr.dataset.himokuOpen = himokuIsOpen ? "true" : "false";
+        jy2ActualAppendHimokuFoldToggle(documentRef, himokuCell, {
+          isOpen: himokuIsOpen,
+          label: primaryHimokuLabel,
+          onToggle: parentHimokuOpts.onHimokuFoldToggle,
+        });
+      }
       // Excel寄せ: 種別はコード表固定のため費目横「＋種別行」は出さない。
     }
     tr.appendChild(jy2MarkFreeze(himokuCell, 1));
@@ -8545,7 +8567,7 @@
       jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
       4,
     );
-    // 種別なし既定費目が空のとき: 操作列＋で最初の詳細（2セル）を追加
+    // 閉じている／平坦費目が空のとき: 操作列＋で開いて詳細を追加
     if (
       parentHimokuOpts &&
       parentHimokuOpts.detailQuickAdd === true &&
@@ -8563,14 +8585,26 @@
         "jy2-actual-detail-pm-btn jy2-actual-himoku-ops-add-btn";
       addBtn.textContent = "＋";
       addBtn.setAttribute("aria-label", "詳細行を追加");
-      addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
+      addBtn.title =
+        "この費目を開いて詳細行を追加（一時保存で App757 へ）";
       jy2BindDetailPmMouseDown(documentRef, addBtn);
       addBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
             event.stopPropagation();
           }
+          if (
+            parentHimokuOpts.himokuFold &&
+            typeof parentHimokuOpts.himokuFold.open === "function" &&
+            parentHimokuOpts.himokuFoldKey
+          ) {
+            parentHimokuOpts.himokuFold.open(parentHimokuOpts.himokuFoldKey);
+          }
           const patch = { name1: primaryHimokuLabel };
+          const defaultType = String(
+            parentHimokuOpts.defaultTypeLabel || "",
+          ).trim();
+          if (defaultType) patch.name2 = defaultType;
           const reused = jy2ActualReuseEmptyDetailIfSole(
             parentHimokuOpts.detailModel,
             row.stableBlockId,
@@ -8743,6 +8777,8 @@
       himokuLabel: dualHimokuLabel = "",
       // 種別行下の詳細2セル時: name2 に埋め込む種別ラベル（例: 昼間）
       dualUnderTypeLabel = "",
+      himokuFold: childHimokuFold = null,
+      himokuFoldKey: childHimokuFoldKey = "",
     } = childDetailOpts;
     const underTypeLabel = String(dualUnderTypeLabel || "").trim();
     const dualUnderType = Boolean(dualDetailCells && underTypeLabel);
@@ -9007,6 +9043,13 @@
             dualUnderTypeLabel: underTypeLabel,
             typeOnlyLeaf,
           });
+          if (
+            childHimokuFold &&
+            typeof childHimokuFold.open === "function" &&
+            childHimokuFoldKey
+          ) {
+            childHimokuFold.open(childHimokuFoldKey);
+          }
           const patch = {};
           if (dualUnderType) {
             patch.name1 = dualHimokuLabel || name1Resolved || "";
@@ -9534,8 +9577,23 @@
     );
     labelCell.title = `費目「${label}」の合計（表示専用・入力不可）`;
     const himokuLabelSpan = documentRef.createElement("span");
+    himokuLabelSpan.className = "jy2-actual-himoku-fold-label";
     himokuLabelSpan.textContent = label;
     labelCell.appendChild(himokuLabelSpan);
+    if (
+      opts &&
+      opts.himokuFold &&
+      opts.himokuFoldKey &&
+      typeof opts.onHimokuFoldToggle === "function"
+    ) {
+      const himokuIsOpen = opts.himokuIsOpen === true;
+      tr.dataset.himokuOpen = himokuIsOpen ? "true" : "false";
+      jy2ActualAppendHimokuFoldToggle(documentRef, labelCell, {
+        isOpen: himokuIsOpen,
+        label,
+        onToggle: opts.onHimokuFoldToggle,
+      });
+    }
     // Excel寄せ: 種別はコード表固定のため費目グループの「＋種別行」は出さない。
     tr.appendChild(jy2MarkFreeze(labelCell, 1));
     const himokuTypeCell = jy2MarkFreeze(jy2Cell(documentRef, "td", "", ""), 2);
@@ -9544,7 +9602,7 @@
       jy2Cell(documentRef, "td", "jy2-actual-ops-cell", ""),
       4,
     );
-    // 種別なし費目が空のとき: 操作列＋で最初の詳細（2セル）を追加
+    // 閉じている／平坦費目が空のとき: 操作列＋で開いて詳細を追加
     if (
       opts &&
       opts.detailQuickAdd === true &&
@@ -9561,15 +9619,25 @@
         "jy2-actual-detail-pm-btn jy2-actual-himoku-ops-add-btn";
       addBtn.textContent = "＋";
       addBtn.setAttribute("aria-label", "詳細行を追加");
-      addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
+      addBtn.title =
+        "この費目を開いて詳細行を追加（一時保存で App757 へ）";
       jy2BindDetailPmMouseDown(documentRef, addBtn);
       addBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
             event.stopPropagation();
           }
+          if (
+            opts.himokuFold &&
+            typeof opts.himokuFold.open === "function" &&
+            opts.himokuFoldKey
+          ) {
+            opts.himokuFold.open(opts.himokuFoldKey);
+          }
           const patch = {};
           if (label && label !== "（未分類）") patch.name1 = label;
+          const defaultType = String(opts.defaultTypeLabel || "").trim();
+          if (defaultType) patch.name2 = defaultType;
           const reused = jy2ActualReuseEmptyDetailIfSole(
             opts.detailModel,
             parent.stableBlockId,
@@ -9689,6 +9757,13 @@
         try {
           if (event && typeof event.stopPropagation === "function") {
             event.stopPropagation();
+          }
+          if (
+            opts.himokuFold &&
+            typeof opts.himokuFold.open === "function" &&
+            opts.himokuFoldKey
+          ) {
+            opts.himokuFold.open(opts.himokuFoldKey);
           }
           const patch = {};
           if (himokuLabel && himokuLabel !== "（未分類）") {
@@ -9993,6 +10068,111 @@
       },
       expand: (id) => set.add(id),
     };
+  }
+
+  // #R-EXCEL-UI-16: 費目単位の開閉。キー未設定時は defaultOpen（表示できる詳細があるとき開く）。
+  function jy2ActualHimokuFoldKey(blockId, himokuLabel) {
+    return `${String(blockId || "")}\u0001${String(himokuLabel || "")}`;
+  }
+  function jy2ActualHimokuFoldState(pane) {
+    if (!pane) {
+      return {
+        isOpen: (_key, defaultOpen) => defaultOpen === true,
+        toggle: () => false,
+        open: () => {},
+      };
+    }
+    if (!pane.__jy2HimokuFold) {
+      pane.__jy2HimokuFold = new Map();
+    }
+    const map = pane.__jy2HimokuFold;
+    return {
+      isOpen: (key, defaultOpen) => {
+        if (!key || !map.has(key)) return defaultOpen === true;
+        return map.get(key) === true;
+      },
+      toggle: (key, defaultOpen) => {
+        if (!key) return false;
+        const next = !map.has(key)
+          ? !(defaultOpen === true)
+          : map.get(key) !== true;
+        map.set(key, next);
+        return next;
+      },
+      open: (key) => {
+        if (key) map.set(key, true);
+      },
+    };
+  }
+  function jy2ActualAppendHimokuFoldToggle(documentRef, labelCell, opts) {
+    if (!documentRef || !labelCell || !opts) return;
+    const isOpen = opts.isOpen === true;
+    const label = String(opts.label || "");
+    const btn = documentRef.createElement("button");
+    btn.type = "button";
+    btn.className = "jy2-actual-himoku-fold-btn";
+    btn.textContent = isOpen ? "▼" : "▶";
+    btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    btn.setAttribute(
+      "aria-label",
+      isOpen ? `費目「${label}」を閉じる` : `費目「${label}」を開く`,
+    );
+    btn.title = isOpen
+      ? "クリックで種別・詳細を閉じる"
+      : "クリックで種別・詳細を開く";
+    btn.addEventListener("click", (event) => {
+      try {
+        if (event && typeof event.stopPropagation === "function") {
+          event.stopPropagation();
+        }
+        if (typeof opts.onToggle === "function") opts.onToggle();
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error("himoku fold toggle failed:", error);
+        }
+      }
+    });
+    const existing = labelCell.querySelector(".jy2-actual-himoku-fold-label");
+    if (existing) {
+      labelCell.insertBefore(btn, existing);
+      return;
+    }
+    const span = labelCell.querySelector("span");
+    if (span) {
+      span.classList.add("jy2-actual-himoku-fold-label");
+      labelCell.insertBefore(btn, span);
+      return;
+    }
+    labelCell.insertBefore(btn, labelCell.firstChild);
+  }
+  // countHiddenLeaf=true: 平坦Excel枠など、中身があれば MANUAL_ONLY でも数える。
+  // false: 種別ありは reveal 済み（手入力）だけを「開く理由」にする。
+  function jy2ActualHimokuShowableCount(
+    entries,
+    detailRows,
+    shouldShowDetail,
+    countHiddenLeaf,
+  ) {
+    let n = 0;
+    for (const entry of entries || []) {
+      const child = entry && entry.child;
+      if (!child || !child.rowKey) continue;
+      const detailIndex =
+        typeof entry.detailIndex === "number" ? entry.detailIndex : -1;
+      const detailRow =
+        detailIndex >= 0 && detailRows ? detailRows[detailIndex] : null;
+      const hasLeaf = jy2CostMgmtDetailHasLeafContent(detailRow || child);
+      const revealed =
+        typeof shouldShowDetail === "function"
+          ? shouldShowDetail(child.rowKey) === true
+          : false;
+      if (revealed) {
+        n += 1;
+        continue;
+      }
+      if (countHiddenLeaf === true && hasLeaf) n += 1;
+    }
+    return n;
   }
 
   // Phase2c-detail-manual-only: 既存内訳行は隠し、＋で reveal した行だけ表示。
@@ -10358,6 +10538,7 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
+    const himokuFold = jy2ActualHimokuFoldState(pane);
     const budgetVersionId =
       (paneOpts && paneOpts.budgetVersionId) ||
       (saveController && saveController.keys && saveController.keys.budgetVersionId) ||
@@ -10698,6 +10879,7 @@
         detailModel,
         canEditBudget,
         expandState,
+        himokuFold,
         rerender,
         revealDetailKey: costDetailVisibility.reveal,
         shouldShowDetail: costDetailVisibility.shouldShow,
@@ -10775,18 +10957,42 @@
         });
         if (primaryHimokuLabel) {
           const primaryTypeMap = bucket.get(primaryHimokuLabel) || new Map();
+          const primaryEntries = [];
           const primaryChildren = [];
           for (const entries of primaryTypeMap.values()) {
-            for (const entry of entries) primaryChildren.push(entry.child);
+            for (const entry of entries) {
+              primaryEntries.push(entry);
+              primaryChildren.push(entry.child);
+            }
           }
           const primaryLastKey =
             primaryChildren.length > 0
               ? primaryChildren[primaryChildren.length - 1].rowKey
               : null;
-          const primaryVisible = jy2ActualChildrenForBudgetSum(
-            primaryChildren,
+          const primaryShowable = jy2ActualHimokuShowableCount(
+            primaryEntries,
+            detailRows,
             costDetailVisibility.shouldShow,
+            jy2CostMgmtIsFlatHimoku(primaryHimokuLabel),
           );
+          const primaryFoldKey = jy2ActualHimokuFoldKey(
+            row.stableBlockId,
+            primaryHimokuLabel,
+          );
+          const primaryIsOpen = himokuFold.isOpen(
+            primaryFoldKey,
+            primaryShowable > 0,
+          );
+          const primaryTemplateTypes = jy2CostMgmtTemplateTypes(
+            row.workTypeCode,
+            primaryHimokuLabel,
+            typesByHimokuMap,
+          );
+          const primaryDefaultType =
+            !jy2CostMgmtIsFlatHimoku(primaryHimokuLabel) &&
+            primaryTemplateTypes.length > 0
+              ? jy2CostMgmtExcelShortName(primaryTemplateTypes[0])
+              : "";
           parentHimokuOpts = {
             primaryHimokuLabel,
             himokuChildren: primaryChildren,
@@ -10798,11 +11004,20 @@
             lastChildRowKeyInGroup: primaryLastKey,
             monthQtyState,
             expandState,
-            // 平坦費目（種別なし／種別のみ）で表示中詳細が無いとき＋
+            himokuFold,
+            himokuFoldKey: primaryFoldKey,
+            himokuIsOpen: primaryIsOpen,
+            defaultTypeLabel: primaryDefaultType,
+            onHimokuFoldToggle: () => {
+              himokuFold.toggle(primaryFoldKey, primaryShowable > 0);
+              rerender();
+            },
+            // 閉じている／平坦で表示できる詳細が無いとき＋（押下で開いて追加）
             detailQuickAdd:
               canEditBudget &&
-              jy2CostMgmtIsFlatHimoku(primaryHimokuLabel) &&
-              primaryVisible.length === 0,
+              (!primaryIsOpen ||
+                (jy2CostMgmtIsFlatHimoku(primaryHimokuLabel) &&
+                  primaryShowable === 0)),
           };
         } else {
           parentHimokuOpts = {
@@ -10811,6 +11026,12 @@
           };
         }
       } else {
+        const emptyFoldKey = primaryHimokuLabel
+          ? jy2ActualHimokuFoldKey(row.stableBlockId, primaryHimokuLabel)
+          : "";
+        const emptyIsOpen = emptyFoldKey
+          ? himokuFold.isOpen(emptyFoldKey, false)
+          : false;
         parentHimokuOpts = {
           primaryHimokuLabel,
           himokuChildren: [],
@@ -10822,10 +11043,17 @@
           lastChildRowKeyInGroup: null,
           monthQtyState,
           expandState,
-          detailQuickAdd:
-            canEditBudget &&
-            Boolean(primaryHimokuLabel) &&
-            jy2CostMgmtIsFlatHimoku(primaryHimokuLabel),
+          himokuFold,
+          himokuFoldKey: emptyFoldKey,
+          himokuIsOpen: emptyIsOpen,
+          defaultTypeLabel: "",
+          onHimokuFoldToggle: emptyFoldKey
+            ? () => {
+                himokuFold.toggle(emptyFoldKey, false);
+                rerender();
+              }
+            : null,
+          detailQuickAdd: canEditBudget && Boolean(primaryHimokuLabel),
         };
       }
       const parentTr = jy2ActualRow(
@@ -10885,13 +11113,38 @@
           himokuChildren.length > 0
             ? himokuChildren[himokuChildren.length - 1].rowKey
             : null;
+        const himokuEntriesForCount = flatHimokuEntries
+          ? flatHimokuEntries
+          : (() => {
+              const all = [];
+              for (const entries of typeMap.values()) {
+                for (const entry of entries || []) all.push(entry);
+              }
+              return all;
+            })();
+        const himokuShowable = jy2ActualHimokuShowableCount(
+          himokuEntriesForCount,
+          detailRows,
+          costDetailVisibility.shouldShow,
+          Boolean(flatHimokuEntries),
+        );
+        const foldKey = jy2ActualHimokuFoldKey(
+          row.stableBlockId,
+          himokuLabel,
+        );
+        const himokuIsOpen = himokuFold.isOpen(foldKey, himokuShowable > 0);
+        const templateTypes = jy2CostMgmtTemplateTypes(
+          row.workTypeCode,
+          himokuLabel,
+          typesByHimokuMap,
+        );
+        const defaultTypeLabel =
+          !flatHimokuEntries && templateTypes.length > 0
+            ? jy2CostMgmtExcelShortName(templateTypes[0])
+            : "";
         let lastRowInHimoku =
           himokuLabel === primaryHimokuLabel ? parentTr : null;
         if (himokuLabel !== primaryHimokuLabel) {
-          const flatVisible = jy2ActualChildrenForBudgetSum(
-            himokuChildren,
-            costDetailVisibility.shouldShow,
-          );
           lastRowInHimoku = body.appendChild(
             jy2ActualHimokuGroupRow(
               documentRef,
@@ -10902,19 +11155,39 @@
               {
                 ...groupOpts,
                 lastChildRowKeyInGroup: lastHimokuKey,
+                himokuFoldKey: foldKey,
+                himokuIsOpen,
+                defaultTypeLabel,
+                onHimokuFoldToggle: () => {
+                  himokuFold.toggle(foldKey, himokuShowable > 0);
+                  rerender();
+                },
+                // 閉じている／平坦で表示できる詳細が無いとき＋
                 detailQuickAdd:
                   canEditBudget &&
-                  Boolean(flatHimokuEntries) &&
-                  flatVisible.length === 0,
+                  (!himokuIsOpen ||
+                    (Boolean(flatHimokuEntries) && himokuShowable === 0)),
               },
             ),
           );
         }
+        // #R-EXCEL-UI-16: 閉じている費目はヘッダ（SUM）のみ
+        if (!himokuIsOpen) {
+          if (lastRowInHimoku) workTypeBlockEndRow = lastRowInHimoku;
+          continue;
+        }
         if (flatHimokuEntries) {
           for (const { child, detailIndex } of flatHimokuEntries) {
             if (!child || !child.rowKey) continue;
-            // Excel正の詳細は手動のみモードでも表示
-            if (typeof costDetailVisibility.reveal === "function") {
+            const detailRow =
+              detailIndex >= 0 ? detailRows[detailIndex] : null;
+            const hasLeaf = jy2CostMgmtDetailHasLeafContent(
+              detailRow || child,
+            );
+            const revealed = costDetailVisibility.shouldShow(child.rowKey);
+            // 空詳細は出さない（＋で reveal 済みの手入力行のみ例外）
+            if (!hasLeaf && !revealed) continue;
+            if (hasLeaf && typeof costDetailVisibility.reveal === "function") {
               costDetailVisibility.reveal(child.rowKey);
             }
             lastRowInHimoku = body.appendChild(
@@ -10938,6 +11211,8 @@
                   dualDetailCells: flatTypeLess,
                   typeOnlyLeaf: flatTypeOnly,
                   himokuLabel,
+                  himokuFold,
+                  himokuFoldKey: foldKey,
                 },
               ),
             );
@@ -10945,12 +11220,7 @@
           if (lastRowInHimoku) workTypeBlockEndRow = lastRowInHimoku;
           continue;
         }
-        // Phase2c-c-excel-flat: Excelどおり種別・詳細を常時表示（費目開閉なし）
-        const templateTypes = jy2CostMgmtTemplateTypes(
-          row.workTypeCode,
-          himokuLabel,
-          typesByHimokuMap,
-        );
+        // 種別あり費目: 開いているときだけ種別・詳細を表示
         const typeOrder = [];
         for (const t of templateTypes) {
           if (!typeOrder.includes(t)) typeOrder.push(t);
@@ -10986,6 +11256,7 @@
               {
                 ...groupOpts,
                 lastChildRowKeyInGroup: lastTypeKey,
+                himokuFoldKey: foldKey,
                 // 手動のみモード: 既存内訳行が隠れている種別でも＋で新規詳細を足せる
                 detailQuickAdd:
                   JY2_ACTUAL_DETAIL_MANUAL_ONLY ||
@@ -11035,6 +11306,8 @@
                   dualDetailCells: true,
                   dualUnderTypeLabel: typeLabel,
                   himokuLabel,
+                  himokuFold,
+                  himokuFoldKey: foldKey,
                 },
               ),
             );
