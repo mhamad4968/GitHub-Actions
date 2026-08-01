@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・TYPELESS 詳細左保存）**: Excel種別なし費目（11700運送費／11800産業廃棄物処理／11900租税公課等）で **詳細左=name2** を入力して保存すると `－` に上書きされる不具合を修正。`jy2HimokuUsesDashType` が TYPELESS 費目ではコード表 `dashTypeByHimoku` の「－」固定を適用しない。BUILD `2026-08-01-ver02-actual-excel-typeless-no-dash`。#R-EXCEL-UI-07/14。  
 **2026-08-01 午後（工事原価管理・11900 租税公課）**: Excel正 **11900｜費目=租税公課｜種別なし・詳細2セル**（11700/11800 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11900／租税公課を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11900-tax`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11800 産業廃棄物処理）**: Excel正 **11800｜費目=産業廃棄物処理｜種別なし・詳細2セル**（11700 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11800／産業廃棄物処理を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11800-waste`。#R-EXCEL-UI-09。  
 **2026-08-01 午後（工事原価管理・11700 運送費）**: Excel正 **11700｜費目=運送費｜種別なし・詳細2セル**（10800 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT`／`WORK_TYPE_NAME_OMIT` から 11700／運送費を解除。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES。LIVE BUILD `2026-08-01-ver02-actual-excel-11700-transport`。#R-EXCEL-UI-09。  

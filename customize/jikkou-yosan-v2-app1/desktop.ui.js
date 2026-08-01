@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11900-tax
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-no-dash
+  // Phase2c-excel-typeless-no-dash: TYPELESS費目は詳細左=name2。コード表 dashType「－」固定を適用しない（保存で詳細左が消える対策）。#R-EXCEL-UI-07/14
   // Phase2c-excel-11900-tax: Excel正 11900｜租税公課（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-11800-waste: Excel正 11800｜産業廃棄物処理（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-11700-transport: Excel正 11700｜運送費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -4971,6 +4972,10 @@
   function jy2HimokuUsesDashType(entry, himoku) {
     const key = String(himoku || "").trim();
     if (!key) return false;
+    // Excel原価管理の種別なし費目: name2=詳細左。コード表の「－」固定種別は使わない。
+    if (jy2CostMgmtIsTypeLessHimoku(key)) {
+      return false;
+    }
     const local = entry && entry.dashTypeByHimoku;
     if (local && Object.prototype.hasOwnProperty.call(local, key)) {
       return local[key] === true;
