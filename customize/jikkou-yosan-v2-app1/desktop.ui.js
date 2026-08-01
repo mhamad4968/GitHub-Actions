@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12500-car
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-dash-by-code
+  // Phase2c-excel-typeless-dash-by-code: Excel TYPELESS工種はコード表dashTypeを無効化。既定費目もHIMOKU_OVERRIDEを優先（12500借上げ自動車費が旅費交通費－固定になる不具合）。#R-EXCEL-UI-07/14
   // Phase2c-excel-12500-car: Excel正 12500｜借上げ自動車費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12400-type-strip: 12400種別の（塗）接頭辞を除去し Excel短名3種のみ表示。#R-EXCEL-UI-12
   // Phase2c-excel-12400-travel: Excel正 12400｜旅費交通費。種別=出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -915,6 +916,19 @@
     const text = String(himokuLabel || "").trim();
     if (!text) return false;
     return !jy2CostMgmtIsFlatHimoku(text);
+  }
+  function jy2CostMgmtIsTypeLessExcelWorkType(workTypeCode, workTypeName) {
+    const code = String(workTypeCode || "").trim();
+    const byCode = code ? JY2_COST_MGMT_HIMOKU_OVERRIDE[code] : null;
+    if (byCode && byCode.length > 0) {
+      return byCode.every((h) => jy2CostMgmtIsTypeLessHimoku(h));
+    }
+    const short = jy2CostMgmtExcelShortName(workTypeName);
+    const byName = short ? JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[short] : null;
+    if (byName && byName.length > 0) {
+      return byName.every((h) => jy2CostMgmtIsTypeLessHimoku(h));
+    }
+    return jy2CostMgmtIsTypeLessHimoku(short);
   }
   function jy2CostMgmtKnownTypesForHimoku(himokuLabel, extraTypes) {
     const himoku = String(himokuLabel || "").trim();
@@ -4967,6 +4981,13 @@
   }
 
   function jy2HimokuDefaultForBlock(block) {
+    const code = String((block && block.workTypeCode) || "").trim();
+    const short = jy2CostMgmtExcelShortName(block && block.workTypeName);
+    const override =
+      (code && JY2_COST_MGMT_HIMOKU_OVERRIDE[code]) ||
+      (short && JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[short]) ||
+      null;
+    if (override && override.length > 0) return override[0];
     const entry = jy2ResolveNameHierarchy(block);
     if (!entry) return null;
     const choices = jy2HimokuChoicesForEntry(entry);
@@ -5062,6 +5083,9 @@
     if (jy2CostMgmtIsTypeLessHimoku(key)) {
       return false;
     }
+    const code = entry && entry.workTypeCode != null ? String(entry.workTypeCode).trim() : "";
+    const name = entry && entry.workTypeName != null ? String(entry.workTypeName) : "";
+    if (jy2CostMgmtIsTypeLessExcelWorkType(code, name)) return false;
     const local = entry && entry.dashTypeByHimoku;
     if (local && Object.prototype.hasOwnProperty.call(local, key)) {
       return local[key] === true;
