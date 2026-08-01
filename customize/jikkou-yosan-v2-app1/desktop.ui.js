@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-qty-default-one
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-unit-price-comma
+  // Phase2c-unit-price-comma: 単価入力に千区切りカンマ表示（保存値はカンマ無し）。
   // Phase2c-qty-default-one: 単価を入れたとき計画数量が空なら 1 を自動セット。
   // （実行予算＝ROUND(単価×数量) がすぐ見える。既存数量は上書きしない）
   // Phase2c-flush-before-save: 一時保存前にフォーカス中 input を明示 commit。
@@ -860,10 +861,23 @@
     return parts.join(".");
   }
 
+  function jy2StripCommaNumber(text) {
+    return String(text ?? "")
+      .trim()
+      .replace(/[,，]/g, "");
+  }
+
+  function jy2FormatCommaNumber(text) {
+    const cleaned = jy2StripCommaNumber(text);
+    if (!cleaned) return "";
+    if (!/^[+-]?\d+(?:\.\d*)?$/.test(cleaned)) return cleaned;
+    return jy2Comma(cleaned);
+  }
+
   function jy2AmountDisplay(decimalAmount) {
     // 空文字・「－」・非数は Invalid decimal を投げない（Phase2a 数量/単価表示で顕在化）。
     if (decimalAmount === null || decimalAmount === undefined) return "";
-    const text = String(decimalAmount).trim().replace(/[,，]/g, "");
+    const text = jy2StripCommaNumber(decimalAmount);
     if (!text || text === "-" || text === "－") return "";
     if (!/^[+-]?\d+(?:\.\d*)?$/.test(text)) return "";
     try {
@@ -1017,6 +1031,26 @@
     } catch {
       // ignore
     }
+  }
+
+  // 単価など: 表示は千区切り、commit 値はカンマ無し。focus 中は素の数字で編集。
+  function jy2CommaNumberInput(documentRef, value, onCommit, opts = {}) {
+    const input = jy2TextInput(
+      documentRef,
+      jy2FormatCommaNumber(value),
+      (raw) => onCommit(jy2StripCommaNumber(raw)),
+      opts,
+    );
+    input.addEventListener("focus", () => {
+      input.value = jy2StripCommaNumber(input.value);
+    });
+    input.addEventListener("blur", () => {
+      const cleaned = jy2StripCommaNumber(input.value);
+      if (cleaned && /^[+-]?\d+(?:\.\d*)?$/.test(cleaned)) {
+        input.value = jy2Comma(cleaned);
+      }
+    });
+    return input;
   }
 
   // U26-2: input[list]/datalist 用の一意 ID 採番（DeepSeek §50-3-8 盲点1:
@@ -5417,7 +5451,7 @@
           );
           const unitPrice = jy2Cell(documentRef, "td", "jy2-num", "");
           unitPrice.appendChild(
-            jy2TextInput(documentRef, line.unitPrice, commit("unitPrice")),
+            jy2CommaNumberInput(documentRef, line.unitPrice, commit("unitPrice")),
           );
           const anchor = jy2HasText(line.workName);
           jy2MarkIncompleteIfAnchor(workName, anchor, line.workName);
@@ -5558,7 +5592,7 @@
         );
         const unitPrice = jy2Cell(documentRef, "td", "jy2-num", "");
         unitPrice.appendChild(
-          jy2TextInput(documentRef, line.unitPrice, commit("unitPrice")),
+          jy2CommaNumberInput(documentRef, line.unitPrice, commit("unitPrice")),
         );
         const anchor = jy2HasText(line.role);
         jy2MarkIncompleteIfAnchor(role, anchor, line.role);
@@ -6451,7 +6485,7 @@
         quantityCell.appendChild(qtyCtrl);
         tr.appendChild(quantityCell);
         const unitPriceCell = jy2Cell(documentRef, "td", "jy2-num", "");
-        const priceCtrl = jy2TextInput(
+        const priceCtrl = jy2CommaNumberInput(
           documentRef,
           row.unitPrice,
           commit("unitPrice"),
@@ -7449,7 +7483,7 @@
       return child.quantity;
     };
     if (childCanEditBudget && childDetailModel) {
-      const unitPriceInput = jy2TextInput(
+      const unitPriceInput = jy2CommaNumberInput(
         documentRef,
         unitPriceInputValue,
         (value) => {
@@ -7467,7 +7501,7 @@
       unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
       unitPriceInput.placeholder = "単価";
       unitPriceInput.title =
-        "単価（手入力・一時保存で App757 へ）。数量が空なら 1 を自動セット";
+        "単価（千区切り表示・一時保存で App757 へ）。数量が空なら 1 を自動セット";
       unitPriceCell.appendChild(unitPriceInput);
     } else {
       unitPriceCell.className = "jy2-num";
