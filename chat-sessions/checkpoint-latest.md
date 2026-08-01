@@ -1,8 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-01 20:55 JST — **本日最終締め（full CLOSE）**。756 LIVE rev286／夕反省全承認反映／SPEC同期／Desktop最新。浜田: OMIT残 11400・13500 は次セッション。
 **次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500。受入 O-756-01）。一時保存→App757／予実保存→App758 は維持。
-**Git**: **`77beae91`** = `origin/main` — push 済（R44 parent）
-
+**Git**: **`eea2efb2`** = `origin/main` — push 済
 **本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び・11000〜11300・dedupe・夕反省GO全反映。R63 クリーン。GHA success。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-01）
@@ -49,7 +48,6 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-
 ## 2026-08-01
 
 ### 2026-08-01 夜（本日最終締め）
@@ -66,11 +64,13 @@
 - close-git / clock:clear（本締め）
 
 
+
 ## 2026-07-31
 
 ### 2026-07-31 夜（セッション締め）
 - 756: 操作列・＋詳細行撤去・struct-raf・SPEC・ops ルール（4h硬拒否）
 - Desktop AI緊急用 最新同期・verify OK
+
 
 
 
@@ -80,3 +80,4 @@
 - Desktop AI緊急用: 旧ファイル prune＋最新入替
 - 夕反省GO全承認反映済・CI緑
 - close-git / clock:clear
+
