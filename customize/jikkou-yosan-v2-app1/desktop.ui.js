@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10900-manager
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-worktype-end-rule
+  // Phase2c-worktype-end-rule: グレー区切り線はシステム工種ごと（費目ごとではない）。
+  // 10900 のように費目が複数でも一塊に見える（#R-EXCEL-UI-13）。
   // Phase2c-excel-10900-manager: Excel正 10900｜工事管理者賃金。
   // 費目=出向工事管理者／その他工事管理者 → 種別=昼間／夜間 → 詳細。#R-EXCEL-UI-12。
   // （コード表の労務費＋（昼）（夜）は原価管理では使わない）
@@ -41,7 +43,7 @@
   // Phase2c-dual-detail-cells: その他材料費の詳細行は Excelどおり2セル
   // （種別列=左・詳細列=右 → name2/name3）。例: エンドポイント／塗装表示記録･数字シール。
   // Phase2c-excel-sonota-himoku: 「その他材料費」は費目。種別行なし・詳細を表示。
-  // Phase2c-himoku-end-rule: 費目ブロック最終行の下に薄いグレー区切り線。
+  // Phase2c-himoku-end-rule: （旧）費目ごとの区切り → worktype-end-rule へ変更。
   // Phase2c-omit-extra-himoku: （未分類）等の余分な費目枠は出さない。
   // Phase2c-hide-blank-worktype: システム工種が空/「－」の親行は原則出さない。
   // 例外: Excel正の名称枠（コード空・#R-EXCEL-UI-11）は出す。
@@ -942,7 +944,8 @@
       ".jy2-actual-table .jy2-actual-parent-row td.jy2-actual-visual-merge,.jy2-actual-table .jy2-actual-himoku-group-row td.jy2-actual-visual-merge{background:#e8f5e9!important}",
       ".jy2-actual-table .jy2-actual-type-group-row td.jy2-actual-visual-merge{background:#e3f2fd!important}",
       /* 費目ブロックの区切り（最終行の下辺・薄いグレー） */
-      ".jy2-actual-table tr.jy2-actual-himoku-block-end > td{border-bottom:2px solid #94a3b8!important}",
+      // システム工種ブロックの最終行だけ区切り（費目ごとではない）
+      ".jy2-actual-table tr.jy2-actual-worktype-block-end > td{border-bottom:2px solid #94a3b8!important}",
       ".jy2-actual-table .jy2-actual-child-row:hover td:not(.jy2-freeze){background:#f1f5f9}",
       ".jy2-actual-table .jy2-actual-child-row:hover .jy2-freeze{background:#f1f5f9}",
       ".jy2-actual-table td.jy2-actual-note{max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}",
@@ -9145,9 +9148,11 @@
       );
       body.appendChild(parentTr);
       if (!row.hasChildren) {
-        parentTr.classList.add("jy2-actual-himoku-block-end");
+        parentTr.classList.add("jy2-actual-worktype-block-end");
         continue;
       }
+      // 区切り線はシステム工種の最終行だけ（費目ごとではない）
+      let workTypeBlockEndRow = parentTr;
       for (const himokuLabel of himokuOrder) {
         const typeMap = bucket.get(himokuLabel) || new Map();
         if (jy2CostMgmtShouldOmitHimoku(himokuLabel, costHimokuTemplate)) {
@@ -9188,15 +9193,14 @@
           himokuChildren.length > 0
             ? himokuChildren[himokuChildren.length - 1].rowKey
             : null;
-        // 費目ブロック最終行に区切り線（薄いグレー）を付けるための追跡
-        let himokuBlockEndRow =
+        let lastRowInHimoku =
           himokuLabel === primaryHimokuLabel ? parentTr : null;
         if (himokuLabel !== primaryHimokuLabel) {
           const flatVisible = jy2ActualChildrenForBudgetSum(
             himokuChildren,
             costDetailVisibility.shouldShow,
           );
-          himokuBlockEndRow = body.appendChild(
+          lastRowInHimoku = body.appendChild(
             jy2ActualHimokuGroupRow(
               documentRef,
               row,
@@ -9221,7 +9225,7 @@
             if (typeof costDetailVisibility.reveal === "function") {
               costDetailVisibility.reveal(child.rowKey);
             }
-            himokuBlockEndRow = body.appendChild(
+            lastRowInHimoku = body.appendChild(
               jy2ActualChildRow(
                 documentRef,
                 actualsModel,
@@ -9246,9 +9250,7 @@
               ),
             );
           }
-          if (himokuBlockEndRow) {
-            himokuBlockEndRow.classList.add("jy2-actual-himoku-block-end");
-          }
+          if (lastRowInHimoku) workTypeBlockEndRow = lastRowInHimoku;
           continue;
         }
         // Phase2c-c-excel-flat: Excelどおり種別・詳細を常時表示（費目開閉なし）
@@ -9280,7 +9282,7 @@
             typeChildren.length > 0
               ? typeChildren[typeChildren.length - 1].rowKey
               : lastAnchorInHimoku;
-          himokuBlockEndRow = body.appendChild(
+          lastRowInHimoku = body.appendChild(
             jy2ActualTypeGroupRow(
               documentRef,
               row,
@@ -9318,7 +9320,7 @@
             ) {
               continue;
             }
-            himokuBlockEndRow = body.appendChild(
+            lastRowInHimoku = body.appendChild(
               jy2ActualChildRow(
                 documentRef,
                 actualsModel,
@@ -9341,9 +9343,10 @@
             );
           }
         }
-        if (himokuBlockEndRow) {
-          himokuBlockEndRow.classList.add("jy2-actual-himoku-block-end");
-        }
+        if (lastRowInHimoku) workTypeBlockEndRow = lastRowInHimoku;
+      }
+      if (workTypeBlockEndRow) {
+        workTypeBlockEndRow.classList.add("jy2-actual-worktype-block-end");
       }
     }
     for (const category of ACTUAL_COST_CATEGORY_KEYS) {
