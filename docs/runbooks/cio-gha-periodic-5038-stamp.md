@@ -10,6 +10,8 @@
 |---------|----------|----------------|------|
 | `682-graph-monthly` | `682-graph-monthly-refresh.yml` | **`npm run 682:graph-monthly:gha`** | 682 月次グラフ窓 REST 更新 + preview deploy |
 
+**§51-6-2 / SESSION-CLOCK（2026-08-02）**: `cio-deploy-preflight-guard` は **`GITHUB_ACTIONS=true` のとき壁時計 4h 検査をスキップ**する（checkout された `SESSION-CLOCK.md` の経過で定期ジョブが落ちる再発防止）。workflow 側は防御層として `SKIP_CIO_SESSION_CLOCK_DEPLOY=1` も明示。ローカル人間セッションの 4h 硬拒否は維持。
+
 **禁止**: workflow から **`682:graph-monthly:scheduled` を直接呼ぶ**（5038 忘れで失敗する）。`verify:gha-periodic-workflows` が検知して exit 1。
 
 ---

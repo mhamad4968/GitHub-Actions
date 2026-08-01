@@ -37,6 +37,13 @@ function hasCustomizeForApp(app) {
 }
 
 function assertSessionClockAllowsDeploy() {
+  // GHA 無人ジョブは Cursor 壁時計の対象外（checkout された SESSION-CLOCK.md の経過で落ちる再発防止）
+  if (process.env.GITHUB_ACTIONS === 'true') {
+    console.log(
+      '[cio-deploy-preflight-guard] GITHUB_ACTIONS=true — §51-6-2 session-clock 検査スキップ（定期/dispatch 無人）',
+    );
+    return;
+  }
   if (process.env.SKIP_CIO_SESSION_CLOCK_DEPLOY === '1') {
     console.warn(
       '[cio-deploy-preflight-guard] SKIP_CIO_SESSION_CLOCK_DEPLOY=1（§51-6-2 4h 硬拒否を緊急回避・証跡をチャットに残すこと）',

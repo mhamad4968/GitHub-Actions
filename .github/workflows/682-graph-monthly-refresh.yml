@@ -40,6 +40,8 @@ jobs:
       KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
       KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
       KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
+      # 防御層: guard は GITHUB_ACTIONS でも時計スキップするが、明示（ローカル SESSION-CLOCK 混入再発防止）
+      SKIP_CIO_SESSION_CLOCK_DEPLOY: "1"
     steps:
       - uses: actions/checkout@v6
 
