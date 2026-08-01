@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12600-bond
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12700-kentaikyo
+  // Phase2c-excel-12700-kentaikyo: Excel正 12700｜建退共証紙購入費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12600-bond: Excel正 12600｜履行保証保険料（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-typeless-name2-show: TYPELESS費目で name2===費目名でも詳細左を空にしない。取り違えシード(name2=費目)は読み込み時にクリア。#R-EXCEL-UI-14
   // Phase2c-excel-typeless-dash-by-code: Excel TYPELESS工種はコード表dashTypeを無効化。既定費目もHIMOKU_OVERRIDEを優先（12500借上げ自動車費が旅費交通費－固定になる不具合）。#R-EXCEL-UI-07/14
@@ -203,7 +204,7 @@
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
-    "12700", "12800",
+    "12800",
     "12900", "13100", "13500", "13600", "13620",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
@@ -229,6 +230,7 @@
     "12400": Object.freeze(["旅費交通費"]),
     "12500": Object.freeze(["借上げ自動車費"]),
     "12600": Object.freeze(["履行保証保険料"]),
+    "12700": Object.freeze(["建退共証紙購入費"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
@@ -304,6 +306,7 @@
     "通信費": Object.freeze(["通信費"]),
     "借上げ自動車費": Object.freeze(["借上げ自動車費"]),
     "履行保証保険料": Object.freeze(["履行保証保険料"]),
+    "建退共証紙購入費": Object.freeze(["建退共証紙購入費"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -324,6 +327,7 @@
     "通信費",
     "借上げ自動車費",
     "履行保証保険料",
+    "建退共証紙購入費",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -432,6 +436,12 @@
       workTypeCode: "12600",
       workTypeName: "（塗）履行保証保険料",
       nameAliases: Object.freeze(["履行保証保険料", "（塗）履行保証保険料"]),
+    }),
+    Object.freeze({
+      shortName: "建退共証紙購入費",
+      workTypeCode: "12700",
+      workTypeName: "（塗）建退共証紙購入費",
+      nameAliases: Object.freeze(["建退共証紙購入費", "（塗）建退共証紙購入費"]),
     }),
   ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
