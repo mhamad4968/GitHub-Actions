@@ -260,4 +260,5 @@
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |
 | 2026-08-01 | 単価列を拡大（カンマ付き金額の見切れ解消）。数量は狭め・実行予算額は広め維持。#R-EXCEL-UI-01。BUILD `2026-08-01-ver02-actual-unit-price-wider` |
 | 2026-08-01 | Excel 13600｜交際費→得意先接待交際費（甲）／（乙）／その他接待交際費→詳細2セル（12400同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-13600-entertainment` |
-| 2026-08-01 | セッション締め時点の OMIT 残: 11000〜11400・13500（浜田見積）。#R-EXCEL-UI-09 |
+| 2026-08-01 | Excel 11000｜工事安全専任管理者賃金→昼間／夜間→詳細2セル（10900同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-11000-safety-manager` |
+| 2026-08-01 | セッション締め時点の OMIT 残: 11100〜11400・13500（浜田見積）。#R-EXCEL-UI-09 |
