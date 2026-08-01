@@ -2,7 +2,8 @@
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-soft-save-visible
+  // Phase2c-actual-cost-mgmt-harden: 予実flush / revealを版スコープ / ENSUREでdetailSavePending立てない / revealを現行行に剪定。#R-SOFT-SAVE-02
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-cost-mgmt-harden
   // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
   // Phase2c-excel-11300-traffic: Excel正 11300｜交通整理員賃金。種別=昼間／夜間 → 詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-11200-watchman: Excel正 11200｜列車見張員賃金。種別=昼間／夜間 → 詳細2セル（11100同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -9917,14 +9918,24 @@
   // reveal キーは sessionStorage に残し、一時保存後の reload でも手入力行を維持。
   const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys`;
   const JY2_LAST_SOFT_SAVED_KEY = `jy2:${APP1_ID}:lastSoftSavedAt`;
-  function jy2ActualLoadRevealKeys(view) {
+  function jy2ActualLoadRevealKeys(view, budgetVersionId) {
     const set = new Set();
     if (!view || !view.sessionStorage) return set;
     try {
       const raw = view.sessionStorage.getItem(JY2_ACTUAL_REVEAL_KEYS_STORAGE);
-      const list = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(list)) {
-        for (const key of list) {
+      if (!raw) return set;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return set;
+      }
+      if (parsed && typeof parsed === "object" && Array.isArray(parsed.keys)) {
+        if (
+          budgetVersionId &&
+          String(parsed.budget_version_id || "") !== String(budgetVersionId)
+        ) {
+          return set;
+        }
+        for (const key of parsed.keys) {
           if (key) set.add(String(key));
         }
       }
@@ -9933,12 +9944,15 @@
     }
     return set;
   }
-  function jy2ActualPersistRevealKeys(view, set) {
+  function jy2ActualPersistRevealKeys(view, set, budgetVersionId) {
     if (!view || !view.sessionStorage || !set) return;
     try {
       view.sessionStorage.setItem(
         JY2_ACTUAL_REVEAL_KEYS_STORAGE,
-        JSON.stringify([...set]),
+        JSON.stringify({
+          budget_version_id: budgetVersionId ? String(budgetVersionId) : "",
+          keys: [...set],
+        }),
       );
     } catch {
       // ignore
@@ -9967,7 +9981,41 @@
     }
     return n;
   }
-  function jy2ActualCostDetailVisibility(pane) {
+  function jy2ActualPruneRevealKeys(detailModel, costDetailVisibility, view, budgetVersionId) {
+    if (!detailModel || !costDetailVisibility) return 0;
+    const set = costDetailVisibility._revealKeys;
+    if (!set) return 0;
+    if (typeof detailModel.snapshot !== "function") return 0;
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    const validKeys = new Set();
+    for (const block of blocks) {
+      if (!block || !Array.isArray(block.detailRows)) continue;
+      for (const row of block.detailRows) {
+        if (row && row.rowKey) validKeys.add(String(row.rowKey));
+      }
+    }
+    for (const key of [...set]) {
+      if (!validKeys.has(key)) set.delete(key);
+    }
+    let n = 0;
+    for (const block of blocks) {
+      if (!block || !Array.isArray(block.detailRows)) continue;
+      for (const row of block.detailRows) {
+        if (!row || !row.rowKey) continue;
+        if (!jy2CostMgmtDetailHasLeafContent(row)) continue;
+        set.add(String(row.rowKey));
+        n += 1;
+      }
+    }
+    jy2ActualPersistRevealKeys(view, set, budgetVersionId);
+    return n;
+  }
+  function jy2ActualCostDetailVisibility(pane, budgetVersionId) {
     const view =
       pane && pane.ownerDocument && pane.ownerDocument.defaultView
         ? pane.ownerDocument.defaultView
@@ -9979,14 +10027,15 @@
       };
     }
     if (!pane.__jy2CostDetailRevealKeys) {
-      pane.__jy2CostDetailRevealKeys = jy2ActualLoadRevealKeys(view);
+      pane.__jy2CostDetailRevealKeys = jy2ActualLoadRevealKeys(view, budgetVersionId);
     }
     const set = pane.__jy2CostDetailRevealKeys;
     return {
+      _revealKeys: set,
       reveal: (key) => {
         if (!key) return;
         set.add(String(key));
-        jy2ActualPersistRevealKeys(view, set);
+        jy2ActualPersistRevealKeys(view, set, budgetVersionId);
       },
       shouldShow: (key) => {
         if (!JY2_ACTUAL_DETAIL_MANUAL_ONLY) return true;
@@ -10075,7 +10124,11 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
-    const costDetailVisibility = jy2ActualCostDetailVisibility(pane);
+    const budgetVersionId =
+      (paneOpts && paneOpts.budgetVersionId) ||
+      (saveController && saveController.keys && saveController.keys.budgetVersionId) ||
+      "";
+    const costDetailVisibility = jy2ActualCostDetailVisibility(pane, budgetVersionId);
     const hasPendingDetailEdits =
       paneOpts && typeof paneOpts.hasPendingDetailEdits === "function"
         ? paneOpts.hasPendingDetailEdits
@@ -10097,7 +10150,11 @@
         detailBlocksProvider,
         detailModel,
         onDetailStructureChanged,
-        paneOpts,
+        {
+          ...(paneOpts || {}),
+          budgetVersionId,
+          hasPendingDetailEdits,
+        },
       );
     // Phase2c-b-a: 費目グループ行の「＋種別行」ボタンから呼ばれる pane 側
     // フック。detail 構造が変わった旨を shell に通知し（内訳 pane 再描画・
@@ -10151,17 +10208,14 @@
     const ensuredTypeOnlyFrames = canEditBudget
       ? jy2CostMgmtEnsureTypeOnlyFrames(detailModel, costDetailVisibility)
       : 0;
-    if (ensuredTypeOnlyFrames > 0 && typeof onDetailStructureChanged === "function") {
-      try {
-        onDetailStructureChanged();
-      } catch (error) {
-        if (typeof console !== "undefined" && console.error) {
-          console.error("ensure type-only frames dirty mark failed:", error);
-        }
+    if (ensuredTypeOnlyFrames > 0) {
+      if (typeof console !== "undefined" && console.info) {
+        console.info("[jy2-actual-ensure]", { ensuredTypeOnlyFrames });
       }
     }
     if (detailModel) {
-      jy2ActualRevealPersistedDetailRows(detailModel, costDetailVisibility);
+      const view = documentRef && documentRef.defaultView;
+      jy2ActualPruneRevealKeys(detailModel, costDetailVisibility, view, budgetVersionId);
     }
     const months = actualsModel.months();
     const blocks = blocksProvider();
@@ -10269,10 +10323,12 @@
         "月次金額・実行予算額など予実（App758）を保存。詳細・単価・行の追加／削除は上部の「一時保存」";
       // 入力中クリックで blur→commit が click を潰さないようにする
       saveButton.addEventListener("mousedown", (event) => {
+        jy2FlushActiveInputBeforeSave(documentRef);
         if (typeof event.preventDefault === "function") event.preventDefault();
       });
       saveButton.addEventListener("click", async () => {
         if (saveButton.disabled) return;
+        jy2FlushActiveInputBeforeSave(documentRef);
         const view = documentRef.defaultView;
         // 詳細/単価/行構造は App757＝上部「一時保存」。ここは App758 のみ。
         if (hasPendingDetailEdits()) {
@@ -12091,7 +12147,10 @@
         currentDetailBlocks,
         detailModel,
         onDetailStructureChanged,
-        { hasPendingDetailEdits: () => detailSavePending },
+        {
+          hasPendingDetailEdits: () => detailSavePending,
+          budgetVersionId: jy2FieldValue(record, "budget_version_id"),
+        },
       );
       actualsDirty = false;
     };
@@ -12287,9 +12346,9 @@
           const revealForSave = {
             reveal: (key) => {
               if (!key || !view) return;
-              const set = jy2ActualLoadRevealKeys(view);
+              const set = jy2ActualLoadRevealKeys(view, budgetVersionId);
               set.add(String(key));
-              jy2ActualPersistRevealKeys(view, set);
+              jy2ActualPersistRevealKeys(view, set, budgetVersionId);
             },
           };
           jy2ActualRevealPersistedDetailRows(detailModel, revealForSave);
