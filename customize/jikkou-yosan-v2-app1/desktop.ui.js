@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10800-kamagaya
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-viewport-shrink-fix
+  // Phase2c-viewport-shrink-fix: 保存後reloadで visualViewport が一瞬狭いとき host max-width が縮む再発防止（scale≈1は layout 幅を優先）。
   // Phase2c-excel-10800-kamagaya: Excel正 10800｜鎌ヶ谷資材使用料（種別なし・詳細2セル）。コード表の仮設機械経費＞鎌ヶ谷は原価管理では使わない（#R-EXCEL-UI-09）。
   // Phase2c-excel-other-labor: 建設機械オペレーター枠に費目「その他労務」追加。
   // 各費目とも種別=昼間／夜間→詳細2セル（10900 の出向／その他と同型）。#R-EXCEL-UI-12。
@@ -4901,6 +4902,7 @@
   /**
    * レイアウト可視矩形（ブラウザ拡大率 100%/80% 差の主因を吸収）。
    * Ctrl± ズームでは visualViewport と layout が連動。ピンチ時は小さい方を使う。
+   * alert/reload 直後の visualViewport 偽狭幅を無視（scale≈1）。
    */
   function jy2LayoutViewportBox(win) {
     const innerW = win.innerWidth || 0;
@@ -4909,8 +4911,20 @@
     if (vv && Number.isFinite(vv.width) && vv.width > 0) {
       const left = Number.isFinite(vv.offsetLeft) ? vv.offsetLeft : 0;
       const top = Number.isFinite(vv.offsetTop) ? vv.offsetTop : 0;
-      const width = Math.min(innerW || vv.width, vv.width);
-      const height = Math.min(innerH || vv.height, vv.height);
+      const scale = Number.isFinite(vv.scale) ? vv.scale : 1;
+      const isPinch = Math.abs(scale - 1) > 0.02;
+      let width;
+      let height;
+      if (isPinch) {
+        width = Math.min(innerW || vv.width, vv.width);
+        height = Math.min(innerH || vv.height, vv.height);
+      } else {
+        const docEl = win.document && win.document.documentElement;
+        const clientW = docEl && docEl.clientWidth ? docEl.clientWidth : 0;
+        const clientH = docEl && docEl.clientHeight ? docEl.clientHeight : 0;
+        width = Math.max(innerW, clientW);
+        height = Math.max(innerH, clientH);
+      }
       return {
         left,
         top,
@@ -11103,6 +11117,10 @@
         jy2SyncAllHScroll(documentRef);
         view.requestAnimationFrame(() => jy2SyncAllHScroll(documentRef));
       });
+    }
+    if (view && typeof view.setTimeout === "function") {
+      view.setTimeout(() => jy2SyncAllHScroll(documentRef), 0);
+      view.setTimeout(() => jy2SyncAllHScroll(documentRef), 120);
     }
 
     addBlockBtn.addEventListener("click", () => {

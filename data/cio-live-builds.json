@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-10800-kamagaya",
-      "fileKey": "f2ccdc24-8cb2-45f1-a0c7-d60ca9bd472f",
-      "revision": "245",
+      "build": "2026-08-01-ver02-actual-viewport-shrink-fix",
+      "fileKey": "5b75b824-c90d-486f-80f1-ff0136c06229",
+      "revision": "246",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T06:48:51.676Z",
+      "deployedAt": "2026-08-01T06:56:28.060Z",
       "note": null
     },
     "757": {
