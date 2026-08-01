@@ -93,7 +93,7 @@
 
 **揃え位置（#R-EXCEL-UI-08）**: 費目名＝**左**（親行・グループ行とも `padding-left:6px`）。種別名＝左＋一段インデント。詳細テキスト＝左。数量・単価・金額・各SUM＝**右**（tabular nums）。操作列＝中央。例外行を作らない。
 
-**Excel費目枠オーバーライド（#R-EXCEL-UI-09）**: コード表の constructionMenu（材料費・外注費…）より **原価管理明細の費目枠が正**。例: **10200 → 塗装工事**、**10300 → 足場工事**（いずれも種別なし・詳細2セル＝その他材料費と同型）。`JY2_COST_MGMT_HIMOKU_OVERRIDE` ＋ `TYPELESS`。空のときは操作列＋で最初の詳細を追加。共通仕様（SUM/色/太字/揃え）は #R-EXCEL-UI-06〜08 を継承し、差分だけ足す。
+**Excel費目枠オーバーライド（#R-EXCEL-UI-09）**: コード表の constructionMenu（材料費・外注費…）より **原価管理明細の費目枠が正**。例: **10200 → 塗装工事**、**10300 → 足場工事**、**10400 → 塗装・足場工事**（いずれも種別なし・詳細2セル＝その他材料費と同型）。`JY2_COST_MGMT_HIMOKU_OVERRIDE` ＋ `TYPELESS`。空のときは操作列＋で最初の詳細を追加。共通仕様（SUM/色/太字/揃え）は #R-EXCEL-UI-06〜08 を継承し、差分だけ足す。
 
 **種別なしの詳細2セル（#R-EXCEL-UI-10）**: 列は増やさない。Excelどおり **種別列＝詳細左（name2）・詳細列＝詳細右（name3）**。全行に列を足すと表が膨らみ、通常費目の種別と混線する。一時保存前はフォーカス中 input を明示 commit（`jy2FlushActiveInputBeforeSave`）。
 
@@ -219,3 +219,4 @@
 | 2026-08-01 | 単価入力時に計画数量が空なら 1 を自動セット。BUILD `2026-08-01-ver02-actual-qty-default-one` |
 | 2026-08-01 | 単価に千区切りカンマ表示（保存は素の数字）。BUILD `2026-08-01-ver02-actual-unit-price-comma` |
 | 2026-08-01 | Excel 10300｜足場工事（種別なし・詳細2セル）。10200と同型。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10300-scaffold` |
+| 2026-08-01 | Excel 10400｜塗装・足場工事（種別なし・詳細2セル）。同型。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10400-paint-scaffold` |
