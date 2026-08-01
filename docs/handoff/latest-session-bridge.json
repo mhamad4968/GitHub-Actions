@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-01T10:13:10.439Z",
-  "gitHead": "85627233",
+  "exportedAt": "2026-08-01T10:27:57.924Z",
+  "gitHead": "a152624a",
   "gitStatus": "## main...origin/main",
   "nextTask": "**新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約12。OMIT: 11000〜11400・12800・13100・13500・13600・13620）。一時保存→App757／予実保存→App758 は維持。",
   "nextFiles": [
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=85627233 | 次=**新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約12。OMIT: 11000〜11400・12800・13100・13500・13600・13620）。一時保存→App757／予実保存→App758 は維持。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=a152624a | 次=**新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（残り約12。OMIT: 11000〜11400・12800・13100・13500・13600・13620）。一時保存→App757／予実保存→App758 は維持。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-08-01T10:27:58.482Z",
+  "crosscheckOk": true
 }
