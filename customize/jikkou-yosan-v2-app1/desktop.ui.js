@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-flush-before-save
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-qty-default-one
+  // Phase2c-qty-default-one: 単価を入れたとき計画数量が空なら 1 を自動セット。
+  // （実行予算＝ROUND(単価×数量) がすぐ見える。既存数量は上書きしない）
   // Phase2c-flush-before-save: 一時保存前にフォーカス中 input を明示 commit。
   // （save ボタン mousedown preventDefault で blur が飛ばず詳細左 name2 等が消える対策）
   // Phase2c-excel-10200-paint: Excel正 10200｜塗装工事（種別なし・詳細2セル）。
@@ -7425,15 +7427,47 @@
       notifyFieldChanged();
       scheduleActualRerender();
     };
+    const livePlanQty = () => {
+      if (!childDetailModel || !child || !child.rowKey) {
+        return child && child.quantity;
+      }
+      try {
+        const snap = childDetailModel.snapshot();
+        const block = (snap.blocks || []).find(
+          (candidate) =>
+            candidate && candidate.stableBlockId === parent.stableBlockId,
+        );
+        const row = ((block && block.detailRows) || []).find(
+          (candidate) => candidate && candidate.rowKey === child.rowKey,
+        );
+        if (row && row.quantity != null && String(row.quantity).trim() !== "") {
+          return row.quantity;
+        }
+      } catch {
+        // fall through
+      }
+      return child.quantity;
+    };
     if (childCanEditBudget && childDetailModel) {
       const unitPriceInput = jy2TextInput(
         documentRef,
         unitPriceInputValue,
-        (value) => commitDetailField({ unitPrice: value }),
+        (value) => {
+          const patch = { unitPrice: value };
+          // 単価あり＆計画数量空 → 1（実行予算がすぐ出る。既存数量は触らない）
+          if (
+            String(value || "").trim() !== "" &&
+            jy2ActualDecimalAddend(livePlanQty()) === null
+          ) {
+            patch.quantity = "1";
+          }
+          commitDetailField(patch);
+        },
       );
       unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
       unitPriceInput.placeholder = "単価";
-      unitPriceInput.title = "単価（手入力・一時保存で App757 へ）";
+      unitPriceInput.title =
+        "単価（手入力・一時保存で App757 へ）。数量が空なら 1 を自動セット";
       unitPriceCell.appendChild(unitPriceInput);
     } else {
       unitPriceCell.className = "jy2-num";
