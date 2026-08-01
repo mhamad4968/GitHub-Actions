@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-01 20:45 JST — **セッション締め（full CLOSE・夜最終）**。756 Excel枠 11000〜11300（昼間／夜間）・名称枠を10700直後・11100二重非表示。浜田: OMIT残 11400・13500 は次セッション。
 **次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500）。一時保存→App757／予実保存→App758 は維持。
-**Git**: **`f03a6657`** = `origin/main` — push 済
+**Git**: **`a860fe73`** = `origin/main` — push 済（R44 parent）
 
 **本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び修正・11000〜11300・dedupe。R63 クリーン。GitHub Actions 本日 success。
 

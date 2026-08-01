@@ -5411,7 +5411,7 @@ npm run cio:morning:ready
 
 **要約**: 756 LIVE rev286 dedupe-coded。名称枠を10700直後、11000-11300（昼間/夜間）追加、11100二重非表示。GHA本日success。OMIT残11400・13500。
 
-**次の1手**: 新チャットで00-NEW-SESSION-STARTER貼付→bootstrap → 756 原価管理明細の未実装枠をExcel正で続行（OMIT残11400・13500）
+**次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500）。一時保存→App757／予実保存→App758 は維持。
 
 **Git**: `f03a6657` — night close; GHA green; tmp-check deleted
 
