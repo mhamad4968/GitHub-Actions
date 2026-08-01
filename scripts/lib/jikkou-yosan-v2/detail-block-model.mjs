@@ -80,8 +80,10 @@ export function resolveContinuedField(rows, index, field) {
 export function normalizeContinuedFieldsToDitto(
   rows,
   fields = DITTO_NAME_FIELDS,
+  options = {},
 ) {
   if (!Array.isArray(rows)) return rows;
+  const { skipEmptyName2Ditto, block } = options;
   for (const field of fields) {
     const emptyBecomesDitto = field === "name1" || field === "name2";
     let prevResolved = null;
@@ -92,7 +94,13 @@ export function normalizeContinuedFieldsToDitto(
         continue;
       }
       if (!detailHasText(raw)) {
-        if (emptyBecomesDitto && prevResolved) row[field] = DITTO_MARK;
+        const skipEmptyDitto =
+          field === "name2" &&
+          typeof skipEmptyName2Ditto === "function" &&
+          skipEmptyName2Ditto(row, block);
+        if (emptyBecomesDitto && prevResolved && !skipEmptyDitto) {
+          row[field] = DITTO_MARK;
+        }
         continue;
       }
       const text = String(raw).trim();
@@ -514,7 +522,8 @@ export function createDetailBlockModel({
 
   // U28: prune empty detail rows / blank blocks before save; renumber display order.
   // U27: 同値連続の費目/種別/定義は「〃」に正規化してから保存する。
-  function prepareForSave() {
+  function prepareForSave(options = {}) {
+    const { skipEmptyName2Ditto } = options;
     for (let blockIndex = list.length - 1; blockIndex >= 0; blockIndex -= 1) {
       const block = list[blockIndex];
       const emptyRows = block.detailRows.filter(isDetailRowFullyEmpty);
@@ -525,7 +534,10 @@ export function createDetailBlockModel({
       } else {
         block.detailRows = [...nonEmptyRows, ...emptyRows.slice(0, 1)];
       }
-      normalizeContinuedFieldsToDitto(block.detailRows);
+      normalizeContinuedFieldsToDitto(block.detailRows, DITTO_NAME_FIELDS, {
+        skipEmptyName2Ditto,
+        block,
+      });
       if (!blockHasMeaningfulContent(block)) {
         list.splice(blockIndex, 1);
       }

@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-detail-col-wide
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-name2-persist
+  // Phase2c-excel-typeless-name2-persist: TYPELESS詳細左は空name2を〃にしない・〃は継承表示しない・費目ミラークリア廃止。#R-EXCEL-UI-14
   // Phase2c-excel-detail-col-wide: 詳細列(freeze-3)と種別/詳細左(freeze-2)を広げて見切れ解消。#R-EXCEL-UI-01
   // Phase2c-excel-12700-kentaikyo: Excel正 12700｜建退共証紙購入費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12600-bond: Excel正 12600｜履行保証保険料（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -761,8 +762,8 @@
     }
     return stripped;
   }
-  // TYPELESS Excel 明細: name2 が費目名(name1)と同じ取り違えシードなら null へ（12500 等）。
-  function jy2CostMgmtClearHimokuMirroredName2(detailModel) {
+  // TYPELESS Excel 明細: 保存値が〃のとき null へ（詳細左は継承表示しない）。
+  function jy2CostMgmtSanitizeTypelessName2Ditto(detailModel) {
     if (
       !detailModel ||
       typeof detailModel.updateDetailRow !== "function" ||
@@ -770,7 +771,7 @@
     ) {
       return 0;
     }
-    let cleared = 0;
+    let sanitized = 0;
     let blocks;
     try {
       blocks = detailModel.snapshot().blocks || [];
@@ -785,7 +786,6 @@
         block.workTypeCode,
         block.workTypeName,
       );
-      const excelOverrideHimoku = jy2HimokuDefaultForBlock(block);
       for (const row of block.detailRows) {
         if (!row || !row.rowKey) continue;
         const himoku = String(row.name1 == null ? "" : row.name1).trim();
@@ -798,24 +798,16 @@
         ) {
           continue;
         }
-        const name2 = String(row.name2 == null ? "" : row.name2).trim();
-        if (!name2) continue;
-        const mirrorsHimoku =
-          (himoku && name2 === himoku) ||
-          (resolvedHimoku && name2 === resolvedHimoku);
-        const mirrorsOverride =
-          excelOverrideHimoku &&
-          name2 === String(excelOverrideHimoku).trim();
-        if (!mirrorsHimoku && !mirrorsOverride) continue;
+        if (!jy2IsDitto(row.name2)) continue;
         try {
           detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
             name2: null,
           });
-          cleared += 1;
+          sanitized += 1;
         } catch (error) {
           if (typeof console !== "undefined" && console.error) {
             console.error(
-              "jy2CostMgmtClearHimokuMirroredName2 failed:",
+              "jy2CostMgmtSanitizeTypelessName2Ditto failed:",
               block.stableBlockId,
               row.rowKey,
               error,
@@ -824,7 +816,7 @@
         }
       }
     }
-    return cleared;
+    return sanitized;
   }
   function jy2CostMgmtEnsureFrameList(detailModel, frames, logLabel) {
     let added = 0;
@@ -957,8 +949,8 @@
       detailModel,
       detailVisibility,
     );
-    const clearedMirroredName2 =
-      jy2CostMgmtClearHimokuMirroredName2(detailModel);
+    const sanitizedTypelessName2Ditto =
+      jy2CostMgmtSanitizeTypelessName2Ditto(detailModel);
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedDayNight =
@@ -970,7 +962,7 @@
       addedDayNight +
       addedCoded +
       stripped +
-      clearedMirroredName2 +
+      sanitizedTypelessName2Ditto +
       movedTypeOnly +
       movedDayNight +
       movedCoded
@@ -8294,8 +8286,13 @@
     const name1Resolved =
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name1") ?? "";
     const name2Raw = detailRows?.[detailIndex]?.name2;
+    const typelessDualLeft = dualDetailCells && !dualUnderType;
     let name2Resolved =
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name2") ?? "";
+    // TYPELESS 詳細左: 〃は継承表示しない（空として扱う）
+    if (typelessDualLeft && jy2IsDitto(name2Raw)) {
+      name2Resolved = "";
+    }
     // 費目名が name2 に入っている取り違えは左セルに出さない（TYPELESS除く）
     const hideHimokuAsLeft =
       (dualDetailCells || typeOnlyLeaf) &&
@@ -8342,7 +8339,9 @@
     const name2InputValue = dualUnderType
       ? dualSplit.leftDetail || ""
       : jy2IsDitto(name2Raw)
-        ? name2Resolved
+        ? typelessDualLeft
+          ? ""
+          : name2Resolved
         : jy2HasText(name2Raw) && !hideHimokuAsLeftRaw
           ? String(name2Raw).trim()
           : "";
@@ -8355,7 +8354,7 @@
       name1Resolved || dualHimokuLabel,
       dualUnderType ? underTypeLabel : "",
       dualDetailCells || typeOnlyLeaf
-        ? name2InputValue || (dualUnderType ? "" : name2Resolved)
+        ? name2InputValue || (dualUnderType ? "" : typelessDualLeft ? "" : name2Resolved)
         : name2Resolved,
       typeOnlyLeaf ? "" : name3Resolved,
     ]
@@ -10929,7 +10928,28 @@
       },
       // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
       async save(detailModel, summaryModel, projectionManual, options = {}) {
-        detailModel.prepareForSave();
+        detailModel.prepareForSave({
+          skipEmptyName2Ditto: (row, block) => {
+            const himoku = String(row && row.name1 != null ? row.name1 : "").trim();
+            const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
+            if (
+              jy2CostMgmtIsTypeLessHimoku(himoku) ||
+              jy2CostMgmtIsTypeLessHimoku(himokuShort)
+            ) {
+              return true;
+            }
+            if (
+              block &&
+              jy2CostMgmtIsTypeLessExcelWorkType(
+                block.workTypeCode,
+                block.workTypeName,
+              )
+            ) {
+              return true;
+            }
+            return false;
+          },
+        });
         const parentRecord = {
           ...(summaryModel
             ? summarySnapshotToSubtables(summaryModel.snapshot())

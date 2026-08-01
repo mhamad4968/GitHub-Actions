@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-01 午後（工事原価管理・TYPELESS 詳細左保存・〃正規化）**: TYPELESS 詳細左(name2)は **空のまま保存**（prepareForSave で空→〃しない）。表示でも **〃は継承しない**。費目名=name2 のミラークリアは廃止（ユーザー入力を保持）。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-persist`。#R-EXCEL-UI-14。  
 **2026-08-01 午後（工事原価管理・TYPELESS 工種 dashType 無効化）**: Excel TYPELESS 工種（12500借上げ自動車費等）でコード表 `himokuDefault=旅費交通費`＋`dashTypeByHimoku` により **詳細左=name2** が保存時 `－` に上書きされる不具合を修正。`jy2CostMgmtIsTypeLessExcelWorkType` で工種単位に dashType 無効化、`jy2HimokuDefaultForBlock` で HIMOKU_OVERRIDE を優先。BUILD `2026-08-01-ver02-actual-excel-typeless-dash-by-code`。#R-EXCEL-UI-07/14。  
 **2026-08-01 午後（工事原価管理・詳細列幅）**: 詳細列（freeze-3）と種別/詳細左（freeze-2）を拡大し、長い詳細テキストの見切れを解消。LIVE BUILD `2026-08-01-ver02-actual-excel-detail-col-wide`。#R-EXCEL-UI-01。  
 **2026-08-01 午後（工事原価管理・12700 建退共証紙購入費）**: Excel正 **12700｜費目=建退共証紙購入費｜種別なし・詳細2セル**（12600 同型）。`JY2_COST_MGMT_WORK_TYPE_OMIT` から 12700 を解除。コード表 himoku「法定福利費」＋dash「－」は原価管理では使わない。HIMOKU_OVERRIDE＋TYPELESS＋ENSURE_CODED_FRAMES（workTypeName=`（塗）建退共証紙購入費`）。LIVE BUILD `2026-08-01-ver02-actual-excel-12700-kentaikyo`。#R-EXCEL-UI-09。  

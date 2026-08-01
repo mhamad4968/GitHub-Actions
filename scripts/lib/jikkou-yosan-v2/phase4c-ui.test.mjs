@@ -17,6 +17,7 @@ import {
   MANUAL_FOOTER_KINDS,
   createDetailBlockModel,
   detailRowAmount,
+  normalizeContinuedFieldsToDitto,
 } from "./detail-block-model.mjs";
 import { LOCK_STATES } from "./lock.mjs";
 import { regenerateSummaryCostLines } from "./projection.mjs";
@@ -408,6 +409,53 @@ test("U27: prepareForSave normalizes continued name1/2/3 to 〃; legal welfare r
     rows.map((row) => row.nameSpecGroup),
     ["労務費", "労務費", "労務費"],
   );
+});
+
+test("U27b: skipEmptyName2Ditto leaves empty name2 on TYPELESS-like rows", () => {
+  const rows = [
+    { name1: "建退共証紙購入費", name2: "建退共証紙購入費", name3: "A" },
+    { name1: "〃", name2: "", name3: "B" },
+  ];
+  normalizeContinuedFieldsToDitto(rows, undefined, {
+    skipEmptyName2Ditto: (row) =>
+      String(row.name1 || "").includes("建退共") ||
+      String(row.name1 || "").trim() === "〃",
+  });
+  assert.equal(rows[0].name2, "建退共証紙購入費");
+  assert.equal(rows[1].name1, "〃");
+  assert.equal(rows[1].name2, "");
+});
+
+test("U27c: prepareForSave skipEmptyName2Ditto keeps empty name2 in model", () => {
+  const model = editableModel();
+  const blockId = model.addBlock();
+  model.updateBlockHeader(blockId, {
+    workTypeCode: "12700",
+    workTypeName: "（塗）建退共証紙購入費",
+  });
+  const r0 = model.snapshot().blocks[0].detailRows[0].rowKey;
+  model.updateDetailRow(blockId, r0, {
+    name1: "建退共証紙購入費",
+    name2: "建退共証紙購入費",
+    name3: "明細A",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "100",
+  });
+  const r1 = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, r1, {
+    name1: "建退共証紙購入費",
+    name2: "",
+    name3: "明細B",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "50",
+  });
+  model.prepareForSave({
+    skipEmptyName2Ditto: () => true,
+  });
+  const rows = model.snapshot().blocks[0].detailRows;
+  assert.equal(rows[1].name2, null);
 });
 
 test("editBudget=false freezes every 内訳 mutation while display stays readable", () => {

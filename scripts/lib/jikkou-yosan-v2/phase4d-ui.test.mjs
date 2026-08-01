@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-detail-col-wide/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-name2-persist/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /jy2BindDetailPmMouseDown/);
   assert.match(source, /jy2CommitChildDetailInputsFromRow/);
@@ -524,8 +524,11 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-detail-col-wide/);
   assert.match(source, /Phase2c-excel-12700-kentaikyo/);
   assert.match(source, /Phase2c-excel-12600-bond/);
-  assert.match(source, /Phase2c-excel-typeless-name2-show/);
-  assert.match(source, /jy2CostMgmtClearHimokuMirroredName2/);
+  assert.match(source, /Phase2c-excel-typeless-name2-persist/);
+  assert.match(source, /jy2CostMgmtSanitizeTypelessName2Ditto/);
+  assert.doesNotMatch(source, /jy2CostMgmtClearHimokuMirroredName2/);
+  assert.match(source, /skipEmptyName2Ditto/);
+  assert.match(source, /prepareForSave\(\{[\s\S]*?skipEmptyName2Ditto/);
   assert.match(source, /hideHimokuAsLeft/);
   assert.match(source, /!jy2CostMgmtIsTypeLessHimoku\(dualHimokuLabel\)/);
   assert.match(source, /Phase2c-dual-commit-live/);
