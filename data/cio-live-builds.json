@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-11700-transport",
-      "fileKey": "2c41e76b-b7b5-4c1a-8817-7716405e320f",
-      "revision": "253",
+      "build": "2026-08-01-ver02-actual-excel-11800-waste",
+      "fileKey": "96de2ca3-e1c3-4bca-b1d4-8b03a662208f",
+      "revision": "254",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T07:26:09.256Z",
+      "deployedAt": "2026-08-01T07:29:22.550Z",
       "note": null
     },
     "757": {

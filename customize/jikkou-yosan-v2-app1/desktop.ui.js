@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11700-transport
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11800-waste
+  // Phase2c-excel-11800-waste: Excel正 11800｜産業廃棄物処理（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-11700-transport: Excel正 11700｜運送費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-omit-pending-frames: 浜田: 11700〜経費・旅費/保険/交際・11000〜13500保安外注は原価管理から一旦全消し。必要枠は後でExcel正で足す。内訳は残す。#R-EXCEL-UI-09
   // Phase2c-excel-11400-omit-block: Excel正に11400枠なし → 工事原価管理から工種11400を丸ごと非表示（外注停電責任者・外注検電接地作業者）。内訳App757は触らない。#R-EXCEL-UI-09
@@ -189,7 +190,7 @@
     }),
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
-    "11000", "11100", "11200", "11300", "11400", "11800", "11900",
+    "11000", "11100", "11200", "11300", "11400", "11900",
     "12000", "12100", "12200", "12300", "12400", "12600", "12700", "12800",
     "12900", "13100", "13500", "13600", "13620",
   ]);
@@ -207,6 +208,7 @@
     "10700": Object.freeze(["塗装附帯工事"]),
     "10800": Object.freeze(["鎌ヶ谷資材使用料"]),
     "11700": Object.freeze(["運送費"]),
+    "11800": Object.freeze(["産業廃棄物処理"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
@@ -261,6 +263,7 @@
     "その他労務者賃金": Object.freeze(["その他労務"]),
     "レンタル": Object.freeze(["レンタル"]),
     "運送費": Object.freeze(["運送費"]),
+    "産業廃棄物処理": Object.freeze(["産業廃棄物処理"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -273,6 +276,7 @@
     "塗装附帯工事",
     "鎌ヶ谷資材使用料",
     "運送費",
+    "産業廃棄物処理",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -327,6 +331,12 @@
       workTypeCode: "11700",
       workTypeName: "（塗）運送費",
       nameAliases: Object.freeze(["運送費", "（塗）運送費"]),
+    }),
+    Object.freeze({
+      shortName: "産業廃棄物処理",
+      workTypeCode: "11800",
+      workTypeName: "（塗）産業廃棄物処理費",
+      nameAliases: Object.freeze(["産業廃棄物処理", "（塗）産業廃棄物処理費", "（塗）産業廃棄物処理"]),
     }),
   ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
@@ -969,7 +979,7 @@
     return false;
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
-    "産業廃棄物処理", "租税公課", "地代家賃", "消耗品費", "事務費", "通信費",
+    "租税公課", "地代家賃", "消耗品費", "事務費", "通信費",
     "旅費交通費", "出張旅費特例", "３万円未満公共交通機関特例", "その他旅費交通費",
     "保険料", "労災保険料", "法定福利費", "雑費", "諸会費", "会議費", "補償費",
     "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
