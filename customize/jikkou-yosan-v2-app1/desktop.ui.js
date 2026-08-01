@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-flush-before-plus
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-dual-commit-live
+  // Phase2c-dual-commit-live: 詳細左/右は input の都度モデルへ書く。
+  // 右セル保存時に描画時の左値で name2 を上書きしない（行追加で左が消える主因）。
   // Phase2c-flush-before-plus: 操作列＋／－の mousedown preventDefault 前に
   // フォーカス中 input を flush（詳細左が行追加で消える対策）。
   // Phase2c-fix-flat-plus-strip: 外注試験費等の＋追加直後に name1 を剥がさない。
@@ -1544,6 +1546,7 @@
     input.value = value === null || value === undefined ? "" : String(value);
     let lastCommitted = input.value.trim();
     const fullTitle = Boolean(opts.fullTitle);
+    const commitOnInput = Boolean(opts.commitOnInput);
     const syncFullTitle = () => {
       if (!fullTitle) return;
       input.title = input.value.trim();
@@ -1559,7 +1562,15 @@
     input.addEventListener("change", commit);
     // 保存クリック直前の blur でも確実にストアへ反映する
     input.addEventListener("blur", commit);
-    if (fullTitle) input.addEventListener("input", syncFullTitle);
+    if (commitOnInput) {
+      // ＋押下で blur が飛ばなくても、打鍵のたびに App757 モデルへ載せる
+      input.addEventListener("input", () => {
+        commit();
+        if (fullTitle) syncFullTitle();
+      });
+    } else if (fullTitle) {
+      input.addEventListener("input", syncFullTitle);
+    }
     return input;
   }
 
@@ -1570,17 +1581,59 @@
     if (!active) return;
     const tag = String(active.tagName || "").toUpperCase();
     if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return;
-    try {
-      if (typeof active.blur === "function") active.blur();
-    } catch {
-      // ignore
-    }
+    // change を先に（blur が握りつぶされても commit する）
     try {
       const view = documentRef.defaultView;
       const EventCtor = (view && view.Event) || Event;
       active.dispatchEvent(new EventCtor("change", { bubbles: true }));
     } catch {
       // ignore
+    }
+    try {
+      if (typeof active.blur === "function") active.blur();
+    } catch {
+      // ignore
+    }
+  }
+  // 行内の詳細 input を DOM 値でモデルへ確定（＋直前の保険）
+  function jy2CommitChildDetailInputsFromRow(tr, opts) {
+    if (!tr || !opts || !opts.detailModel || !opts.blockId || !opts.rowKey) {
+      return;
+    }
+    const leftInput = tr.querySelector(
+      ".jy2-actual-dual-detail-left input, .jy2-actual-type-only-name input",
+    );
+    const rightInput = tr.querySelector(
+      ".jy2-actual-dual-detail-right input, td.jy2-actual-child-name:not(.jy2-actual-dual-detail-left):not(.jy2-actual-type-only-name) input.jy2-actual-child-name-input",
+    );
+    const himoku = String(opts.himokuLabel || "").trim();
+    const underType = String(opts.dualUnderTypeLabel || "").trim();
+    const patch = {};
+    if (leftInput && (opts.dualDetailCells || opts.typeOnlyLeaf)) {
+      const left = jy2ToFullWidthKana(String(leftInput.value || "").trim());
+      if (himoku) patch.name1 = himoku;
+      patch.name2 = underType
+        ? jy2CostMgmtJoinTypeDetailName2(underType, left)
+        : left || null;
+    }
+    if (rightInput && !opts.typeOnlyLeaf) {
+      const right = jy2ToFullWidthKana(String(rightInput.value || "").trim());
+      patch.name3 = right || null;
+      if (opts.dualDetailCells && himoku) patch.name1 = himoku;
+      if (underType && !Object.prototype.hasOwnProperty.call(patch, "name2")) {
+        const leftVal = leftInput
+          ? jy2ToFullWidthKana(String(leftInput.value || "").trim())
+          : "";
+        patch.name2 = jy2CostMgmtJoinTypeDetailName2(underType, leftVal);
+      }
+    }
+    if (Object.keys(patch).length === 0) return;
+    try {
+      opts.detailModel.updateDetailRow(opts.blockId, opts.rowKey, patch);
+    } catch (error) {
+      if (typeof console !== "undefined" && console.error) {
+        console.error("jy2CommitChildDetailInputsFromRow failed:", error);
+      }
     }
   }
   // 操作列＋／－: flush してから preventDefault（フォーカス移動で blur が飛ぶのを抑止）
@@ -7869,7 +7922,7 @@
                 (typeOnlyLeaf ? "（未分類）" : "その他材料費"),
               name2: dualUnderType
                 ? jy2CostMgmtJoinTypeDetailName2(underTypeLabel, kana)
-                : kana,
+                : kana || null,
             };
             childDetailModel.updateDetailRow(
               parent.stableBlockId,
@@ -7881,7 +7934,7 @@
             }
             notifyFieldChanged();
           },
-          { fullTitle: true },
+          { fullTitle: true, commitOnInput: true },
         );
         name2Input.className = typeOnlyLeaf
           ? "jy2-input jy2-actual-child-name-input jy2-actual-type-only-input"
@@ -7902,17 +7955,20 @@
           name3InputValue,
           (value) => {
             const patch = {
-              name3: jy2ToFullWidthKana(value),
+              name3: jy2ToFullWidthKana(value) || null,
             };
             if (dualDetailCells) {
               patch.name1 = dualHimokuLabel || name1Resolved || "その他材料費";
             }
             if (dualUnderType) {
-              // 右セルだけ直したときも種別を name2 に残す
-              const currentLeft = name2InputValue || "";
+              // 描画時クロージャではなく、左 input の現在値を使う
+              const leftEl = leftDetailCell.querySelector("input");
+              const currentLeft = leftEl
+                ? String(leftEl.value || "").trim()
+                : name2InputValue || "";
               patch.name2 = jy2CostMgmtJoinTypeDetailName2(
                 underTypeLabel,
-                currentLeft,
+                jy2ToFullWidthKana(currentLeft),
               );
             }
             childDetailModel.updateDetailRow(
@@ -7925,7 +7981,10 @@
             }
             notifyFieldChanged();
           },
-          { fullTitle: true },
+          {
+            fullTitle: true,
+            commitOnInput: Boolean(dualDetailCells || dualUnderType),
+          },
         );
         name3Input.className = dualDetailCells
           ? "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input"
@@ -7958,6 +8017,16 @@
           if (event && typeof event.stopPropagation === "function") {
             event.stopPropagation();
           }
+          jy2FlushActiveInputBeforeSave(documentRef);
+          jy2CommitChildDetailInputsFromRow(tr, {
+            detailModel: childDetailModel,
+            blockId: parent.stableBlockId,
+            rowKey: child.rowKey,
+            himokuLabel: dualHimokuLabel || name1Resolved || "",
+            dualDetailCells,
+            dualUnderTypeLabel: underTypeLabel,
+            typeOnlyLeaf,
+          });
           const patch = {};
           if (dualUnderType) {
             patch.name1 = dualHimokuLabel || name1Resolved || "";
