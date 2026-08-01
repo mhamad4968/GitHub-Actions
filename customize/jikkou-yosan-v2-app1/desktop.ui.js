@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10200-paint
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-flush-before-save
+  // Phase2c-flush-before-save: 一時保存前にフォーカス中 input を明示 commit。
+  // （save ボタン mousedown preventDefault で blur が飛ばず詳細左 name2 等が消える対策）
   // Phase2c-excel-10200-paint: Excel正 10200｜塗装工事（種別なし・詳細2セル）。
   // コード表 constructionMenu（外注費等）は原価管理では HIMOKU_OVERRIDE で置換。
   // Phase2c-himoku-align-unify: 揃え位置も統一。費目名=左、数量/金額/SUM=右。
@@ -992,6 +994,27 @@
     input.addEventListener("blur", commit);
     if (fullTitle) input.addEventListener("input", syncFullTitle);
     return input;
+  }
+
+  // 一時保存/版確定: sticky ボタンの mousedown preventDefault で
+  // フォーカス中 input の blur→commit が飛ばないため、保存直前に明示 flush。
+  function jy2FlushActiveInputBeforeSave(documentRef) {
+    const active = documentRef && documentRef.activeElement;
+    if (!active) return;
+    const tag = String(active.tagName || "").toUpperCase();
+    if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") return;
+    try {
+      if (typeof active.blur === "function") active.blur();
+    } catch {
+      // ignore
+    }
+    try {
+      const view = documentRef.defaultView;
+      const EventCtor = (view && view.Event) || Event;
+      active.dispatchEvent(new EventCtor("change", { bubbles: true }));
+    } catch {
+      // ignore
+    }
   }
 
   // U26-2: input[list]/datalist 用の一意 ID 採番（DeepSeek §50-3-8 盲点1:
@@ -10191,6 +10214,8 @@
           : "保存";
       const runBudgetSave = async ({ confirmingVersion, busyLabel, doneAlert }) => {
         const view = documentRef.defaultView;
+        // 詳細左(name2)等: 入力中のまま一時保存してもモデルへ載せる
+        jy2FlushActiveInputBeforeSave(documentRef);
         const startDate = jy2FieldValue(record, "start_date");
         const endDate = jy2FieldValue(record, "end_date");
         const dateOrderInverted = jy2IsStartDateAfterEndDate(startDate, endDate);

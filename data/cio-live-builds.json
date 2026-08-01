@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-10200-paint",
-      "fileKey": "6f05ef38-60d2-44fa-9bc9-67002f49503f",
-      "revision": "221",
+      "build": "2026-08-01-ver02-actual-flush-before-save",
+      "fileKey": "312c6759-3672-411d-8b95-58437d21b837",
+      "revision": "222",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T00:05:10.200Z",
+      "deployedAt": "2026-08-01T00:06:55.122Z",
       "note": null
     },
     "757": {
