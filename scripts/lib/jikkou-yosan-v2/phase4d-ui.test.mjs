@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-operator-dual-detail/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-typed-dual-detail/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
@@ -528,10 +528,12 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-10900-manager/);
   assert.match(source, /Phase2c-excel-operator-day-night/);
   assert.match(source, /Phase2c-excel-operator-dual-detail/);
+  assert.match(source, /Phase2c-excel-typed-dual-detail/);
   assert.match(source, /Phase2c-worktype-end-rule/);
-  assert.match(source, /JY2_COST_MGMT_DUAL_DETAIL_TYPE_HIMOKU/);
-  assert.match(source, /dualUnderTypeLabel/);
+  assert.match(source, /dualUnderTypeLabel:\s*typeLabel/);
+  assert.match(source, /dualDetailCells:\s*true/);
   assert.match(source, /#R-EXCEL-UI-14/);
+  assert.match(source, /種別あり費目の詳細はすべて2セル/);
   assert.match(source, /Phase2c-excel-type-only-frames/);
   assert.match(source, /Phase2c-excel-type-only-ensure/);
   assert.match(source, /Phase2c-excel-type-only-order/);
