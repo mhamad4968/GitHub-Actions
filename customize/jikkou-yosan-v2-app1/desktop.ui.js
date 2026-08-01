@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-unit-price-wider
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-13600-entertainment
+  // Phase2c-excel-13600-entertainment: Excel正 13600｜交際費。種別=得意先接待交際費（甲）／（乙）／その他接待交際費 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-unit-price-wider: 単価列を広げてカンマ付き金額の見切れを解消。#R-EXCEL-UI-01
   // Phase2c-soft-save-reload: soft-saveのフルreload回避を撤回。REST更新後に本体が「新しいバージョン」を出すため一時保存後は従来どおりreload。計測[jy2-save-timing]は維持。#R-PERF-01
   // Phase2c-excel-12800-col-widths: 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量狭・実行予算額広。#R-EXCEL-UI-09/01
@@ -214,7 +215,7 @@
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
-    "13500", "13600",
+    "13500",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
   const JY2_COST_MGMT_HIMOKU_EXTRA = Object.freeze({
@@ -243,6 +244,7 @@
     "12800": Object.freeze(["補償費"]),
     "12900": Object.freeze(["諸雑費"]),
     "13100": Object.freeze(["諸会費"]),
+    "13600": Object.freeze(["交際費"]),
     "13620": Object.freeze(["会議費"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
@@ -268,6 +270,13 @@
         "その他旅費交通費",
       ]),
     }),
+    "13600": Object.freeze({
+      "交際費": Object.freeze([
+        "得意先接待交際費（甲）",
+        "得意先接待交際費（乙）",
+        "その他接待交際費",
+      ]),
+    }),
   });
   // 工種コードに依らない費目→種別（コード空枠用）。#R-EXCEL-UI-12。
   const JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU = Object.freeze({
@@ -278,6 +287,11 @@
       "出張旅費特例",
       "３万円未満公共交通機関特例",
       "その他旅費交通費",
+    ]),
+    "交際費": Object.freeze([
+      "得意先接待交際費（甲）",
+      "得意先接待交際費（乙）",
+      "その他接待交際費",
     ]),
   });
   // 種別行の下は詳細2セルが既定（種別列=詳細左・詳細列=詳細右）。#R-EXCEL-UI-14。
@@ -323,6 +337,9 @@
     "補償費": Object.freeze(["補償費"]),
     "諸雑費": Object.freeze(["諸雑費"]),
     "諸会費": Object.freeze(["諸会費"]),
+    "交際費": Object.freeze(["交際費"]),
+    // コード表 himoku「接待交際費」→ Excel正「交際費」へ寄せる
+    "接待交際費": Object.freeze(["交際費"]),
     "会議費": Object.freeze(["会議費"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
@@ -481,6 +498,12 @@
       workTypeCode: "13100",
       workTypeName: "（塗）諸会費",
       nameAliases: Object.freeze(["諸会費", "（塗）諸会費"]),
+    }),
+    Object.freeze({
+      shortName: "交際費",
+      workTypeCode: "13600",
+      workTypeName: "（塗）交際費",
+      nameAliases: Object.freeze(["交際費", "（塗）交際費"]),
     }),
     Object.freeze({
       shortName: "会議費",
@@ -1255,16 +1278,22 @@
     if (!known.includes(short)) return null;
     return { himokuLabel: primaryHimokuLabel, typeLabel: short };
   }
+  // コード表費目名 → Excel正費目名（13600: 接待交際費→交際費）
+  function jy2CostMgmtNormalizeHimokuLabel(himokuLabel) {
+    const text = String(himokuLabel || "").trim();
+    if (text === "接待交際費") return "交際費";
+    return text;
+  }
   function jy2CostMgmtShouldOmitHimoku(himokuLabel, himokuTemplate) {
-    if (jy2CostMgmtIsNoiseHimoku(himokuLabel)) return true;
+    const normalized = jy2CostMgmtNormalizeHimokuLabel(himokuLabel);
+    if (jy2CostMgmtIsNoiseHimoku(normalized)) return true;
     const allowed = Array.isArray(himokuTemplate) ? himokuTemplate : [];
     if (allowed.length === 0) return true;
-    if (!allowed.includes(himokuLabel)) return true;
+    if (!allowed.includes(normalized)) return true;
     return false;
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
     "保険料", "労災保険料", "法定福利費", "雑費",
-    "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
     "工事安全専任管理者", "出向工事安全専任管理者",
     "線閉責任者", "外注線閉責任者",
     "列車見張員", "外注列車見張員",
@@ -10098,9 +10127,8 @@
               : child && child.name1
                 ? String(child.name1).trim()
                 : "";
-          return resolvedName1 && resolvedName1.length > 0
-            ? resolvedName1
-            : "（未分類）";
+          if (!resolvedName1) return "（未分類）";
+          return jy2CostMgmtNormalizeHimokuLabel(resolvedName1);
         };
         const resolveTypeLabel = (child, detailIndex, himokuLabel) => {
           const resolvedName2 =
