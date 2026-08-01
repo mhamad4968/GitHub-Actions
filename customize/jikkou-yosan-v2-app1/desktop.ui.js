@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-no-dash
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-12000-rent
+  // Phase2c-excel-12000-rent: Excel正 12000｜借地料（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-typeless-no-dash: TYPELESS費目は詳細左=name2。コード表 dashType「－」固定を適用しない（保存で詳細左が消える対策）。#R-EXCEL-UI-07/14
   // Phase2c-excel-11900-tax: Excel正 11900｜租税公課（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-11800-waste: Excel正 11800｜産業廃棄物処理（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
@@ -193,7 +194,7 @@
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
     "11000", "11100", "11200", "11300", "11400",
-    "12000", "12100", "12200", "12300", "12400", "12600", "12700", "12800",
+    "12100", "12200", "12300", "12400", "12600", "12700", "12800",
     "12900", "13100", "13500", "13600", "13620",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
@@ -212,6 +213,7 @@
     "11700": Object.freeze(["運送費"]),
     "11800": Object.freeze(["産業廃棄物処理"]),
     "11900": Object.freeze(["租税公課"]),
+    "12000": Object.freeze(["借地料"]),
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "14100": Object.freeze(["追加工事①"]),
@@ -268,6 +270,7 @@
     "運送費": Object.freeze(["運送費"]),
     "産業廃棄物処理": Object.freeze(["産業廃棄物処理"]),
     "租税公課": Object.freeze(["租税公課"]),
+    "借地料": Object.freeze(["借地料"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -282,6 +285,7 @@
     "運送費",
     "産業廃棄物処理",
     "租税公課",
+    "借地料",
     "軌道工事",
     "調査設計費",
     "外注試験費",
@@ -348,6 +352,12 @@
       workTypeCode: "11900",
       workTypeName: "（塗）租税公課",
       nameAliases: Object.freeze(["租税公課", "（塗）租税公課"]),
+    }),
+    Object.freeze({
+      shortName: "借地料",
+      workTypeCode: "12000",
+      workTypeName: "（塗）借地料等",
+      nameAliases: Object.freeze(["借地料", "（塗）借地料等", "地代家賃"]),
     }),
   ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
@@ -990,7 +1000,7 @@
     return false;
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
-    "地代家賃", "消耗品費", "事務費", "通信費",
+    "消耗品費", "事務費", "通信費",
     "旅費交通費", "出張旅費特例", "３万円未満公共交通機関特例", "その他旅費交通費",
     "保険料", "労災保険料", "法定福利費", "雑費", "諸会費", "会議費", "補償費",
     "接待交際費", "得意先接待交際費（甲）", "得意先接待交際費（乙）", "その他接待交際費",
