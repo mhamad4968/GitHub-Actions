@@ -1,9 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-10900-after-10800
-  // Phase2c-excel-10900-after-10800: 10900工事管理者賃金（出向工事管理者）を10800鎌ヶ谷の直後へ。名称枠はその後ろ。#R-EXCEL-UI-09
-  // Phase2c-excel-10800-after-10700: 10800鎌ヶ谷資材使用料を10700塗装附帯工事の直後へ。名称枠はその後ろ。#R-EXCEL-UI-09
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-nameless-after-10700
+  // Phase2c-excel-nameless-after-10700: 軌道工事〜追加工事⑤を10700直後（工事がらみ）。10800/10900はその後ろ。#R-EXCEL-UI-09/11
+  // Phase2c-excel-10900-after-10800: 10900工事管理者賃金（出向工事管理者）を10800鎌ヶ谷の直後へ。#R-EXCEL-UI-09
+  // Phase2c-excel-10800-after-10700: 10800鎌ヶ谷資材使用料を名称枠群の直後へ（10700群の後ろ）。#R-EXCEL-UI-09
   // Phase2c-excel-11000-safety-manager: Excel正 11000｜工事安全専任管理者賃金。種別=昼間／夜間 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-13600-entertainment: Excel正 13600｜交際費。種別=得意先接待交際費（甲）／（乙）／その他接待交際費 → 詳細2セル。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-unit-price-wider: 単価列を広げてカンマ付き金額の見切れを解消。#R-EXCEL-UI-01
@@ -65,7 +66,7 @@
   // （＋で追加するまで。自動確保時に name1 を載せない／既存の空詳細は外す）。
   // Phase2c-excel-nameless-typeless: 軌道工事〜追加工事⑤は種別なし・詳細2セル
   // （10700塗装附帯工事と同型）。浜田訂正。
-  // Phase2c-excel-type-only-order: 名称枠を 10700｜塗装附帯工事 の直後へ並べる。
+  // Phase2c-excel-type-only-order: 名称枠を 10700｜塗装附帯工事 の直後へ並べる（工事がらみ）。
   // Phase2c-excel-type-only-ensure: 名称枠が内訳に無いとき App757 へ空ブロック追加。
   // （表示だけOVERRIDEしても行が出ない問題の修正。一時保存で永続化）
   // Phase2c-excel-type-only-frames: Excel正・システム工種コードなし枠（名称キー）。
@@ -600,7 +601,17 @@
     }
     return jy2CostMgmtFindManagerWageAnchor(blocks);
   }
-  // 10800｜鎌ヶ谷資材使用料を 10700｜塗装附帯工事 の直後へ。
+  // 名称枠群の末尾（軌道…→追加工事⑤のうち存在する最後）。無ければ null。
+  function jy2CostMgmtFindLastTypeOnlyAnchor(blocks) {
+    if (!Array.isArray(blocks)) return null;
+    let last = null;
+    for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
+      const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
+      if (block && block.status !== "retired") last = block;
+    }
+    return last;
+  }
+  // 10800｜鎌ヶ谷資材使用料を 名称枠群（無ければ10700）の直後へ。
   function jy2CostMgmtPlaceKamagayaAfterPaintAncillary(detailModel) {
     if (
       !detailModel ||
@@ -617,9 +628,12 @@
     } catch {
       return 0;
     }
-    const anchor = jy2CostMgmtFindPaintAncillaryAnchor(blocks);
+    const anchor =
+      jy2CostMgmtFindLastTypeOnlyAnchor(blocks) ||
+      jy2CostMgmtFindPaintAncillaryAnchor(blocks);
     const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
     if (!anchor || !block || block.status === "retired") return 0;
+    if (anchor.stableBlockId === block.stableBlockId) return 0;
     const afterIndex = blocks.findIndex(
       (candidate) => candidate && candidate.stableBlockId === anchor.stableBlockId,
     );
@@ -685,7 +699,7 @@
       return 0;
     }
   }
-  // 種別のみ枠を 10900（無ければ10800／10700）の直後へ（軌道→…→追加工事⑤の順）。
+  // 種別のみ枠を 10700｜塗装附帯工事 の直後へ（軌道→…→追加工事⑤の順・工事がらみ）。
   // 戻り値＝位置を動かした件数。
   function jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel) {
     if (
@@ -701,10 +715,7 @@
     } catch {
       return 0;
     }
-    const anchor =
-      jy2CostMgmtFindManagerWageAnchor(blocks) ||
-      jy2CostMgmtFindKamagayaAnchor(blocks) ||
-      jy2CostMgmtFindPaintAncillaryAnchor(blocks);
+    const anchor = jy2CostMgmtFindPaintAncillaryAnchor(blocks);
     if (!anchor) return 0;
     let afterId = anchor.stableBlockId;
     let moved = 0;
@@ -1150,7 +1161,7 @@
     }
     return changes;
   }
-  // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700 直後／10900 直後／オペレーター直後へ並べる。
+  // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700直後（名称枠）／その後10800・10900／オペレーター直後へ並べる。
   // 詳細行は載せず費目枠だけ（＋で追加するまで）。戻り値＝変化件数。
   function jy2CostMgmtEnsureTypeOnlyFrames(detailModel, detailVisibility) {
     if (
@@ -1184,13 +1195,13 @@
     );
     const sanitizedTypelessName2Ditto =
       jy2CostMgmtSanitizeTypelessName2Ditto(detailModel);
-    // 10700 → 10800 → 10900 → 名称枠（軌道…）→ オペレーター → その他コード枠
+    // 10700 → 名称枠（軌道…追加工事）→ 10800 → 10900 → オペレーター → その他コード枠
+    const movedTypeOnly =
+      jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedKamagaya =
       jy2CostMgmtPlaceKamagayaAfterPaintAncillary(detailModel);
     const movedManager =
       jy2CostMgmtPlaceManagerWageAfterKamagaya(detailModel);
-    const movedTypeOnly =
-      jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedDayNight =
       jy2CostMgmtPlaceDayNightFramesAfterManagerWage(detailModel);
     const movedCoded =
