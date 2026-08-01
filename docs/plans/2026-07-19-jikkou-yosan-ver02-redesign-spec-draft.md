@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（一時保存が見えない誤認・#R-SOFT-SAVE-01）**: App757 への書込は成功していたが、MANUAL_ONLY が sessionStorage reveal のみ依存し reload 後に詳細が消えて「未保存」に見えた。leaf 内容あり行を自動 reveal＋sticky 右に保存/更新日時。LIVE **rev287** / BUILD `2026-08-02-ver02-actual-soft-save-visible`。  
 **2026-08-01 夜（最終・夕反省全承認＋仕様同期）**: 浜田 — 運用改善 A/S/O/C/M **すべて承認**（憲法本文変更なし）。GO `docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md`／runbook `cio-ops-2026-08-01-evening-improvements.md`。LIVE **rev286** `…-dedupe-coded`。配置順 #R-EXCEL-PLACE-01／二重非表示 S-DEDUP-01／ENSURE 区分 resolve C-EXCEL-01／受入ミニチェック O-756-01。**OMIT 残: 11400・13500**。正本表構造 SPEC 同期済。  
 **2026-08-01 午後（工事原価管理・TYPELESS 詳細左保存・〃正規化）**: TYPELESS 詳細左(name2)は **空のまま保存**（prepareForSave で空→〃しない）。表示でも **〃は継承しない**。費目名=name2 のミラークリアは廃止（ユーザー入力を保持）。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-persist`。#R-EXCEL-UI-14。  
 **2026-08-01 午後（工事原価管理・TYPELESS 工種 dashType 無効化）**: Excel TYPELESS 工種（12500借上げ自動車費等）でコード表 `himokuDefault=旅費交通費`＋`dashTypeByHimoku` により **詳細左=name2** が保存時 `－` に上書きされる不具合を修正。`jy2CostMgmtIsTypeLessExcelWorkType` で工種単位に dashType 無効化、`jy2HimokuDefaultForBlock` で HIMOKU_OVERRIDE を優先。BUILD `2026-08-01-ver02-actual-excel-typeless-dash-by-code`。#R-EXCEL-UI-07/14。  

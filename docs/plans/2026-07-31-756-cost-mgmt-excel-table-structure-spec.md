@@ -261,6 +261,7 @@
 | 2026-08-01 | Excel 13100｜諸会費（種別なし・詳細2セル）。12900同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-13100-dues` |
 | 2026-08-01 | Excel 13620｜会議費（種別なし・詳細2セル）。13100同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-13620-meeting` |
 | 2026-08-01 | Phase2c-soft-save-timing: 一時保存成功時はフルreloadせず親revision+App757再取得。console [jy2-save-timing]。版確定/競合は従来reload。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-timing` |
+| 2026-08-02 | **#R-SOFT-SAVE-01**: App757への一時保存は成功していたが MANUAL_ONLY が sessionStorage reveal のみ依存し reload 後に詳細が消えて「未保存」に見えた。leaf内容あり行を自動 reveal＋sticky右に保存/更新日時。BUILD `2026-08-02-ver02-actual-soft-save-visible` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |

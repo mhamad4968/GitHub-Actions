@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-dedupe-coded
+  // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-soft-save-visible
   // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
   // Phase2c-excel-11300-traffic: Excel正 11300｜交通整理員賃金。種別=昼間／夜間 → 詳細2セル（11200同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-11200-watchman: Excel正 11200｜列車見張員賃金。種別=昼間／夜間 → 詳細2セル（11100同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
@@ -2104,6 +2105,7 @@
       ".jy2-btn-accent:hover{background:#047857}",
       ".jy2-lock-banner{margin:0 0 6px;padding:6px 10px;background:#fff3cd;border:1px solid #ffc107;color:#92400e;font-size:12px;font-weight:700;border-radius:6px}",
       ".jy2-action-meta{font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}",
+      ".jy2-last-saved{font-size:11px;color:#475569;white-space:nowrap;margin-right:8px;align-self:center}",
       ".jy2-sticky-top .jy2-tabs{margin:4px 0 0;padding:0;background:transparent}",
       ".jy2-action-bar .jy2-btn[hidden]{display:none!important}",
       "#jy2-host{margin:0 0 12px;padding:0;overflow-x:clip;overflow-y:visible;max-width:100%;width:100%;min-width:0;box-sizing:border-box}",
@@ -9914,6 +9916,7 @@
   // App757 の既存明細は削除しない。来週連動後は MANUAL_ONLY=false で全表示。
   // reveal キーは sessionStorage に残し、一時保存後の reload でも手入力行を維持。
   const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys`;
+  const JY2_LAST_SOFT_SAVED_KEY = `jy2:${APP1_ID}:lastSoftSavedAt`;
   function jy2ActualLoadRevealKeys(view) {
     const set = new Set();
     if (!view || !view.sessionStorage) return set;
@@ -9940,6 +9943,29 @@
     } catch {
       // ignore
     }
+  }
+  function jy2ActualRevealPersistedDetailRows(detailModel, costDetailVisibility) {
+    if (!detailModel || !costDetailVisibility || typeof costDetailVisibility.reveal !== "function") {
+      return 0;
+    }
+    if (typeof detailModel.snapshot !== "function") return 0;
+    let n = 0;
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    for (const block of blocks) {
+      if (!block || !Array.isArray(block.detailRows)) continue;
+      for (const row of block.detailRows) {
+        if (!row || !row.rowKey) continue;
+        if (!jy2CostMgmtDetailHasLeafContent(row)) continue;
+        costDetailVisibility.reveal(row.rowKey);
+        n += 1;
+      }
+    }
+    return n;
   }
   function jy2ActualCostDetailVisibility(pane) {
     const view =
@@ -10133,6 +10159,9 @@
           console.error("ensure type-only frames dirty mark failed:", error);
         }
       }
+    }
+    if (detailModel) {
+      jy2ActualRevealPersistedDetailRows(detailModel, costDetailVisibility);
     }
     const months = actualsModel.months();
     const blocks = blocksProvider();
@@ -10876,6 +10905,71 @@
     if (!text) return "";
     const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(text);
     return match ? `${match[1]} ${match[2]}` : text.slice(0, 16);
+  }
+  function jy2FormatJstDatetimeLabel(isoOrDate, labelPrefix) {
+    const text = String(isoOrDate ?? "").trim();
+    if (!text) return "";
+    const date = new Date(text);
+    if (Number.isNaN(date.getTime())) return "";
+    const fmt = new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const parts = fmt.formatToParts(date);
+    const pick = (type) => {
+      const part = parts.find((p) => p.type === type);
+      return part ? part.value : "";
+    };
+    const stamp = `${pick("year")}-${pick("month")}-${pick("day")} ${pick("hour")}:${pick("minute")}`;
+    return `${labelPrefix} ${stamp}`;
+  }
+  function jy2ReadLastSoftSavedStamp(view, budgetVersionId) {
+    if (!view || !view.sessionStorage || !budgetVersionId) return null;
+    try {
+      const raw = view.sessionStorage.getItem(JY2_LAST_SOFT_SAVED_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || String(parsed.budget_version_id || "") !== String(budgetVersionId)) {
+        return null;
+      }
+      const savedAt = String(parsed.savedAt || "").trim();
+      return savedAt || null;
+    } catch {
+      return null;
+    }
+  }
+  function jy2WriteLastSoftSavedStamp(view, budgetVersionId, iso) {
+    if (!view || !view.sessionStorage || !budgetVersionId || !iso) return;
+    try {
+      view.sessionStorage.setItem(
+        JY2_LAST_SOFT_SAVED_KEY,
+        JSON.stringify({
+          budget_version_id: String(budgetVersionId),
+          savedAt: String(iso),
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  }
+  function jy2ResolveLastSavedDisplayText(view, record) {
+    const budgetVersionId = jy2FieldValue(record, "budget_version_id");
+    const softSaved = jy2ReadLastSoftSavedStamp(view, budgetVersionId);
+    if (softSaved) {
+      return jy2FormatJstDatetimeLabel(softSaved, "保存");
+    }
+    const updated =
+      jy2FieldValue(record, "Updated_datetime") ||
+      jy2FieldValue(record, "updated_datetime");
+    if (updated) {
+      return jy2FormatJstDatetimeLabel(updated, "更新");
+    }
+    return "";
   }
 
   function jy2Field(record, code, value) {
@@ -11736,6 +11830,11 @@
     addSalaryBtn.disabled = !canEditBudget;
     addSalaryBtn.title = "総括の給与手当に行を追加します";
 
+    const lastSavedEl = documentRef.createElement("span");
+    lastSavedEl.className = "jy2-last-saved";
+    const initLastSaved = jy2ResolveLastSavedDisplayText(documentRef.defaultView, record);
+    if (initLastSaved) lastSavedEl.textContent = initLastSaved;
+
     const saveButton = documentRef.createElement("button");
     saveButton.type = "button";
     saveButton.className = "jy2-btn jy2-btn-primary jy2-save-button";
@@ -11747,6 +11846,7 @@
       : "工事基本情報・総括・内訳を保存（工事原価管理の詳細・単価・行追加も含む）";
     // 詳細入力中に押しても blur→commit で click が消えないようにする
     saveButton.addEventListener("mousedown", (event) => {
+      jy2FlushActiveInputBeforeSave(documentRef);
       if (typeof event.preventDefault === "function") event.preventDefault();
     });
 
@@ -11759,7 +11859,7 @@
     confirmButton.title = "下書きを版確定します（確認ダイアログあり）";
 
     // 保存等を DOM 先頭に置き、狭い幅でも左端に見えるようにする。
-    rightGroup.append(saveButton, confirmButton, addBlockBtn, addSalaryBtn);
+    rightGroup.append(lastSavedEl, saveButton, confirmButton, addBlockBtn, addSalaryBtn);
     actionBar.append(rightGroup, leftGroup);
     sticky.appendChild(actionBar);
 
@@ -12180,6 +12280,19 @@
               requestCount: outcome && outcome.requestCount,
             });
           }
+          const savedIso = new Date().toISOString();
+          const budgetVersionId = jy2FieldValue(record, "budget_version_id");
+          jy2WriteLastSoftSavedStamp(view, budgetVersionId, savedIso);
+          lastSavedEl.textContent = jy2FormatJstDatetimeLabel(savedIso, "保存");
+          const revealForSave = {
+            reveal: (key) => {
+              if (!key || !view) return;
+              const set = jy2ActualLoadRevealKeys(view);
+              set.add(String(key));
+              jy2ActualPersistRevealKeys(view, set);
+            },
+          };
+          jy2ActualRevealPersistedDetailRows(detailModel, revealForSave);
           jy2ReloadPreservingTab(
             view,
             sticky.dataset.activeTab || "header",
