@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-ensure
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-type-only-order
+  // Phase2c-excel-type-only-order: 種別のみ枠を 10700｜塗装附帯工事 の直後へ並べる。
   // Phase2c-excel-type-only-ensure: 種別のみ枠が内訳に無いとき App757 へ空ブロック追加。
   // （表示だけOVERRIDEしても行が出ない問題の修正。一時保存で永続化）
   // Phase2c-excel-type-only-frames: Excel正・システム工種コードなし枠
@@ -222,8 +223,83 @@
       .trim()
       .replace(/^（塗）/, "");
   }
-  // 内訳に Excel 種別のみ枠が無いとき空ブロックを追加（App757 非破壊・追加のみ）。
-  // 廃止済みがあれば再作成しない。戻り値＝追加件数。
+  function jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame) {
+    if (!Array.isArray(blocks) || !frame) return null;
+    return (
+      blocks.find((block) => {
+        if (!block) return false;
+        const short = jy2CostMgmtExcelShortName(block.workTypeName);
+        if (short && short === frame.shortName) return true;
+        const code = String(block.workTypeCode || "").trim();
+        if (frame.workTypeCode && code === frame.workTypeCode) return true;
+        return false;
+      }) || null
+    );
+  }
+  function jy2CostMgmtFindPaintAncillaryAnchor(blocks) {
+    if (!Array.isArray(blocks)) return null;
+    return (
+      blocks.find((block) => {
+        if (!block || block.status === "retired") return false;
+        if (String(block.workTypeCode || "").trim() === "10700") return true;
+        const short = jy2CostMgmtExcelShortName(block.workTypeName);
+        return short === "塗装附帯工事" || short === "塗装付帯工事";
+      }) || null
+    );
+  }
+  // 種別のみ枠を 10700｜塗装附帯工事 の直後へ（軌道→…→追加工事⑤の順）。
+  // 戻り値＝位置を動かした件数。
+  function jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel) {
+    if (
+      !detailModel ||
+      typeof detailModel.moveBlockAfter !== "function" ||
+      typeof detailModel.snapshot !== "function"
+    ) {
+      return 0;
+    }
+    let blocks = [];
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    const anchor = jy2CostMgmtFindPaintAncillaryAnchor(blocks);
+    if (!anchor) return 0;
+    let afterId = anchor.stableBlockId;
+    let moved = 0;
+    for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
+      blocks = detailModel.snapshot().blocks || [];
+      const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
+      if (!block || block.status === "retired") continue;
+      const afterIndex = blocks.findIndex(
+        (candidate) => candidate && candidate.stableBlockId === afterId,
+      );
+      const blockIndex = blocks.findIndex(
+        (candidate) =>
+          candidate && candidate.stableBlockId === block.stableBlockId,
+      );
+      if (afterIndex >= 0 && blockIndex === afterIndex + 1) {
+        afterId = block.stableBlockId;
+        continue;
+      }
+      try {
+        detailModel.moveBlockAfter(block.stableBlockId, afterId);
+        afterId = block.stableBlockId;
+        moved += 1;
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error(
+            "jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary failed:",
+            frame,
+            error,
+          );
+        }
+      }
+    }
+    return moved;
+  }
+  // 内訳に Excel 種別のみ枠が無いとき空ブロックを追加し、10700 直後へ並べる。
+  // 廃止済みがあれば再作成しない。戻り値＝追加＋並べ替えで変化した件数。
   function jy2CostMgmtEnsureTypeOnlyFrames(detailModel) {
     if (
       !detailModel ||
@@ -241,21 +317,11 @@
     } catch {
       return 0;
     }
-    const hasFrame = (frame) =>
-      blocks.some((block) => {
-        if (!block) return false;
-        const short = jy2CostMgmtExcelShortName(block.workTypeName);
-        if (short && short === frame.shortName) return true;
-        const code = String(block.workTypeCode || "").trim();
-        if (frame.workTypeCode && code === frame.workTypeCode) return true;
-        return false;
-      });
     let added = 0;
     for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
-      if (hasFrame(frame)) continue;
-      let id = null;
+      if (jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame)) continue;
       try {
-        id = detailModel.addBlock();
+        const id = detailModel.addBlock();
         detailModel.updateBlockHeader(id, {
           workTypeName: frame.workTypeName,
           workTypeCode: frame.workTypeCode || null,
@@ -283,7 +349,8 @@
         }
       }
     }
-    return added;
+    const moved = jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
+    return added + moved;
   }
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];

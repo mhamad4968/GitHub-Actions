@@ -227,3 +227,4 @@
 | 2026-08-01 | Excel 10700｜塗装附帯工事（種別なし・詳細2セル）。同型。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-10700-ancillary` |
 | 2026-08-01 | Excel 種別のみ枠（軌道工事・調査設計費・外注試験費・交通規制費・追加工事①〜⑤）。コード空可。#R-EXCEL-UI-11。BUILD `2026-08-01-ver02-actual-excel-type-only-frames` |
 | 2026-08-01 | 種別のみ枠が内訳に無いとき空ブロック自動追加。BUILD `2026-08-01-ver02-actual-excel-type-only-ensure` |
+| 2026-08-01 | 種別のみ枠を 10700｜塗装附帯工事 の直後へ並べ替え。BUILD `2026-08-01-ver02-actual-excel-type-only-order` |

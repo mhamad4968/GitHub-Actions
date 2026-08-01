@@ -643,6 +643,37 @@ export function createDetailBlockModel({
       if (target < 0 || target >= list.length) return;
       [list[index], list[target]] = [list[target], list[index]];
     },
+    // Excel枠の位置合わせ用: 指定ブロックの直後へ移動（同一なら何もしない）。
+    // afterStableBlockId が null/空なら先頭へ。
+    moveBlockAfter(stableBlockId, afterStableBlockId) {
+      assertEditable("moveBlockAfter");
+      const { index } = findBlock(stableBlockId, "moveBlockAfter");
+      const afterId =
+        afterStableBlockId == null || afterStableBlockId === ""
+          ? null
+          : String(afterStableBlockId);
+      if (afterId && afterId === String(stableBlockId)) {
+        throw new RangeError(
+          "moveBlockAfter: afterStableBlockId must differ from stableBlockId",
+        );
+      }
+      let insertAt = 0;
+      if (afterId) {
+        const afterIndex = list.findIndex(
+          (block) => block.stableBlockId === afterId,
+        );
+        if (afterIndex < 0) {
+          throw new RangeError(
+            `moveBlockAfter: unknown afterStableBlockId ${afterId}`,
+          );
+        }
+        insertAt = afterIndex + 1;
+      }
+      if (index === insertAt || index + 1 === insertAt) return;
+      const [block] = list.splice(index, 1);
+      if (index < insertAt) insertAt -= 1;
+      list.splice(insertAt, 0, block);
+    },
     updateBlockHeader(stableBlockId, patch) {
       assertEditable("updateBlockHeader");
       detailAssertPatchKeys(patch, HEADER_EDITABLE_FIELDS, "updateBlockHeader");

@@ -297,6 +297,28 @@ test("retire vs delete (P-39) and block reorder renumber 内訳№ (U14)", () =>
   );
 });
 
+test("moveBlockAfter places a block immediately after the anchor", () => {
+  const model = editableModel({
+    blocks: [
+      { costCategory: "施工", workTypeName: "アンカー" },
+      { costCategory: "施工", workTypeName: "末尾A" },
+      { costCategory: "施工", workTypeName: "末尾B" },
+    ],
+  });
+  const [anchor, a, b] = model.snapshot().blocks.map((block) => block.stableBlockId);
+  model.moveBlockAfter(b, anchor);
+  model.moveBlockAfter(a, b);
+  assert.deepEqual(
+    model.snapshot().blocks.map((block) => block.stableBlockId),
+    [anchor, b, a],
+  );
+  model.moveBlockAfter(a, b); // already after b → no-op
+  assert.deepEqual(
+    model.snapshot().blocks.map((block) => block.stableBlockId),
+    [anchor, b, a],
+  );
+});
+
 test("each block keeps at least 1 detail row after deletes (U12)", () => {
   const model = editableModel();
   const blockId = model.addBlock();
