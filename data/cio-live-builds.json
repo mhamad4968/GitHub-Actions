@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-excel-11200-watchman",
-      "fileKey": "e874fbf2-7b09-46a4-82a5-f52c1ddbc391",
-      "revision": "284",
+      "build": "2026-08-01-ver02-actual-excel-11300-traffic",
+      "fileKey": "c84a6128-b9bc-4349-9bbd-8a157967a054",
+      "revision": "285",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T11:36:41.179Z",
+      "deployedAt": "2026-08-01T11:39:47.102Z",
       "note": null
     },
     "757": {
