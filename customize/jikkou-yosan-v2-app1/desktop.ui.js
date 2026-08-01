@@ -1,7 +1,10 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-worktype-end-rule
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-operator-day-night
+  // Phase2c-excel-operator-day-night: Excel正・システム工種なし｜建設機械オペレーター。
+  // 費目=建設機械オペレーター → 種別=昼間／夜間 → 詳細。10900 と同型（#R-EXCEL-UI-12）。
+  // コード表の労務費＋建設機械オペレーター（種別）は原価管理では使わない。10900 直後へ確保。
   // Phase2c-worktype-end-rule: グレー区切り線はシステム工種ごと（費目ごとではない）。
   // 10900 のように費目が複数でも一塊に見える（#R-EXCEL-UI-13）。
   // Phase2c-excel-10900-manager: Excel正 10900｜工事管理者賃金。
@@ -187,6 +190,10 @@
       "その他工事管理者": Object.freeze(["昼間", "夜間"]),
     }),
   });
+  // 工種コードに依らない費目→種別（コード空枠用）。#R-EXCEL-UI-12。
+  const JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU = Object.freeze({
+    "建設機械オペレーター": Object.freeze(["昼間", "夜間"]),
+  });
   // システム工種コードが空の Excel 枠（名称で費目枠を決める）。
   const JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME = Object.freeze({
     "軌道工事": Object.freeze(["軌道工事"]),
@@ -198,6 +205,8 @@
     "追加工事③": Object.freeze(["追加工事③"]),
     "追加工事④": Object.freeze(["追加工事④"]),
     "追加工事⑤": Object.freeze(["追加工事⑤"]),
+    "建設機械オペレーター": Object.freeze(["建設機械オペレーター"]),
+    "建設機械オペレーター賃金": Object.freeze(["建設機械オペレーター"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -234,18 +243,35 @@
     Object.freeze({ shortName: "追加工事④", workTypeCode: "14400", workTypeName: "追加工事④" }),
     Object.freeze({ shortName: "追加工事⑤", workTypeCode: "14500", workTypeName: "追加工事⑤" }),
   ]);
+  // 昼間／夜間付き・コード空枠（10900 と同型）。10700 群とは別配置（10900 直後）。
+  const JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES = Object.freeze([
+    Object.freeze({
+      shortName: "建設機械オペレーター",
+      workTypeCode: "",
+      workTypeName: "建設機械オペレーター",
+      nameAliases: Object.freeze(["建設機械オペレーター賃金"]),
+    }),
+  ]);
   function jy2CostMgmtExcelShortName(workTypeName) {
     return String(workTypeName || "")
       .trim()
       .replace(/^（塗）/, "");
+  }
+  function jy2CostMgmtFrameNameMatches(blockName, frame) {
+    if (!frame) return false;
+    const short = jy2CostMgmtExcelShortName(blockName);
+    if (!short) return false;
+    if (short === frame.shortName) return true;
+    const aliases = frame.nameAliases;
+    if (Array.isArray(aliases) && aliases.includes(short)) return true;
+    return false;
   }
   function jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame) {
     if (!Array.isArray(blocks) || !frame) return null;
     return (
       blocks.find((block) => {
         if (!block) return false;
-        const short = jy2CostMgmtExcelShortName(block.workTypeName);
-        if (short && short === frame.shortName) return true;
+        if (jy2CostMgmtFrameNameMatches(block.workTypeName, frame)) return true;
         const code = String(block.workTypeCode || "").trim();
         if (frame.workTypeCode && code === frame.workTypeCode) return true;
         return false;
@@ -263,6 +289,17 @@
       }) || null
     );
   }
+  function jy2CostMgmtFindManagerWageAnchor(blocks) {
+    if (!Array.isArray(blocks)) return null;
+    return (
+      blocks.find((block) => {
+        if (!block || block.status === "retired") return false;
+        if (String(block.workTypeCode || "").trim() === "10900") return true;
+        const short = jy2CostMgmtExcelShortName(block.workTypeName);
+        return short === "工事管理者賃金";
+      }) || null
+    );
+  }
   // 種別のみ枠を 10700｜塗装附帯工事 の直後へ（軌道→…→追加工事⑤の順）。
   // 戻り値＝位置を動かした件数。
   function jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel) {
@@ -273,7 +310,7 @@
     ) {
       return 0;
     }
-    let blocks = [];
+    let blocks;
     try {
       blocks = detailModel.snapshot().blocks || [];
     } catch {
@@ -284,7 +321,11 @@
     let afterId = anchor.stableBlockId;
     let moved = 0;
     for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
-      blocks = detailModel.snapshot().blocks || [];
+      try {
+        blocks = detailModel.snapshot().blocks || [];
+      } catch {
+        break;
+      }
       const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
       if (!block || block.status === "retired") continue;
       const afterIndex = blocks.findIndex(
@@ -314,6 +355,60 @@
     }
     return moved;
   }
+  // 昼間／夜間枠を 10900｜工事管理者賃金 の直後へ。戻り値＝動かした件数。
+  function jy2CostMgmtPlaceDayNightFramesAfterManagerWage(detailModel) {
+    if (
+      !detailModel ||
+      typeof detailModel.moveBlockAfter !== "function" ||
+      typeof detailModel.snapshot !== "function"
+    ) {
+      return 0;
+    }
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    const anchor = jy2CostMgmtFindManagerWageAnchor(blocks);
+    if (!anchor) return 0;
+    let afterId = anchor.stableBlockId;
+    let moved = 0;
+    for (const frame of JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES) {
+      try {
+        blocks = detailModel.snapshot().blocks || [];
+      } catch {
+        break;
+      }
+      const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
+      if (!block || block.status === "retired") continue;
+      const afterIndex = blocks.findIndex(
+        (candidate) => candidate && candidate.stableBlockId === afterId,
+      );
+      const blockIndex = blocks.findIndex(
+        (candidate) =>
+          candidate && candidate.stableBlockId === block.stableBlockId,
+      );
+      if (afterIndex >= 0 && blockIndex === afterIndex + 1) {
+        afterId = block.stableBlockId;
+        continue;
+      }
+      try {
+        detailModel.moveBlockAfter(block.stableBlockId, afterId);
+        afterId = block.stableBlockId;
+        moved += 1;
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error(
+            "jy2CostMgmtPlaceDayNightFramesAfterManagerWage failed:",
+            frame,
+            error,
+          );
+        }
+      }
+    }
+    return moved;
+  }
   function jy2CostMgmtDetailHasLeafContent(row) {
     if (!row) return false;
     const parts = [row.name2, row.name3, row.quantity, row.unitPrice, row.note];
@@ -325,6 +420,27 @@
       return true;
     });
   }
+  function jy2CostMgmtEmptyDetailHimokuLabels(frame) {
+    const labels = new Set();
+    if (!frame) return labels;
+    if (frame.shortName) {
+      labels.add(frame.shortName);
+      labels.add(jy2CostMgmtExcelShortName(frame.shortName));
+    }
+    const aliases = frame.nameAliases;
+    if (Array.isArray(aliases)) {
+      for (const alias of aliases) {
+        if (alias) labels.add(String(alias).trim());
+      }
+    }
+    const byName = JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[frame.shortName];
+    if (Array.isArray(byName)) {
+      for (const himoku of byName) {
+        if (himoku) labels.add(String(himoku).trim());
+      }
+    }
+    return labels;
+  }
   // 名称枠の「空のままの詳細」から費目名(name1)を外し、費目直下に空行が出ないようにする。
   function jy2CostMgmtStripEmptyFrameDetailHimoku(detailModel) {
     if (
@@ -335,24 +451,27 @@
       return 0;
     }
     let stripped = 0;
-    let blocks = [];
+    let blocks;
     try {
       blocks = detailModel.snapshot().blocks || [];
     } catch {
       return 0;
     }
-    for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
+    const frames = [
+      ...JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES,
+      ...JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES,
+    ];
+    for (const frame of frames) {
       const block = jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame);
       if (!block || !Array.isArray(block.detailRows)) continue;
+      const allowedName1 = jy2CostMgmtEmptyDetailHimokuLabels(frame);
       for (const row of block.detailRows) {
         if (!row || !row.rowKey) continue;
         if (jy2CostMgmtDetailHasLeafContent(row)) continue;
         const name1 = String(row.name1 || "").trim();
         if (!name1) continue;
-        if (
-          name1 !== frame.shortName &&
-          jy2CostMgmtExcelShortName(name1) !== frame.shortName
-        ) {
+        const name1Short = jy2CostMgmtExcelShortName(name1);
+        if (!allowedName1.has(name1) && !allowedName1.has(name1Short)) {
           continue;
         }
         try {
@@ -373,7 +492,35 @@
     }
     return stripped;
   }
-  // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700 直後へ並べる。
+  function jy2CostMgmtEnsureFrameList(detailModel, frames, logLabel) {
+    let added = 0;
+    for (const frame of frames) {
+      let blocks;
+      try {
+        const snap = detailModel.snapshot();
+        blocks = Array.isArray(snap.blocks) ? snap.blocks : [];
+      } catch {
+        break;
+      }
+      if (jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame)) continue;
+      try {
+        const id = detailModel.addBlock();
+        detailModel.updateBlockHeader(id, {
+          workTypeName: frame.workTypeName,
+          workTypeCode: frame.workTypeCode || null,
+          costCategory: "施工",
+        });
+        // 必須の空詳細1行は App757 側の制約。name1 は載せない（費目枠だけ見せる）。
+        added += 1;
+      } catch (error) {
+        if (typeof console !== "undefined" && console.error) {
+          console.error(logLabel + " failed:", frame, error);
+        }
+      }
+    }
+    return added;
+  }
+  // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700 直後／10900 直後へ並べる。
   // 詳細行は載せず費目枠だけ（＋で追加するまで）。戻り値＝変化件数。
   function jy2CostMgmtEnsureTypeOnlyFrames(detailModel) {
     if (
@@ -385,35 +532,24 @@
     ) {
       return 0;
     }
-    let blocks = [];
-    try {
-      const snap = detailModel.snapshot();
-      blocks = Array.isArray(snap.blocks) ? snap.blocks : [];
-    } catch {
-      return 0;
-    }
-    let added = 0;
-    for (const frame of JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES) {
-      if (jy2CostMgmtFindTypeOnlyFrameBlock(blocks, frame)) continue;
-      try {
-        const id = detailModel.addBlock();
-        detailModel.updateBlockHeader(id, {
-          workTypeName: frame.workTypeName,
-          workTypeCode: frame.workTypeCode || null,
-          costCategory: "施工",
-        });
-        // 必須の空詳細1行は App757 側の制約。name1 は載せない（費目枠だけ見せる）。
-        added += 1;
-        blocks = detailModel.snapshot().blocks || blocks;
-      } catch (error) {
-        if (typeof console !== "undefined" && console.error) {
-          console.error("jy2CostMgmtEnsureTypeOnlyFrames failed:", frame, error);
-        }
-      }
-    }
+    const addedTypeOnly = jy2CostMgmtEnsureFrameList(
+      detailModel,
+      JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES,
+      "jy2CostMgmtEnsureTypeOnlyFrames",
+    );
+    const addedDayNight = jy2CostMgmtEnsureFrameList(
+      detailModel,
+      JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES,
+      "jy2CostMgmtEnsureDayNightFrames",
+    );
     const stripped = jy2CostMgmtStripEmptyFrameDetailHimoku(detailModel);
-    const moved = jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
-    return added + stripped + moved;
+    const movedTypeOnly =
+      jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
+    const movedDayNight =
+      jy2CostMgmtPlaceDayNightFramesAfterManagerWage(detailModel);
+    return (
+      addedTypeOnly + addedDayNight + stripped + movedTypeOnly + movedDayNight
+    );
   }
   function jy2CostMgmtDeniedTypes(workTypeCode, himokuLabel) {
     const byCode = JY2_COST_MGMT_TYPE_DENY[String(workTypeCode || "")];
@@ -480,7 +616,7 @@
   // ダッシュ類（半角/全角/類似）・空・（種別未設定）は通常は種別行に出さない。
   function jy2CostMgmtIsDashLike(text) {
     const value = String(text || "").trim();
-    return !value ? false : /^[\-－―‐ーｰ−]+$/.test(value);
+    return !value ? false : /^[-－―‐ーｰ−]+$/.test(value);
   }
   function jy2CostMgmtIsBlankWorkTypeCode(code) {
     const value = String(code || "").trim();
@@ -514,8 +650,18 @@
     const code = String(workTypeCode || "");
     const himoku = String(himokuLabel || "").trim();
     const byCode = JY2_COST_MGMT_TYPES_OVERRIDE[code];
-    const fromOverride =
+    const fromCode =
       byCode && himoku && Array.isArray(byCode[himoku]) ? byCode[himoku] : null;
+    const fromHimoku =
+      himoku && Array.isArray(JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU[himoku])
+        ? JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU[himoku]
+        : null;
+    const fromOverride =
+      fromCode && fromCode.length > 0
+        ? fromCode
+        : fromHimoku && fromHimoku.length > 0
+          ? fromHimoku
+          : null;
     const raw =
       fromOverride && fromOverride.length > 0
         ? [...fromOverride]
@@ -9022,7 +9168,7 @@
         hierarchyEntry,
         row,
       );
-      let parentHimokuOpts = null;
+      let parentHimokuOpts;
       let himokuOrder = [];
       let bucket = new Map();
       let typesByHimokuMap = {};

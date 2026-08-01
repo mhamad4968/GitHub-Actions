@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-worktype-end-rule",
-      "fileKey": "2e27eea3-e27d-4e16-8240-0fdab5b0ea6c",
-      "revision": "237",
+      "build": "2026-08-01-ver02-actual-excel-operator-day-night",
+      "fileKey": "4ab6f205-17ab-48d6-845b-cdfcde4b0747",
+      "revision": "238",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T00:53:47.835Z",
+      "deployedAt": "2026-08-01T01:01:11.073Z",
       "note": null
     },
     "757": {

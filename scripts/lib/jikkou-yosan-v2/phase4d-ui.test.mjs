@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-worktype-end-rule/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-operator-day-night/);
   assert.match(source, /jy2FlushActiveInputBeforeSave/);
   assert.match(source, /Phase2c-flush-before-save/);
   assert.match(source, /Phase2c-qty-default-one/);
@@ -526,6 +526,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-10600-repair/);
   assert.match(source, /Phase2c-excel-10700-ancillary/);
   assert.match(source, /Phase2c-excel-10900-manager/);
+  assert.match(source, /Phase2c-excel-operator-day-night/);
   assert.match(source, /Phase2c-worktype-end-rule/);
   assert.match(source, /Phase2c-excel-type-only-frames/);
   assert.match(source, /Phase2c-excel-type-only-ensure/);
@@ -536,14 +537,33 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2CostMgmtEnsureTypeOnlyFrames/);
   assert.match(source, /jy2CostMgmtStripEmptyFrameDetailHimoku/);
   assert.match(source, /jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary/);
+  assert.match(source, /jy2CostMgmtPlaceDayNightFramesAfterManagerWage/);
   assert.match(source, /jy2CostMgmtFindPaintAncillaryAnchor/);
+  assert.match(source, /jy2CostMgmtFindManagerWageAnchor/);
   assert.match(source, /JY2_COST_MGMT_ENSURE_TYPE_ONLY_FRAMES/);
+  assert.match(source, /JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES/);
   assert.match(source, /JY2_COST_MGMT_TYPES_OVERRIDE/);
+  assert.match(source, /JY2_COST_MGMT_TYPES_OVERRIDE_BY_HIMOKU/);
   assert.match(source, /#R-EXCEL-UI-12/);
   assert.match(source, /#R-EXCEL-UI-13/);
   assert.match(source, /"10900":\s*Object\.freeze\(\["出向工事管理者",\s*"その他工事管理者"\]\)/);
   assert.match(source, /"出向工事管理者":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/);
   assert.match(source, /"その他工事管理者":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/);
+  assert.match(
+    source,
+    /"建設機械オペレーター":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/,
+  );
+  assert.match(
+    source,
+    /"建設機械オペレーター":\s*Object\.freeze\(\["建設機械オペレーター"\]\)/,
+  );
+  {
+    const typelessMatch = source.match(
+      /JY2_COST_MGMT_TYPELESS_HIMOKU = Object\.freeze\(\[([\s\S]*?)\]\);/,
+    );
+    assert.ok(typelessMatch, "TYPELESS list present");
+    assert.doesNotMatch(typelessMatch[1], /建設機械オペレーター/);
+  }
   assert.match(source, /moveBlockAfter/);
   assert.match(source, /isSoleDetailInBlock/);
   // 軌道工事等は TYPELESS（詳細2セル）。TYPE_ONLY リストは空。
