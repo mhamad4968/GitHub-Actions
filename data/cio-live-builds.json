@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-01-ver02-actual-fix-flat-plus-strip",
-      "fileKey": "3748474b-92ba-46e2-b9bd-412fffa67511",
-      "revision": "241",
+      "build": "2026-08-01-ver02-actual-flush-before-plus",
+      "fileKey": "1fcd5465-b74a-4fc3-afeb-e0af62b2ef79",
+      "revision": "242",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-01T01:15:35.230Z",
+      "deployedAt": "2026-08-01T01:20:11.777Z",
       "note": null
     },
     "757": {

@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-fix-flat-plus-strip
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-flush-before-plus
+  // Phase2c-flush-before-plus: 操作列＋／－の mousedown preventDefault 前に
+  // フォーカス中 input を flush（詳細左が行追加で消える対策）。
   // Phase2c-fix-flat-plus-strip: 外注試験費等の＋追加直後に name1 を剥がさない。
   // （空枠掃除は未 reveal 行のみ。reveal 済み＝手入力行は残す）
   // Phase2c-excel-typed-dual-detail: 種別あり費目の詳細はすべて2セル
@@ -1561,8 +1563,8 @@
     return input;
   }
 
-  // 一時保存/版確定: sticky ボタンの mousedown preventDefault で
-  // フォーカス中 input の blur→commit が飛ばないため、保存直前に明示 flush。
+  // sticky 保存ボタン／操作列＋－ の mousedown preventDefault で
+  // フォーカス中 input の blur→commit が飛ばないため、操作直前に明示 flush。
   function jy2FlushActiveInputBeforeSave(documentRef) {
     const active = documentRef && documentRef.activeElement;
     if (!active) return;
@@ -1580,6 +1582,14 @@
     } catch {
       // ignore
     }
+  }
+  // 操作列＋／－: flush してから preventDefault（フォーカス移動で blur が飛ぶのを抑止）
+  function jy2BindDetailPmMouseDown(documentRef, button) {
+    if (!button || typeof button.addEventListener !== "function") return;
+    button.addEventListener("mousedown", (event) => {
+      jy2FlushActiveInputBeforeSave(documentRef);
+      if (typeof event.preventDefault === "function") event.preventDefault();
+    });
   }
 
   // 単価など: 表示は千区切り、commit 値はカンマ無し。focus 中は素の数字で編集。
@@ -7531,9 +7541,7 @@
       addBtn.textContent = "＋";
       addBtn.setAttribute("aria-label", "詳細行を追加");
       addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
-      addBtn.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
+      jy2BindDetailPmMouseDown(documentRef, addBtn);
       addBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
@@ -7944,9 +7952,7 @@
       addSibling.textContent = "＋";
       addSibling.setAttribute("aria-label", "詳細行を追加");
       addSibling.title = "詳細行を追加（一時保存で App757 へ）";
-      addSibling.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
+      jy2BindDetailPmMouseDown(documentRef, addSibling);
       addSibling.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
@@ -8015,9 +8021,7 @@
       deleteBtn.title = isSoleDetailInBlock
         ? "内容をクリア（工種ブロックには明細が1行残ります）"
         : "詳細行を削除（一時保存で App757 へ）";
-      deleteBtn.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
+      jy2BindDetailPmMouseDown(documentRef, deleteBtn);
       deleteBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
@@ -8499,9 +8503,7 @@
       addBtn.textContent = "＋";
       addBtn.setAttribute("aria-label", "詳細行を追加");
       addBtn.title = "この費目の下に詳細行を追加（一時保存で App757 へ）";
-      addBtn.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
+      jy2BindDetailPmMouseDown(documentRef, addBtn);
       addBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
@@ -8623,9 +8625,7 @@
       addBtn.textContent = "＋";
       addBtn.setAttribute("aria-label", "詳細行を追加");
       addBtn.title = "この種別の下に詳細行を追加（一時保存で App757 へ）";
-      addBtn.addEventListener("mousedown", (event) => {
-        if (typeof event.preventDefault === "function") event.preventDefault();
-      });
+      jy2BindDetailPmMouseDown(documentRef, addBtn);
       addBtn.addEventListener("click", (event) => {
         try {
           if (event && typeof event.stopPropagation === "function") {
