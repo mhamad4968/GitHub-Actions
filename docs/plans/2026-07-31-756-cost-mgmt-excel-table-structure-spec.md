@@ -246,3 +246,4 @@
 | 2026-08-01 | Excel 12400｜旅費交通費→出張旅費特例／３万円未満公共交通機関特例／その他旅費交通費→詳細2セル（11600同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14。BUILD `2026-08-01-ver02-actual-excel-12400-travel` |
 | 2026-08-01 | Excel 12500｜借上げ自動車費（種別なし・詳細2セル）。11700〜12300同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12500-car` |
 | 2026-08-01 | 12400種別の（塗）接頭辞を除去し Excel短名3種のみ表示（name1偽費目畳み込み含む）。#R-EXCEL-UI-12。BUILD `2026-08-01-ver02-actual-excel-12400-type-strip` |
+| 2026-08-01 | TYPELESS費目で name2===費目名でも詳細左を空にしない。取り違えシード(name2=費目)は読み込み時にクリア。#R-EXCEL-UI-14。BUILD `2026-08-01-ver02-actual-excel-typeless-name2-show` |

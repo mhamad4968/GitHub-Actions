@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-dash-by-code
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-typeless-name2-show
+  // Phase2c-excel-typeless-name2-show: TYPELESS費目で name2===費目名でも詳細左を空にしない。取り違えシード(name2=費目)は読み込み時にクリア。#R-EXCEL-UI-14
   // Phase2c-excel-typeless-dash-by-code: Excel TYPELESS工種はコード表dashTypeを無効化。既定費目もHIMOKU_OVERRIDEを優先（12500借上げ自動車費が旅費交通費－固定になる不具合）。#R-EXCEL-UI-07/14
   // Phase2c-excel-12500-car: Excel正 12500｜借上げ自動車費（種別なし・詳細2セル）。omit解除＋ENSURE。#R-EXCEL-UI-09
   // Phase2c-excel-12400-type-strip: 12400種別の（塗）接頭辞を除去し Excel短名3種のみ表示。#R-EXCEL-UI-12
@@ -739,6 +740,71 @@
     }
     return stripped;
   }
+  // TYPELESS Excel 明細: name2 が費目名(name1)と同じ取り違えシードなら null へ（12500 等）。
+  function jy2CostMgmtClearHimokuMirroredName2(detailModel) {
+    if (
+      !detailModel ||
+      typeof detailModel.updateDetailRow !== "function" ||
+      typeof detailModel.snapshot !== "function"
+    ) {
+      return 0;
+    }
+    let cleared = 0;
+    let blocks;
+    try {
+      blocks = detailModel.snapshot().blocks || [];
+    } catch {
+      return 0;
+    }
+    for (const block of blocks) {
+      if (!block || !block.stableBlockId || !Array.isArray(block.detailRows)) {
+        continue;
+      }
+      const blockTypeless = jy2CostMgmtIsTypeLessExcelWorkType(
+        block.workTypeCode,
+        block.workTypeName,
+      );
+      const excelOverrideHimoku = jy2HimokuDefaultForBlock(block);
+      for (const row of block.detailRows) {
+        if (!row || !row.rowKey) continue;
+        const himoku = String(row.name1 == null ? "" : row.name1).trim();
+        const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
+        const resolvedHimoku = himokuShort || himoku;
+        if (
+          !blockTypeless &&
+          !jy2CostMgmtIsTypeLessHimoku(resolvedHimoku) &&
+          !jy2CostMgmtIsTypeLessHimoku(himoku)
+        ) {
+          continue;
+        }
+        const name2 = String(row.name2 == null ? "" : row.name2).trim();
+        if (!name2) continue;
+        const mirrorsHimoku =
+          (himoku && name2 === himoku) ||
+          (resolvedHimoku && name2 === resolvedHimoku);
+        const mirrorsOverride =
+          excelOverrideHimoku &&
+          name2 === String(excelOverrideHimoku).trim();
+        if (!mirrorsHimoku && !mirrorsOverride) continue;
+        try {
+          detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
+            name2: null,
+          });
+          cleared += 1;
+        } catch (error) {
+          if (typeof console !== "undefined" && console.error) {
+            console.error(
+              "jy2CostMgmtClearHimokuMirroredName2 failed:",
+              block.stableBlockId,
+              row.rowKey,
+              error,
+            );
+          }
+        }
+      }
+    }
+    return cleared;
+  }
   function jy2CostMgmtEnsureFrameList(detailModel, frames, logLabel) {
     let added = 0;
     for (const frame of frames) {
@@ -870,6 +936,8 @@
       detailModel,
       detailVisibility,
     );
+    const clearedMirroredName2 =
+      jy2CostMgmtClearHimokuMirroredName2(detailModel);
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedDayNight =
@@ -881,6 +949,7 @@
       addedDayNight +
       addedCoded +
       stripped +
+      clearedMirroredName2 +
       movedTypeOnly +
       movedDayNight +
       movedCoded
@@ -8205,13 +8274,14 @@
     const name2Raw = detailRows?.[detailIndex]?.name2;
     let name2Resolved =
       jy2ActualResolveContinuedField(detailRows, detailIndex, "name2") ?? "";
-    // 費目名が name2 に入っている取り違えは左セルに出さない
-    if (
+    // 費目名が name2 に入っている取り違えは左セルに出さない（TYPELESS除く）
+    const hideHimokuAsLeft =
       (dualDetailCells || typeOnlyLeaf) &&
       !dualUnderType &&
       dualHimokuLabel &&
-      String(name2Resolved).trim() === String(dualHimokuLabel).trim()
-    ) {
+      String(name2Resolved).trim() === String(dualHimokuLabel).trim() &&
+      !jy2CostMgmtIsTypeLessHimoku(dualHimokuLabel);
+    if (hideHimokuAsLeft) {
       name2Resolved = "";
     }
     const name3Raw = detailRows?.[detailIndex]?.name3;
@@ -8240,16 +8310,18 @@
           ]);
         })()
       : null;
+    const hideHimokuAsLeftRaw =
+      (dualDetailCells || typeOnlyLeaf) &&
+      !dualUnderType &&
+      dualHimokuLabel &&
+      String(name2Raw == null ? "" : name2Raw).trim() ===
+        String(dualHimokuLabel).trim() &&
+      !jy2CostMgmtIsTypeLessHimoku(dualHimokuLabel);
     const name2InputValue = dualUnderType
       ? dualSplit.leftDetail || ""
       : jy2IsDitto(name2Raw)
         ? name2Resolved
-        : jy2HasText(name2Raw) &&
-            !(
-              (dualDetailCells || typeOnlyLeaf) &&
-              dualHimokuLabel &&
-              String(name2Raw).trim() === String(dualHimokuLabel).trim()
-            )
+        : jy2HasText(name2Raw) && !hideHimokuAsLeftRaw
           ? String(name2Raw).trim()
           : "";
     const name3InputValue = jy2IsDitto(name3Raw)
