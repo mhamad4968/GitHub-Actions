@@ -1,7 +1,8 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-nameless-after-10700
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-excel-11100-senpei
+  // Phase2c-excel-11100-senpei: Excel正 11100｜線閉責任者賃金。種別=昼間／夜間 → 詳細2セル（11000同型）。omit解除＋ENSURE。#R-EXCEL-UI-09/12/14
   // Phase2c-excel-nameless-after-10700: 軌道工事〜追加工事⑤を10700直後（工事がらみ）。10800/10900はその後ろ。#R-EXCEL-UI-09/11
   // Phase2c-excel-10900-after-10800: 10900工事管理者賃金（出向工事管理者）を10800鎌ヶ谷の直後へ。#R-EXCEL-UI-09
   // Phase2c-excel-10800-after-10700: 10800鎌ヶ谷資材使用料を名称枠群の直後へ（10700群の後ろ）。#R-EXCEL-UI-09
@@ -218,7 +219,7 @@
     }),
   });
   const JY2_COST_MGMT_WORK_TYPE_OMIT = Object.freeze([
-    "11100", "11200", "11300", "11400",
+    "11200", "11300", "11400",
     "13500",
   ]);
   // Excel原価管理明細で費目として出す（コード表 himoku に無い追加）。
@@ -253,6 +254,7 @@
     "11600": Object.freeze(["レンタル"]),
     "10900": Object.freeze(["出向工事管理者", "その他工事管理者"]),
     "11000": Object.freeze(["工事安全専任管理者賃金"]),
+    "11100": Object.freeze(["線閉責任者賃金"]),
     "14100": Object.freeze(["追加工事①"]),
     "14200": Object.freeze(["追加工事②"]),
     "14300": Object.freeze(["追加工事③"]),
@@ -267,6 +269,9 @@
     }),
     "11000": Object.freeze({
       "工事安全専任管理者賃金": Object.freeze(["昼間", "夜間"]),
+    }),
+    "11100": Object.freeze({
+      "線閉責任者賃金": Object.freeze(["昼間", "夜間"]),
     }),
     "11600": Object.freeze({
       "レンタル": Object.freeze(["建設機械", "仮設資材･足場資材"]),
@@ -291,6 +296,7 @@
     "建設機械オペレーター": Object.freeze(["昼間", "夜間"]),
     "その他労務": Object.freeze(["昼間", "夜間"]),
     "工事安全専任管理者賃金": Object.freeze(["昼間", "夜間"]),
+    "線閉責任者賃金": Object.freeze(["昼間", "夜間"]),
     "レンタル": Object.freeze(["建設機械", "仮設資材･足場資材"]),
     "旅費交通費": Object.freeze([
       "出張旅費特例",
@@ -352,6 +358,8 @@
     "会議費": Object.freeze(["会議費"]),
     "工事安全専任管理者賃金": Object.freeze(["工事安全専任管理者賃金"]),
     "工事安全専任管理者": Object.freeze(["工事安全専任管理者賃金"]),
+    "線閉責任者賃金": Object.freeze(["線閉責任者賃金"]),
+    "線閉責任者": Object.freeze(["線閉責任者賃金"]),
   });
   // Excel: 費目の下に種別行なし・詳細だけ（その他材料費・塗装工事・足場工事 等）。
   // #R-EXCEL-UI-07/08: SUM・行色・太字・揃えは通常費目と同一。差分は詳細2セルのみ。
@@ -428,6 +436,17 @@
         "工事安全専任管理者賃金",
         "工事安全専任管理者",
         "（塗）工事安全専任管理者",
+      ]),
+    }),
+    Object.freeze({
+      shortName: "線閉責任者賃金",
+      workTypeCode: "11100",
+      workTypeName: "（塗）線閉責任者",
+      nameAliases: Object.freeze([
+        "線閉責任者賃金",
+        "線閉責任者",
+        "（塗）線閉責任者",
+        "外注線閉責任者",
       ]),
     }),
     Object.freeze({
@@ -1434,7 +1453,6 @@
   }
   const JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object.freeze([
     "保険料", "労災保険料", "法定福利費", "雑費",
-    "線閉責任者", "外注線閉責任者",
     "列車見張員", "外注列車見張員",
     "交通整理員", "外注交通整理員", "交通整理員等",
     "重機誘導員", "外注重機誘導員",

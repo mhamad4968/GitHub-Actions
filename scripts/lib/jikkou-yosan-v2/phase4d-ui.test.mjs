@@ -515,7 +515,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-nameless-after-10700/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-11100-senpei/);
+  assert.match(source, /Phase2c-excel-11100-senpei/);
   assert.match(source, /Phase2c-excel-nameless-after-10700/);
   assert.match(source, /jy2CostMgmtFindLastTypeOnlyAnchor/);
   assert.match(source, /Phase2c-excel-10900-after-10800/);
@@ -541,6 +542,31 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     source,
     /"11000":\s*Object\.freeze\(\{\s*"工事安全専任管理者賃金":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/,
   );
+  assert.match(
+    source,
+    /"11100":\s*Object\.freeze\(\["線閉責任者賃金"\]\)/,
+  );
+  assert.match(
+    source,
+    /"11100":\s*Object\.freeze\(\{\s*"線閉責任者賃金":\s*Object\.freeze\(\["昼間",\s*"夜間"\]\)/,
+  );
+  assert.match(
+    source,
+    /shortName:\s*"線閉責任者賃金",\s*workTypeCode:\s*"11100"/,
+  );
+  {
+    const omitCodes = source.match(
+      /JY2_COST_MGMT_WORK_TYPE_OMIT = Object\.freeze\(\[([\s\S]*?)\]\);/,
+    );
+    assert.ok(omitCodes, "WORK_TYPE_OMIT present");
+    assert.equal(omitCodes[1].includes('"11100"'), false);
+    const omitNames = source.match(
+      /JY2_COST_MGMT_WORK_TYPE_NAME_OMIT = Object\.freeze\(\[([\s\S]*?)\]\);/,
+    );
+    assert.ok(omitNames, "WORK_TYPE_NAME_OMIT present");
+    assert.equal(omitNames[1].includes('"線閉責任者"'), false);
+    assert.equal(omitNames[1].includes('"外注線閉責任者"'), false);
+  }
   assert.match(source, /jy2CostMgmtNormalizeHimokuLabel/);
   assert.match(source, /jy2CostMgmtRepairNullCostCategories/);
   assert.match(source, /jy2-actual-col-unit-price/);
