@@ -1,7 +1,9 @@
   const APP1_ID = /* @JY_V2_APP1 */ 756;
   const APP2_ID = /* @JY_V2_APP2 */ 757;
   const APP3_ID = /* @JY_V2_APP3 */ 758;
-  // @JY_V2_BUILD 2026-08-01-ver02-actual-typed-dual-detail
+  // @JY_V2_BUILD 2026-08-01-ver02-actual-fix-flat-plus-strip
+  // Phase2c-fix-flat-plus-strip: 外注試験費等の＋追加直後に name1 を剥がさない。
+  // （空枠掃除は未 reveal 行のみ。reveal 済み＝手入力行は残す）
   // Phase2c-excel-typed-dual-detail: 種別あり費目の詳細はすべて2セル
   // （種別列=詳細左・詳細列=詳細右。name2=種別／詳細左。#R-EXCEL-UI-14）。
   // 10900・建設機械オペレーター・材料費など共通。平坦費目（TYPELESS）は従来どおり。
@@ -457,7 +459,8 @@
     return labels;
   }
   // 名称枠の「空のままの詳細」から費目名(name1)を外し、費目直下に空行が出ないようにする。
-  function jy2CostMgmtStripEmptyFrameDetailHimoku(detailModel) {
+  // ＋で追加して reveal した行は剥がさない（外注試験費等で詳細が消える不具合の防止）。
+  function jy2CostMgmtStripEmptyFrameDetailHimoku(detailModel, detailVisibility) {
     if (
       !detailModel ||
       typeof detailModel.updateDetailRow !== "function" ||
@@ -465,6 +468,10 @@
     ) {
       return 0;
     }
+    const shouldKeepRow =
+      detailVisibility && typeof detailVisibility.shouldShow === "function"
+        ? (rowKey) => detailVisibility.shouldShow(rowKey) === true
+        : () => false;
     let stripped = 0;
     let blocks;
     try {
@@ -482,6 +489,8 @@
       const allowedName1 = jy2CostMgmtEmptyDetailHimokuLabels(frame);
       for (const row of block.detailRows) {
         if (!row || !row.rowKey) continue;
+        // 手入力行（＋で reveal 済み）は name1 だけでも残す
+        if (shouldKeepRow(row.rowKey)) continue;
         if (jy2CostMgmtDetailHasLeafContent(row)) continue;
         const name1 = String(row.name1 || "").trim();
         if (!name1) continue;
@@ -537,7 +546,7 @@
   }
   // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700 直後／10900 直後へ並べる。
   // 詳細行は載せず費目枠だけ（＋で追加するまで）。戻り値＝変化件数。
-  function jy2CostMgmtEnsureTypeOnlyFrames(detailModel) {
+  function jy2CostMgmtEnsureTypeOnlyFrames(detailModel, detailVisibility) {
     if (
       !detailModel ||
       !detailModel.allowedOperations ||
@@ -557,7 +566,10 @@
       JY2_COST_MGMT_ENSURE_DAY_NIGHT_FRAMES,
       "jy2CostMgmtEnsureDayNightFrames",
     );
-    const stripped = jy2CostMgmtStripEmptyFrameDetailHimoku(detailModel);
+    const stripped = jy2CostMgmtStripEmptyFrameDetailHimoku(
+      detailModel,
+      detailVisibility,
+    );
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
     const movedDayNight =
@@ -7528,13 +7540,20 @@
             event.stopPropagation();
           }
           const patch = { name1: primaryHimokuLabel };
-          const newKey = jy2ActualInsertDetailNear(
+          const reused = jy2ActualReuseEmptyDetailIfSole(
             parentHimokuOpts.detailModel,
             row.stableBlockId,
-            parentHimokuOpts.lastChildRowKeyInGroup || null,
             patch,
-            parentHimokuOpts.expandState,
           );
+          const newKey =
+            reused ||
+            jy2ActualInsertDetailNear(
+              parentHimokuOpts.detailModel,
+              row.stableBlockId,
+              parentHimokuOpts.lastChildRowKeyInGroup || null,
+              patch,
+              parentHimokuOpts.expandState,
+            );
           if (typeof parentHimokuOpts.revealDetailKey === "function") {
             parentHimokuOpts.revealDetailKey(newKey);
           }
@@ -8336,6 +8355,44 @@
     return tr;
   }
 
+  // 平坦費目の＋: 空の必須1行だけならそれを埋める（新規追加しない）。
+  // 戻り値＝利用した rowKey。無ければ null（通常の insert へ）。
+  function jy2ActualReuseEmptyDetailIfSole(detailModel, blockId, patch) {
+    if (
+      !detailModel ||
+      !blockId ||
+      typeof detailModel.snapshot !== "function" ||
+      typeof detailModel.updateDetailRow !== "function"
+    ) {
+      return null;
+    }
+    let rows;
+    try {
+      const block = (detailModel.snapshot().blocks || []).find(
+        (candidate) => candidate && candidate.stableBlockId === blockId,
+      );
+      rows = block && Array.isArray(block.detailRows) ? block.detailRows : [];
+    } catch {
+      return null;
+    }
+    if (rows.length !== 1 || !rows[0] || !rows[0].rowKey) return null;
+    const sole = rows[0];
+    if (jy2CostMgmtDetailHasLeafContent(sole)) return null;
+    const name1 = String(sole.name1 || "").trim();
+    if (name1) return null;
+    const clean = {};
+    if (patch && typeof patch === "object") {
+      if (Object.prototype.hasOwnProperty.call(patch, "name1")) {
+        clean.name1 = patch.name1;
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, "name2")) {
+        clean.name2 = patch.name2;
+      }
+    }
+    if (Object.keys(clean).length === 0) return null;
+    detailModel.updateDetailRow(blockId, sole.rowKey, clean);
+    return sole.rowKey;
+  }
   // Phase2c-b/c: App757 detailModel に明細行を追加し、anchor の直後へ寄せる。
   // patch で name1/name2 を prefill。actualsModel は触らない。
   function jy2ActualInsertDetailNear(detailModel, blockId, lastChildRowKey, patch, expandState) {
@@ -8452,13 +8509,20 @@
           }
           const patch = {};
           if (label && label !== "（未分類）") patch.name1 = label;
-          const newKey = jy2ActualInsertDetailNear(
+          const reused = jy2ActualReuseEmptyDetailIfSole(
             opts.detailModel,
             parent.stableBlockId,
-            opts.lastChildRowKeyInGroup || null,
             patch,
-            opts.expandState,
           );
+          const newKey =
+            reused ||
+            jy2ActualInsertDetailNear(
+              opts.detailModel,
+              parent.stableBlockId,
+              opts.lastChildRowKeyInGroup || null,
+              patch,
+              opts.expandState,
+            );
           if (typeof opts.revealDetailKey === "function") {
             opts.revealDetailKey(newKey);
           }
@@ -9085,7 +9149,7 @@
     );
     // Excel 種別のみ枠が内訳に無いと原価管理に行が出ない → 空ブロックを足す
     const ensuredTypeOnlyFrames = canEditBudget
-      ? jy2CostMgmtEnsureTypeOnlyFrames(detailModel)
+      ? jy2CostMgmtEnsureTypeOnlyFrames(detailModel, costDetailVisibility)
       : 0;
     if (ensuredTypeOnlyFrames > 0 && typeof onDetailStructureChanged === "function") {
       try {
