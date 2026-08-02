@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-unlink-catalog-fix
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold-persist
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -10141,7 +10142,51 @@
   function jy2ActualHimokuFoldKey(blockId, himokuLabel) {
     return `${String(blockId || "")}\u0001${String(himokuLabel || "")}`;
   }
-  function jy2ActualHimokuFoldState(pane) {
+  // 一時保存はフルreloadするため pane Map だけでは▶が閉じる。開いているキーだけ版スコープで残す。
+  const JY2_ACTUAL_HIMOKU_FOLD_STORAGE = `jy2:${APP1_ID}:actualHimokuFoldOpen:v1`;
+  function jy2ActualLoadHimokuFoldOpen(view, budgetVersionId) {
+    const map = new Map();
+    if (!view || !view.sessionStorage) return map;
+    try {
+      const raw = view.sessionStorage.getItem(JY2_ACTUAL_HIMOKU_FOLD_STORAGE);
+      if (!raw) return map;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.openKeys)) {
+        return map;
+      }
+      if (
+        budgetVersionId &&
+        String(parsed.budget_version_id || "") !== String(budgetVersionId)
+      ) {
+        return map;
+      }
+      for (const key of parsed.openKeys) {
+        if (key) map.set(String(key), true);
+      }
+    } catch {
+      // ignore
+    }
+    return map;
+  }
+  function jy2ActualPersistHimokuFoldOpen(view, map, budgetVersionId) {
+    if (!view || !view.sessionStorage || !map) return;
+    try {
+      const openKeys = [];
+      for (const [key, open] of map.entries()) {
+        if (key && open === true) openKeys.push(String(key));
+      }
+      view.sessionStorage.setItem(
+        JY2_ACTUAL_HIMOKU_FOLD_STORAGE,
+        JSON.stringify({
+          budget_version_id: budgetVersionId ? String(budgetVersionId) : "",
+          openKeys,
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  }
+  function jy2ActualHimokuFoldState(pane, view, budgetVersionId) {
     if (!pane) {
       return {
         isOpen: (_key, defaultOpen) => defaultOpen === true,
@@ -10152,9 +10197,11 @@
       };
     }
     if (!pane.__jy2HimokuFold) {
-      pane.__jy2HimokuFold = new Map();
+      pane.__jy2HimokuFold = jy2ActualLoadHimokuFoldOpen(view, budgetVersionId);
     }
     const map = pane.__jy2HimokuFold;
+    const persist = () =>
+      jy2ActualPersistHimokuFoldOpen(view, map, budgetVersionId);
     return {
       isOpen: (key, defaultOpen) => {
         if (!key || !map.has(key)) return defaultOpen === true;
@@ -10166,19 +10213,27 @@
           ? !(defaultOpen === true)
           : map.get(key) !== true;
         map.set(key, next);
+        persist();
         return next;
       },
       open: (key) => {
-        if (key) map.set(key, true);
+        if (key) {
+          map.set(key, true);
+          persist();
+        }
       },
       close: (key) => {
-        if (key) map.set(key, false);
+        if (key) {
+          map.set(key, false);
+          persist();
+        }
       },
       setAll: (keys, open) => {
         const value = open === true;
         for (const key of keys || []) {
           if (key) map.set(key, value);
         }
+        persist();
       },
     };
   }
@@ -10674,11 +10729,18 @@
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
     const expandState = jy2ActualExpandState(pane);
-    const himokuFold = jy2ActualHimokuFoldState(pane);
     const budgetVersionId =
       (paneOpts && paneOpts.budgetVersionId) ||
       (saveController && saveController.keys && saveController.keys.budgetVersionId) ||
       "";
+    const foldView =
+      (documentRef && documentRef.defaultView) ||
+      (typeof globalThis !== "undefined" ? globalThis : null);
+    const himokuFold = jy2ActualHimokuFoldState(
+      pane,
+      foldView,
+      budgetVersionId,
+    );
     const costDetailVisibility = jy2ActualCostDetailVisibility(pane, budgetVersionId);
     const hasPendingDetailEdits =
       paneOpts && typeof paneOpts.hasPendingDetailEdits === "function"

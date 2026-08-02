@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-02-ver02-actual-unlink-catalog-fix",
-      "fileKey": "afc12cc1-47ea-4a96-b226-9bdd5f3d0214",
-      "revision": "307",
+      "build": "2026-08-02-ver02-actual-himoku-fold-persist",
+      "fileKey": "680fa34e-632e-4783-bae9-846c689accca",
+      "revision": "308",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-02T00:29:32.533Z",
+      "deployedAt": "2026-08-02T00:38:03.288Z",
       "note": null
     },
     "757": {
