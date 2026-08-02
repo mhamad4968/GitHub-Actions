@@ -2,7 +2,8 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
-**2026-08-02（内訳自動reveal停止・#R-EXCEL-LINK-00）**: 原価管理への内訳 leaf 自動表示を止め、**＋手追加のみ**。BUILD `2026-08-02-ver02-actual-unlink-reveal`。  
+**2026-08-02（内訳カタログのみ非表示・#R-EXCEL-LINK-00）**: 材料費品名カタログ（鋼材/H形鋼等）のみ原価管理非表示。手入力詳細は再表示。BUILD `2026-08-02-ver02-actual-unlink-catalog`。  
+**2026-08-02（内訳自動reveal停止・#R-EXCEL-LINK-00）**: （過剰→catalog除外へ修正）BUILD `2026-08-02-ver02-actual-unlink-reveal`。  
 **2026-08-02（予実視覚整理・#R-EXCEL-UI-17）**: 案内帯・合計バー・すべて展開バー・費目▶を緑/琥珀トーンで揃える。BUILD `2026-08-02-ver02-actual-visual-polish`。  
 **2026-08-02（予実の見方・Excel言及削除）**: 利用者向け文言から「Excel原価管理明細」を削除。BUILD `2026-08-02-ver02-actual-howto-no-excel`。  
 **2026-08-02（予実の見方更新・#R-EXCEL-UI-16）**: 「予実の見方」を費目▶／▼・すべて展開／閉じるに合わせて更新。BUILD `2026-08-02-ver02-actual-howto-fold`。  
