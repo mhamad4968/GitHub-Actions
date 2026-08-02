@@ -277,6 +277,7 @@
 | 2026-08-02 | 詳細追加案内バナーを短文化「操作列＋で詳細を追加して手入力できます」。#R-EXCEL-UI-05。BUILD `2026-08-02-ver02-actual-detail-notice-short` |
 | 2026-08-02 | 「予実の見方」を費目開閉・すべて展開に合わせて更新（常時表示表記を削除）。#R-EXCEL-UI-16。BUILD `2026-08-02-ver02-actual-howto-fold` |
 | 2026-08-02 | 「予実の見方」からExcel原価管理明細の言及を削除（利用者向け）。#R-EXCEL-UI-16。BUILD `2026-08-02-ver02-actual-howto-no-excel` |
+| 2026-08-02 | 「予実の見方」から「費目は既定クローズ」を削除。BUILD `2026-08-02-ver02-actual-howto-trim` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |
