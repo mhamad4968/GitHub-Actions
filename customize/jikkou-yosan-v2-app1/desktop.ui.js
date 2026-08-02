@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止。原価管理は＋手追加のみ（storageキー更新で旧reveal破棄）。#R-EXCEL-LINK-00
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-unlink-reveal
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-visual-polish
   // Phase2c-actual-howto-trim: 予実の見方から「既定クローズ」文言を削除。#R-EXCEL-UI-16
   // Phase2c-actual-howto-no-excel: 予実の見方からExcel言及を削除（利用者向け）。#R-EXCEL-UI-16
   // Phase2c-actual-howto-fold: 予実の見方を費目開閉・すべて展開に合わせて更新。#R-EXCEL-UI-16
@@ -10261,7 +10262,8 @@
   // Phase2c-detail-manual-only: 既存内訳行は隠し、＋で reveal した行だけ表示。
   // App757 の既存明細は削除しない。来週連動後は MANUAL_ONLY=false で全表示。
   // reveal キーは sessionStorage に残し、一時保存後の reload でも手入力行を維持。
-  const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys`;
+  // v2-manual: 旧キーは leaf 全件 reveal 汚染のため使わない（#R-EXCEL-LINK-00 unlink）。
+  const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys:v2-manual`;
   const JY2_LAST_SOFT_SAVED_KEY = `jy2:${APP1_ID}:lastSoftSavedAt`;
   function jy2ActualLoadRevealKeys(view, budgetVersionId) {
     const set = new Set();
@@ -10303,29 +10305,14 @@
       // ignore
     }
   }
+  // 旧: leaf 内容がある内訳行をすべて reveal → 原価管理にカタログが出る。
+  // 現: 連携無効。手追加（＋）で付けた reveal キーのみ維持。呼び出しは no-op 相当。
   function jy2ActualRevealPersistedDetailRows(detailModel, costDetailVisibility) {
-    if (!detailModel || !costDetailVisibility || typeof costDetailVisibility.reveal !== "function") {
-      return 0;
-    }
-    if (typeof detailModel.snapshot !== "function") return 0;
-    let n = 0;
-    let blocks;
-    try {
-      blocks = detailModel.snapshot().blocks || [];
-    } catch {
-      return 0;
-    }
-    for (const block of blocks) {
-      if (!block || !Array.isArray(block.detailRows)) continue;
-      for (const row of block.detailRows) {
-        if (!row || !row.rowKey) continue;
-        if (!jy2CostMgmtDetailHasLeafContent(row)) continue;
-        costDetailVisibility.reveal(row.rowKey);
-        n += 1;
-      }
-    }
-    return n;
+    void detailModel;
+    void costDetailVisibility;
+    return 0;
   }
+  // 消えた rowKey だけ除去。leaf 全件の再追加はしない（内訳連動の無効化）。
   function jy2ActualPruneRevealKeys(detailModel, costDetailVisibility, view, budgetVersionId) {
     if (!detailModel || !costDetailVisibility) return 0;
     const set = costDetailVisibility._revealKeys;
@@ -10344,21 +10331,15 @@
         if (row && row.rowKey) validKeys.add(String(row.rowKey));
       }
     }
+    let removed = 0;
     for (const key of [...set]) {
-      if (!validKeys.has(key)) set.delete(key);
-    }
-    let n = 0;
-    for (const block of blocks) {
-      if (!block || !Array.isArray(block.detailRows)) continue;
-      for (const row of block.detailRows) {
-        if (!row || !row.rowKey) continue;
-        if (!jy2CostMgmtDetailHasLeafContent(row)) continue;
-        set.add(String(row.rowKey));
-        n += 1;
+      if (!validKeys.has(key)) {
+        set.delete(key);
+        removed += 1;
       }
     }
     jy2ActualPersistRevealKeys(view, set, budgetVersionId);
-    return n;
+    return removed;
   }
   function jy2ActualCostDetailVisibility(pane, budgetVersionId) {
     const view =
@@ -11069,7 +11050,9 @@
             primaryEntries,
             detailRows,
             costDetailVisibility.shouldShow,
-            jy2CostMgmtIsFlatHimoku(primaryHimokuLabel),
+            // MANUAL_ONLY: reveal 済みだけ数える（内訳 leaf は数えない）
+            !JY2_ACTUAL_DETAIL_MANUAL_ONLY &&
+              jy2CostMgmtIsFlatHimoku(primaryHimokuLabel),
           );
           const primaryFoldKey = jy2ActualHimokuFoldKey(
             row.stableBlockId,
@@ -11223,7 +11206,8 @@
           himokuEntriesForCount,
           detailRows,
           costDetailVisibility.shouldShow,
-          Boolean(flatHimokuEntries),
+          // MANUAL_ONLY: reveal 済みだけ（内訳カタログ leaf を折りたたみ対象にしない）
+          !JY2_ACTUAL_DETAIL_MANUAL_ONLY && Boolean(flatHimokuEntries),
         );
         const foldKey = jy2ActualHimokuFoldKey(
           row.stableBlockId,
@@ -11280,16 +11264,17 @@
         if (flatHimokuEntries) {
           for (const { child, detailIndex } of flatHimokuEntries) {
             if (!child || !child.rowKey) continue;
-            const detailRow =
-              detailIndex >= 0 ? detailRows[detailIndex] : null;
-            const hasLeaf = jy2CostMgmtDetailHasLeafContent(
-              detailRow || child,
-            );
-            const revealed = costDetailVisibility.shouldShow(child.rowKey);
-            // 空詳細は出さない（＋で reveal 済みの手入力行のみ例外）
-            if (!hasLeaf && !revealed) continue;
-            if (hasLeaf && typeof costDetailVisibility.reveal === "function") {
-              costDetailVisibility.reveal(child.rowKey);
+            // MANUAL_ONLY: 内訳 leaf は出さない。＋で reveal した行だけ表示。
+            if (JY2_ACTUAL_DETAIL_MANUAL_ONLY) {
+              if (!costDetailVisibility.shouldShow(child.rowKey)) continue;
+            } else {
+              const detailRow =
+                detailIndex >= 0 ? detailRows[detailIndex] : null;
+              const hasLeaf = jy2CostMgmtDetailHasLeafContent(
+                detailRow || child,
+              );
+              const revealed = costDetailVisibility.shouldShow(child.rowKey);
+              if (!hasLeaf && !revealed) continue;
             }
             lastRowInHimoku = body.appendChild(
               jy2ActualChildRow(
