@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-fill-breath-v20';
+  const BUILD = '2026-08-02-683-print-orient-fill-v21';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2218,18 +2218,20 @@
       '}' +
       '}' +
       '@media print{' +
-      /* 210×297 = A4縦（ダイアログで「横」だと余白・縮小が起きる） */
-      '@page{size:210mm 297mm;margin:5mm;}' +
-      'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
+      /* 既定は A4縦。ダイアログで横にすると MediaBox が 842×595 になり下余白の主因になる */
+      '@page{size:A4 portrait;margin:5mm;}' +
+      'html,body{height:100%!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
       'display:block!important;position:static!important;left:auto!important;top:auto!important;' +
-      'width:100%!important;max-width:100%!important;visibility:visible!important;pointer-events:auto!important;' +
+      'width:100%!important;max-width:100%!important;height:100%!important;' +
+      'visibility:visible!important;pointer-events:auto!important;' +
       'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
+      /* 用紙の向きに合わせてページ箱を埋める（287mm 固定だと横印刷で縮小→下空き） */
       '.us683-print-page1,.us683-print-page2{' +
-      'box-sizing:border-box!important;height:287mm!important;max-height:287mm!important;' +
+      'box-sizing:border-box!important;height:100%!important;max-height:100%!important;' +
       'width:100%!important;overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
       '}' +
       '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:11pt;}' +
@@ -2358,10 +2360,25 @@
     }
   }
 
+  function user683IsPrintMedia() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('print').matches);
+    } catch (eMql) {
+      return false;
+    }
+  }
+
   function user683PrintSheetMaxH(pageEl) {
-    pageEl.style.height = '287mm';
-    pageEl.style.maxHeight = '287mm';
     pageEl.style.overflow = 'hidden';
+    if (user683IsPrintMedia()) {
+      /* 印刷中は用紙ボックスに追従（横でも縦でも clientHeight を使う） */
+      pageEl.style.height = '100%';
+      pageEl.style.maxHeight = '100%';
+    } else {
+      /* 画面計測（印刷前）は A4縦の内容高さを仮定 */
+      pageEl.style.height = '287mm';
+      pageEl.style.maxHeight = '287mm';
+    }
     var maxH = pageEl.clientHeight;
     if (!maxH || maxH < 80) {
       maxH = Math.round((287 * 96) / 25.4);
@@ -2444,14 +2461,20 @@
       used += ch.offsetHeight || 0;
       headerCount += 1;
     }
-    /* ヘッダ間 gap + 日次/下段の間 gap + 下余白 */
+    /* ヘッダ間 gap + 日次/下段の間 gap + 下余白（用紙高を超える floor 禁止＝横印刷で縮小→下空きの原因） */
     var gapBudget = sectionGap * Math.max(1, headerCount) + sectionGap + bottomPad;
     var remain = maxH - used - gapBudget;
-    if (remain < 320) remain = 320;
+    if (remain < 90) remain = 90;
     var dayArea = Math.floor(remain * 0.58);
     var rowArea = remain - dayArea;
-    if (dayArea < 160) dayArea = 160;
-    if (rowArea < 130) rowArea = 130;
+    var minDay = remain >= 220 ? 120 : Math.floor(remain * 0.55);
+    var minRow = remain - minDay;
+    if (dayArea < minDay) dayArea = minDay;
+    if (rowArea < minRow) rowArea = Math.max(60, remain - dayArea);
+    if (dayArea + rowArea > remain) {
+      dayArea = Math.floor(remain * 0.58);
+      rowArea = remain - dayArea;
+    }
 
     if (dayFull) {
       dayFull.style.flex = 'none';
@@ -2545,6 +2568,15 @@
   function openUser683PrintReport() {
     if (!document.getElementById('user683-hero')) {
       window.alert('ダッシュの読み込み完了後に「印刷報告用」を押してください。');
+      return;
+    }
+    var orientOk = window.confirm(
+      '【重要】印刷ダイアログの「向き」は必ず「縦」にしてください。\n\n' +
+        '「横」のままだと下に大きな余白が出ます（PDFが 842×595 の横になる症状）。\n' +
+        '詳細設定で「用紙サイズに合わせる／縮小」が付いている場合はオフ推奨。\n\n' +
+        'OK で印刷画面を開きます。',
+    );
+    if (!orientOk) {
       return;
     }
     ensureUser683PrintReportStyles();
@@ -2694,8 +2726,23 @@
     p2inner.appendChild(wrap2);
     portal.appendChild(p2);
 
+    function relayoutForPrintBox() {
+      var port = document.getElementById('user683-print-report-portal');
+      if (!port) return;
+      user683LayoutPrintPage1(port.querySelector('.us683-print-page1'));
+      user683LayoutPrintPage2(port.querySelector('.us683-print-page2'));
+    }
+
     if (!USER683_PRINT_AFTERPRINT_BOUND) {
       USER683_PRINT_AFTERPRINT_BOUND = true;
+      window.addEventListener(
+        'beforeprint',
+        function () {
+          /* 印刷メディア適用後の実ページ高で再配分（横/縦どちらでも下空きを減らす） */
+          relayoutForPrintBox();
+        },
+        false,
+      );
       window.addEventListener(
         'afterprint',
         function () {
@@ -2706,15 +2753,28 @@
         },
         false,
       );
+      try {
+        var mqlPrint = window.matchMedia('print');
+        var onMql = function (ev) {
+          if (ev && ev.matches) {
+            relayoutForPrintBox();
+          }
+        };
+        if (mqlPrint.addEventListener) {
+          mqlPrint.addEventListener('change', onMql);
+        } else if (mqlPrint.addListener) {
+          mqlPrint.addListener(onMql);
+        }
+      } catch (eMqlBind) {
+        console.warn(BUILD, eMqlBind);
+      }
     }
 
     window.requestAnimationFrame(function () {
       window.requestAnimationFrame(function () {
-        user683LayoutPrintPage1(p1);
-        user683LayoutPrintPage2(p2);
+        relayoutForPrintBox();
         window.requestAnimationFrame(function () {
-          /* flex 高さ確定後にもう一度棒を合わせる */
-          user683LayoutPrintPage1(p1);
+          relayoutForPrintBox();
           try {
             window.print();
           } catch (ePrint) {
