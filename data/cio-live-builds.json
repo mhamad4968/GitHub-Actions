@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-2page-readable-mom-v1",
-      "fileKey": "7f471af2-2730-411d-9a53-d07c4a40166f",
-      "revision": "88",
+      "build": "2026-08-02-683-print-2page-portrait-fit-v2",
+      "fileKey": "4d8471a8-a0df-4329-b70a-bc230ec34187",
+      "revision": "89",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T08:39:38.174Z",
+      "deployedAt": "2026-08-02T09:00:48.865Z",
       "note": null
     },
     "686": {
