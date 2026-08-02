@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-06-25-683-sixmo-chart-pagination-fix-v1';
+  const BUILD = '2026-08-02-683-print-2page-readable-mom-v1';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1857,6 +1857,9 @@
     wrap.id = 'user683-hero';
     wrap.style.cssText =
       'padding:22px 24px 28px;background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);color:#fff;border-radius:8px;margin:10px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18);text-align:center;';
+    wrap.setAttribute('data-us683-cur-total', String(curTotal));
+    wrap.setAttribute('data-us683-prev-total', String(prevHasRecords ? prevTotal : ''));
+    wrap.setAttribute('data-us683-prev-has', prevHasRecords ? '1' : '0');
 
     const line1 = document.createElement('div');
     line1.style.fontSize = '28px';
@@ -1875,11 +1878,28 @@
     } else {
       const delta = curTotal - prevTotal;
       if (delta > 0) {
-        mom.innerHTML = '前月比: <span style="color:#fecaca;font-weight:800;">+' + delta + ' 増</span>';
+        mom.innerHTML =
+          '前月比: 先月より <span style="color:#fecaca;font-weight:800;">+' +
+          delta +
+          ' 件増加</span>（先月 ' +
+          prevTotal +
+          ' 件 → 当月 ' +
+          curTotal +
+          ' 件）';
       } else if (delta < 0) {
-        mom.innerHTML = '前月比: <span style="color:#93c5fd;font-weight:800;">−' + Math.abs(delta) + ' 減</span>';
+        mom.innerHTML =
+          '前月比: 先月より <span style="color:#93c5fd;font-weight:800;">−' +
+          Math.abs(delta) +
+          ' 件減少</span>（先月 ' +
+          prevTotal +
+          ' 件 → 当月 ' +
+          curTotal +
+          ' 件）';
       } else {
-        mom.innerHTML = '前月比: <span style="opacity:.92;font-weight:800;">±0（同数）</span>';
+        mom.innerHTML =
+          '前月比: <span style="opacity:.92;font-weight:800;">先月と同数</span>（先月・当月とも ' +
+          curTotal +
+          ' 件）';
       }
     }
     wrap.appendChild(mom);
@@ -2188,39 +2208,43 @@
       '#user683-print-report-portal{display:none;}' +
       '}' +
       '@media print{' +
-      '@page{size:A4;margin:5mm;}' +
-      'body *{visibility:hidden!important;}' +
-      '#user683-print-report-portal,#user683-print-report-portal *{visibility:visible!important;}' +
+      '@page{size:A4;margin:4mm;}' +
+      'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
+      'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
-      'display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;' +
-      'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
+      'display:block!important;position:static!important;left:auto!important;top:auto!important;width:100%!important;' +
+      'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:12pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      '.us683-print-page1{page-break-after:always;font-size:11pt;}' +
-      '.us683-print-page2{page-break-before:auto;}' +
+      /* page2 に break-before:always を重ねると間に白紙が挟まることがある → page1 の after のみ */
+      '.us683-print-page1{page-break-after:always;break-after:page;font-size:12pt;}' +
+      '.us683-print-page2{page-break-before:auto;break-before:auto;page-break-after:avoid;break-after:avoid;}' +
       '.us683-print-block{margin-bottom:3px;}' +
       '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
-      '.us683-print-page1 .us683-print-h2{font-size:12pt;font-weight:700;margin:4px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.45;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:6px 8px;margin:0 0 5px;font-size:14pt;font-weight:800;line-height:1.35;background:#f3f4f6;}' +
+      '.us683-print-mom-label{font-size:11pt;font-weight:700;margin-bottom:2px;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:13pt;font-weight:700;margin:4px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:5px;min-height:1.2em;background:#fafafa;font-size:16pt;line-height:1.4;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div:nth-child(1){font-size:15pt!important;line-height:1.2!important;font-weight:800!important;}' +
-      '.us683-print-hero-inner>div:nth-child(2){font-size:12pt!important;margin-top:2px!important;font-weight:700!important;}' +
+      '.us683-print-hero-inner>div{padding:4px 6px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(1){font-size:16pt!important;line-height:1.2!important;font-weight:800!important;margin:0!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(2){font-size:13pt!important;margin-top:2px!important;line-height:1.3!important;font-weight:700!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
       '.us683-print-page1 .us683-print-chart-slot{transform:none!important;width:100%!important;margin-bottom:4px;}' +
       '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:5px 8px!important;margin:2px 0!important;}' +
-      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:13pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
-      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:11pt!important;font-weight:700!important;}' +
-      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:10pt!important;font-weight:600!important;line-height:1.2!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:7pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:14pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
+      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:12pt!important;font-weight:700!important;}' +
+      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:11pt!important;font-weight:600!important;line-height:1.2!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:8pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
       '.us683-print-page1 .us683-week-card-legend{font-size:9.5pt!important;}' +
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:0!important;}' +
-      '.us683-print-page2 .us683-print-h2{font-size:10.5pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page2-note{font-size:7.5pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
-      '.us683-print-p2-wrap{font-size:7pt;line-height:1.1;}' +
+      '.us683-print-page2 .us683-print-h2{font-size:12pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page2-note{font-size:9pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
+      '.us683-print-p2-wrap{font-size:8.5pt;line-height:1.1;}' +
       '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;}' +
-      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:0 2px!important;border:1px solid #999!important;vertical-align:top!important;}' +
+      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:1px 3px!important;border:1px solid #999!important;vertical-align:top!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word;}' +
       '}';
   }
@@ -2283,6 +2307,53 @@
     hw.appendChild(hi);
     p1.appendChild(hw);
 
+    var curTotalAttr = heroSrc.getAttribute('data-us683-cur-total') || '';
+    var prevTotalAttr = heroSrc.getAttribute('data-us683-prev-total') || '';
+    var prevHasAttr = heroSrc.getAttribute('data-us683-prev-has') || '0';
+    var curN = Number(curTotalAttr);
+    var prevN = Number(prevTotalAttr);
+    if (!Number.isFinite(curN)) {
+      curN = 0;
+    }
+    if (!Number.isFinite(prevN)) {
+      prevN = 0;
+    }
+    var momBox = document.createElement('div');
+    momBox.className = 'us683-print-mom-box us683-print-block';
+    var momLabel = document.createElement('div');
+    momLabel.className = 'us683-print-mom-label';
+    momLabel.textContent = '【先月対比（件数）】';
+    momBox.appendChild(momLabel);
+    var momBody = '';
+    if (prevHasAttr !== '1') {
+      momBody = '前月比: —（前月にデータなし）';
+    } else {
+      var delta = curN - prevN;
+      if (delta > 0) {
+        momBody =
+          '前月比: 先月より +' +
+          delta +
+          ' 件増加（先月 ' +
+          prevN +
+          ' 件 → 当月 ' +
+          curN +
+          ' 件）';
+      } else if (delta < 0) {
+        momBody =
+          '前月比: 先月より −' +
+          Math.abs(delta) +
+          ' 件減少（先月 ' +
+          prevN +
+          ' 件 → 当月 ' +
+          curN +
+          ' 件）';
+      } else {
+        momBody = '前月比: 先月と同数（先月・当月とも ' + curN + ' 件）';
+      }
+    }
+    momBox.appendChild(document.createTextNode(momBody));
+    p1.appendChild(momBox);
+
     var h2m = document.createElement('h2');
     h2m.className = 'us683-print-h2';
     h2m.textContent = '月次要約';
@@ -2290,7 +2361,14 @@
     var ms = document.createElement('div');
     ms.className = 'us683-print-month-summary us683-print-block';
     var mta = document.getElementById('user683-month-note');
-    ms.textContent = mta ? String(mta.value || '') : '（月次要約フィールドなし）';
+    var summaryText = mta ? String(mta.value || '').trim() : '';
+    if (!mta) {
+      ms.textContent = '（月次要約フィールドなし）';
+    } else if (!summaryText) {
+      ms.textContent = '（月次要約未入力 — 件数の先月対比は上枠を参照）';
+    } else {
+      ms.textContent = summaryText;
+    }
     p1.appendChild(ms);
 
     function addChartBlock(title, hostId) {
@@ -2327,7 +2405,7 @@
       ym.y +
       '年' +
       ym.m +
-      '月度。2枚目は参考用に小さめの字体で1枚に収めやすくしています（詳細はアプリの一覧を参照）。';
+      '月度。本印刷は2枚構成（3枚目白紙が出ないよう最適化）。2枚目は参考用に小さめの字体で一覧サマリーを掲載（詳細はアプリの一覧を参照）。';
     p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
@@ -2448,7 +2526,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（2枚構成・1枚目:件名・前月比・月次要約・各グラフ、2枚目:対応一覧サマリー）。PDF保存は印刷先で「PDFに保存」を選んでください。';
+      'ブラウザの印刷ダイアログを開きます（2枚構成・1枚目:件数・先月対比・月次要約・各グラフ、2枚目:対応一覧サマリー）。PDF保存は印刷先で「PDFに保存」を選んでください。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();

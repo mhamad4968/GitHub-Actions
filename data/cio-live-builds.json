@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-06-25-683-sixmo-chart-pagination-fix-v1",
-      "fileKey": "d6472898-0387-40e1-b716-840e7eae1e1f",
-      "revision": "86",
-      "relPath": ".kintone-deploy/upload-683.js",
-      "deployedAt": "2026-06-25T13:50:56.139Z",
+      "build": "2026-08-02-683-print-2page-readable-mom-v1",
+      "fileKey": "c879cd76-e8ad-4f9c-b149-ab8394baa17c",
+      "revision": "87",
+      "relPath": "customize/683/desktop.js",
+      "deployedAt": "2026-08-02T08:37:47.101Z",
       "note": null
     },
     "686": {
