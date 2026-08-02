@@ -1,6 +1,7 @@
 # 新・PDF ページレイアウト要件（ユーザサポート月報・683 系）
 
-> **状態**: **正本（レイアウト・掲載物）**。実装のコード正本は **`scripts/user683-monthly-pdf/generate_monthly_pdf.py`**。**kintone 標準印刷や一覧画面の `window.print()` による月報は NG**（別紙 `docs/runbooks/user683-weekly-summary-and-print.md` 参照）。**月報の体裁は本 PDF が正**。
+> **状態**: **オフライン ReportLab PDF（任意 CLI）のレイアウト正本**。実装: **`scripts/user683-monthly-pdf/generate_monthly_pdf.py`**。
+> **kintone 運用の正（2026-05-17〜）**: 683 一覧の **`window.print()`**（`customize/683/desktop.js`・Runbook `docs/runbooks/user683-weekly-summary-and-print.md`）。本仕様は **CLI 提出 PDF** 用。ブラウザ印刷の受入（MediaBox・向き・2枚構成）は Runbook／夕反省 GO 2026-08-02 を正とする。
 
 ---
 
@@ -92,6 +93,7 @@
 
 | 日付 | 内容 |
 |------|------|
+| 2026-08-02 | **役割分離明記**: kintone 正は `window.print()`。本 SPEC は CLI PDF 任意。ブラウザ印刷の詳細は Runbook＋BUILD `…-print-page2-break-v24`。 |
 | 2026-05-17 | **`user683:monthly-pdf:serve` 廃止**（CEO）。kintone 683 は **`window.print()`** のみ。本仕様の CLI 生成は任意。 |
 | 2026-05-15 | **出力場所（Windows）**: `npm run user683:monthly-pdf:demo` → **`C:\tmp\user683-monthly-demo.pdf`**。`user683-monthly-pdf-serve` の一時生成 → **`C:\tmp\_user683-monthly-serve-temp.pdf`**（`USER683_MONTHLY_PDF_SERVE_TEMP` で上書き可）。 |
 | 2026-05-15 | **PDF 脚注**: ページ末の **出典・注釈・キャンバス英語フッター**を **出力しない**。683「提出用PDF」は **`effectiveViewYm()` をクリック時に再評価**し、**前月／次月切替後の暦月**で `year`/`month` を渡す。 |

@@ -72,11 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-01 午後締め反映・WAKE 是正）】
-- 進行中: **756 原価管理明細**を Excel 正で枠寄せ継続（残り約12。OMIT: 11000〜11400・12800・13100・13500・13600・13620）
-- LIVE: App756 rev**270** BUILD `2026-08-01-ver02-actual-excel-12900-misc`／一時保存→App757／予実保存→App758 は維持
-- 調査正本: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md`（#R-EXCEL-UI-09〜14）
-- 当日コミット (上位 3・参考):
-  - chore(handoff): sync bridge + WAKE artifacts after cold-start
-  - feat(756): add Excel cost frame 12900 miscellaneous expenses typeless
-  - fix(756): persist typeless detail-left without ditto wipe
+【今やってる主タスク（2026-08-02）】
+- 本日レーン: **683 印刷報告**（`…-print-page2-break-v24` rev112）＋ **ナレッジWAKE M-RAG-04**（`cio:knowledge:wake-stamp`）
+- 正本: `docs/runbooks/user683-weekly-summary-and-print.md` · GO `docs/approved-changes/2026-08-02-evening-reflection-hamada-go.md`
+- LIVE 参考: App683 rev**112** / App756 rev**318**
+- 当日コミット (上位):
+  - feat(ops): knowledge-wake stamp injects active needles at session start
+  - docs(683): evening GO print MediaBox checklist and MCP mirror ops
+  - fix(683): split print page1/page2 CSS to avoid clip regression

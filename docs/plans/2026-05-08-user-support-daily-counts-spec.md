@@ -153,13 +153,14 @@
 ### 7.3 実装メモ（683 ダッシュ・2026-05-15）
 
 - **閲覧の正本 UI**: **[683](https://jbis-kintone.cybozu.com/k/683/)** の `customize/683/desktop.js`（グラフ・表・要約キャッシュの編集・保存）。
-- **月次印刷（正・2026-05-17）**: **683 一覧**から **`window.print()`**（`@media print`・**2 枚前後**目標）。**「提出用PDF」ボタン**および **`user683:monthly-pdf:serve` は廃止**（旧 2026-05-15 ルートは履歴のみ）。**オフライン ReportLab PDF** は CLI `user683:monthly-pdf` のみ任意。
-- **運用**: **詳細**: `docs/runbooks/user683-weekly-summary-and-print.md`。
+- **月次印刷（正・2026-05-17／追補 2026-08-02）**: **683 一覧**「印刷報告用」→ **`window.print()`**（`@media print`）。**1枚目**=ヒーロー＋先月対比＋月次要約＋日次フル幅＋週次|年次。**2枚目**=対応案件一覧（全文・見切れ時は次頁可）。**向き＝縦**推奨（MediaBox 確認は Runbook）。**BUILD** `2026-08-02-683-print-page2-break-v24` rev **112**。
+- **「提出用PDF」ボタン**および **`user683:monthly-pdf:serve` は廃止**。**オフライン ReportLab PDF** は CLI `user683:monthly-pdf` のみ任意（`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`）。
+- **運用**: `docs/runbooks/user683-weekly-summary-and-print.md` · ナレッジWAKE `683-print-mediabox` · GO `docs/approved-changes/2026-08-02-evening-reflection-hamada-go.md`。
 
-### 7.4 月報 PDF（新レイアウト・2026-05-15）
+### 7.4 月報 PDF（CLI 任意・2026-05-15）
 
-- **月報（提出用 PDF）**は **kintone 標準印刷に相当する画面 `print` では出さない**。**正本仕様**: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**。**生成**: **`scripts/user683-monthly-pdf/generate_monthly_pdf.py`**（ReportLab）。
-- **体裁**: **PDF は 2 ページ**（表面・裏面）。**印刷・納品は両面1枚（A4）**を想定。**表面**＝大きめの棒グラフ2（日別・月別）→**月次要約**→**週次（第1〜4週）**。**裏面**＝**対応案件一覧（サマリー）のみ**（日別の対応文抜粋一覧）。
+- **kintone 運用の正は §7.3 の `window.print()`**。本節は **オフライン ReportLab** の任意経路。**正本仕様**: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**。**生成**: **`scripts/user683-monthly-pdf/generate_monthly_pdf.py`**。
+- **体裁（CLI）**: **PDF は 2 ページ**（表面・裏面）。**印刷・納品は両面1枚（A4）**を想定。**表面**＝大きめの棒グラフ2（日別・月別）→**月次要約**→**週次（第1〜4週）**。**裏面**＝**対応案件一覧（サマリー）のみ**。
 
 ---
 
@@ -229,6 +230,7 @@
 | 2026-05-14 | **§6.1.1 / 683**: **直近6暦月** REST 取得を **100 件ページング**で全件化し、**右端暦月棒＝ヒーロー月合計**を一致させる（先頭100件打切りで月合計が欠落する不具合の是正）。**BUILD** `2026-05-14-683-sixmo-fetch-pagination`・`deploy:683` rev **25**。 |
 | 2026-05-14 | **§6.1.1 / 683**: **読み込み中で停止**するページングを **満ページのみ継続＋最大50ページ（limit 500）** に是正。**BUILD** `2026-05-14-683-fetch-pagination-safe`・`deploy:683` rev **26**。 |
 | 2026-05-14 | **§6.1.1 / 683**: **グラフ直下**に **月次→週次4**の AI コメント欄を表示し、**683 一覧上で修正して要約キャッシュへ保存**（`user683_month`／`user683_week_1`〜`4`）。**BUILD** `2026-05-14-683-summary-comments-edit-save`・`deploy:683` rev **27**。 |
+| 2026-08-02 | **§7.3 / 683**: 印刷報告 2枚構成・MediaBox/向き受入・page2 見切れ防止・**BUILD** `2026-08-02-683-print-page2-break-v24` rev **112**。ナレッジWAKE / Runbook / 夕反省 GO 同期。 |
 | 2026-05-17 | **§7.3 / 683**: **`user683:monthly-pdf:serve` 廃止**（CEO）。運用の正は **`window.print()`**（**BUILD** `2026-05-16-683-print-2page-tight-v2` 継続）。 |
 | 2026-05-15 | **§7.3 / 683**: **「提出用PDF」**＋**`user683:monthly-pdf:serve`**（`window.open`）— **2026-05-17 廃止**。ブラウザ **`window.print()` 用ページ2**は撤去。**BUILD** `2026-05-15-683-monthly-pdf-open-serve`・`deploy:683` rev **40**。 |
 | 2026-05-15 | **§7.4 / 月報 PDF**: **2 ページ PDF（表面＝大きめグラフ2→月次→週次、裏面＝対応一覧サマリーのみ）**・**印刷は両面1枚 A4 想定**。仕様 `docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`・`scripts/user683-monthly-pdf/`。 |
