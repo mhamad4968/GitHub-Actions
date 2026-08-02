@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-month-summary-lg-v6",
-      "fileKey": "4fbb80d6-72e0-4894-99c2-3ce01e4fb1cf",
-      "revision": "93",
+      "build": "2026-08-02-683-print-p1-summary-day-v7",
+      "fileKey": "412ff408-7bcb-4fb2-80e9-81cb5e29513d",
+      "revision": "94",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:12:06.359Z",
+      "deployedAt": "2026-08-02T09:16:34.744Z",
       "note": null
     },
     "686": {

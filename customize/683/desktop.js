@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-month-summary-lg-v6';
+  const BUILD = '2026-08-02-683-print-p1-summary-day-v7';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1907,7 +1907,7 @@
     return wrap;
   }
 
-  function formatDaySummaryForTable(x) {
+  function daySummaryLineRaw(x) {
     if (!x) return '';
     var line = normalizeSummaryWhitespace(x.relayLine || '');
     if (!line) {
@@ -1915,7 +1915,11 @@
         [x.amRaw, x.pmRaw].filter(Boolean).join(' '),
       );
     }
-    return truncateOneLine(line, TABLE_DAY_SUMMARY_MAX_LEN);
+    return line;
+  }
+
+  function formatDaySummaryForTable(x) {
+    return truncateOneLine(daySummaryLineRaw(x), TABLE_DAY_SUMMARY_MAX_LEN);
   }
 
   function buildMonthTableEl(ym, dim, byDay) {
@@ -1995,14 +1999,16 @@
         bodyTd.style.color = '#666';
       } else {
         dtTd.textContent = String(x.dt);
+        const fullLine = daySummaryLineRaw(x);
         const summaryLine = formatDaySummaryForTable(x);
-        const hasText = Boolean(summaryLine);
+        const hasText = Boolean(fullLine);
         bodyTd.textContent = hasText ? summaryLine : '（対応文なし・件数のみ）';
-        bodyTd.title = hasText
-          ? x.rows > 1
-            ? '同一日 ' + x.rows + ' 行を合算済み。全文は 682 で確認してください。'
-            : '全文は 682 の該当日レコードを開いてください。'
-          : '';
+        if (hasText) {
+          bodyTd.setAttribute('data-us683-full-summary', fullLine);
+          bodyTd.title = fullLine;
+        } else {
+          bodyTd.title = '';
+        }
       }
       tr.appendChild(dtTd);
       tr.appendChild(bodyTd);
@@ -2223,9 +2229,9 @@
       '.us683-print-mom-box{border:2px solid #222;padding:3px 5px;margin:0 0 2px;font-size:13pt;font-weight:800;line-height:1.3;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:10pt;font-weight:700;margin-bottom:1px;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      /* 月次要約＝1枚目のメイン。大きく読みやすく（グラフ側で高さ帳尻） */
+      /* 1枚目: 月次要約（メイン・全文）＋日次グラフ */
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:13pt;font-weight:800;margin:3px 0 2px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:6px 7px;min-height:1.2em;background:#fafafa;font-size:18pt;font-weight:600;line-height:1.35;max-height:48mm;overflow:hidden;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:6px 7px;min-height:1.2em;background:#fafafa;font-size:18pt;font-weight:600;line-height:1.35;overflow:visible;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2233,63 +2239,73 @@
       '.us683-print-hero-inner>div>div:nth-child(1){font-size:14pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      /* 上段: 日次フル幅 / 下段: 週次|年次 左右 */
       '.us683-print-chart-full{width:100%!important;margin:0 0 2px!important;}' +
       '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
-      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:5px!important;width:100%!important;}' +
+      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:5px!important;width:100%!important;margin:0 0 3px!important;}' +
       '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
       '.us683-print-chart-slot{margin:0!important;overflow:hidden!important;}' +
       '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;}' +
-      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:4px 6px!important;margin:1px 0!important;}' +
-      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:11pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
-      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:10pt!important;font-weight:700!important;}' +
-      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:8pt!important;font-weight:600!important;line-height:1.2!important;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card,' +
+      '.us683-print-page2 .us683-bar-card,.us683-print-page2 .us683-week-card{padding:4px 6px!important;margin:1px 0!important;}' +
+      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title,' +
+      '.us683-print-page2 .us683-bar-card-title,.us683-print-page2 .us683-week-card-title{font-size:11pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
+      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num,' +
+      '.us683-print-page2 .us683-bar-card-num,.us683-print-page2 .us683-week-card-num{font-size:10pt!important;font-weight:700!important;}' +
+      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab,' +
+      '.us683-print-page2 .us683-bar-card-lab,.us683-print-page2 .us683-week-card-lab{font-size:8pt!important;font-weight:600!important;line-height:1.2!important;}' +
       '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:6.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
-      '.us683-print-page1 .us683-week-card-legend{font-size:9.5pt!important;}' +
-      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:0!important;}' +
+      '.us683-print-page1 .us683-week-card-legend,.us683-print-page2 .us683-week-card-legend{font-size:9.5pt!important;}' +
+      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row,' +
+      '.us683-print-page2 .us683-bar-card-row,.us683-print-page2 .us683-week-card-row{min-height:0!important;}' +
       '.us683-print-page2 .us683-print-h2{font-size:9pt;font-weight:700;margin:0 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page2-note{font-size:7pt;color:#333;margin:0 0 1px;line-height:1.15;}' +
-      /* 2枚目表: 画面用 inline 12px/padding を潰し、余白少なめで1枚に収める（過度な極小は避ける） */
-      '.us683-print-p2-wrap{font-size:7pt!important;line-height:1.08!important;margin:0!important;}' +
+      '.us683-print-page2-note{font-size:6.5pt;color:#333;margin:0 0 1px;line-height:1.15;}' +
+      /* 2枚目表: 字は小さくても全文（…見切れ禁止・高さ制限なし） */
+      '.us683-print-p2-wrap{font-size:6.5pt!important;line-height:1.12!important;margin:0!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;}' +
       '.us683-print-p2-wrap>div>div:first-child{display:none!important;}' +
-      '.us683-print-p2-wrap table{font-size:7pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
+      '.us683-print-p2-wrap table{font-size:6.5pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
       '.us683-print-p2-wrap th,.us683-print-p2-wrap td{' +
-      'padding:0 2px!important;border:1px solid #bbb!important;vertical-align:middle!important;' +
-      'font-size:7pt!important;line-height:1.08!important;}' +
-      '.us683-print-p2-wrap td{word-break:break-word!important;overflow:hidden!important;max-height:2.3em!important;}' +
+      'padding:1px 2px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
+      'font-size:6.5pt!important;line-height:1.12!important;}' +
+      '.us683-print-p2-wrap td{word-break:break-word!important;overflow:visible!important;white-space:normal!important;}' +
       '.us683-print-p2-wrap td:nth-child(1){width:9.5em!important;white-space:nowrap!important;}' +
       '.us683-print-p2-wrap td:nth-child(2){width:2.2em!important;white-space:nowrap!important;text-align:right!important;}' +
       '.us683-print-p2-wrap tr{page-break-inside:avoid;}' +
       '}';
   }
 
-  /** 印刷2枚目: 画面クローンの余白・長文を圧縮し A4横1枚に収める */
+  /** 印刷2枚目: 余白圧縮＋data属性の全文を復元（…切り捨て禁止） */
   function user683TightenPrintSummaryTable(root) {
     if (!root) return;
-    var PRINT_BODY_MAX = 96;
     var tables = root.querySelectorAll('table');
     for (var ti = 0; ti < tables.length; ti += 1) {
       var tbl = tables[ti];
       tbl.style.margin = '0';
-      tbl.style.fontSize = '7pt';
+      tbl.style.fontSize = '6.5pt';
       var cells = tbl.querySelectorAll('th,td');
       for (var ci = 0; ci < cells.length; ci += 1) {
         var cell = cells[ci];
-        cell.style.padding = '0 2px';
-        cell.style.fontSize = '7pt';
-        cell.style.lineHeight = '1.08';
-        cell.style.verticalAlign = 'middle';
+        cell.style.padding = '1px 2px';
+        cell.style.fontSize = '6.5pt';
+        cell.style.lineHeight = '1.12';
+        cell.style.verticalAlign = 'top';
+        cell.style.overflow = 'visible';
+        cell.style.maxHeight = 'none';
       }
       var bodyCells = tbl.querySelectorAll('tbody td:nth-child(3)');
       for (var bi = 0; bi < bodyCells.length; bi += 1) {
         var bd = bodyCells[bi];
-        var raw = String(bd.textContent || '').replace(/\s+/g, ' ').trim();
-        if (raw.length > PRINT_BODY_MAX) {
-          bd.title = raw;
-          bd.textContent = raw.slice(0, PRINT_BODY_MAX - 1) + '…';
+        var full = bd.getAttribute('data-us683-full-summary');
+        if (full) {
+          bd.textContent = full;
+          bd.title = full;
         }
+        bd.style.whiteSpace = 'normal';
+        bd.style.wordBreak = 'break-word';
+        bd.style.overflow = 'visible';
+        bd.style.maxHeight = 'none';
+        bd.style.textOverflow = 'clip';
       }
     }
   }
@@ -2451,33 +2467,33 @@
       return slot;
     }
 
-    /* 上段: 日次を横いっぱいに / 下段: 週次・年次を左右 */
+    /* 1枚目: 月次要約＋日次グラフ（横いっぱい） */
     var dayFull = document.createElement('div');
     dayFull.className = 'us683-print-chart-full us683-print-block';
-    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.56);
+    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.72);
     p1.appendChild(dayFull);
+    portal.appendChild(p1);
 
+    /* 2枚目: 週次|年次 左右＋対応案件一覧（全文・小さめ） */
+    var p2 = document.createElement('div');
+    p2.className = 'us683-print-page2';
     var chartRow = document.createElement('div');
     chartRow.className = 'us683-print-chart-row us683-print-block';
     var colWeek = document.createElement('div');
     colWeek.className = 'us683-print-chart-col';
     var colYear = document.createElement('div');
     colYear.className = 'us683-print-chart-col';
-    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.52);
+    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.48);
     addChartCol(
       colYear,
       '年次推移グラフ（直近6暦月）',
       'user683-chart-year',
-      0.52,
+      0.48,
     );
     chartRow.appendChild(colWeek);
     chartRow.appendChild(colYear);
-    p1.appendChild(chartRow);
+    p2.appendChild(chartRow);
 
-    portal.appendChild(p1);
-
-    var p2 = document.createElement('div');
-    p2.className = 'us683-print-page2';
     var h2t = document.createElement('h2');
     h2t.className = 'us683-print-h2';
     h2t.textContent = '対応案件一覧（サマリー）※参考';
@@ -2485,7 +2501,7 @@
     var pn = document.createElement('p');
     pn.className = 'us683-print-page2-note';
     pn.textContent =
-      '※参考・A4横。1枚目=要約＋日次フル幅＋週次/年次左右、2枚目=一覧。長文は要約（詳細は682）。';
+      '※参考・A4横。1枚目=月次要約＋日次、2枚目=週次/年次＋一覧（全文表示）。';
     p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
