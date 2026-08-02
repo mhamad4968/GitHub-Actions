@@ -3,11 +3,12 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-detail-left-persist: 詳細左(name2)は保存時〃化禁止・既存〃は実値展開・種別下もleaf再表示。#R-EXCEL-UI-14
   // Phase2c-actual-detail-save-fix: TYPELESS詳細左の〃sanitize/stripを停止＋保存時name2を〃化しない。#R-EXCEL-UI-14
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-detail-save-fix
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-detail-left-persist
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -1131,8 +1132,8 @@
     }
     return stripped;
   }
-  // TYPELESS Excel 明細: 保存値が〃のとき null へ（詳細左は継承表示しない）。
-  function jy2CostMgmtSanitizeTypelessName2Ditto(detailModel) {
+  // 詳細左(name2)の 〃 を直前の実値へ展開（空にすると「保存できない」ように見える）。
+  function jy2CostMgmtExpandName2Ditto(detailModel) {
     if (
       !detailModel ||
       typeof detailModel.updateDetailRow !== "function" ||
@@ -1140,7 +1141,7 @@
     ) {
       return 0;
     }
-    let sanitized = 0;
+    let expanded = 0;
     let blocks;
     try {
       blocks = detailModel.snapshot().blocks || [];
@@ -1151,41 +1152,35 @@
       if (!block || !block.stableBlockId || !Array.isArray(block.detailRows)) {
         continue;
       }
-      const blockTypeless = jy2CostMgmtIsTypeLessExcelWorkType(
-        block.workTypeCode,
-        block.workTypeName,
-      );
+      let prevName2 = null;
       for (const row of block.detailRows) {
         if (!row || !row.rowKey) continue;
-        const himoku = String(row.name1 == null ? "" : row.name1).trim();
-        const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
-        const resolvedHimoku = himokuShort || himoku;
-        if (
-          !blockTypeless &&
-          !jy2CostMgmtIsTypeLessHimoku(resolvedHimoku) &&
-          !jy2CostMgmtIsTypeLessHimoku(himoku)
-        ) {
+        const raw = row.name2;
+        if (jy2IsDitto(raw)) {
+          if (prevName2) {
+            try {
+              detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
+                name2: prevName2,
+              });
+              expanded += 1;
+            } catch (error) {
+              if (typeof console !== "undefined" && console.error) {
+                console.error(
+                  "jy2CostMgmtExpandName2Ditto failed:",
+                  block.stableBlockId,
+                  row.rowKey,
+                  error,
+                );
+              }
+            }
+          }
           continue;
         }
-        if (!jy2IsDitto(row.name2)) continue;
-        try {
-          detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
-            name2: null,
-          });
-          sanitized += 1;
-        } catch (error) {
-          if (typeof console !== "undefined" && console.error) {
-            console.error(
-              "jy2CostMgmtSanitizeTypelessName2Ditto failed:",
-              block.stableBlockId,
-              row.rowKey,
-              error,
-            );
-          }
-        }
+        const text = String(raw == null ? "" : raw).trim();
+        if (text) prevName2 = text;
       }
     }
-    return sanitized;
+    return expanded;
   }
   function jy2CostMgmtEnsureFrameList(detailModel, frames, logLabel) {
     let added = 0;
@@ -1412,8 +1407,8 @@
       JY2_COST_MGMT_ENSURE_CODED_FRAMES,
       "jy2CostMgmtEnsureCodedFrames",
     );
-    // strip/sanitize は一時保存後に詳細左(name2)が消えるため走らせない。
-    // （〃→null が手入力を消し、次の一時保存で空確定になる。#R-EXCEL-UI-14）
+    // 既存の name2〃 を実値へ戻す（詳細左が空に見える不具合の修復）
+    const expandedName2 = jy2CostMgmtExpandName2Ditto(detailModel);
     // 10700 → 名称枠（軌道…追加工事）→ 10800 → 10900 → オペレーター → その他コード枠
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
@@ -1430,6 +1425,7 @@
       addedTypeOnly +
       addedDayNight +
       addedCoded +
+      expandedName2 +
       movedKamagaya +
       movedManager +
       movedTypeOnly +
@@ -8940,12 +8936,11 @@
       String(name2Raw == null ? "" : name2Raw).trim() ===
         String(dualHimokuLabel).trim() &&
       !jy2CostMgmtIsTypeLessHimoku(dualHimokuLabel);
+    // TYPELESS で name2=〃 のときも実値（継承解決）を入力欄に出す。空表示だと未保存に見える。
     const name2InputValue = dualUnderType
       ? dualSplit.leftDetail || ""
       : jy2IsDitto(name2Raw)
-        ? typelessDualLeft
-          ? ""
-          : name2Resolved
+        ? name2Resolved || ""
         : jy2HasText(name2Raw) && !hideHimokuAsLeftRaw
           ? String(name2Raw).trim()
           : "";
@@ -11492,30 +11487,24 @@
           for (const { child, detailIndex } of entries) {
             const detailRow =
               detailIndex >= 0 ? detailRows[detailIndex] : null;
-            const name3Raw =
-              detailIndex >= 0 ? detailRows[detailIndex]?.name3 : null;
-            const name3Resolved = jy2IsDitto(name3Raw)
-              ? jy2ActualResolveContinuedField(
-                  detailRows,
-                  detailIndex,
-                  "name3",
-                ) || ""
-              : jy2HasText(name3Raw)
-                ? String(name3Raw).trim()
-                : "";
-            const revealed = costDetailVisibility.shouldShow(
-              child.rowKey,
-              name3Resolved,
+            const revealed = costDetailVisibility.shouldShow(child.rowKey);
+            const isCatalog = jy2CostMgmtIsUchiwakeCatalogDetail(
+              detailRow || child,
             );
             // 内訳カタログは未revealのみ隠す（＋手入力は残す）
+            if (isCatalog && !revealed) continue;
+            const hasLeaf = jy2CostMgmtDetailHasLeafContent(
+              detailRow || child,
+            );
+            // 詳細左だけの leaf も再表示（種別下で一時保存後に消える対策）
+            if (!hasLeaf && !revealed) continue;
             if (
-              jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child) &&
-              !revealed
+              hasLeaf &&
+              !revealed &&
+              !isCatalog &&
+              typeof costDetailVisibility.reveal === "function"
             ) {
-              continue;
-            }
-            if (!revealed) {
-              continue;
+              costDetailVisibility.reveal(child.rowKey);
             }
             lastRowInHimoku = body.appendChild(
               jy2ActualChildRow(
@@ -12277,30 +12266,10 @@
       },
       // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
       async save(detailModel, summaryModel, projectionManual, options = {}) {
-        const skipTypelessName2Ditto = (row, block) => {
-          const himoku = String(row && row.name1 != null ? row.name1 : "").trim();
-          const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
-          if (
-            jy2CostMgmtIsTypeLessHimoku(himoku) ||
-            jy2CostMgmtIsTypeLessHimoku(himokuShort)
-          ) {
-            return true;
-          }
-          if (
-            block &&
-            jy2CostMgmtIsTypeLessExcelWorkType(
-              block.workTypeCode,
-              block.workTypeName,
-            )
-          ) {
-            return true;
-          }
-          return false;
-        };
+        // 詳細左は name2。name1 が〃でも判定が外れないよう、name2 の〃化は常時禁止。
         detailModel.prepareForSave({
-          skipEmptyName2Ditto: skipTypelessName2Ditto,
-          // 同値でも name2 を 〃 にしない（TYPELESS詳細左の保存欠け防止）
-          skipName2Ditto: skipTypelessName2Ditto,
+          skipEmptyName2Ditto: () => true,
+          skipName2Ditto: () => true,
         });
         const parentRecord = {
           ...(summaryModel
