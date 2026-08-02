@@ -1,21 +1,20 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-01 20:55 JST — **本日最終締め（full CLOSE）**。756 LIVE rev286／夕反省全承認反映／SPEC同期／Desktop最新。浜田: OMIT残 11400・13500 は次セッション。
-**次の1手**: **新チャット**で `00-NEW-SESSION-STARTER` 貼付→bootstrap → **756 原価管理明細の未実装枠を Excel 正で続行**（OMIT残: 11400・13500。受入 O-756-01）。一時保存→App757／予実保存→App758 は維持。
-**Git**: **`020446d4`** = `origin/main` — push 済
-**本日状態（要約）**: 756 LIVE **rev286** `…-excel-dedupe-coded`。夜=並び・11000〜11300・dedupe・夕反省GO全反映。R63 クリーン。GHA success。
+**最終更新**: 2026-08-02 10:20 JST — 756 見やすさ LIVE＋7月振り返り運用GO着手。Skysea材料は明日。
+**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用改善P2（フラグ可視化・4h退避）は続き可。756 OMIT残 11400・13500 は浜田指示後。
+**Git**: ローカル ahead（visual-readability + 本運用改善 commit 予定）— push は浜田指示後
+**本日状態（要約）**: 756 LIVE **rev318** `…-actual-visual-readability`。運用薄化 P0/P1 着手。R63 クリーン。
 
-### 本日アクティブ（BUILD/rev — 2026-08-01）
+### 本日アクティブ（BUILD/rev — 2026-08-02）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-08-01-ver02-actual-excel-dedupe-coded` | **286** |
+| **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 
 **継続メモ**:
-1. **756 工事原価管理**: Excel「原価管理明細」枠。済=塗装系・名称枠・10800/10900・11000〜11300・経費系多数。**OMIT残: 11400・13500**。
-2. 同一工種コードの二重枠は表示側で正規1件（内訳非破壊）。ENSURE区分はコード表。配置 #R-EXCEL-PLACE-01。
-3. 夕反省 GO: `2026-08-01-evening-reflection-hamada-go`／runbook `cio-ops-2026-08-01-evening-improvements`。
-4. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
+1. **756**: 見やすさ反映済。OMIT残 11400・13500 は指示後。MANUAL_ONLY・カタログ非表示は維持。
+2. **運用改善 GO**: `docs/runbooks/july-2026-ops-thinning-go.md`／必読 `MANDATORY-READ-CARD.md`。
+3. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
 
-**GO待ち**: なし。新アプリ＝相談・GO後のみ。
+**GO待ち**: なし（完了済を出さない）。新アプリ＝相談・GO後のみ。
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**。
 
@@ -23,9 +22,9 @@
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
-**運用メモ**: 品質ゲート · Lifecycle v2 · closures=9。
+**運用メモ**: 品質ゲート · Lifecycle v2 · closures=9 · 必読カード薄化入口。
 
-**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev286 · **712**: deploy禁止
+**688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev318 · **712**: deploy禁止
 
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
@@ -35,9 +34,9 @@
 |------|------|
 | **688** | WBGT 以外触らない |
 | **677–679** | 触らない |
-| **SKYSEA** | 8/3 問い合わせまで実PC配信禁止 |
+| **SKYSEA** | 8/3 問い合わせまで実PC配信禁止（朝prep L120 は after=8/3） |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev286。Excel 原価管理明細枠寄せ継続（OMIT残 11400・13500） |
+| **756/757/758** | LIVE rev318。OMIT残 11400・13500 は指示後 |
 | **712** | 削除済 — deploy 禁止 |
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`

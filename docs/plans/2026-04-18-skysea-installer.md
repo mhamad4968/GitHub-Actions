@@ -117,6 +117,7 @@
   - `skysea_status` (DROP_DOWN: 未確認 / 導入済 / 未導入 / 失敗 / 対象外)
   - `skysea_checked_at` (日時)
   - `skysea_install_log` (複数行テキスト)
+<!-- scan-plans:after=2026-08-03 -->
 - [ ] 「📌 SKYSEA未導入」絞り込みを 674 で使う運用／UI を8月計画で確定する
 
 ---

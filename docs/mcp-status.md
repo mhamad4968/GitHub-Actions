@@ -207,6 +207,11 @@
 
 ## ⏸ disabled の経緯記録
 
+### accessibility-scanner（**disabled 2026-08-02** / 浜田 7月振り返り GO）
+- **最終状態**: ユーザー `~/.cursor/mcp.json` で `disabled: true`（削除ではない）。
+- **理由**: 運用日 Cold。FE a11y 検収時だけ enable。`office-powerpoint` は `neverDisable` のため無効化見送り。
+- **正本**: `docs/runbooks/july-2026-ops-thinning-go.md`／`chat-sessions/MANDATORY-READ-CARD.md`
+
 ### tavily（**削除済 2026-05-06** / 浜田合意）
 - **最終状態**: `mcp.json` から **エントリ除去**（WSL グローバル + Windows 同期先の両方）。`sync-cursor-mcp-windows-from-wsl.mjs` は **tavily を出力しない**。
 - **経緯要約**: 2026-04-23 時点で `disabled: true`（課金回避・duckduckgo-search 代替）→ 2026-05-06 **完全削除**で確定。

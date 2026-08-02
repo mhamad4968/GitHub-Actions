@@ -40,8 +40,9 @@ globs: "**/*"
 
 - **user-github**: Actions Run / PR / Issue / ブランチ・リポ設定を **API で確かめる**とき（外部の正）。
 - **user-kintone**（本番系）: 本番アプリの **フィールド／レコード／権限**が主題、または本番 CRUD の前段調査。
-- **user-kintone-dev**: **開発・検証テナント**の同等操作（**本番と混同禁止**）。
+- **user-kintone-dev**: **API仕様・フィールド型の開発ドキュメント**（**本番CRUDと混同禁止**。検証テナント操作ではない）。
 - **user-kintone-space**: **スペース／ポータル／スレッド**の設定・本文が主題のとき。
+- **kintone 4分割（1行・2026-08-02）**: 本番=`kintone` ／ API docs=`kintone-dev` ／ Space=`kintone-space` ／ ライブ form schema=`kintone-schema-mcp`。削減せず使い分けを固定（`MANDATORY-READ-CARD.md`）。
 - **user-fetch**: **単一 URL の生本文**（HTML/JSON）が正で、ブラウザ操作が不要なとき。
 - **user-duckduckgo-search**: **Web 検索**（横断調査・仕様確認・既知バグ調査）。**Tavily MCP は 2026-05-06 に mcp.json から削除済**（浜田合意）。要約付き検索が必要なら WebFetch＋モデル要約や別経路を検討。
 - **user-playwright**: **ログイン後 UI・E2E・実画面 DOM**が必要なとき（kintone 画面・自社アプリ）。
@@ -58,8 +59,9 @@ globs: "**/*"
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`doc-lane-pptx-mcp.md`**。
 - **office-word** / **user-office-word**: **Word 新規・表・画像・セキュリティレポート図解**（doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-word-phase2`。月次定型は **`doc-lane:security-report`** 先行。正本 **`doc-lane-docx-mcp.md`**。既存 docx 精密パッチは **python-docx**（`docx-patch-windows.md`）。
-- **Figma 系 MCP**（サーバ名は環境依存: 例 `figma` / `figma-desktop` / `figma-developer-mcp`）: **Figma ファイル・フレーム URL が正**で、**表やダッシュの配色・タイポ・間隔・自動レイアウト**を設計データとして取り込みたいとき。**スクリーンショットだけではトークンが不明**なときはこちらを優先。手順の正本は **`docs/mcp-design-figma.md`**。
-- **colors-fonts**（`@colorsandfonts/mcp`）: **パレット生成**・**WCAG/APCA コントラスト**・CSS / Tailwind / **Figma トークン JSON** が欲しいとき（**Figma がまだ無い**表配色のたたき台、または Figma と併用して数値検証）。**kintone 表・ダッシュ**の流れは **`docs/mcp-design-kintone-tables.md`**。
+- **Figma 系 MCP**（サーバ名は環境依存: 例 `figma` / `figma-desktop` / `figma-developer-mcp`）: **Figma ファイル・フレーム URL が正**で、**表やダッシュの配色・タイポ・間隔・自動レイアウト**を設計データとして取り込みたいとき。**スクリーンショットだけではトークンが不明**なときはこちらを優先。手順の正本は **`docs/mcp-design-figma.md`**。**留置＋四半期再判定**（次: 2026-10）。
+- **colors-fonts**（`@colorsandfonts/mcp`）: **パレット生成**・**WCAG/APCA コントラスト**・CSS / Tailwind / **Figma トークン JSON** が欲しいとき（**Figma がまだ無い**表配色のたたき台、または Figma と併用して数値検証）。**kintone 表・ダッシュ**の流れは **`docs/mcp-design-kintone-tables.md`**。**留置＋四半期再判定**（次: 2026-10）。
+- **accessibility-scanner**: 2026-08-02 運用日は **disabled**（FE a11y 検収時だけ enable）。`office-powerpoint` は **neverDisable** のため無効化しない。
 - **user-memory**: **セッション横断で再利用すべきユーザ設定**があるとき（乱用しない・機密を書かない）。
 - **user-sequential-thinking**: **分岐が多い設計判断**で段階化が有効なとき（短問には使わない）。
 - **user-openrouter**: **他 LLM（DeepSeek/Kimi）が失敗・未設定**の代替。**`model` を必ず指定**（MCP 側に既定が無い場合あり。運用では `OPENROUTER_DEFAULT_MODEL` の設定推奨）。
