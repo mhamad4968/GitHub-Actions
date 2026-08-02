@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-a4-portrait-v12';
+  const BUILD = '2026-08-02-683-print-3charts-p1-v13';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2240,7 +2240,7 @@
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:12pt;font-weight:800;margin:2px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:5px 6px;min-height:1.2em;max-height:55mm;background:#fafafa;font-size:12pt;font-weight:600;line-height:1.35;overflow:hidden;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:4px 6px;min-height:1.2em;max-height:42mm;background:#fafafa;font-size:11.5pt;font-weight:600;line-height:1.32;overflow:hidden;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2268,14 +2268,14 @@
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row,' +
       '.us683-print-page2 .us683-bar-card-row,.us683-print-page2 .us683-week-card-row{min-height:0!important;}' +
       '.us683-print-page2 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      /* 2枚目表: A4縦で読めるサイズ・全文（…禁止） */
-      '.us683-print-p2-wrap{font-size:8pt!important;line-height:1.2!important;margin:0!important;}' +
+      /* 2枚目は一覧のみ・読めるサイズ・全文（…禁止） */
+      '.us683-print-p2-wrap{font-size:9pt!important;line-height:1.22!important;margin:0!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;}' +
       '.us683-print-p2-wrap>div>div:first-child{display:none!important;}' +
-      '.us683-print-p2-wrap table{font-size:8pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
+      '.us683-print-p2-wrap table{font-size:9pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
       '.us683-print-p2-wrap th,.us683-print-p2-wrap td{' +
-      'padding:2px 3px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
-      'font-size:8pt!important;line-height:1.2!important;}' +
+      'padding:2px 4px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
+      'font-size:9pt!important;line-height:1.22!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word!important;overflow:visible!important;white-space:normal!important;}' +
       '.us683-print-p2-wrap td:nth-child(1){width:9em!important;white-space:nowrap!important;}' +
       '.us683-print-p2-wrap td:nth-child(2){width:2.2em!important;white-space:nowrap!important;text-align:right!important;}' +
@@ -2289,13 +2289,13 @@
     for (var ti = 0; ti < tables.length; ti += 1) {
       var tbl = tables[ti];
       tbl.style.margin = '0';
-      tbl.style.fontSize = '8pt';
+      tbl.style.fontSize = '9pt';
       var cells = tbl.querySelectorAll('th,td');
       for (var ci = 0; ci < cells.length; ci += 1) {
         var cell = cells[ci];
-        cell.style.padding = '2px 3px';
-        cell.style.fontSize = '8pt';
-        cell.style.lineHeight = '1.2';
+        cell.style.padding = '2px 4px';
+        cell.style.fontSize = '9pt';
+        cell.style.lineHeight = '1.22';
         cell.style.verticalAlign = 'top';
         cell.style.overflow = 'visible';
         cell.style.maxHeight = 'none';
@@ -2362,7 +2362,7 @@
     slot.style.overflow = 'hidden';
   }
 
-  /** 1枚目: 要約以外の残り高さを日次グラフへ全部振る（A4縦） */
+  /** 1枚目: 要約＋日次＋週次|年次（残り高さを日次〜55%／下段〜45%に配分） */
   function user683LayoutPrintPage1(pageEl) {
     if (!pageEl) return;
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
@@ -2371,25 +2371,46 @@
     inner.style.width = '100%';
     var maxH = user683PrintSheetMaxH(pageEl);
     var dayFull = inner.querySelector('.us683-print-chart-full');
-    var slot = dayFull
-      ? dayFull.querySelector('.us683-print-chart-slot')
-      : null;
+    var chartRow = inner.querySelector('.us683-print-chart-row');
     var used = 0;
     for (var i = 0; i < inner.children.length; i += 1) {
       var ch = inner.children[i];
-      if (ch === dayFull) continue;
+      if (ch === dayFull || ch === chartRow) continue;
       used += ch.offsetHeight;
     }
+    var dayTitleH = 0;
+    var rowTitleH = 0;
     if (dayFull) {
-      var h2 = dayFull.querySelector('.us683-print-h2');
-      if (h2) used += h2.offsetHeight;
+      var h2d = dayFull.querySelector('.us683-print-h2');
+      if (h2d) dayTitleH = h2d.offsetHeight;
     }
-    var avail = maxH - used - 4;
-    if (avail < 220) avail = 220;
-    user683FillChartSlotToHeight(slot, avail);
+    if (chartRow) {
+      var titles = chartRow.querySelectorAll('.us683-print-h2');
+      for (var ti = 0; ti < titles.length; ti += 1) {
+        if (titles[ti].offsetHeight > rowTitleH) {
+          rowTitleH = titles[ti].offsetHeight;
+        }
+      }
+    }
+    var remain = maxH - used - dayTitleH - rowTitleH - 8;
+    if (remain < 280) remain = 280;
+    var dayAvail = Math.round(remain * 0.55);
+    var rowAvail = remain - dayAvail;
+    if (dayAvail < 150) dayAvail = 150;
+    if (rowAvail < 120) rowAvail = 120;
+    var daySlot = dayFull
+      ? dayFull.querySelector('.us683-print-chart-slot')
+      : null;
+    user683FillChartSlotToHeight(daySlot, dayAvail);
+    if (chartRow) {
+      var slots = chartRow.querySelectorAll('.us683-print-chart-slot');
+      for (var si = 0; si < slots.length; si += 1) {
+        user683FillChartSlotToHeight(slots[si], rowAvail);
+      }
+    }
   }
 
-  /** 2枚目: 上〜35%をグラフ、下を表（表は読める8pt優先・必要時のみ軽く縮小） */
+  /** 2枚目: 対応案件一覧のみ（ページ全体を使い 9pt 優先） */
   function user683LayoutPrintPage2(pageEl) {
     if (!pageEl) return;
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
@@ -2397,7 +2418,6 @@
     inner.style.transform = 'none';
     inner.style.width = '100%';
     var maxH = user683PrintSheetMaxH(pageEl);
-    var chartRow = inner.querySelector('.us683-print-chart-row');
     var wrap2 = inner.querySelector('.us683-print-p2-wrap');
     var h2t = null;
     for (var i = 0; i < inner.children.length; i += 1) {
@@ -2408,26 +2428,9 @@
         h2t = inner.children[i];
       }
     }
-    var chartBudget = Math.round(maxH * 0.34);
-    var titleH = 0;
-    if (chartRow) {
-      var titles = chartRow.querySelectorAll('.us683-print-h2');
-      for (var ti = 0; ti < titles.length; ti += 1) {
-        if (titles[ti].offsetHeight > titleH) titleH = titles[ti].offsetHeight;
-      }
-    }
-    var chartAvail = chartBudget - titleH - 4;
-    if (chartAvail < 160) chartAvail = 160;
-    if (chartRow) {
-      var slots = chartRow.querySelectorAll('.us683-print-chart-slot');
-      for (var si = 0; si < slots.length; si += 1) {
-        user683FillChartSlotToHeight(slots[si], chartAvail);
-      }
-    }
-    var topH =
-      (chartRow ? chartRow.offsetHeight : 0) + (h2t ? h2t.offsetHeight : 0) + 4;
+    var topH = h2t ? h2t.offsetHeight + 4 : 4;
     var tableAvail = maxH - topH - 2;
-    if (tableAvail < 200) tableAvail = 200;
+    if (tableAvail < 240) tableAvail = 240;
     if (wrap2) {
       wrap2.style.transform = 'none';
       wrap2.style.width = '100%';
@@ -2436,8 +2439,7 @@
       var th = wrap2.scrollHeight || wrap2.offsetHeight || 0;
       if (th > tableAvail + 1) {
         var ts = (tableAvail / th) * 0.995;
-        /* 極端な縮小はしない（読めなくなる） */
-        if (ts < 0.72) ts = 0.72;
+        if (ts < 0.78) ts = 0.78;
         wrap2.style.transformOrigin = 'top left';
         wrap2.style.transform = 'scale(' + ts + ')';
         wrap2.style.width = 100 / ts + '%';
@@ -2589,19 +2591,11 @@
       return slot;
     }
 
-    /* 1枚目: 月次要約＋日次グラフ（残り高さをグラフへ） */
+    /* 1枚目: 月次要約＋日次フル幅＋週次|年次（A4縦なら3グラフ収まる） */
     var dayFull = document.createElement('div');
     dayFull.className = 'us683-print-chart-full us683-print-block';
     addChartCol(dayFull, '日次グラフ', 'user683-chart-day');
     p1inner.appendChild(dayFull);
-    portal.appendChild(p1);
-
-    /* 2枚目: 週次|年次（上半分）＋対応案件一覧（下・必要なら表だけ縮小） */
-    var p2 = document.createElement('div');
-    p2.className = 'us683-print-page2';
-    var p2inner = document.createElement('div');
-    p2inner.className = 'us683-print-sheet-inner';
-    p2.appendChild(p2inner);
 
     var chartRow = document.createElement('div');
     chartRow.className = 'us683-print-chart-row us683-print-block';
@@ -2613,7 +2607,15 @@
     addChartCol(colYear, '年次推移グラフ（直近6暦月）', 'user683-chart-year');
     chartRow.appendChild(colWeek);
     chartRow.appendChild(colYear);
-    p2inner.appendChild(chartRow);
+    p1inner.appendChild(chartRow);
+    portal.appendChild(p1);
+
+    /* 2枚目: 対応案件一覧のみ（読みやすさ優先） */
+    var p2 = document.createElement('div');
+    p2.className = 'us683-print-page2';
+    var p2inner = document.createElement('div');
+    p2inner.className = 'us683-print-sheet-inner';
+    p2.appendChild(p2inner);
 
     var h2t = document.createElement('h2');
     h2t.className = 'us683-print-h2';
@@ -2741,7 +2743,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4縦・計2枚）。向き「縦」を確認。';
+      'ブラウザの印刷ダイアログを開きます（A4縦・計2枚・1枚目にグラフ3つ）。向き「縦」を確認。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();
