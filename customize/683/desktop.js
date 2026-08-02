@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-no-clip-v15';
+  const BUILD = '2026-08-02-683-print-flex-fill-v16';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2210,15 +2210,15 @@
     }
     st.setAttribute('data-build', BUILD);
     st.textContent =
-      /* 計測用: A4縦・余白4mmの内容幅 ≈ 202mm ≈ 764px */
+      /* 計測用: A4縦内容幅（余白5mm → 約200mm） */
       '@media screen{' +
       '#user683-print-report-portal{' +
       'display:block!important;position:fixed!important;left:-12000px!important;top:0!important;' +
-      'width:764px!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;' +
+      'width:756px!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;' +
       '}' +
       '}' +
       '@media print{' +
-      '@page{size:A4 portrait;margin:4mm;}' +
+      '@page{size:A4 portrait;margin:5mm;}' +
       'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
@@ -2227,20 +2227,27 @@
       'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      /* 各シートを A4縦1枚に固定。余白はグラフ高さへ */
       '.us683-print-page1,.us683-print-page2{' +
-      'box-sizing:border-box!important;height:289mm!important;max-height:289mm!important;' +
+      'box-sizing:border-box!important;height:287mm!important;max-height:287mm!important;' +
       'width:100%!important;overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
       '}' +
       '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:11pt;}' +
       '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:avoid!important;break-after:avoid!important;}' +
-      '.us683-print-sheet-inner{transform-origin:top left;width:100%;max-width:100%;height:100%;overflow:hidden;}' +
-      '.us683-print-block{margin-bottom:1px;}' +
+      /* transform scale は使わない（右余白・縦縮小の原因になる） */
+      '.us683-print-page1 .us683-print-sheet-inner{' +
+      'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      '}' +
+      '.us683-print-page2 .us683-print-sheet-inner{' +
+      'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      '}' +
+      '.us683-print-block{margin-bottom:1px;flex:0 0 auto;}' +
       '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 1px;font-size:11pt;font-weight:800;line-height:1.2;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:1px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:1px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:3px 5px;min-height:1.2em;max-height:none;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.3;overflow:visible;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:3px 5px;min-height:1.2em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.3;overflow:visible;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:2px!important;margin:0 0 1px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2248,36 +2255,28 @@
       '.us683-print-hero-inner>div>div:nth-child(1){font-size:12pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      '.us683-print-chart-full{width:100%!important;max-width:100%!important;margin:0 0 1px!important;overflow:hidden!important;}' +
-      '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
-      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:4px!important;width:100%!important;max-width:100%!important;margin:0!important;overflow:hidden!important;}' +
-      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;max-width:50%!important;overflow:hidden!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
-      '.us683-print-chart-slot{margin:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important;}' +
-      '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;max-width:none;}' +
-      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card,' +
-      '.us683-print-page2 .us683-bar-card,.us683-print-page2 .us683-week-card{padding:3px 4px!important;margin:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;}' +
-      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title,' +
-      '.us683-print-page2 .us683-bar-card-title,.us683-print-page2 .us683-week-card-title{font-size:10pt!important;font-weight:700!important;margin-bottom:3px!important;line-height:1.2!important;}' +
-      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num,' +
-      '.us683-print-page2 .us683-bar-card-num,.us683-print-page2 .us683-week-card-num{font-size:9pt!important;font-weight:700!important;}' +
-      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab,' +
-      '.us683-print-page2 .us683-bar-card-lab,.us683-print-page2 .us683-week-card-lab{font-size:7.5pt!important;font-weight:600!important;line-height:1.15!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-row{width:100%!important;max-width:100%!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-col{min-width:0!important;flex:1 1 0%!important;}' +
-      '.us683-print-page1 .us683-week-card-legend,.us683-print-page2 .us683-week-card-legend{font-size:8pt!important;}' +
-      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row,' +
-      '.us683-print-page2 .us683-bar-card-row,.us683-print-page2 .us683-week-card-row{min-height:0!important;}' +
-      '.us683-print-page2 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      /* 2枚目は一覧のみ・読めるサイズ・全文（…禁止） */
-      '.us683-print-p2-wrap{font-size:9pt!important;line-height:1.22!important;margin:0!important;}' +
-      '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;}' +
+      '.us683-print-chart-full{flex:1.25 1 0%!important;min-height:0!important;width:100%!important;margin:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
+      '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;flex:0 0 auto;}' +
+      '.us683-print-chart-row{flex:1 1 0%!important;min-height:0!important;display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:4px!important;width:100%!important;margin:0!important;overflow:hidden!important;}' +
+      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0 0 1px;border-bottom:1px solid #222;flex:0 0 auto;}' +
+      '.us683-print-chart-slot{margin:0!important;width:100%!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:3px 4px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;}' +
+      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:10pt!important;font-weight:700!important;margin-bottom:2px!important;line-height:1.2!important;}' +
+      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:8.5pt!important;font-weight:700!important;}' +
+      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:7pt!important;font-weight:600!important;line-height:1.1!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5.5pt!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{width:100%!important;max-width:100%!important;min-height:0!important;}' +
+      '.us683-print-page1 .us683-bar-card-col,.us683-print-page1 .us683-week-card-col{min-width:0!important;flex:1 1 0%!important;}' +
+      '.us683-print-page1 .us683-week-card-legend{font-size:8pt!important;}' +
+      '.us683-print-page2 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 2px;border-bottom:1px solid #222;padding-bottom:0;flex:0 0 auto;}' +
+      '.us683-print-p2-wrap{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;font-size:8.5pt!important;line-height:1.2!important;margin:0!important;width:100%!important;}' +
+      '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;width:100%!important;}' +
       '.us683-print-p2-wrap>div>div:first-child{display:none!important;}' +
-      '.us683-print-p2-wrap table{font-size:9pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
+      '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
       '.us683-print-p2-wrap th,.us683-print-p2-wrap td{' +
-      'padding:2px 4px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
-      'font-size:9pt!important;line-height:1.22!important;}' +
+      'padding:2px 3px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
+      'font-size:inherit!important;line-height:1.2!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word!important;overflow:visible!important;white-space:normal!important;}' +
       '.us683-print-p2-wrap td:nth-child(1){width:9em!important;white-space:nowrap!important;}' +
       '.us683-print-p2-wrap td:nth-child(2){width:2.2em!important;white-space:nowrap!important;text-align:right!important;}' +
@@ -2291,13 +2290,13 @@
     for (var ti = 0; ti < tables.length; ti += 1) {
       var tbl = tables[ti];
       tbl.style.margin = '0';
-      tbl.style.fontSize = '9pt';
+      tbl.style.fontSize = '8.5pt';
       var cells = tbl.querySelectorAll('th,td');
       for (var ci = 0; ci < cells.length; ci += 1) {
         var cell = cells[ci];
-        cell.style.padding = '2px 4px';
-        cell.style.fontSize = '9pt';
-        cell.style.lineHeight = '1.22';
+        cell.style.padding = '2px 3px';
+        cell.style.fontSize = '8.5pt';
+        cell.style.lineHeight = '1.2';
         cell.style.verticalAlign = 'top';
         cell.style.overflow = 'visible';
         cell.style.maxHeight = 'none';
@@ -2319,155 +2318,116 @@
     }
   }
 
-  /** クローンした画面用グラフ: 余白だけ潰し、棒の高さは保つ */
-  function user683CompactPrintChartClone(root) {
+  /** 印刷用: transform なしで幅100%に収める（列 minWidth を潰す） */
+  function user683PreparePrintChart(root) {
     if (!root) return;
-    var cards = root.querySelectorAll('.us683-bar-card,.us683-week-card');
-    for (var i = 0; i < cards.length; i += 1) {
-      cards[i].style.margin = '0';
-      cards[i].style.padding = '4px 5px';
-    }
+    root.style.transform = 'none';
+    root.style.width = '100%';
+    root.style.maxWidth = '100%';
+    root.style.boxSizing = 'border-box';
+    root.style.margin = '0';
+    root.style.padding = '3px 4px';
     var rows = root.querySelectorAll('.us683-bar-card-row,.us683-week-card-row');
     for (var ri = 0; ri < rows.length; ri += 1) {
       rows[ri].style.minHeight = '0';
+      rows[ri].style.width = '100%';
+      rows[ri].style.maxWidth = '100%';
+      rows[ri].style.boxSizing = 'border-box';
+    }
+    var cols = root.querySelectorAll('.us683-bar-card-col,.us683-week-card-col');
+    for (var ci = 0; ci < cols.length; ci += 1) {
+      cols[ci].style.minWidth = '0';
+      cols[ci].style.flex = '1 1 0%';
+      cols[ci].style.maxWidth = 'none';
     }
   }
 
   function user683PrintSheetMaxH(pageEl) {
-    pageEl.style.height = '289mm';
-    pageEl.style.maxHeight = '289mm';
+    pageEl.style.height = '287mm';
+    pageEl.style.maxHeight = '287mm';
     pageEl.style.overflow = 'hidden';
     var maxH = pageEl.clientHeight;
     if (!maxH || maxH < 80) {
-      maxH = Math.round((289 * 96) / 25.4);
+      maxH = Math.round((287 * 96) / 25.4);
     }
     return maxH;
   }
 
-  /** 棒の高さだけ伸ばして余白を埋める（transform 縦伸びによる見切れを避ける） */
-  function user683GrowChartBars(root, factor) {
-    if (!root || !(factor > 1.02)) return;
-    if (factor > 2.2) factor = 2.2;
+  /** 棒高さの係数変更（transform 不使用） */
+  function user683ScaleChartBarHeights(root, factor) {
+    if (!root || !(factor > 0) || Math.abs(factor - 1) < 0.02) return;
+    if (factor > 2.4) factor = 2.4;
+    if (factor < 0.45) factor = 0.45;
     var nodes = root.querySelectorAll('div');
     for (var i = 0; i < nodes.length; i += 1) {
       var h = parseFloat(nodes[i].style.height || '');
-      if (!isNaN(h) && h >= 6) {
-        nodes[i].style.height = Math.round(h * factor) + 'px';
+      if (!isNaN(h) && h >= 4) {
+        nodes[i].style.height = Math.max(2, Math.round(h * factor)) + 'px';
       }
     }
   }
 
-  /** 横だけ収める（等倍 scale ≤ 1）。縦は伸ばさない */
-  function user683FitChartSlotWidth(slot) {
+  /** slot の利用可能高さに合わせて棒を伸縮（幅は常に100%） */
+  function user683SizeChartSlotToFlex(slot) {
     if (!slot || !slot.firstElementChild) return;
     var child = slot.firstElementChild;
-    user683CompactPrintChartClone(child);
-    child.classList.add('us683-print-chart-scaled');
-    child.style.transform = 'none';
-    child.style.width = '100%';
-    child.style.maxWidth = '100%';
-    child.style.boxSizing = 'border-box';
-    slot.style.width = '100%';
-    slot.style.maxWidth = '100%';
+    user683PreparePrintChart(child);
+    slot.style.height = '100%';
     slot.style.overflow = 'hidden';
-    var slotW =
-      slot.clientWidth ||
-      (slot.parentElement && slot.parentElement.clientWidth) ||
-      0;
-    if (slotW < 40) slotW = 700;
-    var contentW = Math.max(child.scrollWidth || 0, child.offsetWidth || 0, 1);
-    var sx = slotW / contentW;
-    if (sx > 1) sx = 1;
-    if (sx < 0.6) sx = 0.6;
-    if (sx < 0.999) {
-      child.style.transformOrigin = 'top left';
-      child.style.transform = 'scale(' + sx + ')';
-      child.style.width = 100 / sx + '%';
-      var h0 = child.offsetHeight || child.scrollHeight || 0;
-      slot.style.height = Math.ceil(h0 * sx) + 'px';
-    } else {
-      child.style.transform = 'none';
-      child.style.width = '100%';
-      slot.style.height =
-        Math.ceil(child.offsetHeight || child.scrollHeight || 0) + 'px';
-    }
+    var target = slot.clientHeight;
+    if (!(target > 40)) return;
+    var h0 = child.offsetHeight || child.scrollHeight || 0;
+    if (h0 < 20) return;
+    var factor = target / h0;
+    /* 少し余白を残して下端ラベルが見切れないように */
+    factor *= 0.96;
+    user683ScaleChartBarHeights(child, factor);
   }
 
-  /** シート全体をページ高さに等倍で収める（見切れ禁止・下限なし） */
-  function user683FitSheetToPage(pageEl) {
-    if (!pageEl) return;
-    var inner = pageEl.querySelector('.us683-print-sheet-inner');
-    if (!inner) return;
-    var maxH = user683PrintSheetMaxH(pageEl);
-    inner.style.transform = 'none';
-    inner.style.width = '100%';
-    var h = Math.max(inner.scrollHeight, inner.offsetHeight);
-    if (h <= maxH + 1) return;
-    var s = (maxH / h) * 0.992;
-    if (s > 1) s = 1;
-    if (s < 0.55) s = 0.55;
-    inner.style.transformOrigin = 'top left';
-    inner.style.transform = 'scale(' + s + ')';
-    inner.style.width = 100 / s + '%';
-  }
-
-  /** 余白があればグラフ棒を伸ばして埋める */
-  function user683FillPage1ExtraWithCharts(pageEl) {
-    if (!pageEl) return;
-    var inner = pageEl.querySelector('.us683-print-sheet-inner');
-    if (!inner) return;
-    var maxH = user683PrintSheetMaxH(pageEl);
-    var h = Math.max(inner.scrollHeight, inner.offsetHeight);
-    var extra = maxH - h;
-    if (extra < 24) return;
-    var slots = inner.querySelectorAll('.us683-print-chart-slot');
-    if (!slots.length) return;
-    var totalChartH = 0;
-    for (var i = 0; i < slots.length; i += 1) {
-      totalChartH += slots[i].offsetHeight || 0;
-    }
-    if (totalChartH < 40) return;
-    var factor = (totalChartH + extra * 0.92) / totalChartH;
-    if (factor > 1.9) factor = 1.9;
-    for (var si = 0; si < slots.length; si += 1) {
-      var sl = slots[si];
-      if (!sl.firstElementChild) continue;
-      user683GrowChartBars(sl.firstElementChild, factor);
-      user683FitChartSlotWidth(sl);
-    }
-  }
-
-  /** 1枚目: 要約は全文表示 → 横フィット → 余白は棒を伸ばす → 最後に全体フィット */
+  /** 1枚目: flex で幅いっぱい・高さ配分。scale 禁止 */
   function user683LayoutPrintPage1(pageEl) {
     if (!pageEl) return;
+    user683PrintSheetMaxH(pageEl);
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
     if (!inner) return;
     inner.style.transform = 'none';
     inner.style.width = '100%';
     var slots = inner.querySelectorAll('.us683-print-chart-slot');
-    for (var si = 0; si < slots.length; si += 1) {
-      user683FitChartSlotWidth(slots[si]);
+    for (var i = 0; i < slots.length; i += 1) {
+      if (slots[i].firstElementChild) {
+        user683PreparePrintChart(slots[i].firstElementChild);
+      }
     }
-    user683FillPage1ExtraWithCharts(pageEl);
-    user683FitSheetToPage(pageEl);
+    /* flex 反映後に棒高さを合わせる */
+    for (var si = 0; si < slots.length; si += 1) {
+      user683SizeChartSlotToFlex(slots[si]);
+    }
   }
 
-  /** 2枚目: 一覧全文を優先。収まらなければシート全体を等倍縮小（下端見切れ禁止） */
+  /** 2枚目: 幅100%。収まらなければ字号だけ下げる（scale 禁止・全文維持） */
   function user683LayoutPrintPage2(pageEl) {
     if (!pageEl) return;
+    var maxH = user683PrintSheetMaxH(pageEl);
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
     if (!inner) return;
     inner.style.transform = 'none';
     inner.style.width = '100%';
     var wrap2 = inner.querySelector('.us683-print-p2-wrap');
-    if (wrap2) {
-      wrap2.style.transform = 'none';
-      wrap2.style.width = '100%';
-      wrap2.style.height = 'auto';
-      wrap2.style.overflow = 'visible';
-      wrap2.style.maxHeight = 'none';
+    if (!wrap2) return;
+    wrap2.style.transform = 'none';
+    wrap2.style.width = '100%';
+    wrap2.style.overflow = 'hidden';
+    var sizes = [8.5, 8, 7.5, 7, 6.5, 6];
+    for (var i = 0; i < sizes.length; i += 1) {
+      var pt = sizes[i];
+      wrap2.style.fontSize = pt + 'pt';
+      var cells = wrap2.querySelectorAll('th,td');
+      for (var ci = 0; ci < cells.length; ci += 1) {
+        cells[ci].style.fontSize = pt + 'pt';
+      }
+      var h = Math.max(inner.scrollHeight, inner.offsetHeight);
+      if (h <= maxH + 2) break;
     }
-    user683FitSheetToPage(pageEl);
   }
 
   function getOrCreateUser683PrintPortal() {
@@ -2603,7 +2563,7 @@
       slot.className = 'us683-print-block us683-print-chart-slot';
       var cloned = user683CloneHostFirstChild(hostId);
       if (cloned) {
-        user683CompactPrintChartClone(cloned);
+        user683PreparePrintChart(cloned);
         slot.appendChild(cloned);
       } else {
         slot.textContent = '（グラフを取得できませんでした）';
@@ -2674,11 +2634,15 @@
       window.requestAnimationFrame(function () {
         user683LayoutPrintPage1(p1);
         user683LayoutPrintPage2(p2);
-        try {
-          window.print();
-        } catch (ePrint) {
-          console.warn(BUILD, ePrint);
-        }
+        window.requestAnimationFrame(function () {
+          /* flex 高さ確定後にもう一度棒を合わせる */
+          user683LayoutPrintPage1(p1);
+          try {
+            window.print();
+          } catch (ePrint) {
+            console.warn(BUILD, ePrint);
+          }
+        });
       });
     });
   }

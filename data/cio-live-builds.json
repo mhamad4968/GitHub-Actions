@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-no-clip-v15",
-      "fileKey": "d7928e14-22a5-46fa-a224-2a0fb6dd249c",
-      "revision": "103",
+      "build": "2026-08-02-683-print-flex-fill-v16",
+      "fileKey": "6c23d6b7-3ab2-413a-af28-4e2e5d3a7ccf",
+      "revision": "104",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:45:22.459Z",
+      "deployedAt": "2026-08-02T09:49:16.632Z",
       "note": null
     },
     "686": {
