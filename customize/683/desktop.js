@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-2page-landscape-readable-v3';
+  const BUILD = '2026-08-02-683-print-p2-table-fit-v4';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2243,13 +2243,50 @@
       '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:6.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
       '.us683-print-page1 .us683-week-card-legend{font-size:9.5pt!important;}' +
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:0!important;}' +
-      '.us683-print-page2 .us683-print-h2{font-size:12pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page2-note{font-size:9pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
-      '.us683-print-p2-wrap{font-size:8pt;line-height:1.1;}' +
-      '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;}' +
-      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:1px 3px!important;border:1px solid #999!important;vertical-align:top!important;}' +
-      '.us683-print-p2-wrap td{word-break:break-word;}' +
+      '.us683-print-page2 .us683-print-h2{font-size:9pt;font-weight:700;margin:0 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page2-note{font-size:7pt;color:#333;margin:0 0 1px;line-height:1.15;}' +
+      /* 2枚目表: 画面用 inline 12px/padding を潰し、余白少なめで1枚に収める（過度な極小は避ける） */
+      '.us683-print-p2-wrap{font-size:7pt!important;line-height:1.08!important;margin:0!important;}' +
+      '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;}' +
+      '.us683-print-p2-wrap>div>div:first-child{display:none!important;}' +
+      '.us683-print-p2-wrap table{font-size:7pt!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
+      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{' +
+      'padding:0 2px!important;border:1px solid #bbb!important;vertical-align:middle!important;' +
+      'font-size:7pt!important;line-height:1.08!important;}' +
+      '.us683-print-p2-wrap td{word-break:break-word!important;overflow:hidden!important;max-height:2.3em!important;}' +
+      '.us683-print-p2-wrap td:nth-child(1){width:9.5em!important;white-space:nowrap!important;}' +
+      '.us683-print-p2-wrap td:nth-child(2){width:2.2em!important;white-space:nowrap!important;text-align:right!important;}' +
+      '.us683-print-p2-wrap tr{page-break-inside:avoid;}' +
       '}';
+  }
+
+  /** 印刷2枚目: 画面クローンの余白・長文を圧縮し A4横1枚に収める */
+  function user683TightenPrintSummaryTable(root) {
+    if (!root) return;
+    var PRINT_BODY_MAX = 96;
+    var tables = root.querySelectorAll('table');
+    for (var ti = 0; ti < tables.length; ti += 1) {
+      var tbl = tables[ti];
+      tbl.style.margin = '0';
+      tbl.style.fontSize = '7pt';
+      var cells = tbl.querySelectorAll('th,td');
+      for (var ci = 0; ci < cells.length; ci += 1) {
+        var cell = cells[ci];
+        cell.style.padding = '0 2px';
+        cell.style.fontSize = '7pt';
+        cell.style.lineHeight = '1.08';
+        cell.style.verticalAlign = 'middle';
+      }
+      var bodyCells = tbl.querySelectorAll('tbody td:nth-child(3)');
+      for (var bi = 0; bi < bodyCells.length; bi += 1) {
+        var bd = bodyCells[bi];
+        var raw = String(bd.textContent || '').replace(/\s+/g, ' ').trim();
+        if (raw.length > PRINT_BODY_MAX) {
+          bd.title = raw;
+          bd.textContent = raw.slice(0, PRINT_BODY_MAX - 1) + '…';
+        }
+      }
+    }
   }
 
   function getOrCreateUser683PrintPortal() {
@@ -2440,8 +2477,7 @@
     p2.appendChild(h2t);
     var pn = document.createElement('p');
     pn.className = 'us683-print-page2-note';
-    pn.textContent =
-      '用紙はA4横（landscape）。1枚目=件数・先月対比・月次要約（大）・日次/週次/年次グラフ、2枚目=対応一覧サマリー。印刷ダイアログの向きは「横」を確認。';
+    pn.textContent = '※参考・A4横1枚想定（長文は要約表示。詳細は682）。';
     p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
@@ -2450,6 +2486,7 @@
       var tclone = th.firstElementChild.cloneNode(true);
       user683StripAllIds(tclone);
       wrap2.appendChild(tclone);
+      user683TightenPrintSummaryTable(wrap2);
     } else {
       wrap2.textContent = '（一覧表がまだありません）';
     }
@@ -2572,7 +2609,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4横・2枚構成・1枚目:件数・先月対比・月次要約（大）・日次/週次/年次グラフ、2枚目:対応一覧サマリー）。印刷ダイアログで向き「横」を確認してください。PDF保存は印刷先で「PDFに保存」を選んでください。';
+      'ブラウザの印刷ダイアログを開きます（A4横・2枚構成・1枚目:件数・先月対比・月次要約・グラフ、2枚目:対応一覧※参考を1枚に圧縮）。向き「横」を確認。PDFは印刷先で「PDFに保存」。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();

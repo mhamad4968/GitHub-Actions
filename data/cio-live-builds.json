@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-2page-landscape-readable-v3",
-      "fileKey": "02b6a9c1-d5ac-4c3e-aa6b-d943c0fc4c31",
-      "revision": "90",
+      "build": "2026-08-02-683-print-p2-table-fit-v4",
+      "fileKey": "3256260f-bd06-43d8-a79c-dfd0b497939c",
+      "revision": "91",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:05:10.630Z",
+      "deployedAt": "2026-08-02T09:08:50.279Z",
       "note": null
     },
     "686": {
