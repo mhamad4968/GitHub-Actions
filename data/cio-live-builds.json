@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-page2-fit-v23",
-      "fileKey": "8e0f85c5-d5e6-4f0f-9809-24ee117802fe",
-      "revision": "111",
+      "build": "2026-08-02-683-print-page2-break-v24",
+      "fileKey": "6a991120-c5a6-4afa-ac15-85d11662c5e8",
+      "revision": "112",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T10:13:48.320Z",
+      "deployedAt": "2026-08-02T10:16:47.304Z",
       "note": null
     },
     "686": {

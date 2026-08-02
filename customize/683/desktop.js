@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-page2-fit-v23';
+  const BUILD = '2026-08-02-683-print-page2-break-v24';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2229,14 +2229,17 @@
       'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      /* 用紙の向きに合わせてページ箱を埋める（287mm 固定だと横印刷で縮小→下空き） */
-      '.us683-print-page1,.us683-print-page2{' +
+      /* 1枚目: 用紙箱を埋める。2枚目は共有しない（avoid-page/hidden が最終行見切れを再発させる） */
+      '.us683-print-page1{' +
       'box-sizing:border-box!important;height:100%!important;max-height:100%!important;' +
       'width:100%!important;overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
+      'page-break-after:always!important;break-after:page!important;font-size:11pt;' +
       '}' +
-      '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:11pt;}' +
-      /* 2枚目は長いとき次頁へ送る（avoid だと最終行が見切れる） */
-      '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:auto!important;break-after:auto!important;}' +
+      '.us683-print-page2{' +
+      'box-sizing:border-box!important;width:100%!important;height:auto!important;max-height:none!important;' +
+      'overflow:visible!important;page-break-inside:auto!important;break-inside:auto!important;' +
+      'page-break-before:auto!important;break-before:auto!important;page-break-after:auto!important;break-after:auto!important;' +
+      '}' +
       /* transform scale は使わない（右余白・縦縮小の原因になる） */
       '.us683-print-page1 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
@@ -2244,9 +2247,9 @@
       'gap:14px!important;padding-bottom:4mm!important;box-sizing:border-box!important;' +
       '}' +
       '.us683-print-page2 .us683-print-sheet-inner{' +
-      'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
-      'gap:6px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
+      'display:flex!important;flex-direction:column!important;width:100%!important;height:auto!important;max-height:none!important;' +
+      'max-width:100%!important;overflow:visible!important;transform:none!important;' +
+      'gap:4px!important;padding-bottom:2mm!important;box-sizing:border-box!important;' +
       '}' +
       '.us683-print-block{margin-bottom:0;flex:0 0 auto;}' +
       '.us683-print-mom-box{border:2px solid #222;padding:5px 8px;margin:0;font-size:11pt;font-weight:800;line-height:1.3;background:#f3f4f6;}' +
@@ -2281,14 +2284,6 @@
       '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5pt!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}' +
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;}' +
       '.us683-print-page1 .us683-bar-card-col,.us683-print-page1 .us683-week-card-col{min-width:0!important;flex:1 1 0%!important;}' +
-      /* 2枚目のみ: 最終行クリップ防止（1枚目セレクタは触らない） */
-      '.us683-print-page2{' +
-      'overflow:visible!important;max-height:none!important;height:auto!important;min-height:0!important;' +
-      '}' +
-      '.us683-print-page2 .us683-print-sheet-inner{' +
-      'height:auto!important;max-height:none!important;overflow:visible!important;' +
-      'gap:4px!important;padding-bottom:2mm!important;' +
-      '}' +
       '.us683-print-page2 .us683-print-h2{font-size:10.5pt;font-weight:700;margin:1px 0 2px;border-bottom:1px solid #222;padding-bottom:0;flex:0 0 auto;}' +
       '.us683-print-p2-wrap{flex:0 0 auto!important;min-height:0!important;overflow:visible!important;font-size:8pt!important;line-height:1.15!important;margin:0!important;width:100%!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;width:100%!important;}' +
@@ -2311,13 +2306,13 @@
     for (var ti = 0; ti < tables.length; ti += 1) {
       var tbl = tables[ti];
       tbl.style.margin = '0';
-      tbl.style.fontSize = '8.5pt';
+      tbl.style.fontSize = '8pt';
       var cells = tbl.querySelectorAll('th,td');
       for (var ci = 0; ci < cells.length; ci += 1) {
         var cell = cells[ci];
-        cell.style.padding = '2px 3px';
-        cell.style.fontSize = '8.5pt';
-        cell.style.lineHeight = '1.2';
+        cell.style.padding = '1px 3px';
+        cell.style.fontSize = '8pt';
+        cell.style.lineHeight = '1.15';
         cell.style.verticalAlign = 'top';
         cell.style.overflow = 'visible';
         cell.style.maxHeight = 'none';
@@ -2379,19 +2374,30 @@
   }
 
   function user683PrintSheetMaxH(pageEl) {
+    if (!pageEl) {
+      return Math.round((287 * 96) / 25.4);
+    }
+    /* 2枚目は height:auto のまま測ると中身高になってしまう → 一時的に用紙高を当てる */
+    var isPage2 = pageEl.classList && pageEl.classList.contains('us683-print-page2');
+    var prevH = pageEl.style.height;
+    var prevMax = pageEl.style.maxHeight;
+    var prevOv = pageEl.style.overflow;
     pageEl.style.overflow = 'hidden';
     if (user683IsPrintMedia()) {
-      /* 印刷中は用紙ボックスに追従（横でも縦でも clientHeight を使う） */
       pageEl.style.height = '100%';
       pageEl.style.maxHeight = '100%';
     } else {
-      /* 画面計測（印刷前）は A4縦の内容高さを仮定 */
       pageEl.style.height = '287mm';
       pageEl.style.maxHeight = '287mm';
     }
     var maxH = pageEl.clientHeight;
     if (!maxH || maxH < 80) {
       maxH = Math.round((287 * 96) / 25.4);
+    }
+    if (isPage2) {
+      pageEl.style.height = prevH || 'auto';
+      pageEl.style.maxHeight = prevMax || 'none';
+      pageEl.style.overflow = prevOv || 'visible';
     }
     return maxH;
   }
