@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-detail-add-notice-short: 詳細追加案内を短文化。#R-EXCEL-UI-05
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-detail-notice-short
   // Phase2c-actual-himoku-fold-all: すべて展開／すべて閉じる（詳細あり費目のみ）。#R-EXCEL-UI-16
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold-all
   // Phase2c-actual-himoku-fold-default-closed: 費目▶は詳細があるときだけ。既定クローズ。#R-EXCEL-UI-16
   // Phase2c-actual-himoku-fold: 費目単位▶／▼開閉。閉じ時は費目名+数量/実行予算SUM。空詳細は出さない。＋で開いて追加。#R-EXCEL-UI-16
   // Phase2c-actual-sticky-totals-collapse: 合計バーは既定クローズ・summaryクリックで開く。#R-EXCEL-UI-15
@@ -10871,7 +10872,7 @@
       const detailAddNotice = documentRef.createElement("p");
       detailAddNotice.className = "jy2-actual-note jy2-actual-detail-add-notice";
       detailAddNotice.textContent =
-        "原価管理はExcelどおり費目→種別。既存内訳の詳細は非表示のまま、操作列＋で詳細を追加して手入力できます（内訳は消していません）。構造は一時保存。「予実を保存」は月次など予実のみ";
+        "操作列＋で詳細を追加して手入力できます";
       pane.appendChild(detailAddNotice);
     }
     if (rows.length === 0) {
