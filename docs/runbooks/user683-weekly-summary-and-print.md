@@ -21,6 +21,32 @@
 - **`npm run user683:local-servers`**: **Claude 中継のみ**別ウィンドウ起動（PDF 配信は含まない）。
 - **オフライン ReportLab PDF（任意）**: 提出物をファイルで欲しいときのみ CLI — `npm run user683:monthly-pdf -- --year YYYY --month M --out path.pdf`（レイアウト: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**・手順: **`scripts/user683-monthly-pdf/README.md`**）。**kintone UI からは叩かない**。
 
+### 印刷受入（2026-08-02 GO · S-PRINT-01〜03 / A1 / A3）
+
+浜田または依頼者が「余白・見切れ・小さい」と指摘したら、**CSS を触る前**に:
+
+| # | 確認 | 合格目安 |
+|---|------|----------|
+| 1 | 保存 PDF の **MediaBox** | **縦** ≈ **595×842** pt。**横** ≈ **842×595** pt なら向きが主因（間隔調整だけでは直らない） |
+| 2 | 印刷ダイアログの **向き** | **縦**（CSS `@page` よりダイアログが勝つ） |
+| 3 | **縮小／用紙に合わせる** | オフ推奨 |
+| 4 | 2枚目の **最終行日付** | 見切れなし（例: `2026/07/31(金)`） |
+
+実装上の禁止・必須（`customize/683/desktop.js`）:
+
+- **禁止**: 印刷シートへの `transform: scale`、グラフ子の計測前 `height:100%` 先付け、page1/page2 での `overflow:hidden`＋`break-inside:avoid-page` 共有
+- **必須**: 棒は `height:auto` で中身実測してからスケール、page2 は見切れより次頁送りを優先
+
+### ナレッジ（MCP + git · M-RAG-01〜03）
+
+| 格納先 | 識別子 |
+|--------|--------|
+| Memory MCP | エンティティ **`kintone-683-print-report`** |
+| RAG MCP | **`note://2026-08-02/kintone-683-print-failures`** |
+| git 正本（本ファイル＋運用） | 本節 / `docs/runbooks/cio-ops-2026-08-02-evening-improvements.md` |
+
+**683 印刷を直す着手時**: RAG `query_documents`（例: `683 印刷 MediaBox`）または Memory `open_nodes` を **1回以上**。重要失敗を MCP に入れたら **同じターンで本 runbook にも要約をミラー**する（MCP 単独は参照漏れしやすい）。
+
 ### 旧運用（廃止・参照用）
 
 2026-05-15〜16 にあった **localhost HTTP 配信＋`window.open` 提出用 PDF** は **使用しない**。接続拒否（`ERR_CONNECTION_REFUSED`）や **17886 `EADDRINUSE`** のトラブルシュート節は **不要**（serve 未起動が原因だったため）。
