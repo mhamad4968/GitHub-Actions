@@ -3,10 +3,11 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
-  // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE/sanitize再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
+  // Phase2c-actual-detail-save-fix: TYPELESS詳細左の〃sanitize/stripを停止＋保存時name2を〃化しない。#R-EXCEL-UI-14
+  // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-auto-link-on
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-detail-save-fix
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -1379,10 +1380,10 @@
   }
   // 内訳に Excel 名称枠が無いとき空ブロックを追加し、10700直後（名称枠）／その後10800・10900／オペレーター直後へ並べる。
   // 詳細行は載せず費目枠だけ（＋で追加するまで）。戻り値＝変化件数。
-  function jy2CostMgmtEnsureTypeOnlyFrames(detailModel, detailVisibility) {
+  function jy2CostMgmtEnsureTypeOnlyFrames(detailModel, _detailVisibility) {
     if (JY2_COST_MGMT_AUTO_LINK_DISABLED) {
       if (typeof console !== "undefined" && console.info) {
-        console.info("[jy2-actual-auto-link-off] ENSURE/PLACE/sanitize skipped");
+        console.info("[jy2-actual-auto-link-off] ENSURE/PLACE skipped");
       }
       return 0;
     }
@@ -1411,12 +1412,8 @@
       JY2_COST_MGMT_ENSURE_CODED_FRAMES,
       "jy2CostMgmtEnsureCodedFrames",
     );
-    const stripped = jy2CostMgmtStripEmptyFrameDetailHimoku(
-      detailModel,
-      detailVisibility,
-    );
-    const sanitizedTypelessName2Ditto =
-      jy2CostMgmtSanitizeTypelessName2Ditto(detailModel);
+    // strip/sanitize は一時保存後に詳細左(name2)が消えるため走らせない。
+    // （〃→null が手入力を消し、次の一時保存で空確定になる。#R-EXCEL-UI-14）
     // 10700 → 名称枠（軌道…追加工事）→ 10800 → 10900 → オペレーター → その他コード枠
     const movedTypeOnly =
       jy2CostMgmtPlaceTypeOnlyFramesAfterPaintAncillary(detailModel);
@@ -1433,8 +1430,6 @@
       addedTypeOnly +
       addedDayNight +
       addedCoded +
-      stripped +
-      sanitizedTypelessName2Ditto +
       movedKamagaya +
       movedManager +
       movedTypeOnly +
@@ -12282,27 +12277,30 @@
       },
       // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
       async save(detailModel, summaryModel, projectionManual, options = {}) {
+        const skipTypelessName2Ditto = (row, block) => {
+          const himoku = String(row && row.name1 != null ? row.name1 : "").trim();
+          const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
+          if (
+            jy2CostMgmtIsTypeLessHimoku(himoku) ||
+            jy2CostMgmtIsTypeLessHimoku(himokuShort)
+          ) {
+            return true;
+          }
+          if (
+            block &&
+            jy2CostMgmtIsTypeLessExcelWorkType(
+              block.workTypeCode,
+              block.workTypeName,
+            )
+          ) {
+            return true;
+          }
+          return false;
+        };
         detailModel.prepareForSave({
-          skipEmptyName2Ditto: (row, block) => {
-            const himoku = String(row && row.name1 != null ? row.name1 : "").trim();
-            const himokuShort = himoku ? jy2CostMgmtExcelShortName(himoku) : "";
-            if (
-              jy2CostMgmtIsTypeLessHimoku(himoku) ||
-              jy2CostMgmtIsTypeLessHimoku(himokuShort)
-            ) {
-              return true;
-            }
-            if (
-              block &&
-              jy2CostMgmtIsTypeLessExcelWorkType(
-                block.workTypeCode,
-                block.workTypeName,
-              )
-            ) {
-              return true;
-            }
-            return false;
-          },
+          skipEmptyName2Ditto: skipTypelessName2Ditto,
+          // 同値でも name2 を 〃 にしない（TYPELESS詳細左の保存欠け防止）
+          skipName2Ditto: skipTypelessName2Ditto,
         });
         const parentRecord = {
           ...(summaryModel
