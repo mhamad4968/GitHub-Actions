@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-02-ver02-actual-howto-trim",
-      "fileKey": "5762d690-7503-4096-a821-98097cc6bc3a",
-      "revision": "303",
+      "build": "2026-08-02-ver02-actual-visual-polish",
+      "fileKey": "03389b4e-6ced-4c47-aaa6-be0a9888f0dd",
+      "revision": "304",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-02T00:09:21.836Z",
+      "deployedAt": "2026-08-02T00:11:16.664Z",
       "note": null
     },
     "757": {

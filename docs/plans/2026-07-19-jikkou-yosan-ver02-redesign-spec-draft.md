@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（予実視覚整理・#R-EXCEL-UI-17）**: 案内帯・合計バー・すべて展開バー・費目▶を緑/琥珀トーンで揃える。BUILD `2026-08-02-ver02-actual-visual-polish`。  
 **2026-08-02（予実の見方・Excel言及削除）**: 利用者向け文言から「Excel原価管理明細」を削除。BUILD `2026-08-02-ver02-actual-howto-no-excel`。  
 **2026-08-02（予実の見方更新・#R-EXCEL-UI-16）**: 「予実の見方」を費目▶／▼・すべて展開／閉じるに合わせて更新。BUILD `2026-08-02-ver02-actual-howto-fold`。  
 **2026-08-02（詳細追加案内短文化・#R-EXCEL-UI-05）**: バナーを「操作列＋で詳細を追加して手入力できます」に短縮。BUILD `2026-08-02-ver02-actual-detail-notice-short`。  
