@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-section-breath-v19';
+  const BUILD = '2026-08-02-683-print-fill-breath-v20';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2238,19 +2238,19 @@
       '.us683-print-page1 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
       'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
-      'gap:5px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
+      'gap:14px!important;padding-bottom:4mm!important;box-sizing:border-box!important;' +
       '}' +
       '.us683-print-page2 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
       'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
-      'gap:4px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
+      'gap:6px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
       '}' +
       '.us683-print-block{margin-bottom:0;flex:0 0 auto;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:3px 6px;margin:0;font-size:11pt;font-weight:800;line-height:1.25;background:#f3f4f6;}' +
-      '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:0;border-bottom:1px solid #222;padding-bottom:1px;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:5px 8px;margin:0;font-size:11pt;font-weight:800;line-height:1.3;background:#f3f4f6;}' +
+      '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:1px;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:0;border-bottom:1px solid #222;padding-bottom:2px;}' +
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:0;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:5px 7px;min-height:1.2em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.35;overflow:visible;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:8px 10px;min-height:2.4em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.45;overflow:visible;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2333,10 +2333,12 @@
     root.style.transform = 'none';
     root.style.width = '100%';
     root.style.maxWidth = '100%';
-    root.style.height = '100%';
+    /* height:100% だと offsetHeight がスロット高と一致し棒スケールが止まる → auto で中身実測 */
+    root.style.height = 'auto';
+    root.style.minHeight = '0';
     root.style.boxSizing = 'border-box';
     root.style.margin = '0';
-    root.style.padding = '2px 3px';
+    root.style.padding = '3px 4px';
     root.style.display = 'flex';
     root.style.flexDirection = 'column';
     var rows = root.querySelectorAll('.us683-bar-card-row,.us683-week-card-row');
@@ -2370,13 +2372,20 @@
   /** 棒・積み上げの高さだけ係数変更 */
   function user683ScaleChartBarHeights(root, factor) {
     if (!root || !(factor > 0) || Math.abs(factor - 1) < 0.015) return;
-    if (factor > 3) factor = 3;
-    if (factor < 0.4) factor = 0.4;
+    if (factor > 4.5) factor = 4.5;
+    if (factor < 0.35) factor = 0.35;
     var nodes = root.querySelectorAll('div');
     for (var i = 0; i < nodes.length; i += 1) {
       var h = parseFloat(nodes[i].style.height || '');
-      if (!isNaN(h) && h >= 3) {
+      if (!isNaN(h) && h >= 2) {
         nodes[i].style.height = Math.max(2, Math.round(h * factor)) + 'px';
+      }
+    }
+    var rows = root.querySelectorAll('.us683-bar-card-row,.us683-week-card-row');
+    for (var ri = 0; ri < rows.length; ri += 1) {
+      var mh = parseFloat(rows[ri].style.minHeight || '');
+      if (!isNaN(mh) && mh >= 8) {
+        rows[ri].style.minHeight = Math.max(8, Math.round(mh * factor)) + 'px';
       }
     }
   }
@@ -2385,19 +2394,24 @@
   function user683FillChartSlotHeight(slot, targetH) {
     if (!slot || !slot.firstElementChild || !(targetH > 48)) return;
     var child = slot.firstElementChild;
+    var th = Math.floor(targetH);
     user683PreparePrintChart(child);
     slot.style.flex = 'none';
-    slot.style.height = Math.floor(targetH) + 'px';
-    slot.style.maxHeight = Math.floor(targetH) + 'px';
+    slot.style.height = th + 'px';
+    slot.style.maxHeight = th + 'px';
     slot.style.overflow = 'hidden';
+    child.style.height = 'auto';
+    child.style.minHeight = '0';
     var n;
-    for (n = 0; n < 4; n += 1) {
-      var h0 = child.offsetHeight || child.scrollHeight || 0;
+    for (n = 0; n < 6; n += 1) {
+      var h0 = Math.max(child.scrollHeight || 0, child.offsetHeight || 0);
       if (h0 < 16) break;
-      var factor = (targetH * 0.985) / h0;
-      if (Math.abs(factor - 1) < 0.02) break;
+      var factor = (th * 0.97) / h0;
+      if (Math.abs(factor - 1) < 0.025) break;
       user683ScaleChartBarHeights(child, factor);
     }
+    child.style.minHeight = th + 'px';
+    child.style.height = th + 'px';
   }
 
   /**
@@ -2412,9 +2426,9 @@
     inner.style.transform = 'none';
     inner.style.width = '100%';
     inner.style.height = '100%';
-    /* 下端の空きを、要約〜グラフ間の間隔（gap）と余白に振り分ける */
-    var sectionGap = 6;
-    var bottomPad = Math.round((3 * 96) / 25.4);
+    /* 下端の空き → セクション間隔＋棒高さへ（詰まり＋下半分空白を防ぐ） */
+    var sectionGap = 16;
+    var bottomPad = Math.round((4 * 96) / 25.4);
     inner.style.gap = sectionGap + 'px';
     inner.style.paddingBottom = bottomPad + 'px';
     inner.style.boxSizing = 'border-box';
@@ -2433,11 +2447,11 @@
     /* ヘッダ間 gap + 日次/下段の間 gap + 下余白 */
     var gapBudget = sectionGap * Math.max(1, headerCount) + sectionGap + bottomPad;
     var remain = maxH - used - gapBudget;
-    if (remain < 220) remain = 220;
-    var dayArea = Math.floor(remain * 0.56);
+    if (remain < 320) remain = 320;
+    var dayArea = Math.floor(remain * 0.58);
     var rowArea = remain - dayArea;
-    if (dayArea < 130) dayArea = 130;
-    if (rowArea < 105) rowArea = 105;
+    if (dayArea < 160) dayArea = 160;
+    if (rowArea < 130) rowArea = 130;
 
     if (dayFull) {
       dayFull.style.flex = 'none';
