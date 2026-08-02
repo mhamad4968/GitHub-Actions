@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-chart-title-v22';
+  const BUILD = '2026-08-02-683-print-page2-fit-v23';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2235,7 +2235,8 @@
       'width:100%!important;overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
       '}' +
       '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:11pt;}' +
-      '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:avoid!important;break-after:avoid!important;}' +
+      /* 2枚目は長いとき次頁へ送る（avoid だと最終行が見切れる） */
+      '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:auto!important;break-after:auto!important;}' +
       /* transform scale は使わない（右余白・縦縮小の原因になる） */
       '.us683-print-page1 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
@@ -2280,17 +2281,26 @@
       '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5pt!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}' +
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;}' +
       '.us683-print-page1 .us683-bar-card-col,.us683-print-page1 .us683-week-card-col{min-width:0!important;flex:1 1 0%!important;}' +
-      '.us683-print-page2 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 2px;border-bottom:1px solid #222;padding-bottom:0;flex:0 0 auto;}' +
-      '.us683-print-p2-wrap{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;font-size:8.5pt!important;line-height:1.2!important;margin:0!important;width:100%!important;}' +
+      /* 2枚目のみ: 最終行クリップ防止（1枚目セレクタは触らない） */
+      '.us683-print-page2{' +
+      'overflow:visible!important;max-height:none!important;height:auto!important;min-height:0!important;' +
+      '}' +
+      '.us683-print-page2 .us683-print-sheet-inner{' +
+      'height:auto!important;max-height:none!important;overflow:visible!important;' +
+      'gap:4px!important;padding-bottom:2mm!important;' +
+      '}' +
+      '.us683-print-page2 .us683-print-h2{font-size:10.5pt;font-weight:700;margin:1px 0 2px;border-bottom:1px solid #222;padding-bottom:0;flex:0 0 auto;}' +
+      '.us683-print-p2-wrap{flex:0 0 auto!important;min-height:0!important;overflow:visible!important;font-size:8pt!important;line-height:1.15!important;margin:0!important;width:100%!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;width:100%!important;}' +
       '.us683-print-p2-wrap>div>div:first-child{display:none!important;}' +
       '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}' +
       '.us683-print-p2-wrap th,.us683-print-p2-wrap td{' +
-      'padding:2px 3px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
-      'font-size:inherit!important;line-height:1.2!important;}' +
+      'padding:1px 3px!important;border:1px solid #bbb!important;vertical-align:top!important;' +
+      'font-size:inherit!important;line-height:1.15!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word!important;overflow:visible!important;white-space:normal!important;}' +
-      '.us683-print-p2-wrap td:nth-child(1){width:9em!important;white-space:nowrap!important;}' +
+      '.us683-print-p2-wrap td:nth-child(1){width:11.5em!important;min-width:11.5em!important;white-space:nowrap!important;overflow:visible!important;}' +
       '.us683-print-p2-wrap td:nth-child(2){width:2.2em!important;white-space:nowrap!important;text-align:right!important;}' +
+      '.us683-print-p2-wrap tr{page-break-inside:avoid!important;break-inside:avoid!important;}' +
       '}';
   }
 
@@ -2505,30 +2515,52 @@
     }
   }
 
-  /** 2枚目: 幅100%。収まらなければ字号だけ下げる（scale 禁止・全文維持） */
+  /** 2枚目のみ: 字号・余白を下げて収める。それでも超えるならクリップせず次頁へ送る */
   function user683LayoutPrintPage2(pageEl) {
     if (!pageEl) return;
     var maxH = user683PrintSheetMaxH(pageEl);
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
     if (!inner) return;
+    /* 1枚目の 100%/287mm 固定を外し、最終行見切れを防ぐ */
+    pageEl.style.height = 'auto';
+    pageEl.style.maxHeight = 'none';
+    pageEl.style.overflow = 'visible';
     inner.style.transform = 'none';
     inner.style.width = '100%';
+    inner.style.height = 'auto';
+    inner.style.maxHeight = 'none';
+    inner.style.overflow = 'visible';
     var wrap2 = inner.querySelector('.us683-print-p2-wrap');
     if (!wrap2) return;
     wrap2.style.transform = 'none';
     wrap2.style.width = '100%';
-    wrap2.style.overflow = 'hidden';
-    var sizes = [8.5, 8, 7.5, 7, 6.5, 6];
-    for (var i = 0; i < sizes.length; i += 1) {
+    wrap2.style.overflow = 'visible';
+    var sizes = [8, 7.5, 7, 6.5, 6, 5.5, 5];
+    var pads = [2, 2, 1, 1, 1, 1, 0];
+    var i;
+    for (i = 0; i < sizes.length; i += 1) {
       var pt = sizes[i];
+      var pad = pads[i];
       wrap2.style.fontSize = pt + 'pt';
+      wrap2.style.lineHeight = '1.12';
       var cells = wrap2.querySelectorAll('th,td');
       for (var ci = 0; ci < cells.length; ci += 1) {
         cells[ci].style.fontSize = pt + 'pt';
+        cells[ci].style.lineHeight = '1.12';
+        cells[ci].style.padding = pad + 'px 3px';
+        cells[ci].style.overflow = 'visible';
       }
-      var h = Math.max(inner.scrollHeight, inner.offsetHeight);
+      var dateCells = wrap2.querySelectorAll('td:nth-child(1),th:nth-child(1)');
+      for (var di = 0; di < dateCells.length; di += 1) {
+        dateCells[di].style.width = '11.5em';
+        dateCells[di].style.minWidth = '11.5em';
+        dateCells[di].style.whiteSpace = 'nowrap';
+        dateCells[di].style.overflow = 'visible';
+      }
+      var h = Math.max(inner.scrollHeight || 0, inner.offsetHeight || 0);
       if (h <= maxH + 2) break;
     }
+    /* 収まらない場合も overflow:hidden に戻さない（07/31 など最終行クリップ禁止） */
   }
 
   function getOrCreateUser683PrintPortal() {
