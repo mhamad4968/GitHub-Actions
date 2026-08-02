@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-chart-tall-v10';
+  const BUILD = '2026-08-02-683-print-summary-size-v11';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2240,7 +2240,7 @@
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:1px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:13pt;font-weight:800;margin:1px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:4px 6px;min-height:1.2em;max-height:40mm;background:#fafafa;font-size:16pt;font-weight:600;line-height:1.3;overflow:hidden;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:4px 6px;min-height:1.2em;max-height:40mm;background:#fafafa;font-size:13pt;font-weight:600;line-height:1.3;overflow:hidden;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:2px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +

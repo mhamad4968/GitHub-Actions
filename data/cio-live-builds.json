@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-chart-tall-v10",
-      "fileKey": "a0b6e168-7c48-40a5-826e-6cff54c64819",
-      "revision": "98",
+      "build": "2026-08-02-683-print-summary-size-v11",
+      "fileKey": "bb204839-5a62-46e2-8157-cabe52918861",
+      "revision": "99",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:23:33.311Z",
+      "deployedAt": "2026-08-02T09:24:11.660Z",
       "note": null
     },
     "686": {
