@@ -67,10 +67,10 @@
     },
     "683": {
       "build": "2026-08-02-683-print-2page-readable-mom-v1",
-      "fileKey": "c879cd76-e8ad-4f9c-b149-ab8394baa17c",
-      "revision": "87",
+      "fileKey": "7f471af2-2730-411d-9a53-d07c4a40166f",
+      "revision": "88",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T08:37:47.101Z",
+      "deployedAt": "2026-08-02T08:39:38.174Z",
       "note": null
     },
     "686": {

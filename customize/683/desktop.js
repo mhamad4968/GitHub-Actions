@@ -2324,7 +2324,7 @@
     momLabel.className = 'us683-print-mom-label';
     momLabel.textContent = '【先月対比（件数）】';
     momBox.appendChild(momLabel);
-    var momBody = '';
+    var momBody;
     if (prevHasAttr !== '1') {
       momBody = '前月比: —（前月にデータなし）';
     } else {
