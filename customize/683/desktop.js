@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-chart-1plus2-v5';
+  const BUILD = '2026-08-02-683-print-month-summary-lg-v6';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2223,7 +2223,9 @@
       '.us683-print-mom-box{border:2px solid #222;padding:3px 5px;margin:0 0 2px;font-size:13pt;font-weight:800;line-height:1.3;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:10pt;font-weight:700;margin-bottom:1px;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:5px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.32;max-height:36mm;overflow:hidden;}' +
+      /* 月次要約＝1枚目のメイン。大きく読みやすく（グラフ側で高さ帳尻） */
+      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:13pt;font-weight:800;margin:3px 0 2px;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:6px 7px;min-height:1.2em;background:#fafafa;font-size:18pt;font-weight:600;line-height:1.35;max-height:48mm;overflow:hidden;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2413,7 +2415,7 @@
     p1.appendChild(momBox);
 
     var h2m = document.createElement('h2');
-    h2m.className = 'us683-print-h2';
+    h2m.className = 'us683-print-h2 us683-print-h2-month';
     h2m.textContent = '月次要約';
     p1.appendChild(h2m);
     var ms = document.createElement('div');
@@ -2452,7 +2454,7 @@
     /* 上段: 日次を横いっぱいに / 下段: 週次・年次を左右 */
     var dayFull = document.createElement('div');
     dayFull.className = 'us683-print-chart-full us683-print-block';
-    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.62);
+    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.56);
     p1.appendChild(dayFull);
 
     var chartRow = document.createElement('div');
@@ -2461,12 +2463,12 @@
     colWeek.className = 'us683-print-chart-col';
     var colYear = document.createElement('div');
     colYear.className = 'us683-print-chart-col';
-    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.58);
+    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.52);
     addChartCol(
       colYear,
       '年次推移グラフ（直近6暦月）',
       'user683-chart-year',
-      0.58,
+      0.52,
     );
     chartRow.appendChild(colWeek);
     chartRow.appendChild(colYear);
