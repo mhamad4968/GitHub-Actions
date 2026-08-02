@@ -22,7 +22,7 @@
 
 **観測期間**: **H9/△2**: metricsEligibleAfter=**2026-07-18** · reviewDate=**2026-07-25** · early GREEN/降格 **禁止**
 
-**運用メモ**: 品質ゲート · Lifecycle v2 · closures=9 · 必読カード薄化入口。
+**運用メモ**: 品質ゲート · Lifecycle v2 · closures=9 · 必読カード薄化入口 · 棚卸基準 2026-08-02 更新済。
 
 **688**: heat-closed以外触らない · **674**: 購入先OK · **736**: 触らない · **756/757/758**: LIVE rev318 · **712**: deploy禁止
 
