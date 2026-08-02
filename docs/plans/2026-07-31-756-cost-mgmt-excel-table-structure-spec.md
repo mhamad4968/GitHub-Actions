@@ -281,6 +281,7 @@
 | 2026-08-02 | 予実UI視覚整理: 案内帯・合計バー・費目開閉ツールバー・▶ボタンを緑/琥珀で揃える。#R-EXCEL-UI-17。BUILD `2026-08-02-ver02-actual-visual-polish` |
 | 2026-08-02 | **内訳詳細の自動reveal停止**（leaf全件reveal・平坦hasLeaf自動表示を廃止）。原価管理は＋手追加のみ。reveal storageをv2へ更新。#R-EXCEL-LINK-00。BUILD `2026-08-02-ver02-actual-unlink-reveal` |
 | 2026-08-02 | **修正**: 手入力詳細は再表示。材料費品名カタログ（鋼材/H形鋼等）のみ非表示。#R-EXCEL-LINK-00。BUILD `2026-08-02-ver02-actual-unlink-catalog` |
+| 2026-08-02 | **修正**: カタログ除外は未revealのみ。操作列＋の手入力は材料費種別下でも残す（キーを消さない）。BUILD `2026-08-02-ver02-actual-unlink-catalog-fix` |
 | 2026-08-01 | Excel 12800｜補償費（種別なし・詳細2セル）。12700同型。omit解除＋ENSURE。#R-EXCEL-UI-09。BUILD `2026-08-01-ver02-actual-excel-12800-compensation` |
 | 2026-08-01 | 12800表示硬化（区分null修復・ENSURE名一致は空コードのみ）＋単価/数量列狭・実行予算額列広。#R-EXCEL-UI-09/01。BUILD `2026-08-01-ver02-actual-excel-12800-col-widths` |
 | 2026-08-01 | soft-save フルreload回避を撤回（本体「新しいバージョン」ダイアログ回避）。計測は維持。#R-PERF-01。BUILD `2026-08-01-ver02-actual-soft-save-reload` |

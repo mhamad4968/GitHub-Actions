@@ -3,8 +3,9 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-unlink-catalog-fix
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-unlink-catalog
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
   // Phase2c-actual-howto-trim: 予実の見方から「既定クローズ」文言を削除。#R-EXCEL-UI-16
@@ -10283,17 +10284,19 @@
         typeof entry.detailIndex === "number" ? entry.detailIndex : -1;
       const detailRow =
         detailIndex >= 0 && detailRows ? detailRows[detailIndex] : null;
-      if (jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child)) continue;
-      const hasLeaf = jy2CostMgmtDetailHasLeafContent(detailRow || child);
       const revealed =
         typeof shouldShowDetail === "function"
           ? shouldShowDetail(child.rowKey) === true
           : false;
+      const isCatalog = jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child);
+      // カタログは reveal 済み（手＋）だけ数える
+      if (isCatalog && !revealed) continue;
+      const hasLeaf = jy2CostMgmtDetailHasLeafContent(detailRow || child);
       if (revealed) {
         n += 1;
         continue;
       }
-      if (countHiddenLeaf === true && hasLeaf) n += 1;
+      if (countHiddenLeaf === true && hasLeaf && !isCatalog) n += 1;
     }
     return n;
   }
@@ -10301,8 +10304,8 @@
   // Phase2c-detail-manual-only: 既存内訳行は隠し、＋で reveal した行だけ表示。
   // App757 の既存明細は削除しない。来週連動後は MANUAL_ONLY=false で全表示。
   // reveal キーは sessionStorage に残し、一時保存後の reload でも手入力行を維持。
-  // v3: 手入力 leaf は再reveal。材料費品名カタログは除外（#R-EXCEL-LINK-00）。
-  const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys:v3-nocatalog`;
+  // v4: カタログは自動revealしないが＋済みキーは削除しない（#R-EXCEL-LINK-00）。
+  const JY2_ACTUAL_REVEAL_KEYS_STORAGE = `jy2:${APP1_ID}:actualDetailRevealKeys:v4-catalog-soft`;
   const JY2_LAST_SOFT_SAVED_KEY = `jy2:${APP1_ID}:lastSoftSavedAt`;
   function jy2ActualLoadRevealKeys(view, budgetVersionId) {
     const set = new Set();
@@ -10373,7 +10376,7 @@
     }
     return n;
   }
-  // 消えたキー除去 ＋ 非カタログ leaf を reveal に戻す（手入力詳細の再表示）。
+  // 消えたキー除去 ＋ leaf を reveal に戻す。カタログは新規自動追加しない（＋済みは残す）。
   function jy2ActualPruneRevealKeys(detailModel, costDetailVisibility, view, budgetVersionId) {
     if (!detailModel || !costDetailVisibility) return 0;
     const set = costDetailVisibility._revealKeys;
@@ -10401,10 +10404,8 @@
       for (const row of block.detailRows) {
         if (!row || !row.rowKey) continue;
         if (!jy2CostMgmtDetailHasLeafContent(row)) continue;
-        if (jy2CostMgmtIsUchiwakeCatalogDetail(row)) {
-          set.delete(String(row.rowKey));
-          continue;
-        }
+        // 内訳カタログは自動では足さない（手＋で reveal 済みなら set に残る）
+        if (jy2CostMgmtIsUchiwakeCatalogDetail(row)) continue;
         set.add(String(row.rowKey));
         n += 1;
       }
@@ -11334,18 +11335,21 @@
             if (!child || !child.rowKey) continue;
             const detailRow =
               detailIndex >= 0 ? detailRows[detailIndex] : null;
-            if (jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child)) {
-              continue;
-            }
+            const revealed = costDetailVisibility.shouldShow(child.rowKey);
+            const isCatalog = jy2CostMgmtIsUchiwakeCatalogDetail(
+              detailRow || child,
+            );
+            // 内訳カタログは未revealのみ隠す（操作列＋済みは残す）
+            if (isCatalog && !revealed) continue;
             const hasLeaf = jy2CostMgmtDetailHasLeafContent(
               detailRow || child,
             );
-            const revealed = costDetailVisibility.shouldShow(child.rowKey);
-            // 空詳細は出さない。leaf あり（非カタログ）は表示可。
+            // 空詳細は出さない。leaf ありは表示（カタログは上で除外済み）
             if (!hasLeaf && !revealed) continue;
             if (
               hasLeaf &&
               !revealed &&
+              !isCatalog &&
               typeof costDetailVisibility.reveal === "function"
             ) {
               costDetailVisibility.reveal(child.rowKey);
@@ -11431,9 +11435,6 @@
           for (const { child, detailIndex } of entries) {
             const detailRow =
               detailIndex >= 0 ? detailRows[detailIndex] : null;
-            if (jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child)) {
-              continue;
-            }
             const name3Raw =
               detailIndex >= 0 ? detailRows[detailIndex]?.name3 : null;
             const name3Resolved = jy2IsDitto(name3Raw)
@@ -11445,9 +11446,18 @@
               : jy2HasText(name3Raw)
                 ? String(name3Raw).trim()
                 : "";
+            const revealed = costDetailVisibility.shouldShow(
+              child.rowKey,
+              name3Resolved,
+            );
+            // 内訳カタログは未revealのみ隠す（＋手入力は残す）
             if (
-              !costDetailVisibility.shouldShow(child.rowKey, name3Resolved)
+              jy2CostMgmtIsUchiwakeCatalogDetail(detailRow || child) &&
+              !revealed
             ) {
+              continue;
+            }
+            if (!revealed) {
               continue;
             }
             lastRowInHimoku = body.appendChild(
