@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-chart-gap-v17",
-      "fileKey": "ad4f7580-4d32-4e72-bf40-10b3c6270768",
-      "revision": "105",
+      "build": "2026-08-02-683-print-fill-day-gap-v18",
+      "fileKey": "ceffb5b3-b73b-43db-872d-a77653e0f90f",
+      "revision": "106",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:52:47.355Z",
+      "deployedAt": "2026-08-02T09:57:16.089Z",
       "note": null
     },
     "686": {

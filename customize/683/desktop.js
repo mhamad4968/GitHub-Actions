@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-chart-gap-v17';
+  const BUILD = '2026-08-02-683-print-fill-day-gap-v18';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2218,7 +2218,8 @@
       '}' +
       '}' +
       '@media print{' +
-      '@page{size:A4 portrait;margin:5mm;}' +
+      /* 210×297 = A4縦（ダイアログで「横」だと余白・縮小が起きる） */
+      '@page{size:210mm 297mm;margin:5mm;}' +
       'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
@@ -2330,15 +2331,20 @@
     root.style.transform = 'none';
     root.style.width = '100%';
     root.style.maxWidth = '100%';
+    root.style.height = '100%';
     root.style.boxSizing = 'border-box';
     root.style.margin = '0';
-    root.style.padding = '3px 4px';
+    root.style.padding = '2px 3px';
+    root.style.display = 'flex';
+    root.style.flexDirection = 'column';
     var rows = root.querySelectorAll('.us683-bar-card-row,.us683-week-card-row');
     for (var ri = 0; ri < rows.length; ri += 1) {
       rows[ri].style.minHeight = '0';
       rows[ri].style.width = '100%';
       rows[ri].style.maxWidth = '100%';
       rows[ri].style.boxSizing = 'border-box';
+      rows[ri].style.flex = '1 1 auto';
+      rows[ri].style.alignItems = 'flex-end';
     }
     var cols = root.querySelectorAll('.us683-bar-card-col,.us683-week-card-col');
     for (var ci = 0; ci < cols.length; ci += 1) {
@@ -2359,54 +2365,95 @@
     return maxH;
   }
 
-  /** 棒高さの係数変更（transform 不使用） */
+  /** 棒・積み上げの高さだけ係数変更 */
   function user683ScaleChartBarHeights(root, factor) {
-    if (!root || !(factor > 0) || Math.abs(factor - 1) < 0.02) return;
-    if (factor > 2.4) factor = 2.4;
-    if (factor < 0.45) factor = 0.45;
+    if (!root || !(factor > 0) || Math.abs(factor - 1) < 0.015) return;
+    if (factor > 3) factor = 3;
+    if (factor < 0.4) factor = 0.4;
     var nodes = root.querySelectorAll('div');
     for (var i = 0; i < nodes.length; i += 1) {
       var h = parseFloat(nodes[i].style.height || '');
-      if (!isNaN(h) && h >= 4) {
+      if (!isNaN(h) && h >= 3) {
         nodes[i].style.height = Math.max(2, Math.round(h * factor)) + 'px';
       }
     }
   }
 
-  /** slot の利用可能高さに合わせて棒を伸縮（幅は常に100%） */
-  function user683SizeChartSlotToFlex(slot) {
-    if (!slot || !slot.firstElementChild) return;
+  /** 指定 px 高さまで棒を伸ばしてスロット内の下余白を埋める */
+  function user683FillChartSlotHeight(slot, targetH) {
+    if (!slot || !slot.firstElementChild || !(targetH > 48)) return;
     var child = slot.firstElementChild;
     user683PreparePrintChart(child);
-    slot.style.height = '100%';
+    slot.style.flex = 'none';
+    slot.style.height = Math.floor(targetH) + 'px';
+    slot.style.maxHeight = Math.floor(targetH) + 'px';
     slot.style.overflow = 'hidden';
-    var target = slot.clientHeight;
-    if (!(target > 40)) return;
-    var h0 = child.offsetHeight || child.scrollHeight || 0;
-    if (h0 < 20) return;
-    var factor = target / h0;
-    /* 隙間を詰める（ラベル見切れだけわずかに余裕） */
-    factor *= 0.99;
-    user683ScaleChartBarHeights(child, factor);
+    var n;
+    for (n = 0; n < 4; n += 1) {
+      var h0 = child.offsetHeight || child.scrollHeight || 0;
+      if (h0 < 16) break;
+      var factor = (targetH * 0.985) / h0;
+      if (Math.abs(factor - 1) < 0.02) break;
+      user683ScaleChartBarHeights(child, factor);
+    }
   }
 
-  /** 1枚目: flex で幅いっぱい・高さ配分。scale 禁止 */
+  /**
+   * 1枚目: ヘッダ実測のあと、残り高さを日次/下段に px 固定配分。
+   * flex の clientHeight=0 で棒が伸びず「日次の下に空白」になるのを防ぐ。
+   */
   function user683LayoutPrintPage1(pageEl) {
     if (!pageEl) return;
-    user683PrintSheetMaxH(pageEl);
+    var maxH = user683PrintSheetMaxH(pageEl);
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
     if (!inner) return;
     inner.style.transform = 'none';
     inner.style.width = '100%';
-    var slots = inner.querySelectorAll('.us683-print-chart-slot');
-    for (var i = 0; i < slots.length; i += 1) {
-      if (slots[i].firstElementChild) {
-        user683PreparePrintChart(slots[i].firstElementChild);
-      }
+    inner.style.height = '100%';
+
+    var dayFull = inner.querySelector('.us683-print-chart-full');
+    var chartRow = inner.querySelector('.us683-print-chart-row');
+    var used = 0;
+    var i;
+    for (i = 0; i < inner.children.length; i += 1) {
+      var ch = inner.children[i];
+      if (ch === dayFull || ch === chartRow) continue;
+      used += ch.offsetHeight || 0;
     }
-    /* flex 反映後に棒高さを合わせる */
-    for (var si = 0; si < slots.length; si += 1) {
-      user683SizeChartSlotToFlex(slots[si]);
+
+    var remain = maxH - used - 2;
+    if (remain < 240) remain = 240;
+    var dayArea = Math.floor(remain * 0.58);
+    var rowArea = remain - dayArea;
+    if (dayArea < 140) dayArea = 140;
+    if (rowArea < 110) rowArea = 110;
+
+    if (dayFull) {
+      dayFull.style.flex = 'none';
+      dayFull.style.height = dayArea + 'px';
+      dayFull.style.maxHeight = dayArea + 'px';
+      dayFull.style.margin = '0';
+      dayFull.style.overflow = 'hidden';
+      var dayH2 = dayFull.querySelector('.us683-print-h2');
+      var dayTitleH = dayH2 ? dayH2.offsetHeight || 0 : 0;
+      var daySlot = dayFull.querySelector('.us683-print-chart-slot');
+      user683FillChartSlotHeight(daySlot, dayArea - dayTitleH);
+    }
+
+    if (chartRow) {
+      chartRow.style.flex = 'none';
+      chartRow.style.height = rowArea + 'px';
+      chartRow.style.maxHeight = rowArea + 'px';
+      chartRow.style.margin = '0';
+      chartRow.style.overflow = 'hidden';
+      var cols = chartRow.querySelectorAll('.us683-print-chart-col');
+      for (i = 0; i < cols.length; i += 1) {
+        var col = cols[i];
+        var h2 = col.querySelector('.us683-print-h2');
+        var titleH = h2 ? h2.offsetHeight || 0 : 0;
+        var slot = col.querySelector('.us683-print-chart-slot');
+        user683FillChartSlotHeight(slot, rowArea - titleH);
+      }
     }
   }
 
@@ -2734,7 +2781,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4縦・計2枚・1枚目にグラフ3つ）。向き「縦」を確認。';
+      'A4縦・計2枚。印刷ダイアログの向きは必ず「縦／ポートレート」にしてください（「横」だと余白と縮小が起きます）。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();
