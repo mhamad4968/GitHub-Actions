@@ -4,6 +4,7 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 const SPEC_REL = 'templates/yojitsu-budget-lite/SPEC.md';
 const MCP_REQUIRED = ['deepseek', 'kimi', 'repo-tree', 'eslint-mcp', 'openrouter'];
@@ -21,6 +22,31 @@ function meter(pct, width = 20) {
   return `[${'█'.repeat(filled)}${'░'.repeat(width - filled)}] ${pct}%`;
 }
 
+/** mcp.json キー有無（disabled 含む）。verify の stdout 文言依存は偽陰性になるため使わない。 */
+function loadMcpServerKeys(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) return {};
+    const j = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const raw = j.mcpServers || {};
+    const out = {};
+    for (const k of Object.keys(raw)) out[k] = true;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function mergedMcpServerKeys(root) {
+  const home = process.env.USERPROFILE || process.env.HOME || '';
+  const paths = [
+    home ? path.join(home, '.cursor', 'mcp.json') : '',
+    path.join(root, '.cursor', 'mcp.json'),
+  ].filter(Boolean);
+  const merged = {};
+  for (const p of paths) Object.assign(merged, loadMcpServerKeys(p));
+  return merged;
+}
+
 export function specProgress(root) {
   const p = path.join(root, SPEC_REL);
   if (!fs.existsSync(p)) return { done: 0, total: 0, pct: 0 };
@@ -33,13 +59,16 @@ export function specProgress(root) {
 }
 
 export function mcpStatus(root) {
+  const keys = mergedMcpServerKeys(root);
   const r = run('npm run verify:cio-mcp-registry', root);
+  // exit 1 = 推奨のみ欠落（必須は揃っている）→ registry 自体は運用可。exit 2 のみ NG。
+  const registryOk = r.ok || !/\bmissing required\b/i.test(r.out);
   const lines = [];
   for (const name of MCP_REQUIRED) {
-    const ok = r.out.includes(name) || r.ok;
+    const ok = Boolean(keys[name]);
     lines.push(`  ${ok ? '✅' : '❌'} ${name}`);
   }
-  return { registryOk: r.ok, lines };
+  return { registryOk, lines };
 }
 
 export function repoTreeSummary(root) {

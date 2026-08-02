@@ -49,14 +49,21 @@ const RECOMMENDED = [
   'git-history-mcp',
 ];
 
-function loadServers(filePath) {
+/**
+ * @param {string} filePath
+ * @param {{ includeDisabled?: boolean }} [opts]
+ *   includeDisabled=true … キー存在のみ（推奨チェック用。dormant/disabled も「登録済」）
+ *   includeDisabled=false … 必須チェック用（disabled は欠落とみなす）
+ */
+function loadServers(filePath, opts = {}) {
+  const includeDisabled = opts.includeDisabled === true;
   try {
     if (!fs.existsSync(filePath)) return {};
     const j = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const raw = j.mcpServers || {};
     const out = {};
     for (const [k, v] of Object.entries(raw)) {
-      if (v && v.disabled === true) continue;
+      if (!includeDisabled && v && v.disabled === true) continue;
       out[k] = true;
     }
     return out;
@@ -66,10 +73,10 @@ function loadServers(filePath) {
   }
 }
 
-function mergeRegistry(paths) {
+function mergeRegistry(paths, opts = {}) {
   const merged = {};
   for (const p of paths) {
-    const s = loadServers(p);
+    const s = loadServers(p, opts);
     for (const k of Object.keys(s)) merged[k] = true;
   }
   return merged;
@@ -81,14 +88,20 @@ const userMcp = home ? path.join(home, '.cursor', 'mcp.json') : '';
 const repoMcp = path.join(root, '.cursor', 'mcp.json');
 
 const paths = [userMcp, repoMcp].filter(Boolean);
-const names = mergeRegistry(paths);
+/** 必須: 有効サーバのみ。推奨: キー登録があれば OK（disabled=dormant 許容・a11y 等） */
+const namesActive = mergeRegistry(paths, { includeDisabled: false });
+const namesConfigured = mergeRegistry(paths, { includeDisabled: true });
 
 const presentPaths = paths.filter((p) => fs.existsSync(p));
 console.log('[verify-cio-mcp-registry] files:', presentPaths.length ? presentPaths.join(' | ') : '(none)');
-console.log('[verify-cio-mcp-registry] merged server count:', Object.keys(names).length);
+console.log(
+  '[verify-cio-mcp-registry] merged server count:',
+  Object.keys(namesConfigured).length,
+  `(active=${Object.keys(namesActive).length})`,
+);
 
-const missingReq = REQUIRED_CIO.filter((n) => !names[n]);
-const missingRec = RECOMMENDED.filter((n) => !names[n]);
+const missingReq = REQUIRED_CIO.filter((n) => !namesActive[n]);
+const missingRec = RECOMMENDED.filter((n) => !namesConfigured[n]);
 
 if (missingReq.length) {
   console.error('[verify-cio-mcp-registry] NG missing required:', missingReq.join(', '));

@@ -16,6 +16,15 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   'chat-sessions/desktop-ai-emergency-read-pack/31-META-26-formalization-lifecycle-charter.txt',
   'chat-sessions/desktop-ai-emergency-read-pack/32-META-27-constitution-navigation-charter.txt',
   'chat-sessions/desktop-ai-emergency-read-pack/33-META-28-ceo-go-phases-charter.txt',
+  // #S-RAG-WAKE-03 — quick-health Self-Heal 後の正本ミラーを WAKE commit に同梱
+  'kintone-apps.md',
+  '.rag/extra-docs/kintone-apps.md',
+  'RULES-INDEX.md',
+  '.rag/extra-docs/RULES-INDEX.md',
+  'AGENTS.md',
+  '.rag/extra-docs/AGENTS.md',
+  'WORKFLOW.md',
+  '.rag/extra-docs/WORKFLOW.md',
 ]);
 
 export function gitHeadShort(root) {

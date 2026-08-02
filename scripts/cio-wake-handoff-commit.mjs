@@ -47,8 +47,9 @@ function commitAllowlist(paths, message) {
     console.error('[cio:wake:handoff-commit] NG git add', add.err);
     process.exit(1);
   }
+  // pathspec 付き commit — index に載った allowlist 外（例: 682 workflow）を誤同梱しない
   // post-commit checkpoint sync を入れると tip が再度ずれて D-CLOSE-02 が悪化する
-  const commit = git(['commit', '-m', message], {
+  const commit = git(['commit', '-m', message, '--', ...paths], {
     env: {
       ...process.env,
       CIO_POST_COMMIT_CHECKPOINT_SYNC: '0',

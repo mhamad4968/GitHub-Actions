@@ -1,57 +1,57 @@
-# アプリ 682: 月次グラフの 7 暦月 filterCond を JST 基準で更新（preview reports PUT + deploy）
-#
-# ■ スケジュール: 毎月 1 日 14:00 UTC ≈ 同日 23:00 JST（GitHub cron は UTC 固定のため近似）
-# ■ 手動: Actions タブから workflow_dispatch 可
-#
-# ■ Secrets（**Repository secrets のみ** — 本ジョブは `environment:` を付けない）
-#   Settings → Secrets and variables → Actions に登録: KINTONE_BASE_URL / KINTONE_USERNAME / KINTONE_PASSWORD
-#   （682 グラフ REST・ローカル `.env` と同じ名前）。任意: KINTONE_BASIC_AUTH_* 。
-#   ※ `environment: kintone-collect` + Required reviewers だと **スケジュールが承認待ちで止まる**ため、
-#     月初の無人実行は **Repo secrets 直参照**に固定（`ops-guide-kintone-publish` 等の別ワークフローは従来どおり Environment 可）。
-#
-# ■ 運用上の注意（CIO / 浜田側）
-# - **必ず `npm run 682:graph-monthly:gha` のみ**（preflight + §50-3-8 skip stamp + guard + REST を一括）。
-#   `682:graph-monthly:scheduled` を workflow から直接呼ばない（5038 未設定で失敗 — TSB 再発防止）。
-#   正本: `docs/runbooks/cio-gha-periodic-5038-stamp.md` / `npm run verify:gha-periodic-workflows`
-# - `schedule` は **デフォルトブランチ**のみ。検証は **workflow_dispatch**。
-# - ログにパスワードを echo しない（スクリプトは認証ヘッダのみ生成）。
-
-name: 682-graph-monthly-refresh
-
-on:
-  schedule:
-    - cron: "0 14 1 * *"
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: 682-graph-monthly-refresh
-  cancel-in-progress: false
-
-jobs:
-  refresh:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
-      KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
-      KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
-      KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
-      KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
-      # 防御層: guard は GITHUB_ACTIONS でも時計スキップするが、明示（ローカル SESSION-CLOCK 混入再発防止）
-      SKIP_CIO_SESSION_CLOCK_DEPLOY: "1"
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: npm
-
-      - name: npm ci
-        run: npm ci
-
-      - name: Refresh graph (bundled GHA gate — preflight + 5038 + REST)
-        run: npm run 682:graph-monthly:gha
+# アプリ 682: 月次グラフの 7 暦月 filterCond を JST 基準で更新（preview reports PUT + deploy）
+#
+# ■ スケジュール: 毎月 1 日 14:00 UTC ≈ 同日 23:00 JST（GitHub cron は UTC 固定のため近似）
+# ■ 手動: Actions タブから workflow_dispatch 可
+#
+# ■ Secrets（**Repository secrets のみ** — 本ジョブは `environment:` を付けない）
+#   Settings → Secrets and variables → Actions に登録: KINTONE_BASE_URL / KINTONE_USERNAME / KINTONE_PASSWORD
+#   （682 グラフ REST・ローカル `.env` と同じ名前）。任意: KINTONE_BASIC_AUTH_* 。
+#   ※ `environment: kintone-collect` + Required reviewers だと **スケジュールが承認待ちで止まる**ため、
+#     月初の無人実行は **Repo secrets 直参照**に固定（`ops-guide-kintone-publish` 等の別ワークフローは従来どおり Environment 可）。
+#
+# ■ 運用上の注意（CIO / 浜田側）
+# - **必ず `npm run 682:graph-monthly:gha` のみ**（preflight + §50-3-8 skip stamp + guard + REST を一括）。
+#   `682:graph-monthly:scheduled` を workflow から直接呼ばない（5038 未設定で失敗 — TSB 再発防止）。
+#   正本: `docs/runbooks/cio-gha-periodic-5038-stamp.md` / `npm run verify:gha-periodic-workflows`
+# - `schedule` は **デフォルトブランチ**のみ。検証は **workflow_dispatch**。
+# - ログにパスワードを echo しない（スクリプトは認証ヘッダのみ生成）。
+
+name: 682-graph-monthly-refresh
+
+on:
+  schedule:
+    - cron: "0 14 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 682-graph-monthly-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KINTONE_BASE_URL: ${{ secrets.KINTONE_BASE_URL }}
+      KINTONE_USERNAME: ${{ secrets.KINTONE_USERNAME }}
+      KINTONE_PASSWORD: ${{ secrets.KINTONE_PASSWORD }}
+      KINTONE_BASIC_AUTH_USERNAME: ${{ secrets.KINTONE_BASIC_AUTH_USERNAME }}
+      KINTONE_BASIC_AUTH_PASSWORD: ${{ secrets.KINTONE_BASIC_AUTH_PASSWORD }}
+      # 防御層: guard は GITHUB_ACTIONS でも時計スキップするが、明示（ローカル SESSION-CLOCK 混入再発防止）
+      SKIP_CIO_SESSION_CLOCK_DEPLOY: "1"
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Refresh graph (bundled GHA gate — preflight + 5038 + REST)
+        run: npm run 682:graph-monthly:gha
