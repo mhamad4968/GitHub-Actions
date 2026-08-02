@@ -6430,7 +6430,7 @@ function buildVersionCopyInputs({
       ".jy2-title{margin:0;font-size:22px;font-weight:800;letter-spacing:.28em;color:#334155;line-height:1.35}",
       ".jy2-header-stub{font-size:11px;color:#64748b;letter-spacing:normal;opacity:1}",
       ".jy2-tabs{display:flex;gap:4px;padding:6px 0 0;background:transparent;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}",
-      ".jy2-tab{border:1px solid #cbd5e1;border-bottom:0;border-radius:6px 6px 0 0;background:#f1f5f9;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;color:#475569;white-space:nowrap;flex:0 0 auto}",
+      ".jy2-tab{border:1px solid #cbd5e1;border-bottom:0;border-radius:6px 6px 0 0;background:#f1f5f9;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:600;color:#475569;white-space:nowrap;flex:0 0 auto}",
       ".jy2-tab[data-tab-id='header']{background:#f8fafc;color:#475569;border-color:#94a3b8}",
       ".jy2-tab[data-tab-id='summary']{background:#eff6ff;color:#1e40af;border-color:#93c5fd}",
       ".jy2-tab[data-tab-id='detail']{background:#ecfdf5;color:#166534;border-color:#86efac}",
