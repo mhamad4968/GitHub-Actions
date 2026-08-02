@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-08-02-ver02-actual-howto-fold",
-      "fileKey": "0142a4dc-1d91-4d33-80f6-e9c3ec41c89a",
-      "revision": "301",
+      "build": "2026-08-02-ver02-actual-howto-no-excel",
+      "fileKey": "770d8336-7a90-4424-8aa4-4fe175b73366",
+      "revision": "302",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-08-02T00:04:58.441Z",
+      "deployedAt": "2026-08-02T00:07:56.141Z",
       "note": null
     },
     "757": {
