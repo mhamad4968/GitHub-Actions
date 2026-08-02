@@ -5443,7 +5443,7 @@ npm run cio:morning:ready
 
 **要約**: 756 LIVE rev318 visual-readability。7月振り返り運用GO（必読カード・scan-plans日付ゲート・a11y disabled）。アプリ棚卸基準更新。`verify:kintone-apps-live-build-sync --all` OK 59/59。OMIT残なし。
 
-**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用P2（フラグ可視化・4h退避）は続き可。
+**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用改善P2（フラグ可視化・4h退避）は続き可。
 
 **Git**: close-git で本締め（棚卸＋台帳＋SPEC）
 
