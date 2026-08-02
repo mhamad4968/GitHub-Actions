@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-2sheet-fit-v9",
-      "fileKey": "6c67620f-6dee-4f62-a278-c56f23ceff3f",
-      "revision": "97",
+      "build": "2026-08-02-683-print-chart-tall-v10",
+      "fileKey": "a0b6e168-7c48-40a5-826e-6cff54c64819",
+      "revision": "98",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:20:44.517Z",
+      "deployedAt": "2026-08-02T09:23:33.311Z",
       "note": null
     },
     "686": {

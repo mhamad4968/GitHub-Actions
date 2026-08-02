@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-2sheet-fit-v9';
+  const BUILD = '2026-08-02-683-print-chart-tall-v10';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2218,7 +2218,7 @@
       '}' +
       '}' +
       '@media print{' +
-      '@page{size:A4 landscape;margin:4mm;}' +
+      '@page{size:A4 landscape;margin:2.5mm;}' +
       'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
@@ -2227,20 +2227,20 @@
       'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:12pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      /* 各シートを A4横1枚に固定（溢れは内側 scale で収める） */
+      /* 各シートを A4横1枚に固定。余白はグラフ高さへ回す */
       '.us683-print-page1,.us683-print-page2{' +
-      'box-sizing:border-box!important;height:202mm!important;max-height:202mm!important;' +
+      'box-sizing:border-box!important;height:205mm!important;max-height:205mm!important;' +
       'overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
       '}' +
       '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:12pt;}' +
       '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:avoid!important;break-after:avoid!important;}' +
-      '.us683-print-sheet-inner{transform-origin:top left;width:100%;}' +
-      '.us683-print-block{margin-bottom:2px;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 2px;font-size:12pt;font-weight:800;line-height:1.25;background:#f3f4f6;}' +
+      '.us683-print-sheet-inner{transform-origin:top left;width:100%;height:100%;}' +
+      '.us683-print-block{margin-bottom:1px;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 1px;font-size:12pt;font-weight:800;line-height:1.2;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:13pt;font-weight:800;margin:2px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:5px 6px;min-height:1.2em;background:#fafafa;font-size:16pt;font-weight:600;line-height:1.32;overflow:visible;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:1px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:13pt;font-weight:800;margin:1px 0 1px;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:4px 6px;min-height:1.2em;max-height:40mm;background:#fafafa;font-size:16pt;font-weight:600;line-height:1.3;overflow:hidden;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:2px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
@@ -2317,53 +2317,141 @@
     }
   }
 
-  /** クローンした画面用グラフの巨大 minHeight を印刷向けに潰す */
+  /** クローンした画面用グラフ: 余白だけ潰し、棒の高さは保つ */
   function user683CompactPrintChartClone(root) {
     if (!root) return;
     var cards = root.querySelectorAll('.us683-bar-card,.us683-week-card');
     for (var i = 0; i < cards.length; i += 1) {
       cards[i].style.margin = '0';
-      cards[i].style.padding = '4px 6px';
+      cards[i].style.padding = '6px 8px';
     }
     var rows = root.querySelectorAll('.us683-bar-card-row,.us683-week-card-row');
     for (var ri = 0; ri < rows.length; ri += 1) {
       rows[ri].style.minHeight = '0';
-      rows[ri].style.height = 'auto';
-    }
-    var tallEls = root.querySelectorAll('div');
-    for (var bi = 0; bi < tallEls.length; bi += 1) {
-      var bh = parseFloat(tallEls[bi].style.height || '') || 0;
-      if (bh >= 140) {
-        tallEls[bi].style.height = Math.round(bh * 0.5) + 'px';
-      }
     }
   }
 
-  /**
-   * A4横1枚（約202mm）にシート全体を scale して収める。
-   * 計測前に portal を画面外で display できる状態にしておくこと。
-   */
-  function user683FitPrintSheet(pageEl) {
+  function user683PrintSheetMaxH(pageEl) {
+    pageEl.style.height = '205mm';
+    pageEl.style.maxHeight = '205mm';
+    pageEl.style.overflow = 'hidden';
+    var maxH = pageEl.clientHeight;
+    if (!maxH || maxH < 80) {
+      maxH = Math.round((205 * 96) / 25.4);
+    }
+    return maxH;
+  }
+
+  /** グラフを指定高さまで拡大／縮小して余白を埋める */
+  function user683FillChartSlotToHeight(slot, targetH) {
+    if (!slot || !slot.firstElementChild || !(targetH > 40)) return;
+    var child = slot.firstElementChild;
+    user683CompactPrintChartClone(child);
+    child.classList.add('us683-print-chart-scaled');
+    child.style.transform = 'none';
+    child.style.width = '100%';
+    var h0 = child.offsetHeight || child.scrollHeight || 1;
+    if (h0 < 1) h0 = 1;
+    var s = targetH / h0;
+    if (s > 1.25) s = 1.25;
+    if (s < 0.4) s = 0.4;
+    child.style.transformOrigin = 'top left';
+    child.style.transform = 'scale(' + s + ')';
+    child.style.width = 100 / s + '%';
+    slot.style.height = Math.floor(targetH) + 'px';
+    slot.style.overflow = 'hidden';
+  }
+
+  /** 1枚目: 要約以外の残り高さを日次グラフへ全部振る */
+  function user683LayoutPrintPage1(pageEl) {
     if (!pageEl) return;
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
     if (!inner) return;
-    pageEl.style.height = '202mm';
-    pageEl.style.maxHeight = '202mm';
-    pageEl.style.overflow = 'hidden';
     inner.style.transform = 'none';
     inner.style.width = '100%';
-    var maxH = pageEl.clientHeight;
-    if (!maxH || maxH < 80) {
-      maxH = Math.round((202 * 96) / 25.4);
+    var maxH = user683PrintSheetMaxH(pageEl);
+    var dayFull = inner.querySelector('.us683-print-chart-full');
+    var slot = dayFull
+      ? dayFull.querySelector('.us683-print-chart-slot')
+      : null;
+    var used = 0;
+    for (var i = 0; i < inner.children.length; i += 1) {
+      var ch = inner.children[i];
+      if (ch === dayFull) continue;
+      used += ch.offsetHeight;
     }
+    if (dayFull) {
+      var h2 = dayFull.querySelector('.us683-print-h2');
+      if (h2) used += h2.offsetHeight;
+    }
+    var avail = maxH - used - 6;
+    if (avail < 160) avail = 160;
+    user683FillChartSlotToHeight(slot, avail);
     var h = Math.max(inner.scrollHeight, inner.offsetHeight);
-    if (h <= maxH + 1) return;
-    var s = (maxH / h) * 0.985;
-    if (s < 0.28) s = 0.28;
-    if (s > 1) s = 1;
-    inner.style.transformOrigin = 'top left';
-    inner.style.transform = 'scale(' + s + ')';
-    inner.style.width = 100 / s + '%';
+    if (h > maxH + 2) {
+      var s = (maxH / h) * 0.99;
+      if (s < 0.85) s = 0.85;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = 'scale(' + s + ')';
+      inner.style.width = 100 / s + '%';
+    }
+  }
+
+  /** 2枚目: 上半分をグラフ、下を表（表だけ縮めてグラフ高さを確保） */
+  function user683LayoutPrintPage2(pageEl) {
+    if (!pageEl) return;
+    var inner = pageEl.querySelector('.us683-print-sheet-inner');
+    if (!inner) return;
+    inner.style.transform = 'none';
+    inner.style.width = '100%';
+    var maxH = user683PrintSheetMaxH(pageEl);
+    var chartRow = inner.querySelector('.us683-print-chart-row');
+    var wrap2 = inner.querySelector('.us683-print-p2-wrap');
+    var h2t = null;
+    for (var i = 0; i < inner.children.length; i += 1) {
+      if (
+        inner.children[i].classList &&
+        inner.children[i].classList.contains('us683-print-h2')
+      ) {
+        h2t = inner.children[i];
+      }
+    }
+    var chartBudget = Math.round(maxH * 0.5);
+    var titleH = 0;
+    if (chartRow) {
+      var titles = chartRow.querySelectorAll('.us683-print-h2');
+      for (var ti = 0; ti < titles.length; ti += 1) {
+        if (titles[ti].offsetHeight > titleH) titleH = titles[ti].offsetHeight;
+      }
+    }
+    var chartAvail = chartBudget - titleH - 4;
+    if (chartAvail < 140) chartAvail = 140;
+    if (chartRow) {
+      var slots = chartRow.querySelectorAll('.us683-print-chart-slot');
+      for (var si = 0; si < slots.length; si += 1) {
+        user683FillChartSlotToHeight(slots[si], chartAvail);
+      }
+    }
+    var topH =
+      (chartRow ? chartRow.offsetHeight : 0) + (h2t ? h2t.offsetHeight : 0) + 4;
+    var tableAvail = maxH - topH - 2;
+    if (tableAvail < 80) tableAvail = 80;
+    if (wrap2) {
+      wrap2.style.transform = 'none';
+      wrap2.style.width = '100%';
+      wrap2.style.height = 'auto';
+      wrap2.style.overflow = 'visible';
+      var th = wrap2.scrollHeight || wrap2.offsetHeight || 0;
+      if (th > tableAvail + 1) {
+        var ts = (tableAvail / th) * 0.99;
+        if (ts < 0.35) ts = 0.35;
+        wrap2.style.transformOrigin = 'top left';
+        wrap2.style.transform = 'scale(' + ts + ')';
+        wrap2.style.width = 100 / ts + '%';
+        wrap2.style.height = Math.floor(tableAvail) + 'px';
+        wrap2.style.overflow = 'hidden';
+      }
+    }
   }
 
   function getOrCreateUser683PrintPortal() {
@@ -2398,25 +2486,6 @@
     var c = host.firstElementChild.cloneNode(true);
     user683StripAllIds(c);
     return c;
-  }
-
-  function user683ScalePrintChartSlot(slot, scale) {
-    if (!slot || !slot.firstElementChild) return;
-    var child = slot.firstElementChild;
-    user683CompactPrintChartClone(child);
-    var s = scale > 0 && scale <= 1 ? scale : 0.78;
-    child.classList.add('us683-print-chart-scaled');
-    child.style.transform = 'none';
-    child.style.width = '100%';
-    var h0 = child.offsetHeight || child.scrollHeight || 0;
-    child.style.transform = 'scale(' + s + ')';
-    child.style.transformOrigin = 'top left';
-    child.style.width = 100 / s + '%';
-    var h = h0 > 0 ? h0 : child.offsetHeight || child.scrollHeight || 0;
-    if (h > 0) {
-      slot.style.height = Math.ceil(h * s) + 'px';
-    }
-    slot.style.overflow = 'hidden';
   }
 
   function openUser683PrintReport() {
@@ -2509,16 +2578,13 @@
     }
     p1inner.appendChild(ms);
 
-    function addChartCol(parentCol, title, hostId, scale) {
+    function addChartCol(parentCol, title, hostId) {
       var h2 = document.createElement('h2');
       h2.className = 'us683-print-h2';
       h2.textContent = title;
       parentCol.appendChild(h2);
       var slot = document.createElement('div');
       slot.className = 'us683-print-block us683-print-chart-slot';
-      if (scale) {
-        slot.setAttribute('data-us683-print-scale', String(scale));
-      }
       var cloned = user683CloneHostFirstChild(hostId);
       if (cloned) {
         user683CompactPrintChartClone(cloned);
@@ -2530,14 +2596,14 @@
       return slot;
     }
 
-    /* 1枚目: 月次要約＋日次グラフ */
+    /* 1枚目: 月次要約＋日次グラフ（残り高さをグラフへ） */
     var dayFull = document.createElement('div');
     dayFull.className = 'us683-print-chart-full us683-print-block';
-    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.55);
+    addChartCol(dayFull, '日次グラフ', 'user683-chart-day');
     p1inner.appendChild(dayFull);
     portal.appendChild(p1);
 
-    /* 2枚目: 週次|年次＋対応案件一覧（全文） */
+    /* 2枚目: 週次|年次（上半分）＋対応案件一覧（下・必要なら表だけ縮小） */
     var p2 = document.createElement('div');
     p2.className = 'us683-print-page2';
     var p2inner = document.createElement('div');
@@ -2550,13 +2616,8 @@
     colWeek.className = 'us683-print-chart-col';
     var colYear = document.createElement('div');
     colYear.className = 'us683-print-chart-col';
-    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.38);
-    addChartCol(
-      colYear,
-      '年次推移グラフ（直近6暦月）',
-      'user683-chart-year',
-      0.38,
-    );
+    addChartCol(colWeek, '週次グラフ', 'user683-chart-week');
+    addChartCol(colYear, '年次推移グラフ（直近6暦月）', 'user683-chart-year');
     chartRow.appendChild(colWeek);
     chartRow.appendChild(colYear);
     p2inner.appendChild(chartRow);
@@ -2595,18 +2656,8 @@
 
     window.requestAnimationFrame(function () {
       window.requestAnimationFrame(function () {
-        var slots = portal.querySelectorAll('.us683-print-chart-slot');
-        for (var si = 0; si < slots.length; si += 1) {
-          var sl = slots[si];
-          if (sl.firstElementChild) {
-            var sc = Number(
-              sl.getAttribute('data-us683-print-scale') || '0.78',
-            );
-            user683ScalePrintChartSlot(sl, sc);
-          }
-        }
-        user683FitPrintSheet(p1);
-        user683FitPrintSheet(p2);
+        user683LayoutPrintPage1(p1);
+        user683LayoutPrintPage2(p2);
         try {
           window.print();
         } catch (ePrint) {
