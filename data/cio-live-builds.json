@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-summary-size-v11",
-      "fileKey": "bb204839-5a62-46e2-8157-cabe52918861",
-      "revision": "99",
+      "build": "2026-08-02-683-print-a4-portrait-v12",
+      "fileKey": "38bbb4ca-a7c1-4a75-a2a3-41a87ddd9b1b",
+      "revision": "100",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:24:11.660Z",
+      "deployedAt": "2026-08-02T09:28:57.155Z",
       "note": null
     },
     "686": {
