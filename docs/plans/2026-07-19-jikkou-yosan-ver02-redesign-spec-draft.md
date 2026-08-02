@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-08-02（予実の見方更新・#R-EXCEL-UI-16）**: 「予実の見方」を費目▶／▼・すべて展開／閉じるに合わせて更新。BUILD `2026-08-02-ver02-actual-howto-fold`。  
 **2026-08-02（詳細追加案内短文化・#R-EXCEL-UI-05）**: バナーを「操作列＋で詳細を追加して手入力できます」に短縮。BUILD `2026-08-02-ver02-actual-detail-notice-short`。  
 **2026-08-02（費目すべて展開・#R-EXCEL-UI-16）**: 合計バー下に **すべて展開／すべて閉じる**（詳細あり費目のみ）。BUILD `2026-08-02-ver02-actual-himoku-fold-all`。  
 **2026-08-02（費目開閉既定クローズ・#R-EXCEL-UI-16）**: 費目▶は **詳細があるときだけ**。既定はすべてクローズ。BUILD `2026-08-02-ver02-actual-himoku-fold-closed`。  
