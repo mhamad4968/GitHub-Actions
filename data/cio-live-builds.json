@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-p1-summary-day-v7",
-      "fileKey": "412ff408-7bcb-4fb2-80e9-81cb5e29513d",
-      "revision": "94",
+      "build": "2026-08-02-683-print-drop-meta-note-v8",
+      "fileKey": "1af614fb-18f0-4b58-baba-73dbde35a6ea",
+      "revision": "95",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:16:34.744Z",
+      "deployedAt": "2026-08-02T09:17:26.651Z",
       "note": null
     },
     "686": {

@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-p1-summary-day-v7';
+  const BUILD = '2026-08-02-683-print-drop-meta-note-v8';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2259,7 +2259,6 @@
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row,' +
       '.us683-print-page2 .us683-bar-card-row,.us683-print-page2 .us683-week-card-row{min-height:0!important;}' +
       '.us683-print-page2 .us683-print-h2{font-size:9pt;font-weight:700;margin:0 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page2-note{font-size:6.5pt;color:#333;margin:0 0 1px;line-height:1.15;}' +
       /* 2枚目表: 字は小さくても全文（…見切れ禁止・高さ制限なし） */
       '.us683-print-p2-wrap{font-size:6.5pt!important;line-height:1.12!important;margin:0!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;}' +
@@ -2496,13 +2495,8 @@
 
     var h2t = document.createElement('h2');
     h2t.className = 'us683-print-h2';
-    h2t.textContent = '対応案件一覧（サマリー）※参考';
+    h2t.textContent = '対応案件一覧（サマリー）';
     p2.appendChild(h2t);
-    var pn = document.createElement('p');
-    pn.className = 'us683-print-page2-note';
-    pn.textContent =
-      '※参考・A4横。1枚目=月次要約＋日次、2枚目=週次/年次＋一覧（全文表示）。';
-    p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
     var th = document.getElementById('user683-table-host');
@@ -2633,7 +2627,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4横・計2枚・1枚目:要約＋日次フル幅＋週次/年次左右、2枚目:対応一覧※参考）。向き「横」を確認。';
+      'ブラウザの印刷ダイアログを開きます（A4横・計2枚）。向き「横」を確認。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();
