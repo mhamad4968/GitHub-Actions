@@ -3,12 +3,13 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-type-col-label: 列見出し「種別（補助）」をタグ分割せずそのまま表示。#R-EXCEL-UI-01
   // Phase2c-actual-detail-left-persist: 詳細左(name2)は保存時〃化禁止・既存〃は実値展開・種別下もleaf再表示。#R-EXCEL-UI-14
   // Phase2c-actual-detail-save-fix: TYPELESS詳細左の〃sanitize/stripを停止＋保存時name2を〃化しない。#R-EXCEL-UI-14
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-detail-left-persist
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-type-col-label
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -6445,17 +6446,17 @@
     return span;
   }
 
-  /** 「単位（選択）」形式 → { label, mode }。タグ無しはそのまま。 */
+  /** 「単位（選択）」形式 → { label, mode }。タグ無しはそのまま。
+   * 「補助」はモードにしない（列名「種別（補助）」をタグ分割しない。#R-EXCEL-UI-01）。 */
   function jy2ParseModeLabel(raw) {
     const text = String(raw ?? "");
-    const match = /^(.*)（(選択|入力|自動|日付|補助)）$/.exec(text);
+    const match = /^(.*)（(選択|入力|自動|日付)）$/.exec(text);
     if (!match) return { label: text, mode: null };
     const modeByJa = {
       選択: "select",
       入力: "input",
       自動: "auto",
       日付: "date",
-      補助: "aux",
     };
     return { label: match[1], mode: modeByJa[match[2]] || null };
   }
