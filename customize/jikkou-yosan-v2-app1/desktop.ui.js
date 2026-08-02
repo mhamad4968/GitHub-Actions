@@ -3,9 +3,10 @@
   const APP3_ID = /* @JY_V2_APP3 */ 758;
   // Phase2c-actual-soft-save-visible: 一時保存済みApp757明細行をreload後もrevealし、操作バーに最終保存時刻を表示。#R-SOFT-SAVE-01
   // Phase2c-excel-90200-prior-branch: Excel正 90200｜前期支店共通原価（種別なしTYPELESS・詳細2セル）。並び=13620会議費の下。#R-EXCEL-UI-09/07/14
+  // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE/sanitize再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-himoku-fold-persist
+  // @JY_V2_BUILD 2026-08-02-ver02-actual-auto-link-on
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -21,9 +22,9 @@
   // Phase2c-actual-sticky-totals-bar: 表直上に実行予算/月次数量/月次金額の全合計stickyバー（仮置き・浜田確認用）。#R-EXCEL-UI-15
   // Phase2c-excel-11500-other-security: Excel正 11500｜その他保安費（種別なしTYPELESS・詳細2セル）。並び=11400直下＝11600直前。#R-EXCEL-UI-09/07/14
   // Phase2c-excel-11400-ground: Excel正 11400｜検電接地。種別=停電責任者／検電接地作業者 → 詳細2セル。並び=11600直前。#R-EXCEL-UI-09/12/14
-  // Phase2c-excel-13500-guide: Excel正 13500｜重機誘導員。種別=昼間／夜間 → 詳細2セル（11300同型）。omit解除＋OVERRIDE＋ENSURE登録（AUTO_LINK_OFF中はENSURE非実行）。#R-EXCEL-UI-09/12/14
+  // Phase2c-excel-13500-guide: Excel正 13500｜重機誘導員。種別=昼間／夜間 → 詳細2セル（11300同型）。omit解除＋OVERRIDE＋ENSURE登録。#R-EXCEL-UI-09/12/14
 
-  // Phase2c-actual-auto-link-off: 内訳↔原価管理の自動連携（ENSURE/PLACE/sanitize）を一時無効。浜田GO・明日以降に方針決定。#R-EXCEL-LINK-00
+  // Phase2c-actual-auto-link-off: （撤回）内訳↔原価管理の自動連携一時無効 → auto-link-on へ。#R-EXCEL-LINK-00
 
   // Phase2c-actual-cost-mgmt-harden: 予実flush / revealを版スコープ / ENSUREでdetailSavePending立てない / revealを現行行に剪定。#R-SOFT-SAVE-02
   // Phase2c-excel-dedupe-coded: 同一システム工種コードの重複枠は正規1件だけ表示（例: 11100が二重）。区分はコード表（11100=保安）。#R-EXCEL-UI-09
@@ -236,10 +237,9 @@
   // true: 既存内訳由来の詳細は隠し、reveal（＋追加）した行だけ表示・手入力。
   // false: 全詳細行を表示（来週内訳連動方針後）。
   const JY2_ACTUAL_DETAIL_MANUAL_ONLY = true;
-  // 浜田GO 2026-08-02: 内訳↔原価管理の自動連携を一時無効（明日以降に持ち方を決定）。
-  // true のとき ENSURE（空枠追加）/ PLACE（並べ替え）/ strip・sanitize を一切走らせない。
-  // MANUAL_ONLY（内訳詳細を原価管理に出さない）は別フラグで維持。
-  const JY2_COST_MGMT_AUTO_LINK_DISABLED = true;
+  // 浜田GO 2026-08-02: Excel空枠（軌道工事等）を元通り戻すため ENSURE/PLACE/sanitize 再開。
+  // MANUAL_ONLY（内訳詳細を原価管理に出さない）・カタログ非表示は別経路で維持。
+  const JY2_COST_MGMT_AUTO_LINK_DISABLED = false;
   // 材料費下の種別「その他材料費」は Excel では費目へ出すため種別行では抑止。
   const JY2_COST_MGMT_TYPE_DENY = Object.freeze({
     "10100": Object.freeze({
