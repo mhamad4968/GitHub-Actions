@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-02 10:20 JST — 756 見やすさ LIVE＋7月振り返り運用GO着手。Skysea材料は明日。
-**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用改善P2（フラグ可視化・4h退避）は続き可。756 OMIT残 11400・13500 は浜田指示後。
-**Git**: ローカル ahead（visual-readability + 本運用改善 commit 予定）— push は浜田指示後
-**本日状態（要約）**: 756 LIVE **rev318** `…-actual-visual-readability`。運用薄化 P0/P1 着手。R63 クリーン。
+**最終更新**: 2026-08-02 10:35 JST — **本日最終締め（full CLOSE）**。756 LIVE rev318／運用薄化P0P1／棚卸基準更新／台帳59/59。明日=Sky社メール。
+**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用改善P2（フラグ可視化・4h退避）は続き可。
+**Git**: close-git で push（本締め）
+**本日状態（要約）**: 756 LIVE **rev318** `…-actual-visual-readability`。運用薄化・棚卸・台帳同期完了。R63 クリーン。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-02）
 | App | BUILD | rev |
@@ -10,7 +10,7 @@
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 
 **継続メモ**:
-1. **756**: 見やすさ反映済。OMIT残 11400・13500 は指示後。MANUAL_ONLY・カタログ非表示は維持。
+1. **756**: 見やすさ反映済。OMIT残なし。MANUAL_ONLY・カタログ非表示は維持。
 2. **運用改善 GO**: `docs/runbooks/july-2026-ops-thinning-go.md`／必読 `MANDATORY-READ-CARD.md`。
 3. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
 
@@ -36,7 +36,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | 8/3 問い合わせまで実PC配信禁止（朝prep L120 は after=8/3） |
 | **736** | 現行版保持・Ver.02 後も触らない |
-| **756/757/758** | LIVE rev318。OMIT残 11400・13500 は指示後 |
+| **756/757/758** | LIVE rev318。OMIT残なし。MANUAL_ONLY維持 |
 | **712** | 削除済 — deploy 禁止 |
 
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`

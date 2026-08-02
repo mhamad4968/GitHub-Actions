@@ -106,14 +106,24 @@ export function updatePortfolioMachineFileKey(md, appId, fileKey) {
   return { md: next, changed: next !== md };
 }
 
-/** 詳細行 fileKey **`…`** 更新（#S-SYNC-01・先頭の fileKey のみ） */
+/** 詳細行 fileKey **`…`** 更新／欠落時は BUILD 直後に挿入（#S-SYNC-01・先頭の fileKey のみ） */
 export function updatePortfolioDetailFileKey(md, appId, fileKey) {
   if (!fileKey) return { md, changed: false };
   const id = String(appId).trim();
   const line = md.match(portfolioDetailLineRe(id))?.[0];
   if (!line) return { md, changed: false };
-  if (!/fileKey\s+\*\*`[^`]+`\*\*/i.test(line)) return { md, changed: false };
-  const nextLine = line.replace(/fileKey\s+\*\*`[^`]+`\*\*/i, `fileKey **\`${fileKey}\`**`);
+  let nextLine;
+  if (/fileKey\s+\*\*`[^`]+`\*\*/i.test(line)) {
+    nextLine = line.replace(/fileKey\s+\*\*`[^`]+`\*\*/i, `fileKey **\`${fileKey}\`**`);
+  } else if (/\*\*BUILD=`[^`]+`/.test(line)) {
+    // BUILD=`…`（任意で rev **N**）の直後へ挿入
+    nextLine = line.replace(
+      /(\*\*BUILD=`[^`]+`(?:\s*rev\s*\*\*\s*\d+\s*\*\*)?)/i,
+      `$1 / fileKey **\`${fileKey}\`**`,
+    );
+  } else {
+    return { md, changed: false };
+  }
   if (nextLine === line) return { md, changed: false };
   return { md: md.replace(line, nextLine), changed: true };
 }

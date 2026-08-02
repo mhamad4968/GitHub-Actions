@@ -35,12 +35,13 @@ function detectDetailGarble(mdText, id) {
   const lineRe = new RegExp(`^\\|[^|\\n]+\\|\\s*\\*\\*${id}\\*\\*[^\\n]*\\|`, 'm');
   const line = mdText.match(lineRe)?.[0];
   if (!line) return null;
-  // 履歴「前 deploy」以降の旧 rev は対象外（674 等の長文詳細行）
-  const head = line.split(/前\s*deploy|前\s*BUILD/i)[0];
-  const revHits = head.match(/rev\s*\*\*/g) || [];
-  if (revHits.length > 1) return `duplicate rev markers (${revHits.length})`;
-  const buildHits = head.match(/BUILD=`/g) || [];
-  if (buildHits.length > 1) return `duplicate BUILD markers (${buildHits.length})`;
+  // 現行は行内の最後の **BUILD=`…`（履歴 BUILD は無視）。そのチャンク内の **** / 二重 rev のみ NG。
+  const builds = [...line.matchAll(/\*\*BUILD=`[^`]+`(?:\s*rev\s*\*\*\s*\d+\s*\*\*)?/g)];
+  if (builds.length === 0) return null;
+  const chunk = builds[builds.length - 1][0];
+  if (/\*\*\*\*/.test(chunk)) return '**** garble';
+  const revInChunk = chunk.match(/rev\s*\*\*/g) || [];
+  if (revInChunk.length > 1) return `duplicate rev markers (${revInChunk.length})`;
   return null;
 }
 
@@ -50,6 +51,10 @@ function verifyOne(id) {
   if (!entry?.build) {
     issues.push('registry BUILD missing');
     return issues;
+  }
+  // 削除済アプリは機械表の監査履歴のみ — 詳細行の BUILD 三点照合は対象外
+  if (/RETIRED|DELETED|削除済/i.test(String(entry.note || ''))) {
+    return [];
   }
   const garble = detectDetailGarble(md, id);
   if (garble) issues.push(`garble: ${garble}`);

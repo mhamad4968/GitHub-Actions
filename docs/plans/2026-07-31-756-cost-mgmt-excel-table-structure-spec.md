@@ -9,9 +9,10 @@
 　- シート「コード表」＝内訳候補の参考（工事原価管理の空枠は deny で明細に合わせて削る）  
 **依頼メモ**: `chat-sessions/2026-07-30-756-cost-mgmt-requester-face-to-face-memo.md`  
 **親 SPEC**: [`2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md`](2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md) §9（Y12 を本 SPEC で上書き方向）  
-**現行 LIVE（2026-08-01 夜・最終）**: BUILD `2026-08-01-ver02-actual-excel-dedupe-coded` / rev **286** / fileKey `5790d380-0946-4361-a595-20c38d946311`  
+**現行 LIVE（2026-08-02）**: BUILD `2026-08-02-ver02-actual-visual-readability` / rev **318** / fileKey `8f04fdf9-d554-4361-9bf3-6ae897adb6f8`  
 **夕反省 GO**: `docs/approved-changes/2026-08-01-evening-reflection-hamada-go.md`（配置・二重・区分・受入ミニチェック）  
-**OMIT 残（コード）**: **なし**（11400・13500 とも 2026-08-02 解除）  
+**見やすさ GO（2026-08-02）**: 表13px・詳細淡色・予算差色・揃え／運用薄化 `docs/runbooks/july-2026-ops-thinning-go.md`  
+**OMIT 残（コード）**: **なし**（`JY2_COST_MGMT_WORK_TYPE_OMIT=[]`。11400・13500 は ENSURE 登録済）  
 **ロールバック**: git tag `backup/756-before-actual-detail-expand-2026-07-29`（必要時は当該 BUILD 前の tag／commit）  
 **非対象**: 735/736 書込、688（WBGT以外）、677–679、SKYSEA、712 deploy、736 触改
 
@@ -27,7 +28,7 @@
 | **2a** | **安全第1弾（UIのみ）**: 備考列再表示／子行の数量表示（読取）／親・計の月セル灰色。Y12 親+展開維持。App758 キー・保存は**変更しない** | **完了** LIVE rev168 / `70a09aef` / tag `backup/756-before-excel-table-phase2a-2026-07-31` |
 | **2b** | 月次 **数量+金額** デュアル／`ROUND(単価×数量,0)` 自動＋金額直入れ／実行予算額＝既存最終予算手入力の暫定ラベル | **完了** LIVE rev169 / `bccf61d9` / tag `backup/756-before-excel-table-phase2b-2026-07-31`（数量はセッションのみ） |
 | **2c-a〜c** | 費目／種別視覚枠・常時階層・詳細手入力・操作列 | **完了（LIVE rev194）**: 列＝システム工種｜費目｜種別｜詳細｜**操作**｜単価｜実行予算額｜月次…。操作＝＋／－。種別横「＋詳細行」廃止。単価手入力。構造は一時保存→App757。全表 rerender は rAF 応急（ブロック単位再描画＝翌日） |
-| **3** | 目視確認・抜け漏れ埋め | **継続**（夜: 11000〜11300・名称枠並び・二重非表示まで。OMIT 残 11400・13500） |
+| **3** | 目視確認・抜け漏れ埋め | **継続**（名称枠／保安系は枠寄せ済。依頼者確認・実行予算額は月曜以降） |
 | **4** | 実行予算額の出し方（月曜依頼者確認後）差し替え | 月曜以降 |
 | **perf** | 操作＋／－のブロック単位再描画 | **未着手** |
 

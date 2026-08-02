@@ -25,3 +25,8 @@
 - checkpoint 凍結ゾーンの 756 BUILD/rev が `cio-live-builds` と一致
 - `accessibility-scanner.disabled === true`（ユーザー `~/.cursor/mcp.json`）
 - 憲法・RULES 本文の大規模削除なし
+
+## 追補（2026-08-02 セッション締め）
+
+- `npm run audit:kintone-app-inventory:write` — 基準更新（756/757/758/769/770 取り込み）
+- `verify:kintone-apps-live-build-sync --all` → **OK 59/59**（detail fileKey 挿入・削除済スキップ・garble検知修正）

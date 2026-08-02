@@ -1,19 +1,19 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-18T11:28:37.786Z",
+  "generatedAt": "2026-08-02T01:24:53.750Z",
   "ok": true,
   "counts": {
-    "live": 63,
-    "tenantFetched": 244,
-    "scope": 75,
-    "managed": 68,
-    "activePresent": 63,
+    "live": 68,
+    "tenantFetched": 249,
+    "scope": 80,
+    "managed": 73,
+    "activePresent": 68,
     "activeMissing": 0,
     "retiredAbsent": 12,
     "retiredPresent": 0,
     "trackedMissing": 0,
     "unlistedLive": 0,
-    "newSinceLast": 0,
+    "newSinceLast": 5,
     "removedSinceLast": 0,
     "nameChanges": 0
   },
@@ -136,7 +136,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-04-26T08:21:50.000Z",
-          "modifiedAt": "2026-07-17T09:39:33.000Z"
+          "modifiedAt": "2026-07-31T09:34:20.000Z"
         }
       },
       {
@@ -196,7 +196,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-05-08T07:35:36.000Z",
-          "modifiedAt": "2026-07-01T16:27:56.000Z"
+          "modifiedAt": "2026-08-01T22:22:14.000Z"
         }
       },
       {
@@ -256,7 +256,7 @@
           "spaceId": "56",
           "threadId": "60",
           "createdAt": "2026-05-17T06:47:43.000Z",
-          "modifiedAt": "2026-07-13T10:21:02.000Z"
+          "modifiedAt": "2026-07-29T09:39:08.000Z"
         }
       },
       {
@@ -580,7 +580,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-06-16T11:42:04.000Z",
-          "modifiedAt": "2026-07-01T10:25:48.000Z"
+          "modifiedAt": "2026-07-31T22:22:32.000Z"
         }
       },
       {
@@ -774,6 +774,66 @@
           "createdAt": "2026-07-04T23:45:35.000Z",
           "modifiedAt": "2026-07-05T01:02:39.000Z"
         }
+      },
+      {
+        "appId": "756",
+        "logicalName": "実行予算書作成支援ツールver02（App1・read-only shell）",
+        "live": {
+          "appId": "756",
+          "name": "実行予算書作成支援ツールver02",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-07-21T10:11:21.000Z",
+          "modifiedAt": "2026-08-02T01:06:14.000Z"
+        }
+      },
+      {
+        "appId": "757",
+        "logicalName": "実行予算ver02_内訳明細（App2・read-only shell）",
+        "live": {
+          "appId": "757",
+          "name": "実行予算ver02_内訳明細",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-07-21T10:31:28.000Z",
+          "modifiedAt": "2026-07-26T03:34:21.000Z"
+        }
+      },
+      {
+        "appId": "758",
+        "logicalName": "実行予算ver02_実績（App3・read-only shell）",
+        "live": {
+          "appId": "758",
+          "name": "実行予算ver02_実績",
+          "spaceId": "56",
+          "threadId": "60",
+          "createdAt": "2026-07-21T10:31:31.000Z",
+          "modifiedAt": "2026-07-29T10:57:08.000Z"
+        }
+      },
+      {
+        "appId": "769",
+        "logicalName": "東海支店iPad台帳DB（端末正本・閲覧のみ）",
+        "live": {
+          "appId": "769",
+          "name": "東海支店iPad台帳DB",
+          "spaceId": "32",
+          "threadId": "34",
+          "createdAt": "2026-07-28T06:01:19.000Z",
+          "modifiedAt": "2026-07-28T06:04:14.000Z"
+        }
+      },
+      {
+        "appId": "770",
+        "logicalName": "東海支店iPad管理台帳（日常 UI・769 へ REST）",
+        "live": {
+          "appId": "770",
+          "name": "東海支店iPad管理台帳",
+          "spaceId": "32",
+          "threadId": "34",
+          "createdAt": "2026-07-28T06:01:34.000Z",
+          "modifiedAt": "2026-07-29T09:28:30.000Z"
+        }
       }
     ],
     "activeMissing": [],
@@ -842,7 +902,48 @@
     "retiredPresent": [],
     "unlistedLive": [],
     "trackedMissing": [],
-    "newSinceLast": [],
+    "newSinceLast": [
+      {
+        "appId": "756",
+        "name": "実行予算書作成支援ツールver02",
+        "spaceId": "56",
+        "threadId": "60",
+        "createdAt": "2026-07-21T10:11:21.000Z",
+        "modifiedAt": "2026-08-02T01:06:14.000Z"
+      },
+      {
+        "appId": "757",
+        "name": "実行予算ver02_内訳明細",
+        "spaceId": "56",
+        "threadId": "60",
+        "createdAt": "2026-07-21T10:31:28.000Z",
+        "modifiedAt": "2026-07-26T03:34:21.000Z"
+      },
+      {
+        "appId": "758",
+        "name": "実行予算ver02_実績",
+        "spaceId": "56",
+        "threadId": "60",
+        "createdAt": "2026-07-21T10:31:31.000Z",
+        "modifiedAt": "2026-07-29T10:57:08.000Z"
+      },
+      {
+        "appId": "769",
+        "name": "東海支店iPad台帳DB",
+        "spaceId": "32",
+        "threadId": "34",
+        "createdAt": "2026-07-28T06:01:19.000Z",
+        "modifiedAt": "2026-07-28T06:04:14.000Z"
+      },
+      {
+        "appId": "770",
+        "name": "東海支店iPad管理台帳",
+        "spaceId": "32",
+        "threadId": "34",
+        "createdAt": "2026-07-28T06:01:34.000Z",
+        "modifiedAt": "2026-07-29T09:28:30.000Z"
+      }
+    ],
     "removedSinceLast": [],
     "nameChanges": [],
     "ok": true
@@ -926,7 +1027,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-04-26T08:21:50.000Z",
-      "modifiedAt": "2026-07-17T09:39:33.000Z"
+      "modifiedAt": "2026-07-31T09:34:20.000Z"
     },
     {
       "appId": "677",
@@ -966,7 +1067,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-05-08T07:35:36.000Z",
-      "modifiedAt": "2026-07-01T16:27:56.000Z"
+      "modifiedAt": "2026-08-01T22:22:14.000Z"
     },
     {
       "appId": "683",
@@ -1006,7 +1107,7 @@
       "spaceId": "56",
       "threadId": "60",
       "createdAt": "2026-05-17T06:47:43.000Z",
-      "modifiedAt": "2026-07-13T10:21:02.000Z"
+      "modifiedAt": "2026-07-29T09:39:08.000Z"
     },
     {
       "appId": "693",
@@ -1222,7 +1323,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-06-16T11:42:04.000Z",
-      "modifiedAt": "2026-07-01T10:25:48.000Z"
+      "modifiedAt": "2026-07-31T22:22:32.000Z"
     },
     {
       "appId": "735",
@@ -1351,6 +1452,46 @@
       "threadId": "52",
       "createdAt": "2026-07-04T23:45:35.000Z",
       "modifiedAt": "2026-07-05T01:02:39.000Z"
+    },
+    {
+      "appId": "756",
+      "name": "実行予算書作成支援ツールver02",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-07-21T10:11:21.000Z",
+      "modifiedAt": "2026-08-02T01:06:14.000Z"
+    },
+    {
+      "appId": "757",
+      "name": "実行予算ver02_内訳明細",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-07-21T10:31:28.000Z",
+      "modifiedAt": "2026-07-26T03:34:21.000Z"
+    },
+    {
+      "appId": "758",
+      "name": "実行予算ver02_実績",
+      "spaceId": "56",
+      "threadId": "60",
+      "createdAt": "2026-07-21T10:31:31.000Z",
+      "modifiedAt": "2026-07-29T10:57:08.000Z"
+    },
+    {
+      "appId": "769",
+      "name": "東海支店iPad台帳DB",
+      "spaceId": "32",
+      "threadId": "34",
+      "createdAt": "2026-07-28T06:01:19.000Z",
+      "modifiedAt": "2026-07-28T06:04:14.000Z"
+    },
+    {
+      "appId": "770",
+      "name": "東海支店iPad管理台帳",
+      "spaceId": "32",
+      "threadId": "34",
+      "createdAt": "2026-07-28T06:01:34.000Z",
+      "modifiedAt": "2026-07-29T09:28:30.000Z"
     }
   ]
 }
