@@ -1,0 +1,23 @@
+---
+description: 2026-08-02夕反省GO — 683印刷MediaBox/向き・ナレッジWAKE（憲法本文は触らない）
+alwaysApply: false
+globs: "customize/683/**,docs/runbooks/user683-*,docs/runbooks/cio-ops-2026-08-02*,docs/runbooks/session-cold-start*"
+---
+
+# 運用改善 — 2026-08-02 GO（夕反省全承認）
+
+> 正本: `docs/runbooks/cio-ops-2026-08-02-evening-improvements.md`  
+> GO: `docs/approved-changes/2026-08-02-evening-reflection-hamada-go.md`  
+> **憲法本文は変更しない。** `alwaysApply` を true にしない。
+
+## A1 / O-PRINT-01
+
+印刷の余白・見切れは CSS の前に **MediaBox・向き・縮小** を切り分ける。
+
+## S-PRINT-01〜03
+
+Runbook 受入表。棒は `height:auto` 実測。page1/page2 で overflow/avoid を共有しない。
+
+## M-RAG-01〜04
+
+重要失敗は git ミラー必須。起動時は `cio:knowledge:wake-stamp`（`data/cio-active-knowledge-needles.json`）。

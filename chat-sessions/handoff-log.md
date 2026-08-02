@@ -5454,3 +5454,19 @@ npm run cio:morning:ready
 **触らない**: 688/677-679/SKYSEA実配信/736/712deploy禁止
 
 ---
+
+### 2026-08-02 JST — **2026-08-02 full CLOSE — 683 print + knowledge-wake**
+
+**要約**: 683印刷報告 v24 rev112（MediaBox/向き・page2見切れ・グラフタイトル）。ナレッジWAKE M-RAG-04（cio:knowledge:wake-stamp）。夕反省全GO。Desktop AI緊急用 sync+verify OK。
+
+**次の1手**: **当日 項番 -0** で浜田確認（事前にレーンを決めない）。
+
+**Git**: `17fb3085` — full CLOSE pending close-git
+
+**BUILD**: 683=2026-08-02-683-print-page2-break-v24@112; 756=rev318
+
+**GO待ち**: なし
+
+**触らない**: 688 heat以外/736/712/677-679
+
+---

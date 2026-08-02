@@ -1,18 +1,19 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-02 10:35 JST — **本日最終締め（full CLOSE）**。756 LIVE rev318／運用薄化P0P1／棚卸基準更新／台帳59/59。明日=Sky社メール。
-**次の1手**: **明日** Sky社質問メール文（準備材料は浜田）。運用改善P2（フラグ可視化・4h退避）は続き可。
+**最終更新**: 2026-08-02 19:30 JST — **本日最終締め（full CLOSE）**。683 印刷報告 v24＋ナレッジWAKE（M-RAG-04）／夕反省全GO／Desktop AI緊急用同期済。756 LIVE rev318 維持。
+**次の1手**: **当日 項番 -0** で浜田確認（事前にレーンを決めない）。
 **Git**: close-git で push（本締め）
-**本日状態（要約）**: 756 LIVE **rev318** `…-actual-visual-readability`。運用薄化・棚卸・台帳同期完了。R63 クリーン。
+**本日状態（要約）**: App683 **rev112** `…-print-page2-break-v24`。印刷 MediaBox/向き受入・page2見切れ防止・knowledge-wake stamp。夕反省 GO 反映済。R63 クリーン。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-02）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 
 **継続メモ**:
-1. **756**: 見やすさ反映済。OMIT残なし。MANUAL_ONLY・カタログ非表示は維持。
-2. **運用改善 GO**: `docs/runbooks/july-2026-ops-thinning-go.md`／必読 `MANDATORY-READ-CARD.md`。
-3. 内訳連動は月曜以降。RAG aide 観察〜**8/9**。**新アプリ**＝指示後
+1. **683**: 印刷報告用 OK（向き＝縦推奨）。Runbook／ナレッジWAKE `683-print-mediabox`。
+2. **756**: 見やすさ反映済。OMIT残なし。MANUAL_ONLY・カタログ非表示は維持。
+3. **運用改善 GO**: `docs/runbooks/cio-ops-2026-08-02-evening-improvements.md`（印刷＋M-RAG）。
 
 **GO待ち**: なし（完了済を出さない）。新アプリ＝相談・GO後のみ。
 

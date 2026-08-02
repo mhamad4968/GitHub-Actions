@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-07-30 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-08-02 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -44,6 +44,8 @@
 | 毎ターン・四行 | [`mode-b-mdc-canonical-linter.mdc`](.cursor/rules/mode-b-mdc-canonical-linter.mdc) | 方式B — .mdc 正本参照 + AI-KERNEL 4要素 Linter（2026-05-29 永久ロック） |
 | 毎ターン・四行 | [`cio-ops-hard-request-clarity.mdc`](.cursor/rules/cio-ops-hard-request-clarity.mdc) | 難要望の粒度合意・日程語禁止・未push可視化・確認資料切替（2026-07-29 浜田全承認） |
 | 毎ターン・四行 | [`cio-ops-2026-07-30-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-07-30-evening-improvements.mdc) | 2026-07-30夕反省GO — CIローカルparity・依頼者核質問・CON-01 Excel・alwaysApply規律（憲法本文は触らない） |
+| 毎ターン・四行 | [`cio-ops-2026-08-01-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-01-evening-improvements.mdc) | 2026-08-01夕反省GO — 756 Excel枠並び/二重/区分・受入ミニチェック・MCP(gh優先)（憲法本文は触らない） |
+| 毎ターン・四行 | [`cio-ops-2026-08-02-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-02-evening-improvements.mdc) | 2026-08-02夕反省GO — 683印刷MediaBox/向き・ナレッジWAKE（憲法本文は触らない） |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
@@ -69,7 +71,7 @@
 | customize deploy | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | 方式B — Composer 2.5 必須 MCP 監査（eslint-mcp / repo-tree）§50-3-11 第4ステップ |
 | customize deploy | [`preflight-checklist.mdc`](.cursor/rules/preflight-checklist.mdc) | deploy 前 preflight — 正本 cio-discipline-always + push-deploy-quality-gates-v2 |
 | customize deploy | [`jikkou-yosan-v2-ui-chrome.mdc`](.cursor/rules/jikkou-yosan-v2-ui-chrome.mdc) | Ver.02 App756 UI クロム不変条件（overflow×sticky / th display / SPEC同一ターン） |
-| Ver.02 運用予算 | [`jikkou-yosan-v2-ops-budget.mdc`](.cursor/rules/jikkou-yosan-v2-ops-budget.mdc) | 4h硬拒否・構造再描画予算・Excel+UI列・Violation・deploy前 chrome-css（2026-07-31） |
+| customize deploy | [`jikkou-yosan-v2-ops-budget.mdc`](.cursor/rules/jikkou-yosan-v2-ops-budget.mdc) | Ver.02 運用予算（4h硬拒否・構造再描画・Excel+UI列・Violation・日終わり反省） |
 | customize deploy | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
