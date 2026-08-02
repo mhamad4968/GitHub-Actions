@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-fill-day-gap-v18';
+  const BUILD = '2026-08-02-683-print-section-breath-v19';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2237,37 +2237,39 @@
       /* transform scale は使わない（右余白・縦縮小の原因になる） */
       '.us683-print-page1 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;overflow:hidden!important;transform:none!important;gap:0!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      'gap:5px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
       '}' +
       '.us683-print-page2 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;overflow:hidden!important;transform:none!important;gap:0!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      'gap:4px!important;padding-bottom:3mm!important;box-sizing:border-box!important;' +
       '}' +
-      '.us683-print-block{margin-bottom:1px;flex:0 0 auto;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 1px;font-size:11pt;font-weight:800;line-height:1.2;background:#f3f4f6;}' +
+      '.us683-print-block{margin-bottom:0;flex:0 0 auto;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:3px 6px;margin:0;font-size:11pt;font-weight:800;line-height:1.25;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:1px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:1px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:3px 5px;min-height:1.2em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.3;overflow:visible;}' +
-      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:2px!important;margin:0 0 1px!important;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:0;border-bottom:1px solid #222;padding-bottom:1px;}' +
+      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:0;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:5px 7px;min-height:1.2em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.35;overflow:visible;}' +
+      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
       '.us683-print-hero-inner>div{padding:2px 4px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(1){font-size:12pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      /* 日次〜下段の隙間を詰めてグラフ縦に振る */
+      /* グラフ帯: セクション間隔は sheet-inner の gap に任せる */
       '.us683-print-chart-full{flex:1.4 1 0%!important;min-height:0!important;width:100%!important;' +
-      'margin:0!important;padding:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
+      'margin:0!important;padding:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;gap:2px!important;}' +
       '.us683-print-chart-full.us683-print-block{margin:0!important;}' +
-      '.us683-print-chart-full .us683-print-h2{font-size:9pt;margin:0!important;padding:0!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.15;}' +
+      '.us683-print-chart-full .us683-print-h2{font-size:9pt;margin:0!important;padding:0 0 1px!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.2;}' +
       '.us683-print-chart-row{flex:1.15 1 0%!important;min-height:0!important;display:flex!important;flex-direction:row!important;' +
-      'align-items:stretch!important;gap:3px!important;width:100%!important;margin:0!important;padding:0!important;overflow:hidden!important;}' +
+      'align-items:stretch!important;gap:5px!important;width:100%!important;margin:0!important;padding:0!important;overflow:hidden!important;}' +
       '.us683-print-chart-row.us683-print-block{margin:0!important;}' +
-      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0!important;padding:0!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.15;}' +
+      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;gap:2px!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0!important;padding:0 0 1px!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.2;}' +
       '.us683-print-chart-slot{margin:0!important;padding:0!important;width:100%!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}' +
-      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:1px 3px 2px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;border-width:1px!important;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:2px 4px 3px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;border-width:1px!important;}' +
       /* 外側 h2 と重複するカード内タイトルは非表示 → 棒エリアを縦に稼ぐ */
       '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{display:none!important;}' +
       '.us683-print-page1 .us683-week-card-legend{font-size:7pt!important;margin:0 0 1px!important;padding:0!important;}' +
@@ -2410,23 +2412,32 @@
     inner.style.transform = 'none';
     inner.style.width = '100%';
     inner.style.height = '100%';
+    /* 下端の空きを、要約〜グラフ間の間隔（gap）と余白に振り分ける */
+    var sectionGap = 6;
+    var bottomPad = Math.round((3 * 96) / 25.4);
+    inner.style.gap = sectionGap + 'px';
+    inner.style.paddingBottom = bottomPad + 'px';
+    inner.style.boxSizing = 'border-box';
 
     var dayFull = inner.querySelector('.us683-print-chart-full');
     var chartRow = inner.querySelector('.us683-print-chart-row');
     var used = 0;
     var i;
+    var headerCount = 0;
     for (i = 0; i < inner.children.length; i += 1) {
       var ch = inner.children[i];
       if (ch === dayFull || ch === chartRow) continue;
       used += ch.offsetHeight || 0;
+      headerCount += 1;
     }
-
-    var remain = maxH - used - 2;
-    if (remain < 240) remain = 240;
-    var dayArea = Math.floor(remain * 0.58);
+    /* ヘッダ間 gap + 日次/下段の間 gap + 下余白 */
+    var gapBudget = sectionGap * Math.max(1, headerCount) + sectionGap + bottomPad;
+    var remain = maxH - used - gapBudget;
+    if (remain < 220) remain = 220;
+    var dayArea = Math.floor(remain * 0.56);
     var rowArea = remain - dayArea;
-    if (dayArea < 140) dayArea = 140;
-    if (rowArea < 110) rowArea = 110;
+    if (dayArea < 130) dayArea = 130;
+    if (rowArea < 105) rowArea = 105;
 
     if (dayFull) {
       dayFull.style.flex = 'none';
@@ -2437,7 +2448,7 @@
       var dayH2 = dayFull.querySelector('.us683-print-h2');
       var dayTitleH = dayH2 ? dayH2.offsetHeight || 0 : 0;
       var daySlot = dayFull.querySelector('.us683-print-chart-slot');
-      user683FillChartSlotHeight(daySlot, dayArea - dayTitleH);
+      user683FillChartSlotHeight(daySlot, dayArea - dayTitleH - 3);
     }
 
     if (chartRow) {
@@ -2452,7 +2463,7 @@
         var h2 = col.querySelector('.us683-print-h2');
         var titleH = h2 ? h2.offsetHeight || 0 : 0;
         var slot = col.querySelector('.us683-print-chart-slot');
-        user683FillChartSlotHeight(slot, rowArea - titleH);
+        user683FillChartSlotHeight(slot, rowArea - titleH - 3);
       }
     }
   }
