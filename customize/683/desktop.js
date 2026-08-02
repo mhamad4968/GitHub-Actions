@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-2page-portrait-fit-v2';
+  const BUILD = '2026-08-02-683-print-2page-landscape-readable-v3';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2208,7 +2208,7 @@
       '#user683-print-report-portal{display:none;}' +
       '}' +
       '@media print{' +
-      '@page{size:A4 portrait;margin:3.5mm;}' +
+      '@page{size:A4 landscape;margin:4mm;}' +
       'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
@@ -2220,32 +2220,34 @@
       '.us683-print-page2{page-break-before:auto;break-before:auto;page-break-after:avoid;break-after:avoid;}' +
       '.us683-print-block{margin-bottom:3px;}' +
       '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:4px 6px;margin:0 0 3px;font-size:12pt;font-weight:800;line-height:1.35;background:#f3f4f6;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:4px 6px;margin:0 0 3px;font-size:13pt;font-weight:800;line-height:1.35;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:11pt;font-weight:700;margin-bottom:2px;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:4px;min-height:1.2em;background:#fafafa;font-size:12.5pt;line-height:1.3;max-height:38mm;overflow:hidden;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.35;max-height:48mm;overflow:hidden;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
       '.us683-print-hero-inner>div{padding:4px 6px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div>div:nth-child(1){font-size:14pt!important;line-height:1.2!important;font-weight:800!important;margin:0!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(1){font-size:15pt!important;line-height:1.2!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
+      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:4px!important;width:100%!important;}' +
+      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:10pt;margin:0 0 2px;}' +
       '.us683-print-chart-slot{margin:0 0 2px!important;overflow:hidden!important;}' +
       '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;}' +
-      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:3px 6px!important;margin:1px 0!important;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:4px 6px!important;margin:1px 0!important;}' +
       '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:11pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
       '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:10pt!important;font-weight:700!important;}' +
       '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:8pt!important;font-weight:600!important;line-height:1.2!important;}' +
       '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:6.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
       '.us683-print-page1 .us683-week-card-legend{font-size:9.5pt!important;}' +
-      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:64px!important;max-height:72px!important;height:72px!important;}' +
+      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{min-height:0!important;}' +
       '.us683-print-page2 .us683-print-h2{font-size:12pt;font-weight:700;margin:3px 0 2px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page2 .us683-print-chart-slot{margin:0 0 2px!important;overflow:hidden!important;}' +
       '.us683-print-page2-note{font-size:9pt;color:#333;margin:0 0 2px;line-height:1.2;}' +
-      '.us683-print-p2-wrap{font-size:7.5pt;line-height:1.1;}' +
+      '.us683-print-p2-wrap{font-size:8pt;line-height:1.1;}' +
       '.us683-print-p2-wrap table{font-size:inherit!important;width:100%!important;border-collapse:collapse!important;}' +
-      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:1px 2px!important;border:1px solid #999!important;vertical-align:top!important;}' +
+      '.us683-print-p2-wrap th,.us683-print-p2-wrap td{padding:1px 3px!important;border:1px solid #999!important;vertical-align:top!important;}' +
       '.us683-print-p2-wrap td{word-break:break-word;}' +
       '}';
   }
@@ -2287,7 +2289,7 @@
   function user683ScalePrintChartSlot(slot, scale) {
     if (!slot || !slot.firstElementChild) return;
     var child = slot.firstElementChild;
-    var s = scale > 0 && scale <= 1 ? scale : 0.58;
+    var s = scale > 0 && scale <= 1 ? scale : 0.78;
     child.classList.add('us683-print-chart-scaled');
     child.style.transform = 'scale(' + s + ')';
     child.style.transformOrigin = 'top left';
@@ -2387,39 +2389,51 @@
     }
     p1.appendChild(ms);
 
-    function addChartBlock(parent, title, hostId, scale) {
+    function addChartCol(parentCol, title, hostId, scale) {
       var h2 = document.createElement('h2');
       h2.className = 'us683-print-h2';
       h2.textContent = title;
-      parent.appendChild(h2);
+      parentCol.appendChild(h2);
       var slot = document.createElement('div');
       slot.className = 'us683-print-block us683-print-chart-slot';
+      if (scale) {
+        slot.setAttribute('data-us683-print-scale', String(scale));
+      }
       var cloned = user683CloneHostFirstChild(hostId);
       if (cloned) {
         slot.appendChild(cloned);
       } else {
         slot.textContent = '（グラフを取得できませんでした）';
       }
-      parent.appendChild(slot);
-      if (cloned && scale) {
-        user683ScalePrintChartSlot(slot, scale);
-      }
+      parentCol.appendChild(slot);
       return slot;
     }
 
-    addChartBlock(p1, '日次グラフ', 'user683-chart-day', 0.52);
-    addChartBlock(p1, '週次グラフ', 'user683-chart-week', 0.52);
+    var chartRow = document.createElement('div');
+    chartRow.className = 'us683-print-chart-row us683-print-block';
+    var colDay = document.createElement('div');
+    colDay.className = 'us683-print-chart-col';
+    var colWeek = document.createElement('div');
+    colWeek.className = 'us683-print-chart-col';
+    var colYear = document.createElement('div');
+    colYear.className = 'us683-print-chart-col';
+    addChartCol(colDay, '日次グラフ', 'user683-chart-day', 0.78);
+    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.78);
+    addChartCol(
+      colYear,
+      '年次推移グラフ（直近6暦月）',
+      'user683-chart-year',
+      0.74,
+    );
+    chartRow.appendChild(colDay);
+    chartRow.appendChild(colWeek);
+    chartRow.appendChild(colYear);
+    p1.appendChild(chartRow);
 
     portal.appendChild(p1);
 
     var p2 = document.createElement('div');
     p2.className = 'us683-print-page2';
-    addChartBlock(
-      p2,
-      '年次推移グラフ（直近6暦月の月合計）',
-      'user683-chart-year',
-      0.48,
-    );
     var h2t = document.createElement('h2');
     h2t.className = 'us683-print-h2';
     h2t.textContent = '対応案件一覧（サマリー）※参考';
@@ -2427,7 +2441,7 @@
     var pn = document.createElement('p');
     pn.className = 'us683-print-page2-note';
     pn.textContent =
-      '用紙はA4縦。1枚目=件数・先月対比・月次要約・日次/週次、2枚目=年次推移＋一覧。印刷ダイアログで向き「縦」を確認。';
+      '用紙はA4横（landscape）。1枚目=件数・先月対比・月次要約（大）・日次/週次/年次グラフ、2枚目=対応一覧サマリー。印刷ダイアログの向きは「横」を確認。';
     p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
@@ -2461,8 +2475,11 @@
         var slots = portal.querySelectorAll('.us683-print-chart-slot');
         for (var si = 0; si < slots.length; si += 1) {
           var sl = slots[si];
-          if (sl.firstElementChild && !sl.style.height) {
-            user683ScalePrintChartSlot(sl, 0.58);
+          if (sl.firstElementChild) {
+            var sc = Number(
+              sl.getAttribute('data-us683-print-scale') || '0.78',
+            );
+            user683ScalePrintChartSlot(sl, sc);
           }
         }
         try {
@@ -2555,7 +2572,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4縦・2枚構成・1枚目:件数・先月対比・月次要約・日次/週次、2枚目:年次推移＋一覧）。印刷ダイアログで向き「縦」を確認してください。PDF保存は印刷先で「PDFに保存」を選んでください。';
+      'ブラウザの印刷ダイアログを開きます（A4横・2枚構成・1枚目:件数・先月対比・月次要約（大）・日次/週次/年次グラフ、2枚目:対応一覧サマリー）。印刷ダイアログで向き「横」を確認してください。PDF保存は印刷先で「PDFに保存」を選んでください。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();
