@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "description": "セッション起動時に自動想起するアクティブ・ナレッジ針（MCP 受動参照の穴埋め）。正本は gitPaths。Memory/RAG は補助。",
+  "maxWakeInject": 5,
+  "needles": [
+    {
+      "id": "683-print-mediabox",
+      "active": true,
+      "priority": 100,
+      "apps": ["683"],
+      "keywords": ["印刷", "print", "MediaBox", "余白", "向き", "window.print"],
+      "title": "683印刷・MediaBox／向き",
+      "wakeHint": "印刷の余白・見切れはCSSの前にPDF MediaBoxを確認（縦≈595×842／横≈842×595）。横なら向きが主因。棒はheight:auto実測→スケール。page2はoverflow共有禁止。",
+      "memoryEntity": "kintone-683-print-report",
+      "ragSources": [
+        "note://2026-08-02/kintone-683-print-failures",
+        "note://2026-08-02/kintone-683-print-ops-go"
+      ],
+      "gitPaths": [
+        "docs/runbooks/user683-weekly-summary-and-print.md",
+        "docs/runbooks/cio-ops-2026-08-02-evening-improvements.md"
+      ]
+    }
+  ]
+}

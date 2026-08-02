@@ -126,6 +126,10 @@ function main() {
   console.log('\n▶ Phase 5c MANDATORY_READS');
   run('npm run cio:mandatory-reads:stamp');
 
+  // Phase 5d — アクティブ・ナレッジWAKE（MCP 受動参照の穴埋め · M-RAG-04）
+  console.log('\n▶ Phase 5d KNOWLEDGE_WAKE');
+  run('npm run cio:knowledge:wake-stamp');
+
   // Phase 5b — Grok L2b セッション状態リセット（C 回数・契約スタンプ残留防止）
   console.log('\n▶ Phase 5b GROK-SESSION-RESET');
   run('npm run cio:grok:execution-guard -- --session-reset --reason WAKE');

@@ -38,10 +38,11 @@
 | **M-RAG-01** | 重要失敗ナレッジは RAG だけでなく **git runbook に要約をミラー**する（MCP 単独は消える／参照漏れしうる） | **GO・反映** |
 | **M-RAG-02** | 683 印刷作業の着手時は `query_documents`（MediaBox／印刷）または Memory `kintone-683-print-report` を1回読む | **GO** |
 | **M-RAG-03** | Memory エンティティ名と RAG `source:` を runbook 末尾に固定記載する | **GO・反映** |
+| **M-RAG-04** | sessionStart／cold-start でアクティブ針を自動注入（knowledge-wake-stamp） | **GO・反映** |
 
 ### 1-N 憲法運用レビュー（本日の結論）
 
 - 第2者（DeepSeek／Kimi）は印刷修正で挟んだ。§50-3-8 スタンプあり。
-- MCP: 格納はできたが **運用導線が弱く効果は受動的**（クエリしたときだけ効く）。M-RAG-01〜03 で git ミラー＋着手時参照を義務化。
+- MCP: 格納はできたが **運用導線が弱く効果は受動的**（クエリしたときだけ効く）。M-RAG-01〜03 で git ミラー＋着手時参照を義務化。M-RAG-04 で起動時に wakeHint を押し込む。
 
 憲法本文は変更なし。

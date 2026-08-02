@@ -21,6 +21,7 @@
 | **M-RAG-01** | 重要失敗は git runbook にミラー | **反映** |
 | **M-RAG-02** | 683 印刷着手時に RAG/Memory 1回 | 本GO |
 | **M-RAG-03** | Memory 名と RAG source を runbook 末尾に固定 | **反映** |
+| **M-RAG-04** | 起動時ナレッジ自動注入（knowledge-wake-stamp · sessionStart/cold-start） | **反映**（追記承認・2026-08-02） |
 
 ## 反映物
 
@@ -32,3 +33,4 @@
 | 運用まとめ | `docs/runbooks/cio-ops-2026-08-02-evening-improvements.md` |
 | RAG | `note://2026-08-02/kintone-683-print-failures` |
 | Memory | `kintone-683-print-report` |
+| ナレッジWAKE | `data/cio-active-knowledge-needles.json` · `npm run cio:knowledge:wake-stamp` |

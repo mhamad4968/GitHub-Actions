@@ -24,6 +24,21 @@
 **規則**: 重要失敗は RAG/Memory に入れたら **同じターンで runbook にも要約を書く**。  
 **683 印刷着手時**: RAG または Memory を **1回以上**読む（M-RAG-02）。
 
+### 起動時自動参照（M-RAG-04）
+
+MCP はクエリしないと効かない弱点を、**必読WAKEと同型のスタンプ注入**で埋める。
+
+| 部品 | パス |
+|------|------|
+| 針 registry | `data/cio-active-knowledge-needles.json` |
+| スタンプ | `npm run cio:knowledge:wake-stamp` |
+| sessionStart | `.cursor/hooks/session-start-autopilot.mjs` → 【ナレッジWAKE】＋ wakeHint |
+| cold-start | Phase **5d** |
+| digest | `chat-sessions/knowledge-wake-latest.md` |
+| 検証 | `npm run verify:knowledge-wake-stamp` |
+
+新失敗をアクティブに残すとき: registry に `wakeHint` + **必須** `gitPaths` を追加（MCP 単独の針は verify NG）。
+
 ## コード針（S-PRINT-02 / S-PRINT-03）
 
 - 印刷グラフ: 実測は `height:auto` → 棒スケール。スロット合わせ前の `height:100%` 先付け禁止。

@@ -47,6 +47,8 @@
 
 **683 印刷を直す着手時**: RAG `query_documents`（例: `683 印刷 MediaBox`）または Memory `open_nodes` を **1回以上**。重要失敗を MCP に入れたら **同じターンで本 runbook にも要約をミラー**する（MCP 単独は参照漏れしやすい）。
 
+**起動時自動参照（M-RAG-04）**: `data/cio-active-knowledge-needles.json` の針 `683-print-mediabox` が sessionStart／cold-start Phase 5d で注入される（`npm run cio:knowledge:wake-stamp` · digest `chat-sessions/knowledge-wake-latest.md`）。
+
 ### 旧運用（廃止・参照用）
 
 2026-05-15〜16 にあった **localhost HTTP 配信＋`window.open` 提出用 PDF** は **使用しない**。接続拒否（`ERR_CONNECTION_REFUSED`）や **17886 `EADDRINUSE`** のトラブルシュート節は **不要**（serve 未起動が原因だったため）。

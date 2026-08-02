@@ -737,6 +737,8 @@
     "cio:session:start": "node scripts/cio-session-start.mjs",
     "cio:session:cold-start": "node scripts/cio-session-cold-start.mjs",
     "cio:mandatory-reads:stamp": "node scripts/cio-mandatory-reads-stamp.mjs",
+    "cio:knowledge:wake-stamp": "node scripts/cio-knowledge-wake-stamp.mjs",
+    "verify:knowledge-wake-stamp": "node scripts/verify-knowledge-wake-stamp.mjs",
     "cio:checkpoint:rollup": "node scripts/cio-checkpoint-rollup.mjs",
     "cio:checkpoint:git-heal": "node scripts/cio-checkpoint-git-heal.mjs",
     "cio:wake:handoff-commit": "node scripts/cio-wake-handoff-commit.mjs",

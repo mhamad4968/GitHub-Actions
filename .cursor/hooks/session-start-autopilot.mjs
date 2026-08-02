@@ -139,6 +139,47 @@ function main() {
     mandatoryReadsStamp = '必読WAKE: NG（stamp 実行例外）';
   }
 
+  let knowledgeWakeBlock = '';
+  try {
+    const kwScript = path.join(root, 'scripts', 'cio-knowledge-wake-stamp.mjs');
+    const kw = spawnSync(process.execPath, [kwScript], hiddenOpts({
+      cwd: root,
+      encoding: 'utf8',
+      shell: false,
+    }));
+    if (kw.status !== 0) {
+      logLine(`cio-knowledge-wake-stamp.mjs exit=${kw.status} stderr=${(kw.stderr || '').slice(0, 200)}`);
+      const kwLine = (kw.stdout || '').trim().split('\n').pop() || 'ナレッジWAKE: NG（stamp 実行失敗）';
+      knowledgeWakeBlock = ` 【ナレッジWAKE・sessionStart】\`${kwLine}\``;
+    } else {
+      // スタンプ実行で digest 更新済み。context はモジュール同等の短文をログ行から組み立て
+      const kwLine = (kw.stdout || '').trim().split('\n').pop() || '';
+      let digestHint = '';
+      try {
+        const digestPath = path.join(root, 'chat-sessions', 'knowledge-wake-latest.md');
+        if (fs.existsSync(digestPath)) {
+          const digest = fs.readFileSync(digestPath, 'utf8');
+          const hints = [];
+          for (const m of digest.matchAll(/^###\s+(\S+)[^\n]*\n\n([^\n#]+)/gm)) {
+            hints.push(`  - **${m[1]}**: ${m[2].trim()}`);
+            if (hints.length >= 5) break;
+          }
+          if (hints.length) {
+            digestHint = `\n${hints.join('\n')}\n（digest: \`chat-sessions/knowledge-wake-latest.md\` · 正本 \`data/cio-active-knowledge-needles.json\`）`;
+          }
+        }
+      } catch {
+        /* noop */
+      }
+      knowledgeWakeBlock = kwLine
+        ? ` 【ナレッジWAKE・sessionStart】\`${kwLine}\`${digestHint}`
+        : '';
+    }
+  } catch (e) {
+    logLine(`cio-knowledge-wake-stamp spawn error ${e?.message || e}`);
+    knowledgeWakeBlock = ' 【ナレッジWAKE・sessionStart】`ナレッジWAKE: NG（stamp 実行例外）`';
+  }
+
   const mcpBlock = mcpStamp
     ? ` 【MCP貼付1行・sessionStart】\`${mcpStamp}\`（外部正ターンの [ルール確認] にそのまま追記可。手動再発行: \`npm run mcp:chat-stamp\`）`
     : '';
@@ -162,6 +203,7 @@ function main() {
     clockBlock +
     mcpBlock +
     mandatoryReadsBlock +
+    knowledgeWakeBlock +
     cloudHandoffHint +
     buildCioDesktopPathGuardBlock() +
     buildSessionStartConstitutionReadBlock();
