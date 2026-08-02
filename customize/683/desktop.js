@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-flex-fill-v16';
+  const BUILD = '2026-08-02-683-print-chart-gap-v17';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2236,11 +2236,11 @@
       /* transform scale は使わない（右余白・縦縮小の原因になる） */
       '.us683-print-page1 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;gap:0!important;' +
       '}' +
       '.us683-print-page2 .us683-print-sheet-inner{' +
       'display:flex!important;flex-direction:column!important;width:100%!important;height:100%!important;' +
-      'max-width:100%!important;overflow:hidden!important;transform:none!important;' +
+      'max-width:100%!important;overflow:hidden!important;transform:none!important;gap:0!important;' +
       '}' +
       '.us683-print-block{margin-bottom:1px;flex:0 0 auto;}' +
       '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 1px;font-size:11pt;font-weight:800;line-height:1.2;background:#f3f4f6;}' +
@@ -2255,20 +2255,26 @@
       '.us683-print-hero-inner>div>div:nth-child(1){font-size:12pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      '.us683-print-chart-full{flex:1.25 1 0%!important;min-height:0!important;width:100%!important;margin:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
-      '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;flex:0 0 auto;}' +
-      '.us683-print-chart-row{flex:1 1 0%!important;min-height:0!important;display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:4px!important;width:100%!important;margin:0!important;overflow:hidden!important;}' +
+      /* 日次〜下段の隙間を詰めてグラフ縦に振る */
+      '.us683-print-chart-full{flex:1.4 1 0%!important;min-height:0!important;width:100%!important;' +
+      'margin:0!important;padding:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
+      '.us683-print-chart-full.us683-print-block{margin:0!important;}' +
+      '.us683-print-chart-full .us683-print-h2{font-size:9pt;margin:0!important;padding:0!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.15;}' +
+      '.us683-print-chart-row{flex:1.15 1 0%!important;min-height:0!important;display:flex!important;flex-direction:row!important;' +
+      'align-items:stretch!important;gap:3px!important;width:100%!important;margin:0!important;padding:0!important;overflow:hidden!important;}' +
+      '.us683-print-chart-row.us683-print-block{margin:0!important;}' +
       '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0 0 1px;border-bottom:1px solid #222;flex:0 0 auto;}' +
-      '.us683-print-chart-slot{margin:0!important;width:100%!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}' +
-      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:3px 4px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;}' +
-      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:10pt!important;font-weight:700!important;margin-bottom:2px!important;line-height:1.2!important;}' +
-      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:8.5pt!important;font-weight:700!important;}' +
-      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:7pt!important;font-weight:600!important;line-height:1.1!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5.5pt!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}' +
-      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{width:100%!important;max-width:100%!important;min-height:0!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0!important;padding:0!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.15;}' +
+      '.us683-print-chart-slot{margin:0!important;padding:0!important;width:100%!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}' +
+      '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:1px 3px 2px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;border-width:1px!important;}' +
+      /* 外側 h2 と重複するカード内タイトルは非表示 → 棒エリアを縦に稼ぐ */
+      '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{display:none!important;}' +
+      '.us683-print-page1 .us683-week-card-legend{font-size:7pt!important;margin:0 0 1px!important;padding:0!important;}' +
+      '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num{font-size:8pt!important;font-weight:700!important;margin-top:1px!important;}' +
+      '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab{font-size:6.5pt!important;font-weight:600!important;line-height:1.05!important;margin-top:0!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5pt!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row{width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;}' +
       '.us683-print-page1 .us683-bar-card-col,.us683-print-page1 .us683-week-card-col{min-width:0!important;flex:1 1 0%!important;}' +
-      '.us683-print-page1 .us683-week-card-legend{font-size:8pt!important;}' +
       '.us683-print-page2 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 2px;border-bottom:1px solid #222;padding-bottom:0;flex:0 0 auto;}' +
       '.us683-print-p2-wrap{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;font-size:8.5pt!important;line-height:1.2!important;margin:0!important;width:100%!important;}' +
       '.us683-print-p2-wrap>div{margin:0!important;padding:0!important;width:100%!important;}' +
@@ -2379,8 +2385,8 @@
     var h0 = child.offsetHeight || child.scrollHeight || 0;
     if (h0 < 20) return;
     var factor = target / h0;
-    /* 少し余白を残して下端ラベルが見切れないように */
-    factor *= 0.96;
+    /* 隙間を詰める（ラベル見切れだけわずかに余裕） */
+    factor *= 0.99;
     user683ScaleChartBarHeights(child, factor);
   }
 
