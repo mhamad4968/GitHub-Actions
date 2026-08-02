@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-3charts-p1-v13';
+  const BUILD = '2026-08-02-683-print-chart-fit-xy-v14';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2210,60 +2210,62 @@
     }
     st.setAttribute('data-build', BUILD);
     st.textContent =
-      /* 計測用: A4縦の内容幅に近い幅で測る（横幅1100だと余白・縮尺が狂う） */
+      /* 計測用: A4縦・余白4mmの内容幅 ≈ 202mm ≈ 764px */
       '@media screen{' +
       '#user683-print-report-portal{' +
       'display:block!important;position:fixed!important;left:-12000px!important;top:0!important;' +
-      'width:794px!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;' +
+      'width:764px!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;' +
       '}' +
       '}' +
       '@media print{' +
-      '@page{size:A4 portrait;margin:6mm;}' +
+      '@page{size:A4 portrait;margin:4mm;}' +
       'html,body{height:auto!important;margin:0!important;padding:0!important;}' +
       'body>*:not(#user683-print-report-portal){display:none!important;}' +
       '#user683-print-report-portal{' +
       'display:block!important;position:static!important;left:auto!important;top:auto!important;' +
-      'width:100%!important;visibility:visible!important;pointer-events:auto!important;' +
+      'width:100%!important;max-width:100%!important;visibility:visible!important;pointer-events:auto!important;' +
       'background:#fff!important;color:#000!important;font-family:Meiryo,"Yu Gothic",system-ui,sans-serif;font-size:11pt;' +
       '-webkit-print-color-adjust:exact;print-color-adjust:exact;' +
       '}' +
-      /* 各シートを A4縦1枚に固定。余白はグラフ／表へ振る */
+      /* 各シートを A4縦1枚に固定。余白はグラフ高さへ */
       '.us683-print-page1,.us683-print-page2{' +
-      'box-sizing:border-box!important;height:285mm!important;max-height:285mm!important;' +
-      'overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
+      'box-sizing:border-box!important;height:289mm!important;max-height:289mm!important;' +
+      'width:100%!important;overflow:hidden!important;page-break-inside:avoid!important;break-inside:avoid-page!important;' +
       '}' +
       '.us683-print-page1{page-break-after:always!important;break-after:page!important;font-size:11pt;}' +
       '.us683-print-page2{page-break-before:auto!important;break-before:auto!important;page-break-after:avoid!important;break-after:avoid!important;}' +
-      '.us683-print-sheet-inner{transform-origin:top left;width:100%;height:100%;}' +
-      '.us683-print-block{margin-bottom:2px;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:3px 6px;margin:0 0 2px;font-size:11pt;font-weight:800;line-height:1.25;background:#f3f4f6;}' +
+      '.us683-print-sheet-inner{transform-origin:top left;width:100%;max-width:100%;height:100%;overflow:hidden;}' +
+      '.us683-print-block{margin-bottom:1px;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:2px 5px;margin:0 0 1px;font-size:11pt;font-weight:800;line-height:1.2;background:#f3f4f6;}' +
       '.us683-print-mom-label{font-size:9pt;font-weight:700;margin-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:12pt;font-weight:800;margin:2px 0 1px;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:4px 6px;min-height:1.2em;max-height:42mm;background:#fafafa;font-size:11.5pt;font-weight:600;line-height:1.32;overflow:hidden;}' +
-      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0 0 2px!important;}' +
+      '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:1px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
+      '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:1px 0 1px;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:3px 5px;min-height:1.2em;max-height:36mm;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.3;overflow:hidden;}' +
+      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:2px!important;margin:0 0 1px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div{padding:3px 5px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div>div:nth-child(1){font-size:13pt!important;line-height:1.2!important;font-weight:800!important;margin:0!important;}' +
+      '.us683-print-hero-inner>div{padding:2px 4px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(1){font-size:12pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      '.us683-print-chart-full{width:100%!important;margin:0 0 1px!important;}' +
+      '.us683-print-chart-full{width:100%!important;max-width:100%!important;margin:0 0 1px!important;overflow:hidden!important;}' +
       '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
-      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:5px!important;width:100%!important;margin:0 0 3px!important;}' +
-      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
-      '.us683-print-chart-slot{margin:0!important;overflow:hidden!important;}' +
-      '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;}' +
+      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:4px!important;width:100%!important;max-width:100%!important;margin:0!important;overflow:hidden!important;}' +
+      '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;max-width:50%!important;overflow:hidden!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
+      '.us683-print-chart-slot{margin:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important;}' +
+      '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;max-width:none;}' +
       '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card,' +
-      '.us683-print-page2 .us683-bar-card,.us683-print-page2 .us683-week-card{padding:4px 6px!important;margin:0!important;}' +
+      '.us683-print-page2 .us683-bar-card,.us683-print-page2 .us683-week-card{padding:3px 4px!important;margin:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;}' +
       '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title,' +
       '.us683-print-page2 .us683-bar-card-title,.us683-print-page2 .us683-week-card-title{font-size:10pt!important;font-weight:700!important;margin-bottom:3px!important;line-height:1.2!important;}' +
       '.us683-print-page1 .us683-bar-card-num,.us683-print-page1 .us683-week-card-num,' +
       '.us683-print-page2 .us683-bar-card-num,.us683-print-page2 .us683-week-card-num{font-size:9pt!important;font-weight:700!important;}' +
       '.us683-print-page1 .us683-bar-card-lab,.us683-print-page1 .us683-week-card-lab,' +
       '.us683-print-page2 .us683-bar-card-lab,.us683-print-page2 .us683-week-card-lab{font-size:7.5pt!important;font-weight:600!important;line-height:1.15!important;}' +
-      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:6.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-lab{font-size:5.5pt!important;line-height:1!important;white-space:nowrap!important;word-break:keep-all!important;overflow:hidden!important;text-overflow:clip!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-row{width:100%!important;max-width:100%!important;}' +
+      '.us683-print-page1 .us683-bar-card--daily .us683-bar-card-col{min-width:0!important;flex:1 1 0%!important;}' +
       '.us683-print-page1 .us683-week-card-legend,.us683-print-page2 .us683-week-card-legend{font-size:8pt!important;}' +
       '.us683-print-page1 .us683-bar-card-row,.us683-print-page1 .us683-week-card-row,' +
       '.us683-print-page2 .us683-bar-card-row,.us683-print-page2 .us683-week-card-row{min-height:0!important;}' +
@@ -2332,17 +2334,20 @@
   }
 
   function user683PrintSheetMaxH(pageEl) {
-    pageEl.style.height = '285mm';
-    pageEl.style.maxHeight = '285mm';
+    pageEl.style.height = '289mm';
+    pageEl.style.maxHeight = '289mm';
     pageEl.style.overflow = 'hidden';
     var maxH = pageEl.clientHeight;
     if (!maxH || maxH < 80) {
-      maxH = Math.round((285 * 96) / 25.4);
+      maxH = Math.round((289 * 96) / 25.4);
     }
     return maxH;
   }
 
-  /** グラフを指定高さまで拡大／縮小して余白を埋める */
+  /**
+   * グラフを高さ targetH まで伸ばす。
+   * 横は slot 幅に収めてから（はみ出し禁止）、縦だけ別スケールで余白を埋める。
+   */
   function user683FillChartSlotToHeight(slot, targetH) {
     if (!slot || !slot.firstElementChild || !(targetH > 40)) return;
     var child = slot.firstElementChild;
@@ -2350,19 +2355,32 @@
     child.classList.add('us683-print-chart-scaled');
     child.style.transform = 'none';
     child.style.width = '100%';
+    child.style.maxWidth = '100%';
+    child.style.boxSizing = 'border-box';
+    slot.style.width = '100%';
+    slot.style.maxWidth = '100%';
+    slot.style.overflow = 'hidden';
+
+    var slotW = slot.clientWidth || (slot.parentElement && slot.parentElement.clientWidth) || 0;
+    if (slotW < 40) slotW = 700;
+    var contentW = Math.max(child.scrollWidth || 0, child.offsetWidth || 0, 1);
+    var sx = slotW / contentW;
+    if (sx > 1) sx = 1;
+    if (sx < 0.55) sx = 0.55;
+
+    child.style.width = 100 / sx + '%';
     var h0 = child.offsetHeight || child.scrollHeight || 1;
     if (h0 < 1) h0 = 1;
-    var s = targetH / h0;
-    if (s > 1.55) s = 1.55;
-    if (s < 0.45) s = 0.45;
+    var sy = targetH / h0;
+    if (sy > 1.85) sy = 1.85;
+    if (sy < 0.5) sy = 0.5;
+
     child.style.transformOrigin = 'top left';
-    child.style.transform = 'scale(' + s + ')';
-    child.style.width = 100 / s + '%';
+    child.style.transform = 'scale(' + sx + ', ' + sy + ')';
     slot.style.height = Math.floor(targetH) + 'px';
-    slot.style.overflow = 'hidden';
   }
 
-  /** 1枚目: 要約＋日次＋週次|年次（残り高さを日次〜55%／下段〜45%に配分） */
+  /** 1枚目: 要約＋日次＋週次|年次（残り高さを日次〜62%／下段〜38%に配分） */
   function user683LayoutPrintPage1(pageEl) {
     if (!pageEl) return;
     var inner = pageEl.querySelector('.us683-print-sheet-inner');
@@ -2392,12 +2410,12 @@
         }
       }
     }
-    var remain = maxH - used - dayTitleH - rowTitleH - 8;
-    if (remain < 280) remain = 280;
-    var dayAvail = Math.round(remain * 0.55);
+    var remain = maxH - used - dayTitleH - rowTitleH - 4;
+    if (remain < 320) remain = 320;
+    var dayAvail = Math.round(remain * 0.62);
     var rowAvail = remain - dayAvail;
-    if (dayAvail < 150) dayAvail = 150;
-    if (rowAvail < 120) rowAvail = 120;
+    if (dayAvail < 180) dayAvail = 180;
+    if (rowAvail < 140) rowAvail = 140;
     var daySlot = dayFull
       ? dayFull.querySelector('.us683-print-chart-slot')
       : null;

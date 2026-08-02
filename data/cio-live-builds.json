@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-3charts-p1-v13",
-      "fileKey": "7c58337c-07d4-4002-a8e6-e8898a4716b5",
-      "revision": "101",
+      "build": "2026-08-02-683-print-chart-fit-xy-v14",
+      "fileKey": "2d21194a-2ee5-4676-a6bb-6550e8c6d408",
+      "revision": "102",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T09:32:16.199Z",
+      "deployedAt": "2026-08-02T09:41:06.803Z",
       "note": null
     },
     "686": {
