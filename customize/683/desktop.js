@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-p2-table-fit-v4';
+  const BUILD = '2026-08-02-683-print-chart-1plus2-v5';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2220,21 +2220,24 @@
       '.us683-print-page2{page-break-before:auto;break-before:auto;page-break-after:avoid;break-after:avoid;}' +
       '.us683-print-block{margin-bottom:3px;}' +
       '.us683-print-block.us683-print-hero-wrap{break-inside:avoid-page;}' +
-      '.us683-print-mom-box{border:2px solid #222;padding:4px 6px;margin:0 0 3px;font-size:13pt;font-weight:800;line-height:1.35;background:#f3f4f6;}' +
-      '.us683-print-mom-label{font-size:11pt;font-weight:700;margin-bottom:2px;}' +
+      '.us683-print-mom-box{border:2px solid #222;padding:3px 5px;margin:0 0 2px;font-size:13pt;font-weight:800;line-height:1.3;background:#f3f4f6;}' +
+      '.us683-print-mom-label{font-size:10pt;font-weight:700;margin-bottom:1px;}' +
       '.us683-print-page1 .us683-print-h2{font-size:11pt;font-weight:700;margin:2px 0 1px;border-bottom:1px solid #222;padding-bottom:0;}' +
-      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:6px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.35;max-height:48mm;overflow:hidden;}' +
-      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:4px!important;margin:0 0 4px!important;}' +
+      '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:1px solid #999;padding:5px;min-height:1.2em;background:#fafafa;font-size:15pt;line-height:1.32;max-height:36mm;overflow:hidden;}' +
+      '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0 0 2px!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div{padding:4px 6px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
-      '.us683-print-hero-inner>div>div:nth-child(1){font-size:15pt!important;line-height:1.2!important;font-weight:800!important;margin:0!important;}' +
+      '.us683-print-hero-inner>div{padding:3px 5px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(1){font-size:14pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
-      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:4px!important;width:100%!important;}' +
+      /* 上段: 日次フル幅 / 下段: 週次|年次 左右 */
+      '.us683-print-chart-full{width:100%!important;margin:0 0 2px!important;}' +
+      '.us683-print-chart-full .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
+      '.us683-print-chart-row{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:5px!important;width:100%!important;}' +
       '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:10pt;margin:0 0 2px;}' +
-      '.us683-print-chart-slot{margin:0 0 2px!important;overflow:hidden!important;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:10pt;margin:0 0 1px;border-bottom:1px solid #222;}' +
+      '.us683-print-chart-slot{margin:0!important;overflow:hidden!important;}' +
       '.us683-print-chart-slot>.us683-print-chart-scaled{transform-origin:top left;}' +
       '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:4px 6px!important;margin:1px 0!important;}' +
       '.us683-print-page1 .us683-bar-card-title,.us683-print-page1 .us683-week-card-title{font-size:11pt!important;font-weight:700!important;margin-bottom:4px!important;line-height:1.25!important;}' +
@@ -2446,23 +2449,25 @@
       return slot;
     }
 
+    /* 上段: 日次を横いっぱいに / 下段: 週次・年次を左右 */
+    var dayFull = document.createElement('div');
+    dayFull.className = 'us683-print-chart-full us683-print-block';
+    addChartCol(dayFull, '日次グラフ', 'user683-chart-day', 0.62);
+    p1.appendChild(dayFull);
+
     var chartRow = document.createElement('div');
     chartRow.className = 'us683-print-chart-row us683-print-block';
-    var colDay = document.createElement('div');
-    colDay.className = 'us683-print-chart-col';
     var colWeek = document.createElement('div');
     colWeek.className = 'us683-print-chart-col';
     var colYear = document.createElement('div');
     colYear.className = 'us683-print-chart-col';
-    addChartCol(colDay, '日次グラフ', 'user683-chart-day', 0.78);
-    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.78);
+    addChartCol(colWeek, '週次グラフ', 'user683-chart-week', 0.58);
     addChartCol(
       colYear,
       '年次推移グラフ（直近6暦月）',
       'user683-chart-year',
-      0.74,
+      0.58,
     );
-    chartRow.appendChild(colDay);
     chartRow.appendChild(colWeek);
     chartRow.appendChild(colYear);
     p1.appendChild(chartRow);
@@ -2477,7 +2482,8 @@
     p2.appendChild(h2t);
     var pn = document.createElement('p');
     pn.className = 'us683-print-page2-note';
-    pn.textContent = '※参考・A4横1枚想定（長文は要約表示。詳細は682）。';
+    pn.textContent =
+      '※参考・A4横。1枚目=要約＋日次フル幅＋週次/年次左右、2枚目=一覧。長文は要約（詳細は682）。';
     p2.appendChild(pn);
     var wrap2 = document.createElement('div');
     wrap2.className = 'us683-print-p2-wrap';
@@ -2609,7 +2615,7 @@
     printReportBtn.type = 'button';
     printReportBtn.textContent = '印刷報告用';
     printReportBtn.title =
-      'ブラウザの印刷ダイアログを開きます（A4横・2枚構成・1枚目:件数・先月対比・月次要約・グラフ、2枚目:対応一覧※参考を1枚に圧縮）。向き「横」を確認。PDFは印刷先で「PDFに保存」。';
+      'ブラウザの印刷ダイアログを開きます（A4横・計2枚・1枚目:要約＋日次フル幅＋週次/年次左右、2枚目:対応一覧※参考）。向き「横」を確認。';
     printReportBtn.style.cursor = 'pointer';
     printReportBtn.onclick = function () {
       openUser683PrintReport();
