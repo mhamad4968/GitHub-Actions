@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-orient-fill-v21",
-      "fileKey": "b925aac3-9617-4baf-84c3-ac419f204128",
-      "revision": "109",
+      "build": "2026-08-02-683-print-chart-title-v22",
+      "fileKey": "95e3c2af-1a50-4a6a-98ce-e5df8f3e6387",
+      "revision": "110",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T10:08:49.765Z",
+      "deployedAt": "2026-08-02T10:10:36.253Z",
       "note": null
     },
     "686": {

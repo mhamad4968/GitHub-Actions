@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-orient-fill-v21';
+  const BUILD = '2026-08-02-683-print-chart-title-v22';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -2264,12 +2264,12 @@
       '.us683-print-chart-full{flex:1.4 1 0%!important;min-height:0!important;width:100%!important;' +
       'margin:0!important;padding:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;gap:2px!important;}' +
       '.us683-print-chart-full.us683-print-block{margin:0!important;}' +
-      '.us683-print-chart-full .us683-print-h2{font-size:9pt;margin:0!important;padding:0 0 1px!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.2;}' +
+      '.us683-print-chart-full .us683-print-h2{font-size:12.5pt!important;font-weight:800!important;margin:0!important;padding:0 0 3px!important;border-bottom:1.5px solid #222;flex:0 0 auto;line-height:1.25;}' +
       '.us683-print-chart-row{flex:1.15 1 0%!important;min-height:0!important;display:flex!important;flex-direction:row!important;' +
       'align-items:stretch!important;gap:5px!important;width:100%!important;margin:0!important;padding:0!important;overflow:hidden!important;}' +
       '.us683-print-chart-row.us683-print-block{margin:0!important;}' +
       '.us683-print-chart-row .us683-print-chart-col{flex:1 1 0%!important;min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;gap:2px!important;}' +
-      '.us683-print-chart-row .us683-print-h2{font-size:9pt;margin:0!important;padding:0 0 1px!important;border-bottom:1px solid #222;flex:0 0 auto;line-height:1.2;}' +
+      '.us683-print-chart-row .us683-print-h2{font-size:12.5pt!important;font-weight:800!important;margin:0!important;padding:0 0 3px!important;border-bottom:1.5px solid #222;flex:0 0 auto;line-height:1.25;}' +
       '.us683-print-chart-slot{margin:0!important;padding:0!important;width:100%!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}' +
       '.us683-print-page1 .us683-bar-card,.us683-print-page1 .us683-week-card{padding:2px 4px 3px!important;margin:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important;border-width:1px!important;}' +
       /* 外側 h2 と重複するカード内タイトルは非表示 → 棒エリアを縦に稼ぐ */
