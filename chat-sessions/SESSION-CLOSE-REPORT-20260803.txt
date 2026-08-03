@@ -1,0 +1,30 @@
+SESSION-CLOSE-REPORT 2026-08-03（夜・本日最終締め）
+========================================
+
+■ レーン
+- App719 Wi-Fi — 社員限定注記（拠点印刷のみ）
+- App721 JR iPad — 一覧印刷 複数部署モーダル＋フィルタヘッダー
+- 夕反省改善案（ミス削減・体制・MCP・憲法運用）全承認→反映
+
+■ LIVE
+- 719: BUILD `2026-08-03-wifi-ssid-dash-employee-only-print` / rev **14** / fileKey `c5a60590-cca8-4fd8-a688-8bf11f84d8bf`
+- 721: BUILD `2026-08-03-jr-ipad-dash-print-filter-surf` / rev **15** / fileKey `d0b5bd65-1c20-4844-a484-9dafc45333bc`
+- R63: clean（意図 dirty: SESSION-CLOCK → clear / pending V1-globals は翌日キュー）
+
+■ 本日できたこと
+- 719: 社外禁止注記を印刷面のみに訂正（一覧画面・一覧印刷には載せない）
+- 721: 一覧印刷に管理部署マルチ選択。印刷ヘッダーに `画面(…)` / `モーダル部署=` 併記
+- 夕反省: A1–A3 / S-* / O-* / M-* / C-* 全承認・runbook／薄い mdc／SPEC／針テスト反映
+- Desktop AI緊急用: prune＋最新入替（verify 全ファイル一致）
+- knowledge-wake allowlist 恒久是正（WAKE）
+
+■ GO 正本
+- docs/approved-changes/2026-08-03-evening-reflection-hamada-go.md
+- docs/runbooks/cio-ops-2026-08-03-evening-improvements.md
+- docs/reports/2026-08-03-evening-reflection.md
+
+■ 触らない（維持）
+- 688（WBGT以外）/ 677–679 / SKYSEA 実配信は方針確認後 / 712 deploy / 736
+
+■ 次セッション
+- Desktop `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap → **項番 -0**（事前にレーンを決めない）
