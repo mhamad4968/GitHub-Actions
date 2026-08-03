@@ -12,6 +12,8 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   'docs/handoff/spec-task-scores.json',
   'docs/knowledge/debug-tips.md',
   'chat-sessions/checkpoint-latest.md',
+  // #S-KNOW-WAKE-01 — Phase 5d knowledge-wake stamp の digest を WAKE commit に同梱（偽陽性残件防止）
+  'chat-sessions/knowledge-wake-latest.md',
   'chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt',
   'chat-sessions/desktop-ai-emergency-read-pack/31-META-26-formalization-lifecycle-charter.txt',
   'chat-sessions/desktop-ai-emergency-read-pack/32-META-27-constitution-navigation-charter.txt',
