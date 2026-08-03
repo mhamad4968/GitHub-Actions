@@ -18,6 +18,10 @@ globs: "customize/**/desktop*.js,docs/runbooks/cio-ops-2026-08-03*,docs/session-
 
 注意・禁止文言の初回は **印刷面のみ**。画面載せは明示依頼までしない。
 
+## A3 / M-REPORT-01 / S-REPORT-A1
+
+報告送信前に `cio:report-verify-response` を1回。□A1 は必ず `ダブルチェック（誰と・結果）`。下書きは `cio:report-draft` 優先。
+
 ## S-PRINT-FILTER-01
 
 画面絞込＋印刷モーダル二重系 → ヘッダーに `画面(…)` と `モーダル…` を併記。
