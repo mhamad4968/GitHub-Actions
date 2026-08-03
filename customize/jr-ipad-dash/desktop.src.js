@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-06-24-jr-ipad-dash-register-existing";
+  var BUILD = "2026-08-03-jr-ipad-dash-list-print-multi-dept";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -420,7 +420,11 @@
       ".jip-modal label{display:block;margin:10px 0;font-size:15px;}" +
       ".jip-modal input,.jip-modal select,.jip-modal textarea{width:100%;box-sizing:border-box;padding:8px;font-size:15px;margin-top:4px;}" +
       ".jip-modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px;}" +
-      ".jip-modal-delete{margin-right:auto;}";
+      ".jip-modal-delete{margin-right:auto;}" +
+      ".jip-print-dept-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}" +
+      ".jip-print-dept-list{max-height:320px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;}" +
+      ".jip-print-dept-item{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:15px;}" +
+      ".jip-print-dept-item input[type=checkbox]{width:auto;margin:0;flex-shrink:0;}";
     document.head.appendChild(st);
   }
 
@@ -489,6 +493,45 @@
     });
     rows.sort(compareDefaultSort);
     return rows;
+  }
+
+  function filteredRecordsForListPrint(selectedDepts) {
+    var deptSet = {};
+    (selectedDepts || []).forEach(function (name) {
+      deptSet[name] = true;
+    });
+    var q = state.search.trim().toLowerCase();
+    var rows = state.records.filter(function (r) {
+      if (state.lifecycleFilter === "active" && r.status === STATUS_DISPOSED) return false;
+      if (state.lifecycleFilter === "retired" && r.status !== STATUS_DISPOSED) return false;
+      if (state.filterStatus && r.status !== state.filterStatus) return false;
+      if (!deptSet[r.mgmt_dept]) return false;
+      if (!q) return true;
+      var hay = [
+        r.device_name,
+        r.phone_number,
+        r.apple_id,
+        r.loan_company,
+        r.loan_person,
+        r.model,
+        r.note,
+      ]
+        .join(" ")
+        .toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+    rows.sort(compareDefaultSort);
+    return rows;
+  }
+
+  function formatSelectedDeptsSummary(selectedDepts) {
+    if (!selectedDepts || !selectedDepts.length) return "";
+    if (selectedDepts.length === MGMT_DEPTS.length) return "すべて";
+    var joined = selectedDepts.join(",");
+    if (selectedDepts.length > 5 || joined.length > 48) {
+      return "選択" + selectedDepts.length + "件";
+    }
+    return joined;
   }
 
   function buildSummaryCounts() {
@@ -881,11 +924,16 @@
     return key;
   }
 
-  function listPrintFilterSummary() {
-    var parts = ["全 " + filteredRecords().length + " 台"];
+  function listPrintFilterSummary(selectedDepts, rowCount) {
+    var count = rowCount != null ? rowCount : filteredRecords().length;
+    var parts = ["全 " + count + " 台"];
     parts.push(state.lifecycleFilter === "retired" ? "表示=廃止" : "表示=有効");
     if (state.filterStatus) parts.push("ステータス=" + state.filterStatus);
-    if (state.filterDept) parts.push("部署=" + state.filterDept);
+    if (selectedDepts && selectedDepts.length) {
+      parts.push("部署=" + formatSelectedDeptsSummary(selectedDepts));
+    } else if (state.filterDept) {
+      parts.push("部署=" + state.filterDept);
+    }
     if (state.search.trim()) parts.push("検索=" + state.search.trim());
     return parts.join(" / ");
   }
@@ -953,21 +1001,88 @@
     return '<div class="jipl-table-wrap"><table class="jipl-table">' + colgroup + head + body + "</table></div>";
   }
 
-  function buildPrintListHtml(rows) {
+  function buildPrintListHtml(rows, selectedDepts) {
     var today = todayJstYmd();
     var header =
       '<header class="jipl-header"><h1>JRシステム用 iPad 管理台帳 — 一覧（横向き）</h1>' +
       '<p class="jipl-meta">印刷日: ' +
       esc(today) +
       " / " +
-      esc(listPrintFilterSummary()) +
+      esc(listPrintFilterSummary(selectedDepts, rows.length)) +
       "</p></header>";
     return header + buildListPrintTableHtml(rows);
   }
 
-  function openPrintListWindow() {
+  function openPrintListDeptModal() {
     if (!state.isAdmin) return;
-    var rows = filteredRecords();
+    var defaultChecked = state.filterDept
+      ? [state.filterDept]
+      : MGMT_DEPTS.map(function (d) {
+          return d.name;
+        });
+    var bodyHtml =
+      '<div class="jip-print-dept-actions">' +
+      '<button type="button" id="jip-print-dept-all" class="kintoneplugin-button-normal">全選択</button>' +
+      '<button type="button" id="jip-print-dept-none" class="kintoneplugin-button-normal">全解除</button>' +
+      "</div>" +
+      '<div class="jip-print-dept-list">' +
+      MGMT_DEPTS.map(function (d) {
+        var checked = defaultChecked.indexOf(d.name) >= 0 ? " checked" : "";
+        return (
+          '<label class="jip-print-dept-item"><input type="checkbox" value="' +
+          esc(d.name) +
+          '"' +
+          checked +
+          "> " +
+          esc(d.name) +
+          "</label>"
+        );
+      }).join("") +
+      "</div>";
+    var box = openModal("一覧印刷 — 管理部署を選択", bodyHtml, [
+      { label: "キャンセル" },
+      {
+        label: "印刷",
+        primary: true,
+        onClick: function (close) {
+          var selected = [];
+          box.querySelectorAll(".jip-print-dept-list input[type=checkbox]:checked").forEach(function (cb) {
+            selected.push(cb.value);
+          });
+          if (!selected.length) {
+            alert("管理部署を1つ以上選択してください");
+            return;
+          }
+          close();
+          openPrintListWindow(selected);
+        },
+      },
+    ]);
+    var allBtn = box.querySelector("#jip-print-dept-all");
+    var noneBtn = box.querySelector("#jip-print-dept-none");
+    if (allBtn) {
+      allBtn.addEventListener("click", function () {
+        box.querySelectorAll(".jip-print-dept-list input[type=checkbox]").forEach(function (cb) {
+          cb.checked = true;
+        });
+      });
+    }
+    if (noneBtn) {
+      noneBtn.addEventListener("click", function () {
+        box.querySelectorAll(".jip-print-dept-list input[type=checkbox]").forEach(function (cb) {
+          cb.checked = false;
+        });
+      });
+    }
+  }
+
+  function openPrintListWindow(selectedDeptNames) {
+    if (!state.isAdmin) return;
+    if (!selectedDeptNames || !selectedDeptNames.length) {
+      alert("管理部署を1つ以上選択してください");
+      return;
+    }
+    var rows = filteredRecordsForListPrint(selectedDeptNames);
     if (!rows.length) {
       alert("印刷する端末がありません（絞込条件を確認してください）。");
       return;
@@ -984,7 +1099,7 @@
       "<title>JR iPad 一覧</title><style>" +
       listPrintStylesheet() +
       "</style></head><body>" +
-      buildPrintListHtml(rows) +
+      buildPrintListHtml(rows, selectedDeptNames) +
       "</body></html>";
     var d = w.document;
     d.open();
@@ -1213,7 +1328,7 @@
     var printListBtn = document.getElementById("jip-print-list");
     if (printListBtn) {
       printListBtn.addEventListener("click", function () {
-        openPrintListWindow();
+        openPrintListDeptModal();
       });
     }
     var search = document.getElementById("jip-search");
