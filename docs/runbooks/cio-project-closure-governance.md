@@ -76,6 +76,15 @@
 3. `cio-project-closures.json` から該当を **解除**または `status: reopened` に変更（理由 1 行）
 4. `verify:checkpoint-project-closure` → export-handoff → desktop sync
 
+### C-micro — 微小 UI／印刷のみ（#O-CLOSED-01・2026-08-03 浜田 GO）
+
+**closed-v1 のまま**、浜田の **明示依頼**だけで次を再開してよい（closures 解除 **不要**）:
+
+- 注意・禁止文言、印刷ヘッダー／一覧印刷の絞込 UI、表示面の限定・色・注記
+
+**不可（通常の §C 再開が必要）**: WF／採番／データモデル変更・v1 再設計。  
+**完了サマリを GO 待ちに出さない**規律は維持。正本: `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md`
+
 ---
 
 ## D. 4AI 分担

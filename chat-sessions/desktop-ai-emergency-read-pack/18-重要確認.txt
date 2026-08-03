@@ -257,6 +257,13 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **再開**: 浜田 GO + closures 解除 + checkpoint 更新のみ
   **正本**: `docs/runbooks/cio-project-closure-governance.md` / `23-project-closure-recognition-kernel.md` / TSB-038
 
+【2026-08-03 追記・表示面マトリクス（C-41-SURF / C-GO-PRINT・浜田 GO）】
+  **趣旨**: 「接続情報」「注意書き」など **画面／単票印刷／一覧印刷／Excel** が分かれる依頼で、面を固定せず広げて実装すると手戻りになる（719 教訓）。
+  **§41 典型題材**: 「どこに出すか」だけは実装 GO（G2）前でも確認可。AGENTS 本文は非置換。
+  **初回既定**: 印刷物向け文言は **印刷面のみ**から（画面載せは明示依頼までしない）。
+  **着手前1行例**: `表示面: 画面=否 / 単票印刷=要 / 一覧印刷=否 / Excel=否`
+  **正本**: `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md` / `docs/approved-changes/2026-08-03-evening-reflection-hamada-go.md`
+
 【2026-06-14 追記・第12層 MCP 実戦運用（CEO 超厳命 — A1〜C4 統合）】
   **customize 変更 / deploy 前**: `npm run verify:kintone-live-schema -- --app <3桁ID>` — **Warning 0**（deploy 前段 `cio-deploy-preflight-guard` にも連鎖）
   **New Chat import 後**: `verify:session-handoff-integrity -- --import` 成功時に **`verify:git-history-alignment --handoff` 自動連鎖**（先祖返り exit 1）

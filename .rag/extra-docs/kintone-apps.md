@@ -63,7 +63,7 @@ npm run app:fields <アプリID>
 | 716 | `2026-06-14-storage-media-ledger-db-block-ui-mutations` | **5** | `36e4bdf3-9362-4837-8f53-4135b41084d1` | 2026-06-14 記憶媒体等台帳 DB save/delete ブロック |
 | 717 | `2026-06-17-storage-media-ledger-user-filter-compact` | **8** | `0bfa4bc3-b65c-418e-9687-d6a53a9fb04f` | 2026-06-17 利用者チップを社員検索絞り込みに変更 |
 | 720 | `2026-06-15-jr-ipad-db-block-ui-mutations` | **5** | `6a022180-0c57-4992-8f3c-929a93678a0f` | 2026-06-19 新規採番時下書き必須緩和（フォーム rev **7**） |
-| 721 | `2026-08-03-jr-ipad-dash-list-print-multi-dept` | **14** | `47e43b90-a006-460c-aaa2-826cce20b7bd` | 2026-06-24 既存端末を登録ボタン（採番なし・保存時POST） |
+| 721 | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** | `d0b5bd65-1c20-4844-a484-9dafc45333bc` | 2026-06-24 既存端末を登録ボタン（採番なし・保存時POST） |
 | 744 | `2026-06-26-jre-cloud-account-db-block-v1` | **5** | `125843f1-4b4b-49ce-91ad-2ae1886291fd` | 2026-06-26 JREクラウド DB save/delete ブロック |
 | 745 | `2026-06-27-jre-cloud-account-dash-v16-list-filter-clear` | **22** | `797ffc89-ae12-4301-80e0-4d1072f5c0a6` | 2026-06-26 集計表を開くと今月を自動表示 |
 | 746 | `2026-06-27-jre-chub-account-db-block-v1` | **6** | `4e078e50-6c53-4124-aa15-94f241c9082e` | 2026-07-18 フォーム設定8（署名代行対象ST・湾岸工事所） |
@@ -151,7 +151,7 @@ npm run app:fields <アプリID>
 | **記憶媒体等台帳DB**（媒体・周辺機器正本・閲覧のみ） | **716** | `customize/storage-media-ledger-db/desktop.js` \| `npm run deploy:716` | [https://jbis-kintone.cybozu.com/k/716/](https://jbis-kintone.cybozu.com/k/716/) **Space 21 / thread 23**・**2026-06-14**: 19 フィールド・正本 `docs/plans/2026-06-13-storage-media-ledger-kintone-spec.md`・**BUILD=`2026-06-14-storage-media-ledger-db-block-ui-mutations` rev **5** / fileKey **`36e4bdf3-9362-4837-8f53-4135b41084d1`** |
 | **記憶媒体等管理台帳ver.1**（日常 UI・716 へ REST） | **717** | `customize/storage-media-ledger-dash/desktop.js` \| `npm run deploy:717` | [https://jbis-kintone.cybozu.com/k/717/](https://jbis-kintone.cybozu.com/k/717/) **Space 21 / thread 23**・**2026-06-17**: 利用者チップを社員検索絞り込みに変更・**BUILD=`2026-06-17-storage-media-ledger-user-filter-compact` rev **8** / fileKey **`0bfa4bc3-b65c-418e-9687-d6a53a9fb04f`** |
 | **JRシステム用iPad台帳DB**（端末正本・閲覧のみ） | **720** | `customize/jr-ipad-db/desktop.js` \| `npm run deploy:720` | [https://jbis-kintone.cybozu.com/k/720/](https://jbis-kintone.cybozu.com/k/720/) **Space 34 / thread 38**・**2026-06-15**: 13 フィールド・**64 台移行済**・正本 `docs/plans/2026-06-15-jr-ipad-ledger-kintone-spec.md`・**BUILD=`2026-06-15-jr-ipad-db-block-ui-mutations` rev **5** / fileKey **`6a022180-0c57-4992-8f3c-929a93678a0f`** （**2026-06-19**: フォーム revision 7 — 新規採番 POST 時 `mgmt_dept` / `phone_number` / `model` を空可。保存時必須は Dash `validateRequired` が担保） |
-| **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-08-03-jr-ipad-dash-list-print-multi-dept` rev **14** / fileKey **`47e43b90-a006-460c-aaa2-826cce20b7bd`** |
+| **JRシステム用iPad管理台帳 ver.1**（日常 UI・720 へ REST） | **721** | `customize/jr-ipad-dash/desktop.js` \| `npm run deploy:721` | [https://jbis-kintone.cybozu.com/k/721/](https://jbis-kintone.cybozu.com/k/721/) **Space 34 / thread 38**・**BUILD=`2026-08-03-jr-ipad-dash-print-filter-surf` rev **15** / fileKey **`d0b5bd65-1c20-4844-a484-9dafc45333bc`** |
 | **東海支店iPad台帳DB**（端末正本・閲覧のみ） | **769** | `customize/tokai-ipad-db/desktop.js` \| `npm run deploy:769` | [https://jbis-kintone.cybozu.com/k/769/](https://jbis-kintone.cybozu.com/k/769/) **Space 32 / thread 34**・**2026-07-28**: 17 フィールド・**25 台移行済**・正本 `docs/plans/2026-07-28-tokai-ipad-ledger-kintone-spec.md`・**BUILD=`2026-07-28-tokai-ipad-db-block-ui-mutations` rev **6** / fileKey **`3ba2892d-f523-4945-9a82-181e9feb8ddb`**・**720/721 非対象** |
 | **東海支店iPad管理台帳**（日常 UI・769 へ REST） | **770** | `customize/tokai-ipad-dash/desktop.js` \| `npm run deploy:770` | [https://jbis-kintone.cybozu.com/k/770/](https://jbis-kintone.cybozu.com/k/770/) **Space 32 / thread 34**・**BUILD=`2026-07-29-tokai-ipad-dash-shared-passcode-fixed` rev **16** / fileKey **`0c3c8bf1-6fe8-4409-9a73-358db735097f`**・ACL=tokai+admin・Lookup なし・595/674 は admin 直／tokai は同期中継（`docs/runbooks/tokai-ipad-sync-relay.md`） |
 | **JREクラウドアカウント管理台帳用DB**（正本・閲覧のみ） | **744** | `customize/jre-cloud-account-db/desktop.js` \| `npm run deploy:744` | [https://jbis-kintone.cybozu.com/k/744/](https://jbis-kintone.cybozu.com/k/744/) **Space 34 / thread 38**・**2026-06-26**: 9 フィールド・**99 件移行済**・正本 `docs/plans/2026-06-26-jre-cloud-account-kintone-spec.md`・**BUILD=`2026-06-26-jre-cloud-account-db-block-v1` rev **5** / fileKey **`125843f1-4b4b-49ce-91ad-2ae1886291fd`** |
@@ -858,11 +858,11 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
 | 社内Wi-Fi管理DB | **718** | `customize/wifi-ssid-db/desktop.js` | `2026-06-14-wifi-ssid-db-block-ui-mutations` rev5 | `deploy:718` |
-| 社内Wi-Fi管理台帳 ver.1 | **719** | `customize/wifi-ssid-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-07-07-wifi-ssid-dash-list-print-scale2` rev12 | `deploy:719`（前に `wifi-ssid:bundle-dash`） |
+| 社内Wi-Fi管理台帳 ver.1 | **719** | `customize/wifi-ssid-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-08-03-wifi-ssid-dash-employee-only-print` rev14 | `deploy:719`（前に `wifi-ssid:bundle-dash`） |
 
-**719 主要機能**: 694 型一覧・管理者のみ編集（REST→718）・拠点別 A4 印刷（Wi-Fi QR 同梱）・**一覧印刷・Excel出力**（5列・検索絞込・PW 含む）・PW クリックコピー。設備なし（水戸・鎌ヶ谷）は拠点別印刷なし（一覧印刷・Excel には含む）。
+**719 主要機能**: 694 型一覧・管理者のみ編集（REST→718）・拠点別 A4 印刷（Wi-Fi QR 同梱・**社員限定注記は拠点印刷のみ**）・**一覧印刷・Excel出力**（5列・検索絞込・PW 含む）・PW クリックコピー。設備なし（水戸・鎌ヶ谷）は拠点別印刷なし（一覧印刷・Excel には含む）。
 
-**状態（2026-07-07）**: v1 運用中 — 一覧出力追加・浜田目視 OK。移行元 Excel **完全削除済**（kintone 正本のみ）。
+**状態（2026-08-03）**: v1 運用中 — 社員限定注記を拠点印刷のみに限定・浜田目視 OK。移行元 Excel **完全削除済**（kintone 正本のみ）。
 
 ---
 
@@ -873,11 +873,11 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | アプリ | ID | customize | BUILD（本番） | deploy |
 |--------|-----|-----------|---------------|--------|
 | JRシステム用iPad台帳DB | **720** | `customize/jr-ipad-db/desktop.js` | `2026-06-15-jr-ipad-db-block-ui-mutations` rev5（**フォーム rev 7** — 2026-06-19 新規採番時下書き必須緩和） | `deploy:720` / `jr-ipad:relax-draft-required-fields` |
-| JRシステム用iPad管理台帳 ver.1 | **721** | `customize/jr-ipad-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-06-24-jr-ipad-dash-register-existing` rev13 | `deploy:721`（前に `jr-ipad:bundle-dash`） |
+| JRシステム用iPad管理台帳 ver.1 | **721** | `customize/jr-ipad-dash/desktop.js`（`desktop.src.js` + bundle） | `2026-08-03-jr-ipad-dash-print-filter-surf` rev15 | `deploy:721`（前に `jr-ipad:bundle-dash`） |
 | 東海支店iPad台帳DB | **769** | `customize/tokai-ipad-db/desktop.js` | `2026-07-28-tokai-ipad-db-block-ui-mutations` rev6（25台移行済） | `deploy:769` |
 | 東海支店iPad管理台帳 | **770** | `customize/tokai-ipad-dash/desktop.js`（`desktop.src.js` + SheetJS bundle） | `2026-07-28-tokai-ipad-dash-v1` rev5 | `deploy:770`（前に `tokai-ipad:bundle-dash`） |
 
-**721 主要機能**: 694 型一覧・admin のみ・2 系統採番（JBIS### + jb###m）・**既存端末を登録**（採番なし）・**集計表はアコーディオン（初期閉じ）**・端末別 A4 印刷・モデルコンボボックス + NFKC 正規化・**検索・絞込クリアボタン**・**一覧 有効/廃止トグル（デフォルト有効＝廃棄非表示）**。
+**721 主要機能**: 694 型一覧・admin のみ・2 系統採番（JBIS### + jb###m）・**既存端末を登録**（採番なし）・**集計表はアコーディオン（初期閉じ）**・端末別 A4 印刷・**一覧印刷（複数部署モーダル・ヘッダーに画面／モーダルフィルタ）**・モデルコンボボックス + NFKC 正規化・**検索・絞込クリアボタン**・**一覧 有効/廃止トグル（デフォルト有効＝廃棄非表示）**。
 
 **状態（2026-06-15）**: **v1 完成 — CLOSED**（浜田目視 OK）。Excel **64 台移行済**・**運用終了**（kintone のみ正本）。完成報告: `docs/reports/2026-06-15-jr-ipad-ledger-completion.md`
 
@@ -939,6 +939,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | 日付 | 変更内容 |
 |------|----------|
 | 2026-07-18 | **JRE-C_Hub 746/747更新**: 746フォーム rev8（署名代行対象ST・湾岸工事所）、747 rev14（社員検索・利用再開・一覧/検索/出力・Edge「パスポート保存」誤認抑止）。既存48件は一括更新なし |
+| 2026-08-03 | **719** 社員限定注記を拠点別印刷のみに限定（rev14）。**721** 一覧印刷複数部署＋ヘッダー画面／モーダルフィルタ（`print-filter-surf`）。夕反省 GO 運用針 `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md` |
 | 2026-07-07 | **社内 Wi-Fi 台帳 719 一覧出力**: rev12（一覧印刷 A4 カラー・Excel 5列・PW 含む・文字拡大）。仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 |
 | 2026-06-27 | **JRE-C_Hub アカウント管理 v1 完成**: 746 rev5・747 rev12（権限 ST/フィルタ・IDユニーク集計・チップ UI・各種クリア）。Excel **47 件移行済**・浜田 OK。仕様 `docs/plans/2026-06-27-jre-chub-account-kintone-spec.md` |
 | 2026-06-27 | **JREクラウド アカウント台帳 UX 更新**: 745 rev22（集計チップ UI・条件クリア・検索クリア→稼働中）。仕様 §5.3/§4.3 更新 |

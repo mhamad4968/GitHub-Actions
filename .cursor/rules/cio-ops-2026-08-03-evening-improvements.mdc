@@ -1,0 +1,31 @@
+---
+description: 2026-08-03夕反省GO — 表示面マトリクス・□A1・closed-v1微小UI・印刷二重フィルタ（憲法本文は触らない）
+alwaysApply: false
+globs: "customize/**/desktop*.js,docs/runbooks/cio-ops-2026-08-03*,docs/session-report-checklist.md,docs/plans/*wifi*,docs/plans/*jr-ipad*"
+---
+
+# 運用改善 — 2026-08-03 GO（夕反省全承認）
+
+> 正本: `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md`  
+> GO: `docs/approved-changes/2026-08-03-evening-reflection-hamada-go.md`  
+> **憲法本文は変更しない。** `alwaysApply` を true にしない。
+
+## A1 / O-SURF-01 / S-UI-SURF-01
+
+編集前に表示面1行: `画面= / 単票印刷= / 一覧印刷= / Excel=`。曖昧なら印刷優先。
+
+## A2 / C-GO-PRINT
+
+注意・禁止文言の初回は **印刷面のみ**。画面載せは明示依頼までしない。
+
+## S-PRINT-FILTER-01
+
+画面絞込＋印刷モーダル二重系 → ヘッダーに `画面(…)` と `モーダル…` を併記。
+
+## O-CLOSED-01
+
+closed-v1 でも明示依頼の **微小 UI／印刷**は再開可。closures 解除は大規模時のみ。
+
+## M-5038-SURF / M-REPORT-01 / S-REPORT-A1
+
+§50-3-8 (a) に表示面漏れ。報告は `cio:report-draft`→verify。□A1 は `ダブルチェック（誰と・結果）`。

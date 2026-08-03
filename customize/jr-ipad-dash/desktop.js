@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-08-03-jr-ipad-dash-list-print-multi-dept";
+  var BUILD = "2026-08-03-jr-ipad-dash-print-filter-surf";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -926,15 +926,19 @@
 
   function listPrintFilterSummary(selectedDepts, rowCount) {
     var count = rowCount != null ? rowCount : filteredRecords().length;
+    var screenParts = [];
+    screenParts.push(state.lifecycleFilter === "retired" ? "表示=廃止" : "表示=有効");
+    if (state.filterStatus) screenParts.push("ステータス=" + state.filterStatus);
+    if (state.search.trim()) screenParts.push("検索=" + state.search.trim());
     var parts = ["全 " + count + " 台"];
-    parts.push(state.lifecycleFilter === "retired" ? "表示=廃止" : "表示=有効");
-    if (state.filterStatus) parts.push("ステータス=" + state.filterStatus);
+    parts.push(
+      "画面(" + (screenParts.length ? screenParts.join("・") : "絞込なし") + ")"
+    );
     if (selectedDepts && selectedDepts.length) {
-      parts.push("部署=" + formatSelectedDeptsSummary(selectedDepts));
+      parts.push("モーダル部署=" + formatSelectedDeptsSummary(selectedDepts));
     } else if (state.filterDept) {
-      parts.push("部署=" + state.filterDept);
+      parts.push("画面部署=" + state.filterDept);
     }
-    if (state.search.trim()) parts.push("検索=" + state.search.trim());
     return parts.join(" / ");
   }
 
