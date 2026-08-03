@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-02 19:30 JST — **本日最終締め（full CLOSE）**。683 印刷報告 v24＋ナレッジWAKE（M-RAG-04）／夕反省全GO／Desktop AI緊急用同期済。756 LIVE rev318 維持。
 **次の1手**: **当日 項番 -0** で浜田確認（事前にレーンを決めない）。
-**Git**: **`0edf8daa`** = `origin/main` — push 済
+**Git**: **`f943bccf`** = `origin/main` — push 済
 **本日状態（要約）**: App683 **rev112** `…-print-page2-break-v24`。印刷 MediaBox/向き受入・page2見切れ防止・knowledge-wake stamp。夕反省 GO 反映済。R63 クリーン。
 
 ### 本日アクティブ（BUILD/rev — 2026-08-02）
