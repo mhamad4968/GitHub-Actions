@@ -2,7 +2,7 @@
   "use strict";
 
   /** 社内Wi-Fi管理台帳 ver.1 — 718 REST CRUD + 会議室掲示印刷（QR）+ 一覧印刷・Excel */
-  var BUILD = "2026-08-03-wifi-ssid-dash-employee-only-notice";
+  var BUILD = "2026-08-03-wifi-ssid-dash-employee-only-print";
   var PRINT_COMPANY_NAME = "(株）J-BISメンテナンス";
   var EMPLOYEE_ONLY_NOTICE = "社外の方の利用は禁止です。当社社員のみ利用可能です。";
 
@@ -209,7 +209,6 @@
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".wfs-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
       ".wfs-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".wfs-employee-only{margin:0 0 10px;padding:12px 16px;background:#fef2f2;border:2px solid #b91c1c;border-radius:8px;color:#9a3412;font-size:15px;font-weight:700;text-align:center;line-height:1.5;}" +
       ".wfs-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;}" +
       ".wfs-table-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid #cbd5e1;border-radius:6px;}" +
       ".wfs-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1200px;}" +
@@ -310,9 +309,6 @@
       "<h1>" +
       esc(title) +
       "</h1>" +
-      '<p class="wfspr-employee-only">' +
-      esc(EMPLOYEE_ONLY_NOTICE) +
-      "</p>" +
       '<p class="wfspr-list-meta">出力日: ' +
       esc(todayJstYmd()) +
       "　全 " +
@@ -325,9 +321,7 @@
       "</tr></thead><tbody>" +
       body +
       "</tbody></table></div>" +
-      '<footer class="wfspr-list-foot">' +
-      esc(EMPLOYEE_ONLY_NOTICE) +
-      " · パスワードの取扱いに注意してください</footer>" +
+      '<footer class="wfspr-list-foot">社内限り · パスワードの取扱いに注意してください</footer>' +
       "</div>"
     );
   }
@@ -341,7 +335,6 @@
       ".wfspr-list-header{background:linear-gradient(135deg,#1d4ed8 0%,#0d9488 100%);color:#fff;border-radius:14px;padding:24px 28px 20px;margin-bottom:14px;text-align:center;box-shadow:0 4px 14px rgba(29,78,216,.25);}" +
       ".wfspr-list-org{margin:0 0 10px;font-size:13pt;font-weight:500;opacity:.92;letter-spacing:.06em;}" +
       ".wfspr-list-header h1{margin:0 0 10px;font-size:22pt;font-weight:700;line-height:1.3;}" +
-      ".wfspr-employee-only{margin:0 0 12px;padding:10px 16px;background:rgba(255,255,255,.95);border:2px solid #fecaca;border-radius:8px;color:#9a3412;font-size:13pt;font-weight:700;line-height:1.5;text-align:center;}" +
       ".wfspr-list-meta{margin:0;font-size:12pt;opacity:.9;}" +
       ".wfspr-list-table-wrap{border-radius:12px;overflow:hidden;border:1px solid #cbd5e1;box-shadow:0 2px 12px rgba(15,23,42,.08);background:#fff;}" +
       ".wfspr-list-table{border-collapse:collapse;width:100%;font-size:11.5pt;}" +
@@ -362,7 +355,7 @@
       ".wfspr-list-tr-alt .wfspr-list-td-ssid{background:#dbeafe;}" +
       ".wfspr-list-tr-alt .wfspr-list-td-pw{background:#fef3c7;}" +
       ".wfspr-list-tr-none .wfspr-list-td-ssid,.wfspr-list-tr-none .wfspr-list-td-pw{background:#e2e8f0;color:#64748b;}" +
-      ".wfspr-list-foot{margin-top:14px;text-align:center;font-size:11pt;color:#9a3412;font-weight:700;}" +
+      ".wfspr-list-foot{margin-top:14px;text-align:center;font-size:11pt;color:#64748b;}" +
       "@media print{@page{size:A4 portrait;margin:7mm 6mm 5mm;}" +
       "body{padding:0;background:#fff;}" +
       ".wfspr-list-header{border-radius:8px;box-shadow:none;padding:22px 24px 18px;}" +
@@ -966,9 +959,6 @@
       '<div class="wfs-toolbar">' +
       '<input type="search" id="wfs-search" placeholder="拠点名で検索" style="min-width:220px;padding:6px">' +
       "</div>" +
-      '<p class="wfs-employee-only">' +
-      esc(EMPLOYEE_ONLY_NOTICE) +
-      "</p>" +
       '<div id="wfs-meta" class="wfs-meta"></div>' +
       '<div class="wfs-table-wrap"><table class="wfs-table"><thead><tr>' +
       SORT_COLUMNS.map(function (c) {

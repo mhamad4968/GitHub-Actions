@@ -274,11 +274,11 @@
       "note": null
     },
     "719": {
-      "build": "2026-08-03-wifi-ssid-dash-employee-only-notice",
-      "fileKey": "3fc9c8e4-a0d3-47df-b10a-124edeaa888e",
-      "revision": "13",
+      "build": "2026-08-03-wifi-ssid-dash-employee-only-print",
+      "fileKey": "c5a60590-cca8-4fd8-a688-8bf11f84d8bf",
+      "revision": "14",
       "relPath": "customize/wifi-ssid-dash/desktop.js",
-      "deployedAt": "2026-08-03T09:43:03.688Z",
+      "deployedAt": "2026-08-03T09:45:34.169Z",
       "note": null
     },
     "720": {
