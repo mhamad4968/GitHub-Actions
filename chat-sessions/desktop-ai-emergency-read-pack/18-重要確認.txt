@@ -283,3 +283,8 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
   **階段**: Composer → verify NG → validate-diff → Grok C → 突破不能 → CIO 2回 → Fable T1–T4
   **正本**: `docs/plans/2026-07-09-grok-l2b-hybrid-spec.md` / `docs/runbooks/cio-grok-execution-loop.md` / `templates/grok-execution-contract.template.md`
   **検証**: `npm run verify:cio-grok-execution-infra`
+
+【C-R44-OPS / D-CLOSE-PS-01 · 2026-08-05】
+- 締めは cio:session:close-git --execute 一本。途中 git-heal／手書き **Git**／PowerShell Set-Content 禁止（ONEPASS）。
+- 冒頭 cio:session:close-preflight。R44 stamp は close-git 内のみ正当。日本語正本は Node/cio:* のみ。
+- 正本: docs/runbooks/cio-ops-2026-08-05-evening-improvements.md

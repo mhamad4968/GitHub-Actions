@@ -1,5 +1,8 @@
 /**
  * checkpoint-latest.md の **Git** 行同期（R44）
+ *
+ * #S-CLOSE-UTF8-01（2026-08-05）: 書き込み後に必須キー assert。
+ * PowerShell Set-Content / Out-File での編集は禁止（UTF-8 破壊）。
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,6 +16,32 @@ const GIT_LINE_RE = new RegExp(
   `${GIT_LINE_LABEL}\\s*\\*\\*\`([0-9a-f]+)\`\\*\\*\\s*=\\s*\`origin/main\``,
   'i',
 );
+
+/** S-CLOSE-UTF8-01 — checkpoint 必須キー（破壊検知） */
+export const CHECKPOINT_UTF8_REQUIRED = [
+  '**次の1手**:',
+  'セッション切替後の自律復元',
+  'Read より前',
+  '項番 -0',
+  '日終わり',
+];
+
+/**
+ * @param {string} text
+ * @param {string} [context]
+ * @returns {{ ok: true } | { ok: false, missing: string[], message: string }}
+ */
+export function assertCheckpointUtf8Integrity(text, context = 'checkpoint') {
+  const missing = CHECKPOINT_UTF8_REQUIRED.filter((k) => !text.includes(k));
+  if (missing.length === 0) return { ok: true };
+  return {
+    ok: false,
+    missing,
+    message:
+      `[S-CLOSE-UTF8-01] ${context} UTF-8/必須キー欠落: ${missing.join(', ')} — ` +
+      'PowerShell Set-Content/Out-File 禁止。Node fs.writeFileSync(utf8) または cio:* のみ。書き込みを破棄して HEAD から復元',
+  };
+}
 
 /** @returns {string|null} */
 export function readCheckpointGitHead(root) {
@@ -32,6 +61,10 @@ export function updateCheckpointGitHead(root, { hash, suffix = 'push 済' }) {
   const p = path.join(root, CHECKPOINT_REL);
   if (!fs.existsSync(p)) return false;
   const text = fs.readFileSync(p, 'utf8');
+  const beforeAssert = assertCheckpointUtf8Integrity(text, 'before Git stamp');
+  if (!beforeAssert.ok) {
+    throw new Error(beforeAssert.message);
+  }
   const line = `**Git**: **\`${hash}\`** = \`origin/main\` — ${suffix}`;
   const lineRe = new RegExp(`^${GIT_LINE_LABEL}.*$`, 'm');
   if (!lineRe.test(text)) return false;
@@ -41,6 +74,10 @@ export function updateCheckpointGitHead(root, { hash, suffix = 'push 済' }) {
   const out = updated.includes('\r\n')
     ? updated
     : updated.replace(/\r?\n/g, '\r\n');
+  const afterAssert = assertCheckpointUtf8Integrity(out, 'after Git stamp');
+  if (!afterAssert.ok) {
+    throw new Error(afterAssert.message);
+  }
   fs.writeFileSync(p, out, 'utf8');
   return true;
 }

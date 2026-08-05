@@ -20,8 +20,12 @@
 1. 当日の作業を **SESSION-CLOSE-REPORT に反映**（上書き or §4 統合後に冗長 § を削除して 1 本化）
 2. handoff **末尾 1 ブロック** / checkpoint **先頭 1 表**
 3. 夕反省（26）作成 → `verify:evening-reflection-scope`
-4. **先祖返りガード + 締め一括** — `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（R19 + B1/B4 + **R44 checkpoint Git 同期（SKIP）** + desktop sync 内包）
+4. **先祖返りガード + 締め一括** — `npm run cio:session:close-git -- --execute --auto-stage --message "…"`（**preflight** + R19 + B1/B4 + **R44 checkpoint Git 同期** + desktop sync 内包）
 5. `verify:session-handoff-integrity -- --validate-export`（close-git 内で export 直後に実行）
+
+**D-CLOSE-PS-01（2026-08-05）**: `checkpoint-latest.md` 等の日本語正本は **PowerShell Set-Content / Out-File 禁止**（UTF-8 破壊）。編集は Node `fs.writeFileSync(..., 'utf8')` または cio:* のみ。
+
+**S-CLOSE-ONEPASS-01（2026-08-05）**: close-git 途中 NG のとき **`cio:checkpoint:git-heal` や手書き `**Git**:` を挟まない**。原因1件を直してから close-git を再実行。
 
 ## R44 checkpoint Git 針（#R-R44-CLOSE-01 · 2026-07-14 · **2026-07-20 抜本**）
 

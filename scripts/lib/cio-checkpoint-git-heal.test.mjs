@@ -36,6 +36,9 @@ function writeCheckpoint(dir, gitHash) {
 **Git**: **\`${gitHash}\`** = \`origin/main\` — push 済
 **次の1手**: test
 
+## セッション切替後の自律復元（Lifecycle v2 鏡像）
+**正本** test | **項番 -1** | **項番 -0** OK が返るまで **着手しない** | **項番 0** \`npm run session:bootstrap\`（**Read より前**）| **項番 0.9** | **日終わり** close-git
+
 ## 2026-07-20 本日完了サマリー
 | 項目 | 内容 |
 |------|------|

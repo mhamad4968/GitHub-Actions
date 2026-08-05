@@ -1,0 +1,19 @@
+---
+description: 2026-08-05 夕反省 GO — 締め UTF-8 / ONEPASS / preflight（薄い規則）
+alwaysApply: false
+globs:
+  - chat-sessions/checkpoint-latest.md
+  - scripts/cio-session-close-git.mjs
+  - scripts/cio-session-close-preflight.mjs
+  - scripts/lib/cio-checkpoint-git-sync.mjs
+  - docs/handoff/latest-session-bridge.json
+---
+
+# 締め改善（2026-08-05 浜田 GO）
+
+正本: `docs/runbooks/cio-ops-2026-08-05-evening-improvements.md`
+
+- 日本語正本（checkpoint 等）は **PowerShell Set-Content / Out-File 禁止**
+- 締めは **`cio:session:close-git --execute` 一本**。途中 heal／手書き Git 禁止（ONEPASS）
+- 冒頭 **`cio:session:close-preflight`**（#D-CLOSE-02 / Rank1）
+- R44 stamp は close-git 内のみ正当

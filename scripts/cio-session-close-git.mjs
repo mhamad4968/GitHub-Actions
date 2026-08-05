@@ -3,6 +3,7 @@
  * セッション締め Git 儀式 — 先祖返り回避 + B1/B4 + R19/R20 連鎖
  *
  * 順序（--execute 時）:
+ *   0-) cio:session:close-preflight（S-CLOSE-PREFLIGHT-01 — export/score/#D-CLOSE-02）
  *   0) cio:session:close-recognition-gate --pre-commit（R19 内容突合のみ）
  *   0b) verify:spec-progress-sync（R736-SPEC-SYNC 鏡像矛盾）
  *   0c) cio:guard:5038-session-audit（v3.2 B1 — customize セッションのみ）
@@ -13,6 +14,9 @@
  *   5) R44 off-by-one（tipの親）を検証
  *   6) verify:session-close-git-warn
  *   7) desktop:sync-and-verify（--skip-desktop-sync で省略可・浜田 GO 時のみ）
+ *
+ * S-CLOSE-ONEPASS-01: 途中 NG 時は git-heal / 手書き Git / PS Set-Content を挟まず、
+ *   原因1件を直してから本コマンドを再実行する。
  *
  * SPEC を含む場合: --reviewed-by deepseek|kimi|openrouter で commit trailer を付与。
  */
@@ -41,11 +45,21 @@ const autoStage = process.argv.includes('--auto-stage');
 const skipDesktop = process.argv.includes('--skip-desktop-sync');
 const skipCheckpointGit = process.argv.includes('--skip-checkpoint-git-sync');
 const skipR19 = process.argv.includes('--skip-r19');
+const skipPreflight = process.argv.includes('--skip-preflight');
 const msgIdx = process.argv.indexOf('--message');
 const message = msgIdx >= 0 ? process.argv[msgIdx + 1] : '';
 const reviewerIdx = process.argv.indexOf('--reviewed-by');
 const reviewedBy = reviewerIdx >= 0 ? process.argv[reviewerIdx + 1] : '';
 const allowedReviewers = new Set(['deepseek', 'kimi', 'openrouter']);
+
+const ONEPASS =
+  '[cio:session:close-git] ONEPASS (S-CLOSE-ONEPASS-01): git-heal / 手書き **Git** / PowerShell Set-Content を挟まない。原因1件を直してから close-git --execute を再実行';
+
+function failClose(msg, code = 1) {
+  console.error(`[cio:session:close-git] NG ${msg}`);
+  console.error(ONEPASS);
+  process.exit(code);
+}
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });
@@ -116,36 +130,38 @@ function main() {
   }
 
   if (!message) {
-    console.error('[cio:session:close-git] NG --execute には --message "…" 必須');
-    process.exit(1);
+    failClose('--execute には --message "…" 必須');
   }
   if (reviewedBy && !allowedReviewers.has(reviewedBy)) {
-    console.error('[cio:session:close-git] NG --reviewed-by は deepseek|kimi|openrouter のみ');
-    process.exit(1);
+    failClose('--reviewed-by は deepseek|kimi|openrouter のみ');
+  }
+
+  if (!skipPreflight) {
+    if (!runNode('scripts/cio-session-close-preflight.mjs')) {
+      failClose('S-CLOSE-PREFLIGHT-01（export/score/#D-CLOSE-02）');
+    }
+  } else {
+    console.warn('[cio:session:close-git] WARN --skip-preflight（浜田 GO + 理由必須）');
   }
 
   if (!skipR19) {
     if (!runNode('scripts/cio-session-close-recognition-gate.mjs', ['--pre-commit'])) {
-      console.error('[cio:session:close-git] NG R19 pre-commit 認識ゲート');
-      process.exit(1);
+      failClose('R19 pre-commit 認識ゲート');
     }
   } else {
     console.warn('[cio:session:close-git] WARN --skip-r19（浜田 GO + 理由必須）');
   }
 
   if (!runNode('scripts/verify-spec-progress-sync.mjs')) {
-    console.error('[cio:session:close-git] NG R736-SPEC-SYNC — 仕様進捗表の鏡像矛盾（先祖返り）');
-    process.exit(1);
+    failClose('R736-SPEC-SYNC — 仕様進捗表の鏡像矛盾（先祖返り）');
   }
 
   if (!runNode('scripts/cio-guard-5038-session-audit.mjs')) {
-    console.error('[cio:session:close-git] NG §50-3-8 session audit（customize セッション）');
-    process.exit(1);
+    failClose('§50-3-8 session audit（customize セッション）');
   }
 
   if (!runNpm('cio:guard:multi-customize')) {
-    console.error('[cio:session:close-git] NG R-17-1 multi-customize guard');
-    process.exit(1);
+    failClose('R-17-1 multi-customize guard');
   }
 
   const bootRep = repairCheckpointBootstrapBlock(root);
@@ -168,7 +184,7 @@ function main() {
   if (porcelainAfter && !stagedAfter) {
     console.error('[cio:session:close-git] NG 未コミットあり — git add または --auto-stage');
     git(['status', '--short']);
-    process.exit(1);
+    failClose('未コミットあり');
   }
 
   if (stagedAfter) {
@@ -178,13 +194,11 @@ function main() {
       env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' },
     });
     if (!commit.ok) {
-      console.error('[cio:session:close-git] NG commit 失敗（pre-commit 等）');
-      process.exit(commit.status || 1);
+      failClose('commit 失敗（pre-commit 等）', commit.status || 1);
     }
     console.log('[cio:session:close-git] commit OK');
     if (!syncGitHistoryGenerationsIfNeeded(stagedAfter)) {
-      console.error('[cio:session:close-git] NG sync:git-history-generations');
-      process.exit(1);
+      failClose('sync:git-history-generations');
     }
   } else {
     console.log('[cio:session:close-git] 新規 commit なし（既に commit 済）');
@@ -197,14 +211,17 @@ function main() {
   if (!skipCheckpointGit) {
     const parentHash = gitShortHead(root);
     if (parentHash) {
-      updateCheckpointGitHead(root, { hash: parentHash, suffix: 'push 済（R44 parent）' });
+      try {
+        updateCheckpointGitHead(root, { hash: parentHash, suffix: 'push 済（R44 parent）' });
+      } catch (err) {
+        failClose(err instanceof Error ? err.message : String(err));
+      }
     }
   }
 
   if (fs.existsSync(path.join(root, 'docs/handoff/latest-session-bridge.json'))) {
     if (!runNpm('verify:session-handoff-integrity', ['--validate-export'])) {
-      console.error('[cio:session:close-git] NG handoff bridge 整合 — export-handoff を確認');
-      process.exit(1);
+      failClose('handoff bridge 整合 — export-handoff を確認（git-heal 連鎖禁止）');
     }
   }
 
@@ -217,8 +234,7 @@ function main() {
       { env: { ...process.env, CIO_POST_COMMIT_CHECKPOINT_SYNC: '1' } },
     );
     if (!metaCommit.ok) {
-      console.error('[cio:session:close-git] NG 締めメタ commit 失敗');
-      process.exit(metaCommit.status || 1);
+      failClose('締めメタ commit 失敗', metaCommit.status || 1);
     }
     console.log('[cio:session:close-git] checkpoint + bridge を1 commitに集約（P3/R44）');
   }
@@ -231,26 +247,24 @@ function main() {
     stdio: 'inherit',
   });
   if (pull.status !== 0) {
-    console.error('[cio:session:close-git] NG pull --rebase — 競合解消後に再実行');
-    process.exit(pull.status || 1);
+    failClose('pull --rebase — 競合解消後に再実行', pull.status || 1);
   }
 
   const push = git(['push', 'origin', 'HEAD']);
   if (!push.ok) {
     console.error('[cio:session:close-git] NG push', push.err || push.out);
-    process.exit(push.status || 1);
+    failClose('push', push.status || 1);
   }
   console.log('[cio:session:close-git] push OK');
 
   if (!runNode('scripts/verify-session-close-git-warn.mjs')) {
-    process.exit(1);
+    failClose('verify:session-close-git-warn');
   }
 
   if (skipDesktop) {
     console.warn('[cio:session:close-git] WARN --skip-desktop-sync — 後で desktop:sync-and-verify 必須（R17）');
   } else if (!runNpm('desktop:sync-and-verify', [], { SESSION_STARTER_DESKTOP_DIR: DESKTOP_DIR })) {
-    console.error('[cio:session:close-git] NG desktop:sync-and-verify');
-    process.exit(1);
+    failClose('desktop:sync-and-verify');
   }
 
   console.log('\n[cio:session:close-git] OK — 締め Git + Desktop 連鎖完了（R20）');

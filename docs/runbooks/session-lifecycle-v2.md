@@ -210,6 +210,8 @@ npm run cio:checkpoint:rollup -- --keep 3
 
 **R-SESS-11（2026-07-11 Round-3 R3-2）**: full CLOSE では **`npm run verify:constitution-evening`** を **Desktop sync 後・close-git 前**に必須（lifecycle-v2 · `verify:rules-optimization` 連鎖と同一）。
 
+**D-CLOSE-PS-01 / S-CLOSE-PREFLIGHT-01（2026-08-05 浜田 GO）**: checkpoint 等の日本語正本は **PowerShell Set-Content / Out-File 禁止**（Node / cio:* のみ）。full CLOSE の `close-git --execute` 冒頭で **`cio:session:close-preflight`**（export / score / #D-CLOSE-02）。途中 NG は heal chase 禁止（ONEPASS）。正本: `docs/runbooks/cio-ops-2026-08-05-evening-improvements.md`。
+
 **R-SESS-04（2026-06-25 GO）**: `session:bootstrap` / `cio:session:cold-start` が **exit ≠ 0** のとき — **L2 完走は1回のみ** → NG ログをチャットに貼付 → **浜田へエスカレ** → **本題・deploy に着手しない**（Lifecycle v2 §3 L2 違反＝報告違反）。
 
 **R-SESS-05（2026-07-04 GO）**: セッション内で **customize deploy** した app がある full CLOSE 前 — `push-deploy-quality-gates-v2.md` **§5 手順 6**（`sync:kintone-apps-build --strict` + verify）を実行し、`kintone-apps.md` 整合を commit に含める。
