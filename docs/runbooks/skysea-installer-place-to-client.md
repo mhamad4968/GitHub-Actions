@@ -13,7 +13,7 @@
 3. 配置後、PowerShell で SHA-256 を記録:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "\\<サーバ>\skysea$\Client\<インストーラーファイル名>"
+Get-FileHash -Algorithm SHA256 "\\Server01\共有フォルダ\skysea\Client\SKYSEADivSetupLite.exe"
 ```
 
 4. ハッシュ文字列をメモ帳または下記メモ欄に残す
@@ -27,7 +27,7 @@ Get-FileHash -Algorithm SHA256 "\\<サーバ>\skysea$\Client\<インストーラ
 |------|-----|
 | 配置日時 | |
 | UNCパス | `\\Server01\共有フォルダ\skysea\Client`（2026-08-05 浜田確定） |
-| ファイル名 | （配置後に記入） |
+| ファイル名 | **`SKYSEADivSetupLite.exe`**（2026-08-05 浜田） |
 | サイズ | （配置後に記入） |
 | SHA-256 | （配置後に記入） |
 | 管理機版との対応 | 17.210.07j（SKY回答で再確認） |
