@@ -1,9 +1,8 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-03 19:20 JST — **本日最終締め（full CLOSE）**。719 社外禁止注記（拠点印刷のみ）／721 一覧印刷複数部署＋画面／モーダルフィルタ／夕反省全GO反映／Desktop AI緊急用最新入替。
 **次の1手**: **当日 項番 -0** で浜田確認（事前にレーンを決めない）。
-**Git**: **`7a3d04a9`** = `origin/main` — push 済（R44 parent）
+**Git**: close-git で本締め（実行後に tip 同期）
 **本日状態（要約）**: 719 rev14 employee-only-print。721 rev15 print-filter-surf。夕反省 A1–A3/S/O/M/C 全反映。R63 クリーン。
-
 ### 本日アクティブ（BUILD/rev — 2026-08-03）
 | App | BUILD | rev |
 |-----|-------|-----|
@@ -11,7 +10,6 @@
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112**（維持） |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318**（維持） |
-
 **継続メモ**:
 1. **719/721**: closed-v1 微小 UI／印刷は明示依頼で再開可（O-CLOSED-01）。表示面マトリクス必須。
 2. **運用改善 GO**: `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md`
@@ -50,7 +48,6 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-
 ## 2026-08-03
 
 ### 2026-08-03 夜（本日最終締め）
@@ -58,8 +55,10 @@
 - 721: 一覧印刷マルチ部署＋ヘッダー画面／モーダル（rev15）
 - 夕反省全GO反映（A1–A3・S/O/M/C）・Desktop 最新入替・close-git／clock:clear
 
+
 ## 2026-08-02
 
 ### 2026-08-02 夜（本日最終締め）
 - 683 印刷 v24＋ナレッジWAKE／夕反省全GO／Desktop sync
 - close-git / clock:clear（本締め）
+
