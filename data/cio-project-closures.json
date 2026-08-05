@@ -41,7 +41,7 @@
       "holdSince": "2026-04-21",
       "resumedAt": "2026-08-05",
       "planReviewFrom": "2026-08",
-      "note": "2026-08-05 浜田「今日からSKYSEA」・手順はAI主導。playbook=docs/runbooks/skysea-2026-08-ai-playbook.md / 問い合わせ下書き=docs/plans/2026-08-05-skysea-vendor-inquiry-draft.md。実PC配信・既存GPO変更・本番実装はSKY社回答＋浜田GO後のみ。",
+      "note": "2026-08-05 問い合わせ送信済（一次回答=翌営業日）。段B=docs/runbooks/skysea-2026-08-stage-b-prep.md。実PC配信・既存GPO変更・本番実装はSKY社回答＋浜田GO後のみ。",
       "spec": "docs/plans/2026-04-18-skysea-installer.md",
       "forbiddenNextTaskPatterns": ["実PC配信", "本番配信", "gpupdate /force", "既存GPO変更"]
     }

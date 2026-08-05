@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-05 18:50 JST — **SKYSEA 再開（AI手順主導）**。playbook＋SKY社問い合わせ下書き作成。実PC配信は回答＋GO後。
-**次の1手**: 浜田が `docs/plans/2026-08-05-skysea-vendor-inquiry-draft.md` を確認し **SKY社へ送信**（送信後AIは段B準備へ）。
-**Git**: 本セッションで docs 更新後 commit+push
-**本日状態（要約）**: SKYSEA active。WAKE済。Credit 26%記録。719/721/683/756 は維持（完了済を出さない）。
+**最終更新**: 2026-08-05 19:05 JST — **SKYSEA 段A送信完了・段B準備書作成**。一次回答=翌営業日目安。実PC配信は回答＋GO後。
+**次の1手**: 浜田が SKYSEA管理台帳 **全件CSV** をGit外で用意しAIへ提供（段B突合・書込なし）。
+**Git**: docs 更新後 commit+push
+**本日状態（要約）**: SKYSEA active。問い合わせ送信済。Credit 26%。719/721/683/756 維持。
 ### 本日アクティブ（BUILD/rev — 2026-08-03）
 | App | BUILD | rev |
 |-----|-------|-----|
