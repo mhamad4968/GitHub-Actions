@@ -166,6 +166,7 @@
     "test:evening-improvements-2026-08-01": "node scripts/test-evening-improvements-2026-08-01.mjs",
     "test:evening-improvements-2026-08-03": "node scripts/test-evening-improvements-2026-08-03.mjs",
     "test:evening-improvements-2026-08-05": "node scripts/test-evening-improvements-2026-08-05.mjs",
+    "test:674-jbis-max-plus-one": "npx dotenv -e .env -e .env.proxy -- node scripts/test-674-jbis-max-plus-one.mjs",
     "cio:pre-push-local-parity": "node scripts/cio-pre-push-local-parity.mjs",
     "test:evening-improvements-2026-07-28": "node scripts/test-evening-improvements-2026-07-28.mjs",
     "cio:guard-r63-v2": "node scripts/cio-guard-r63-v2-dirty.mjs",
