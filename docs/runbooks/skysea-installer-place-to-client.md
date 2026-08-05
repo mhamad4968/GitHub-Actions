@@ -25,11 +25,11 @@ Get-FileHash -Algorithm SHA256 "\\Server01\共有フォルダ\skysea\Client\SKYS
 
 | 項目 | 値 |
 |------|-----|
-| 配置日時 | |
+| 配置日時 | 2026-08-05（浜田・SHA取得 kent0285） |
 | UNCパス | `\\Server01\共有フォルダ\skysea\Client`（2026-08-05 浜田確定） |
-| ファイル名 | **`SKYSEADivSetupLite.exe`**（2026-08-05 浜田） |
-| サイズ | （配置後に記入） |
-| SHA-256 | （配置後に記入） |
+| ファイル名 | **`SKYSEADivSetupLite.exe`** |
+| サイズ | （任意・未記入） |
+| SHA-256 | **`777EF06A8783C560DB05BE1B54DEF1BD41013B0A7BA5378EF72BDCFCD24B4497`** |
 | 管理機版との対応 | 17.210.07j（SKY回答で再確認） |
 
 ---

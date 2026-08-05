@@ -54,7 +54,7 @@
 - [x] `\\…\skysea$\Client\`（または同等）を作成した — **2026-08-05 浜田OK**
 - [x] `\\…\skysea$\Logs\`（または同等）を分けて作成した — **同上**
 - [x] Domain Computers=読取／管理者=書込／Everyone無し — **浜田確認済（書込=administrator系）**
-- [ ] （任意）インストーラー配置＋SHA-256メモ  
+- [x] （任意）インストーラー配置＋SHA-256メモ — **配置済** `SKYSEADivSetupLite.exe` / SHA256=`777EF06A8783C560DB05BE1B54DEF1BD41013B0A7BA5378EF72BDCFCD24B4497`
 - [x] ADグループ `SG-SKYSEA-Deploy-2026` を **新規作成**・メンバ空 — **2026-08-05 浜田完了**（※OUではなくセキュリティグループ）
 - [x] 既存GPOは触っていない／新規GPOは作っていない  
 - [x] 実PCへは何も配信していない  

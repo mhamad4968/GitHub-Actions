@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-05 20:02 JST — Client UNC確定 `\\Server01\共有フォルダ\skysea\Client`。インストーラー配置・SHA待ち。SKY回答待ち。
-**次の1手**: インストーラーを Client へコピー → SHA-256共有／並行でSKY回答待ち。
+**最終更新**: 2026-08-05 20:08 JST — **インストーラー配置＋SHA済**。Client=`\\Server01\共有フォルダ\skysea\Client\SKYSEADivSetupLite.exe`。SKY回答待ち。
+**次の1手**: **SKY社回答待ち**（届いたら共有）。回答＋GOまで実配信・GPO・SGメンバ追加しない。
 **Git**: docs 更新後 commit+push
-**本日状態（要約）**: SG/フォルダ/OU済。配信禁止。ターゲット123。
+**本日状態（要約）**: 段Bインフラ＋installer/SHA完了。ターゲット123。実配信禁止。
 ### 本日アクティブ（BUILD/rev — 2026-08-03）
 | App | BUILD | rev |
 |-----|-------|-----|

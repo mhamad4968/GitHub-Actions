@@ -59,8 +59,8 @@
 
 - [x] 配置パスを決めた — **`\\Server01\共有フォルダ\skysea\Client`**（2026-08-05 浜田）／Logs は同階層想定
 - [x] 権限を設定した（詳細は浜田環境。配信前に Logs のPC別書込を追加）
-- [ ] インストーラーを Client へコピーした
-- [ ] SHA-256 をメモした（配置後）
+- [x] インストーラーを Client へコピーした — **`SKYSEADivSetupLite.exe`**
+- [x] SHA-256 をメモした — `777EF06A8783C560DB05BE1B54DEF1BD41013B0A7BA5378EF72BDCFCD24B4497`
 
 ---
 
