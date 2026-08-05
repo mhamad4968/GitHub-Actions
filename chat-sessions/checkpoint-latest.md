@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-05 20:10 JST — **SKY回答見込 ~8/17**（お盆休み）。段Bインフラ＋installer/SHA済。ターゲット123。
+**最終更新**: 2026-08-05 20:15 JST — **本日締め**。SKY回答見込 ~8/17。GHA直近100件 success・open issue 0。#D-CLOSE-02 bridge再export済。
 **次の1手**: **~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。
-**Git**: docs 更新後 commit+push
-**本日状態（要約）**: 問い合わせ済・dry-run済・orphan除外・Client/SG/SHA済。お盆明け再開想定。
+**Git**: close-git 後 tip（本日締め）
+**本日状態（要約）**: SKYSEA段B完了（問い合わせ・dry-run123・Client/SG/SHA）。お盆明け再開。GHA健全。
 ### 本日アクティブ（BUILD/rev — 2026-08-03）
 | App | BUILD | rev |
 |-----|-------|-----|
