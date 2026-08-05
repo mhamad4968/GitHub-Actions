@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-08-05T09:30:58.941Z",
+  "scoredAt": "2026-08-05T11:14:50.549Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**当日 項番 -0** で浜田確認（事前にレーンを決めない）。",
+  "topTask": "**~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。",
   "tasks": [
     {
-      "id": "checkpoint:**当日_項番_-0**_で浜田確認（事前にレーンを決めない）。",
-      "text": "**当日 項番 -0** で浜田確認（事前にレーンを決めない）。",
+      "id": "checkpoint:**~8/17_前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GP",
+      "text": "**~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",
