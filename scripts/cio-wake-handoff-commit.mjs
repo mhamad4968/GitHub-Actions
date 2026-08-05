@@ -77,6 +77,20 @@ function main() {
     commitAllowlist(tipsOnly, 'chore(handoff): sync debug-tips after WAKE');
   }
 
+  // #S-WAKE-LOCK-01 — allowlist 外の package-lock / package.json 残件を別 commit（SESSION-CLOCK 除外）
+  // DeepSeek §50-3-8: allowlist 混在禁止・再発時は本パスで分離 heal
+  const lockHeal = [];
+  const stLock = git(['status', '--porcelain', '--', 'package-lock.json', 'package.json']);
+  if (stLock.ok && stLock.out) {
+    for (const line of stLock.out.split(/\r?\n/).filter(Boolean)) {
+      const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1').replace(/\\/g, '/');
+      if (rel === 'package-lock.json' || rel === 'package.json') lockHeal.push(rel);
+    }
+  }
+  if (lockHeal.length > 0) {
+    commitAllowlist(lockHeal, 'chore(deps): sync package-lock after WAKE (#S-WAKE-LOCK-01)');
+  }
+
   if (!doPush) {
     process.exit(0);
   }
