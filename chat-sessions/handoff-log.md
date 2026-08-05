@@ -5486,3 +5486,19 @@ npm run cio:morning:ready
 **触らない**: 688 heat以外/677-679/SKYSEA実配信/712deploy/736
 
 ---
+
+### 2026-08-05 JST — **2026-08-06 朝締め 674 JBIS max+1**
+
+**要約**: 674 次番=max+1 deploy rev266・SPEC同期・浜田目視 JBIS0351 OK。SKYSEAは~8/17回答待ち継続。
+
+**次の1手**: **~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。
+
+**Git**: `9956a345` — origin/main push済（9b0ee359 docs + a1f806b7 fix）
+
+**BUILD**: 674 BUILD=2026-08-06-674-jbis-max-plus-one rev266
+
+**GO待ち**: なし
+
+**触らない**: 688/677-679/736/712・SKYSEA実配信
+
+---
