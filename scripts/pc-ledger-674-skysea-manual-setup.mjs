@@ -268,7 +268,7 @@ async function bulkInitMishoryo(dryRun) {
   }
   // 注意: kintone の `not in ("完了","未了")` は空 DROP_DOWN を拾わないことがある。
   // 個人・廃棄/取消除外を全件取得し、クライアント側で空だけ未了にする。
-  const query = 'account_type in ("個人") and pc_status not in ("廃棄","取消")';
+  const query = 'account_type in ("個人") and pc_status not in ("廃棄","取消","保管")';
   let offset = 0;
   let total = 0;
   for (;;) {

@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-dept-680-all';
+  const BUILD = '2026-08-06-674-skysea-exclude-storage';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7873,13 +7873,20 @@ ${bodyInner}\
       doneMode === SKYSEA_MANUAL_DONE_COMPLETE
         ? SKYSEA_MANUAL_DONE_COMPLETE
         : SKYSEA_MANUAL_DONE_PENDING;
+    // 個人のみ。廃棄・取消に加え **保管も対象外**（浜田 2026-08-06）
     return (
       FC_ACCOUNT_TYPE +
       ' in ("' +
       escapeQueryValue(TYPE_PERSONAL) +
       '") and ' +
-      buildPcStatusActiveOnlyQuery674() +
-      ' and ' +
+      FC_PC_STATUS +
+      ' not in ("' +
+      escapeQueryValue(PC_STATUS_DISPOSED_674) +
+      '", "' +
+      escapeQueryValue(PC_STATUS_CANCELLED_674) +
+      '", "' +
+      escapeQueryValue(PC_STATUS_STORAGE) +
+      '") and ' +
       FC_SKYSEA_MANUAL_DONE +
       ' in ("' +
       escapeQueryValue(done) +
@@ -8346,7 +8353,7 @@ ${bodyInner}\
         const subEl = panel.querySelector('.npl674-skysea-sub');
         if (subEl) {
           subEl.textContent =
-            '個人PCのみ／所属を選んで「リスト表示」／並び=680／パスワード列なし';
+            '個人PCのみ（保管・廃棄・取消除外）／所属を選んで「リスト表示」／並び=680／パスワード列なし';
         }
         rebuildSkysea674DeptBar674(panel, state.records, prevSelected);
         if (keepFiltered) {
