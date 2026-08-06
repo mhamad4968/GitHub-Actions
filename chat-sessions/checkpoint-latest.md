@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-06 19:27 JST — SKYSEA **手動インストール＋674台帳** SPEC 起草。リモート配信は凍結継続。
 **次の1手**: SKYSEA SPEC（`docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`）の **AIチーム確認** → 問題なければ実装GO。実配信・GPO・SGメンバ追加はしない。
-**Git**: **`ab6b183e`** = `origin/main` — push 済
+**Git**: **`4552143f`** = `origin/main` — push 済
 **本日状態（要約）**: 674 JBIS max+1 済。SKYSEA 方針変更＝手動インストール。台帳管理 SPEC 起草・確認待ち。
 ### 本日アクティブ（BUILD/rev — 2026-08-06）
 | App | BUILD | rev |
