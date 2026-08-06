@@ -1,21 +1,21 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-06 19:50 JST — SKYSEA **手動インストール＋674台帳** 実装反映済（個人のみ）。リモート配信は凍結継続。
-**次の1手**: 浜田目視（admin＝フィールド＋SKYSEA対応一覧／非admin＝非表示／所属複数印刷／未了→完了で対応日）。問題なければ運用開始。実配信・GPO・SGメンバ追加はしない。
-**Git**: **`04c521a3`** = `origin/main` — push 済
-**本日状態（要約）**: 674 JBIS max+1 済。SKYSEA 手動台帳＝フィールド＋ACL＋customize deploy 済（rev **273** / BUILD `2026-08-06-674-skysea-manual-admin`）。目視待ち。
+**最終更新**: 2026-08-06 20:24 JST — SKYSEA 手動台帳 **浜田目視OK**（個人・保管/廃棄/取消除外）。リモート配信は凍結継続。
+**次の1手**: （任意）旧 SKYSEA 4フィールド（status/checked_at/install_log/target_flag）を削除するか非表示のままにするか — 浜田判断待ち。実配信・GPO・SGメンバ追加はしない。
+**Git**: **`04c521a3`** 系 push 済（exclude-storage 含む）
+**本日状態（要約）**: 674 JBIS max+1 済。SKYSEA 手動台帳＝運用開始可（BUILD `2026-08-06-674-skysea-exclude-storage` / rev **279**）。目視OK。
 ### 本日アクティブ（BUILD/rev — 2026-08-06）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-06-674-skysea-manual-admin` | **273** |
+| **674** | `2026-08-06-674-skysea-exclude-storage` | **279** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112**（維持） |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318**（維持） |
 **継続メモ**:
-1. **SKYSEA**: 手動インストール＋674台帳 **実装済**。残＝浜田目視。実配信・GPO・SG追加禁止。
-2. **674**: 採番 max+1 済。SKYSEA `skysea_manual_*`＋admin ACL＋一覧／印刷反映済。
+1. **SKYSEA**: 手動インストール＋674台帳 **目視OK・運用可**。配信・GPO・SG追加禁止。旧4フィールド扱い＝任意判断待ち。
+2. **674**: 採番 max+1 済。SKYSEA 一覧＝680並び・リスト表示・行切替・印刷修正済。
 3. **719/721**: closed-v1 微小 UI／印刷は明示依頼で再開可（O-CLOSED-01）。
-**GO待ち**: 新アプリ＝相談・GO後のみ。（SKYSEA 実装は GO済・目視待ち）
+**GO待ち**: 新アプリ＝相談・GO後のみ。旧 SKYSEA 4フィールド削除＝任意。
 
 **案内規律（浜田 2026-07-28）**: **完了済の件を GO待ち／次の1手／質問に出さない**。
 
