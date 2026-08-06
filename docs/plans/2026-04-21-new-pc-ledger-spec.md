@@ -183,7 +183,8 @@ PC レコード保存・廃棄時:
 
 #### 4.2.0 浜田認識の整理（コア自動生成 vs SKYSEA）
 
-- **SKYSEA 計画（別枠）**: §4.2.3 の `skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag` は **SKYSEA 施策の状態・履歴・配信対象の管理用**です。**下表の * は PC 名〜VPN までの「採番・ID 連動」のコア**であり、SKYSEA 4 フィールドとは役割が分かれます（自動生成ボタンが主に触るのは §4.2.2 マトリクス＋下表の論理）。
+- **SKYSEA（手動台帳）**: 正本は `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`。§4.2.3 の旧自動配信メタ4項目は **2026-08-06 削除済**。運用は `skysea_manual_*` のみ（配信・GPO・SG追加は凍結継続）。
+- **SKYSEA 計画（履歴）**: かつての自動配信メタ（status／checked_at／install_log／target_flag）は削除前バックアップ JSON に退避。採番・ID 連動コア（*）とは役割が分かれていた。
 - **595 ルックアップ等**: `mail` / `mail_acct` / `user_name` / `dept_name` / `group_name` は **コア表の外**ですが、個人フローで M365 等に必要になるため **別フィールドで保持**（§4.2.1・§4.2.2）。**会社メール（595）は個人用 PC のみ**採用（**`pc_status`=保管の個人は §4.1a のとおり 595 連携不要**）。共有 PC・JR 端末は **メール・サイボウズ・ガリバーを台帳上もたない**（§4.2.2「不要」・§4.5）。**自動で埋める範囲は共有と JR で異なる**（共有＝Windows+M365／JR＝**M365 のみ**・Windows は手入力）は **§4.1** 直下の箇条書きを正とする。
 - **実務属性**: 棚卸日・購入日・メーカー・型式・製造番号・シリアル・固定 IP・その他情報・備考・種別・ステータス等は **運用メタ**（§4.2.1）。
 - **仕様と浜田認識の突合（2026-04-28）**: チャット等での認識と正本が食い違う場合、**AI は矛盾点を明示して浜田に確認**し、**合意後に正本を改訂**する（誤認をそのまま正本へ書かない）。
@@ -292,13 +293,14 @@ PC レコード保存・廃棄時:
   - **共有**: **`logon_name` と同じ**（例: `sjbm0001`）。
   - **JR**: **手入力**。
 
-#### 4.2.3 SKYSEA 関連（昨夜 #K1 で 594 に追加・新アプリにも継承）
+#### 4.2.3 SKYSEA 関連（手動台帳正・旧自動配信メタは削除済）
+
 | code | type | 内容 |
 |---|---|---|
-| `skysea_status` | DROP_DOWN | 画面上の項目名＝SKYSEAインストール種別。選択肢: 未確認 / インストール済 / 未インストール / インストール対象外（**自動配信用メタ・手動完了とは同期しない**） |
-| `skysea_checked_at` | DATETIME | SKYSEA 最終確認日時 |
-| `skysea_install_log` | MULTI_LINE_TEXT | SKYSEA インストール履歴 |
-| `skysea_target_flag` | CHECK_BOX | 配信対象フラグ（**リモート配信凍結中は運用しない**） |
+| ~~`skysea_status`~~ | — | **削除済（2026-08-06）**。バックアップ: `data/snapshots/674-skysea-legacy4-predelete-*.json` |
+| ~~`skysea_checked_at`~~ | — | **削除済（2026-08-06）** |
+| ~~`skysea_install_log`~~ | — | **削除済（2026-08-06）** |
+| ~~`skysea_target_flag`~~ | — | **削除済（2026-08-06）** |
 | `skysea_manual_done` | DROP_DOWN | 手動インストール **完了／未了**（必須・既定＝未了）。正本: `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md` |
 | `skysea_manual_date` | DATE | 手動対応日（未了の間は空可。未了→完了で空なら今日） |
 | `skysea_manual_handler` | SINGLE_LINE_TEXT | 対応者（自由記述・最大64） |
@@ -307,10 +309,10 @@ PC レコード保存・廃棄時:
 
 | フィールド code | 役割 | UI 方針 |
 |---|---|---|
-| `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウトで **§4.2.3 の全 SKYSEA フィールド**（既存4＋`skysea_manual_*`）をこのグループ内に配置（`npm run pc-ledger:674:layout-skysea-group`／手動分は `npm run pc-ledger:674:skysea-manual-setup`） |
-| skysea_*（グループ子） | 施策メタ＋手動完了 | **LoginID `admin` のみ**表示・編集（フィールド ACL: admin WRITE / everyone NONE ＋ customize `isSkyseaAdmin674`）。非 admin はグループ＋子を非表示。通常は閉じた初期表示。一覧に **「SKYSEA対応一覧」**（admin 専用・個人のみ・廃棄/取消除外・パスワード列なし・所属複数印刷） |
+| `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `openGroup: false`。レイアウトは **`skysea_manual_*` のみ**（`npm run pc-ledger:674:layout-skysea-group`／`skysea-manual-setup`） |
+| skysea_manual_*（グループ子） | 手動完了 | **LoginID `admin` のみ**表示・編集（ACL + customize）。一覧に **「SKYSEA対応一覧」**（個人のみ・保管/廃棄/取消除外・680並び・print-root・パスワード列なし） |
 
-**注**: 値の参照範囲は **フィールド権限・API・CSV**に依存する。非 admin は API でも取得不可（ACL）。詳細運用は **2026-08-06 手動インストール SPEC** を正とする。
+**注**: 詳細運用の正本は **`docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`（as-built）**。運用針は `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`。
 
 #### 4.2.4 M365 リンク参照（自動更新）
 | code | type | 内容 |
@@ -518,7 +520,7 @@ PC レコード保存・廃棄時:
 - 種別チップ行に **「転用PC」**ボタンを **1 個**追加（674 customize）。ON のとき一覧 `query` に **`npl_transfer_manual in ("転用")`** を **AND** で付与する（`FC_NPL_TRANSFER_MANUAL_OPT` と一致。**チェックボックスの選択肢ラベル／内部値を変えた場合は JS 定数と併せて更新**）。キーワード・種別・**URL 由来の SKYSEA in** と **すべて AND**。
 
 #### C. SKYSEA チップ（一覧 UI）
-- **2026-05-11 CEO 合意**: 一覧の検索パネルでは **SKYSEA 状態チップは当面非表示**（要件確定後に再検討）。**`query` 文字列に `skysea_status in (...)` を含む旧 URL／ブックマーク**は、674 customize が **引き続き解釈してハイドレート**する（UI にチップは出ないが条件は有効）。
+- **2026-05-11 CEO 合意（履歴）**: 一覧の SKYSEA 状態チップは非表示としていた。**2026-08-06** に `skysea_status` 自体を削除したため、旧 URL の `skysea_status in (...)` 互換も **廃止**。
 
 ### 4.8c 一覧 URL の絞り込みパラメータ（2026-05-11 CEO 承認）
 
@@ -1261,6 +1263,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 2026-04-30 | v2.1 追記 | **B-1 GO（浜田）**: `docs/plans/2026-04-30-b1-field-mapping-to-674.md`（マッピング表ドラフト v0）+ `npm run pc-ledger:b1-import-csv`（674 layout 順の **取込ドラフト CSV**・ドライラン・例外 CSV を `C:\\tmp\\new-pc-ledger\\` に生成）。§7.4.7（5）のマッピング表リンクを追記。 |
 | 2026-05-12 | v2.1 追記 | **`legacy_pc_name_594` / `legacy_record_id_594` を kintone アプリ定義から削除**（リポ: `npm run pc-ledger:674:delete-legacy594-fields`）。B-1 CSV・採番は `pc_name` / `extra_info_2` / `import_source` に追跡を寄せる。 |
 | 2026-08-06 | v2.1 追記 | **§4.3.1 / §4.2.1a・浜田 GO**: 個人・共有 PC 名の次連番を **空き若番（歯抜け再利用）から廃止**し、**有効 `pc_name` の JBIS/S-JBIS 連番 max + 1** に統一。個人は **670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67）** 未満にしない。番兵 **9999** は max 除外。一覧「次採番」と自動生成は **同一式**。個人は **`pc_serial_no` 最大を採番ソースに使わない**。実装 BUILD `2026-08-06-674-jbis-max-plus-one` / live rev **266**。 |
+| 2026-08-06 | v2.1 追記 | **§4.2.3 SKYSEA**: 手動台帳 `skysea_manual_*` を正本化。旧自動配信メタ4項目（status／checked_at／install_log／target_flag）を **削除**。SCOPE=個人・保管/廃棄/取消除外。BUILD `2026-08-06-674-skysea-drop-legacy4` / rev **282** 系。正本 `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`（as-built）。 |
 
 ---
 

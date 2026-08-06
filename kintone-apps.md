@@ -941,6 +941,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 | 日付 | 変更内容 |
 |------|----------|
 | 2026-08-06 | **674 PC台帳 §4.3.1**: 個人/共有次番を **空き若番→max+1**（番兵9999除外・個人下限67・バナー≡自動生成）。仕様 `docs/plans/2026-04-21-new-pc-ledger-spec.md`・検証 runbook 更新。実装 BUILD `2026-08-06-674-jbis-max-plus-one` / live rev **266**（commit `a1f806b7`） |
+| 2026-08-06 | **674 SKYSEA 手動台帳 as-built**: `skysea_manual_*` 運用・旧自動配信メタ4項目削除・SCOPE=個人＋保管/廃棄/取消除外・680並び・print-root。SPEC `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`。BUILD `2026-08-06-674-skysea-drop-legacy4` / rev **282** 系。夕反省全GO反映 |
 | 2026-07-18 | **JRE-C_Hub 746/747更新**: 746フォーム rev8（署名代行対象ST・湾岸工事所）、747 rev14（社員検索・利用再開・一覧/検索/出力・Edge「パスポート保存」誤認抑止）。既存48件は一括更新なし |
 | 2026-08-03 | **719** 社員限定注記を拠点別印刷のみに限定（rev14）。**721** 一覧印刷複数部署＋ヘッダー画面／モーダルフィルタ（`print-filter-surf`）。夕反省 GO 運用針 `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md` |
 | 2026-07-07 | **社内 Wi-Fi 台帳 719 一覧出力**: rev12（一覧印刷 A4 カラー・Excel 5列・PW 含む・文字拡大）。仕様 `docs/plans/2026-06-14-wifi-ssid-kintone-spec.md` §7.5 |
