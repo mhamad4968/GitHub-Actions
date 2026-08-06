@@ -5507,7 +5507,7 @@ npm run cio:morning:ready
 
 **要約**: リモート配信中止。SPEC起草・DeepSeek指摘反映・push 233bb73a。実装は確認後。
 
-**次の1手**: SPEC AIチーム確認→実装GO。実配信・GPO・SG追加しない。
+**次の1手**: SKYSEA SPEC（`docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`）の **AIチーム確認** → 問題なければ実装GO。実配信・GPO・SGメンバ追加はしない。
 
 **Git**: `233bb73a` — 
 
