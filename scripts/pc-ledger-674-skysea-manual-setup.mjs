@@ -1,6 +1,8 @@
 /**
  * App 674: SKYSEA 手動管理フィールド追加 → グループ配置 → フィールド権限(admin) → 既存レコード未了初期化
  *
+ * SCOPE= account_type=個人 ; pc_status not in (保管,廃棄,取消)  （S-SCOPE-LINE-01 / 2026-08-06 GO）
+ *
  *   npm run pc-ledger:674:skysea-manual-setup -- --dry-run
  *   npm run pc-ledger:674:skysea-manual-setup
  *   npm run pc-ledger:674:skysea-manual-setup -- --skip-bulk
@@ -11,6 +13,10 @@ import 'dotenv/config';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import {
+  isEmptyDropdownField,
+  KINTONE_EMPTY_DROPDOWN_NOTE,
+} from './lib/kintone-empty-dropdown.mjs';
 
 const APP = 674;
 const GROUP_CODE = 'skysea_system_meta';
@@ -266,8 +272,8 @@ async function bulkInitMishoryo(dryRun) {
     console.log('[bulk] skip — skysea_manual_done not live yet (deploy form first)');
     return;
   }
-  // 注意: kintone の `not in ("完了","未了")` は空 DROP_DOWN を拾わないことがある。
-  // 個人・廃棄/取消除外を全件取得し、クライアント側で空だけ未了にする。
+  // S-KINTONE-EMPTY-DD-01: 空 DROP_DOWN は `not in` で拾えない → クライアント空判定
+  console.log(`[bulk] ${KINTONE_EMPTY_DROPDOWN_NOTE}`);
   const query = 'account_type in ("個人") and pc_status not in ("廃棄","取消","保管")';
   let offset = 0;
   let total = 0;
@@ -276,10 +282,7 @@ async function bulkInitMishoryo(dryRun) {
       'GET',
       `/k/v1/records.json?app=${APP}&query=${encodeURIComponent(`${query} order by $id asc limit 100 offset ${offset}`)}&fields[0]=$id&fields[1]=skysea_manual_done&fields[2]=dept_name`,
     );
-    const records = (j.records || []).filter((r) => {
-      const v = r.skysea_manual_done && r.skysea_manual_done.value;
-      return v == null || String(v).trim() === '';
-    });
+    const records = (j.records || []).filter((r) => isEmptyDropdownField(r.skysea_manual_done));
     if (!(j.records || []).length) break;
     if (records.length) {
       const updates = records.map((r) => ({

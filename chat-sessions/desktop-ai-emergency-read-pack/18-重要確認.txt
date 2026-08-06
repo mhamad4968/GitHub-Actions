@@ -288,3 +288,9 @@ SPEC_TOUCHED: yes のターンで SECOND_REVIEWER: deepseek|kimi|openrouter の�
 - 締めは cio:session:close-git --execute 一本。途中 git-heal／手書き **Git**／PowerShell Set-Content 禁止（ONEPASS）。
 - 冒頭 cio:session:close-preflight。R44 stamp は close-git 内のみ正当。日本語正本は Node/cio:* のみ。
 - 正本: docs/runbooks/cio-ops-2026-08-05-evening-improvements.md
+
+【S-KINTONE-EMPTY-DD-01 / S-PRINT-ROOT-01 / S-DEPT-MASTER-01 · 2026-08-06】
+- 空 DROP_DOWN 初期化は not in 単独禁止→クライアント空判定（scripts/lib/kintone-empty-dropdown.mjs）。
+- 新規印刷は print-root（visibility:hidden 禁止）。所属セレクトは App680 sort_no 正。
+- 完了裁定は同ターンで次の1手から削除（D-CHKPT-DONE-01）。SKYSEA 実配信・GPO・SG追加は禁止継続。
+- 正本: docs/runbooks/cio-ops-2026-08-06-evening-improvements.md

@@ -1,0 +1,19 @@
+---
+description: 2026-08-06 夕反省 GO — 空DD / print-root / 680所属 / SCOPE（薄い規則）
+alwaysApply: false
+globs:
+  - customize/new-pc-ledger-v1/**
+  - scripts/pc-ledger-674-skysea*.mjs
+  - scripts/lib/kintone-empty-dropdown.mjs
+  - chat-sessions/checkpoint-latest.md
+---
+
+# SKYSEA／674 台帳改善（2026-08-06 浜田 GO）
+
+正本: `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`
+
+- 空 DROP_DOWN 初期化は **クライアント空判定**（`not in` 単独禁止）
+- 新規印刷は **print-root**（`visibility:hidden` 禁止）
+- 所属セレクトは **App680 sort_no** 正
+- setup 先頭に **SCOPE=** 行
+- 完了裁定は **次の1手から即削除**

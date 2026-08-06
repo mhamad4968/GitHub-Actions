@@ -30,7 +30,15 @@ DeepSeek への盲点抽出では、customize／注意文言／印刷を触る�
 - **(b)** SPEC 乖離
 - **(c)** 差異ロジックの継承
 
-正本運用: `docs/runbooks/cio-ops-2026-08-03-evening-improvements.md`
+### kintone／印刷短問（#M-5038-QUERY・2026-08-06 浜田 GO）
+
+customize・kintone query・印刷を触るときの盲点に、次を **(a) 系に含める**:
+
+1. **空値クエリ**（空 DROP_DOWN は `not in` で拾えない）
+2. **印刷白紙**（`visibility:hidden` 陷阱 → print-root）
+3. **マスタ欠落**（所属セレクトをレコード出現集合だけで組まない・App680 正）
+
+正本運用: `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`（表示面は 08-03 も併読）
 
 ## 仕様確認デーでの分業（必須）
 

@@ -7270,6 +7270,7 @@ ${bodyInner}\
   }
 
   function ensureList674PrintStyles674() {
+    /* S-PRINT-ROOT-01: 既存 LIST674 は visibility:hidden。次に触るとき print-root へ移行 */
     if (document.getElementById(LIST674_PRINT_STYLE_ID)) return;
     const st = document.createElement('style');
     st.id = LIST674_PRINT_STYLE_ID;
@@ -7758,6 +7759,7 @@ ${bodyInner}\
   // --- 一覧：SKYSEA対応一覧（admin 専用・個人のみ・パスワード列なし・所属複数印刷） ---
   const SKYSEA674_PANEL_ID = 'npl674-skysea-list-panel';
   const SKYSEA674_PRINT_STYLE_ID = 'npl674-skysea-list-print-style';
+  /** S-PRINT-ROOT-01: SKYSEA 印刷は専用 root。@media print で visibility:hidden を使わない */
   const SKYSEA674_PRINT_ROOT_ID = 'npl674-skysea-print-root';
   const SKYSEA674_EXPORT_COLS = [
     { label: '所属', code: FC_DEPT_NAME },
@@ -7926,6 +7928,7 @@ ${bodyInner}\
     return out;
   }
 
+  /** S-DEPT-MASTER-01: 所属セレクトは App680（sort_no）正。レコード出現集合だけから組み立てない */
   /** 680マスタ全所属＋レコード側の余剰所属。件数は現在タブの対象件数 */
   function buildSkysea674DeptOptions674(records, rankMap, masterRows) {
     const counts = Object.create(null);
