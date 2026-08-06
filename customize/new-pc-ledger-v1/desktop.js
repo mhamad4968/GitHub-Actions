@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-select-then-list';
+  const BUILD = '2026-08-06-674-skysea-list-toggle-done';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7804,6 +7804,9 @@ ${bodyInner}\
       ' .npl674-skysea-print-warn{display:block !important;}' +
       '#' +
       SKYSEA674_PANEL_ID +
+      ' .npl674-skysea-no-print{display:none !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
       ' tr[data-npl-skysea-print-hide="1"]{display:none !important;}}';
     document.head.appendChild(st);
   }
@@ -7835,7 +7838,7 @@ ${bodyInner}\
 
   function fetchSkysea674ListRecords674(doneMode) {
     const app = kintone.app.getId();
-    const fields = ['$id'].concat(
+    const fields = ['$id', '$revision', FC_SKYSEA_MANUAL_DATE].concat(
       SKYSEA674_EXPORT_COLS.map(function (c) {
         return c.code;
       }),
@@ -8030,8 +8033,96 @@ ${bodyInner}\
     syncSkysea674ActionButtons674(panel);
   }
 
-  function renderSkysea674TableBody674(tbody, records) {
+  function putSkysea674ManualDoneFromList674(panel, rec, btn) {
+    if (!isSkyseaAdmin674()) return;
+    const state = panel && panel.__nplSkysea;
+    if (!state) return;
+    const id = rec && rec.$id && rec.$id.value;
+    if (!id) {
+      window.alert('レコード番号が取得できません。');
+      return;
+    }
+    const nextDone =
+      state.doneMode === SKYSEA_MANUAL_DONE_PENDING
+        ? SKYSEA_MANUAL_DONE_COMPLETE
+        : SKYSEA_MANUAL_DONE_PENDING;
+    const pc = cell674PlainForSearch(rec, FC_PC_NAME) || String(id);
+    if (
+      !window.confirm(
+        '「' + pc + '」を「' + nextDone + '」にしますか？',
+      )
+    ) {
+      return;
+    }
+    const record = {};
+    record[FC_SKYSEA_MANUAL_DONE] = { value: nextDone };
+    if (nextDone === SKYSEA_MANUAL_DONE_COMPLETE) {
+      const curDate = String(cell674PlainForSearch(rec, FC_SKYSEA_MANUAL_DATE) || '').trim();
+      if (!curDate) {
+        record[FC_SKYSEA_MANUAL_DATE] = { value: todayYmd674() };
+      }
+    }
+    const body = {
+      app: kintone.app.getId(),
+      id: id,
+      record: record,
+    };
+    const rev = rec.$revision && rec.$revision.value;
+    if (rev != null && String(rev).trim() !== '') {
+      body.revision = String(rev);
+    }
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '更新中…';
+    }
+    kintoneApiPut('/k/v1/record.json', body)
+      .then(function () {
+        const idStr = String(id);
+        state.records = (state.records || []).filter(function (r) {
+          return String((r.$id && r.$id.value) || '') !== idStr;
+        });
+        if (state.viewMode !== 'filtered') return;
+        const selected = readSelectedSkysea674Depts674(panel);
+        const view = sortSkysea674RecordsByMaster674(
+          filterSkysea674RecordsByDepts674(state.records, selected),
+          state.deptRankMap,
+        );
+        const tbody = panel.querySelector('tbody');
+        if (!tbody) return;
+        if (!view.length) {
+          while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = SKYSEA674_EXPORT_COLS.length + 1;
+          td.style.cssText =
+            'padding:20px 16px;text-align:center;color:#475569;font-size:13px;border:1px solid #e2e8f0;';
+          td.textContent = '選択した所属の表示対象はなくなりました（切替済）。';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          updateSkysea674TitleCount674(panel, state.doneMode, 0, '選択所属');
+          return;
+        }
+        renderSkysea674TableBody674(tbody, view, panel);
+        updateSkysea674TitleCount674(panel, state.doneMode, view.length, '選択所属');
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] skysea list toggle', e);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent =
+            state.doneMode === SKYSEA_MANUAL_DONE_PENDING ? '完了にする' : '未了に戻す';
+        }
+        window.alert(
+          '更新に失敗しました。\n' + (e && e.message ? e.message : String(e)),
+        );
+      });
+  }
+
+  function renderSkysea674TableBody674(tbody, records, panel) {
     while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+    const state = panel && panel.__nplSkysea;
+    const toggleLabel =
+      state && state.doneMode === SKYSEA_MANUAL_DONE_PENDING ? '完了にする' : '未了に戻す';
     for (let ri = 0; ri < records.length; ri++) {
       const rec = records[ri];
       const tr = document.createElement('tr');
@@ -8044,6 +8135,20 @@ ${bodyInner}\
           'border:1px solid #e2e8f0;padding:6px 10px;vertical-align:top;word-break:break-word;';
         tr.appendChild(td);
       });
+      const tdAct = document.createElement('td');
+      tdAct.className = 'npl674-skysea-no-print';
+      tdAct.style.cssText =
+        'border:1px solid #e2e8f0;padding:6px 10px;vertical-align:middle;white-space:nowrap;';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = toggleLabel;
+      btn.style.cssText =
+        'padding:4px 10px;border-radius:4px;border:1px solid #64748b;background:#fff;font-size:12px;font-weight:700;cursor:pointer;';
+      btn.addEventListener('click', function () {
+        putSkysea674ManualDoneFromList674(panel, rec, btn);
+      });
+      tdAct.appendChild(btn);
+      tr.appendChild(tdAct);
       tbody.appendChild(tr);
     }
   }
@@ -8055,7 +8160,7 @@ ${bodyInner}\
     while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = SKYSEA674_EXPORT_COLS.length;
+    td.colSpan = SKYSEA674_EXPORT_COLS.length + 1;
     td.style.cssText =
       'padding:28px 16px;text-align:center;color:#475569;font-size:14px;line-height:1.6;border:1px solid #e2e8f0;background:#fff;';
     const n = typeof totalAvailable === 'number' ? totalAvailable : 0;
@@ -8091,7 +8196,7 @@ ${bodyInner}\
         return;
       }
       state.viewMode = 'filtered';
-      renderSkysea674TableBody674(tbody, view);
+      renderSkysea674TableBody674(tbody, view, panel);
       updateSkysea674TitleCount674(panel, state.doneMode, view.length, '選択所属');
       return;
     }
@@ -8288,6 +8393,12 @@ ${bodyInner}\
         'position:sticky;top:0;background:#e2e8f0;border:1px solid #cbd5e1;padding:8px 10px;text-align:left;white-space:nowrap;';
       hr.appendChild(th);
     });
+    const thAct = document.createElement('th');
+    thAct.className = 'npl674-skysea-no-print';
+    thAct.textContent = '操作';
+    thAct.style.cssText =
+      'position:sticky;top:0;background:#e2e8f0;border:1px solid #cbd5e1;padding:8px 10px;text-align:left;white-space:nowrap;';
+    hr.appendChild(thAct);
     thead.appendChild(hr);
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
