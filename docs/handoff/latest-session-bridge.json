@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-06T11:27:03.463Z",
-  "gitHead": "7231e573",
+  "exportedAt": "2026-08-06T11:52:58.468Z",
+  "gitHead": "6ccceaf5",
   "gitStatus": "## main...origin/main",
-  "nextTask": "（任意）旧 SKYSEA 4フィールド（status/checked_at/install_log/target_flag）を削除するか非表示のままにするか — 浜田判断待ち。実配信・GPO・SGメンバ追加はしない。",
+  "nextTask": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=7231e573 | 次=（任意）旧 SKYSEA 4フィールド（status/checked_at/install_log/target_flag）を削除するか非表示のままにするか — 浜田判断待ち。実配信・GPO・SGメンバ追加はしない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=6ccceaf5 | 次=実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

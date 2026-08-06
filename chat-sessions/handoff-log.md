@@ -5535,7 +5535,7 @@ npm run cio:morning:ready
 
 **要約**: (要約未指定)
 
-**次の1手**: （任意）旧 SKYSEA 4フィールド（status/checked_at/install_log/target_flag）を削除するか非表示のままにするか — 浜田判断待ち。実配信・GPO・SGメンバ追加はしない。
+**次の1手**: 実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。
 
 **Git**: `2c8b373a` — 
 
