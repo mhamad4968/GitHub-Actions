@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-08-06T09:55:29.418Z",
+  "scoredAt": "2026-08-06T11:57:44.415Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。",
+  "topTask": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
   "tasks": [
     {
-      "id": "checkpoint:**~8/17_前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GP",
-      "text": "**~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。",
+      "id": "checkpoint:実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
+      "text": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

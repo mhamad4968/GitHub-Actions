@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-08-02 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-08-06 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -46,6 +46,9 @@
 | 毎ターン・四行 | [`cio-ops-2026-07-30-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-07-30-evening-improvements.mdc) | 2026-07-30夕反省GO — CIローカルparity・依頼者核質問・CON-01 Excel・alwaysApply規律（憲法本文は触らない） |
 | 毎ターン・四行 | [`cio-ops-2026-08-01-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-01-evening-improvements.mdc) | 2026-08-01夕反省GO — 756 Excel枠並び/二重/区分・受入ミニチェック・MCP(gh優先)（憲法本文は触らない） |
 | 毎ターン・四行 | [`cio-ops-2026-08-02-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-02-evening-improvements.mdc) | 2026-08-02夕反省GO — 683印刷MediaBox/向き・ナレッジWAKE（憲法本文は触らない） |
+| 毎ターン・四行 | [`cio-ops-2026-08-03-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-03-evening-improvements.mdc) | 2026-08-03夕反省GO — 表示面マトリクス・□A1・closed-v1微小UI・印刷二重フィルタ（憲法本文は触らない） |
+| 毎ターン・四行 | [`cio-ops-2026-08-05-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-05-evening-improvements.mdc) | 2026-08-05 夕反省 GO — 締め UTF-8 / ONEPASS / preflight（薄い規則） |
+| 毎ターン・四行 | [`cio-ops-2026-08-06-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-06-evening-improvements.mdc) | 2026-08-06 夕反省 GO — 空DD / print-root / 680所属 / SCOPE（薄い規則） |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
