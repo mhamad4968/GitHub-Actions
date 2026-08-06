@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * localtunnel@2.0.2 ships a nested axios@1.13.x that npm overrides cannot always
- * replace. Remove the nested copy so resolution uses the hoisted axios@1.16.1
+ * replace. Remove the nested copy so resolution uses the hoisted axios@1.19.0
  * from package.json overrides (user683 public tunnel only).
  */
 import fs from 'node:fs';
@@ -25,7 +25,8 @@ try {
 const parts = version.split('.').map(Number);
 const major = parts[0] || 0;
 const minor = parts[1] || 0;
-const vulnerable = major === 1 && minor <= 15;
+// axios < 1.18 still in GHSA-42h9-826w-cgv3 range
+const vulnerable = major === 1 && minor < 18;
 
 if (!vulnerable) {
   process.exit(0);
