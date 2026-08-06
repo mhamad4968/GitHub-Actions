@@ -1,7 +1,7 @@
 # SKYSEA 手動インストール × 674 台帳管理 SPEC
 
 - **日付**: 2026-08-06
-- **状態**: **実装反映済・浜田目視待ち**（2026-08-06 GO＝個人のみ。フィールド rev271・ACL・customize BUILD `2026-08-06-674-skysea-manual-admin`）
+- **状態**: **運用中・浜田目視OK**（手動台帳）。2026-08-06 追記: 旧自動配信メタ4項目は **削除**（浜田合意）
 - **アプリ**: 新・PC台帳 ver.1（**App 674**）
 - **浜田合意（チャット 2026-08-06）**: リモート配信は行わずクライアントは手動インストール。完了情報を 674 で管理。
 - **関連正本**:
@@ -55,8 +55,8 @@
 
 ## 3. フィールド設計（新規・推奨）
 
-既存 §4.2.3 の 4 項目（`skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag`）は **自動配信・CSV突合用メタ**として残す。  
-本運用の正本は **下記の手動管理フィールド**とする（用途混同防止・DeepSeek §50-3-8）。
+既存 §4.2.3 の 4 項目（`skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag`）は **2026-08-06 浜田合意で削除**（利用予定なし・バックアップ JSON 退避後）。  
+本運用の正本は **下記の手動管理フィールドのみ**。
 
 | code（案） | type | ラベル案 | 内容 |
 |------------|------|----------|------|
@@ -74,14 +74,13 @@
 
 **グループ**: 既存 `skysea_system_meta`（SKYSEA処理用）内に配置するか、同グループを拡張。`admin` 以外はグループごと不可視。
 
-### 3.1 既存 4 項目との関係（必須ルール）
+### 3.1 旧 4 項目（削除済・2026-08-06）
 
 | 項目 | ルール |
 |------|--------|
-| 優先 | 手動運用の表示・一覧・印刷・進捗判断は **`skysea_manual_*` のみ**。既存4項目は **画面上も admin 以外非表示**（権限）だが **本運用の判定には使わない** |
-| 自動同期 | v1 では **双方向とも自動書込しない**（`skysea_manual_*` ⇄ 既存4項目） |
-| 表示 | SKYSEA専用一覧・印刷は `skysea_manual_*` のみ。既存4項目の値を列に出さない |
-| 将来 | CSV突合や配信再開時は **別 GO** でマッピング表を追加 |
+| 削除対象 | `skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag` |
+| バックアップ | `data/snapshots/674-skysea-legacy4-predelete-*.json`（削除前全件） |
+| 運用正本 | **`skysea_manual_*` のみ**。配信再開は別 GO |
 
 ### 3.2 対象レコード（v1）
 
@@ -96,7 +95,7 @@
 
 ## 4. 権限
 
-1. **フィールド権限（正・必須）**: `skysea_manual_*`（および配置グループ）と、既存 `skysea_status`／`skysea_checked_at`／`skysea_install_log`／`skysea_target_flag` を **Everyone 閲覧不可**、**ユーザ `admin` のみ閲覧・編集可**。
+1. **フィールド権限（正・必須）**: `skysea_manual_*`（および配置グループ）を **Everyone 閲覧不可**、**ユーザ `admin` のみ閲覧・編集可**。
 2. **customize（補助・必須）**: `kintone.getLoginUser().code === 'admin'`（**厳密一致・大文字小文字区別**）のときだけ SKYSEA 入力UI・「SKYSEA対応一覧」ボタン・印刷 UI を出す。非 admin は **DOM を出さない**（無効化ボタンのみは不可）。
 3. **優先**: 認可の本丸は **フィールド権限**。customize 漏れがあっても値は見えないこと。customize は UX／ボタン露出の二重化。
 4. 通常の 674 一覧・業務機能は従来どおり（非 admin も利用可）。SKYSEA 列は通常一覧に出さない。

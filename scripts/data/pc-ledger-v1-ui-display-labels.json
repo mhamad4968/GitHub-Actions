@@ -39,10 +39,9 @@
     "sb_pw": "ガリバー PW",
     "vpn_id": "VPN ID",
     "vpn_pw": "VPN PW",
-    "skysea_status": "SKYSEAインストール種別",
-    "skysea_checked_at": "SKYSEA確認日時",
-    "skysea_install_log": "SKYSEAインストール履歴",
-    "skysea_target_flag": "SKYSEA配信対象",
+    "skysea_manual_done": "SKYSEA対応",
+    "skysea_manual_date": "SKYSEA対応日",
+    "skysea_manual_handler": "SKYSEA対応者",
     "m365_master_record_id": "M365管理マスタ レコード番号",
     "import_source": "取込元",
     "created_at_jst": "作成日時（JST）"

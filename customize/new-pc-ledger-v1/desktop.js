@@ -9,14 +9,14 @@
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
- *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` のみ**表示・編集（手動完了フィールド含む）。非 admin はグループ＋子を `setFieldShown(false)`。一覧に「SKYSEA対応一覧」（admin 専用）。通常はグループを閉じた初期表示
+ *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` のみ**表示・編集（手動完了フィールドのみ）。非 admin はグループ＋子を `setFieldShown(false)`。一覧に「SKYSEA対応一覧」（admin 専用）。通常はグループを閉じた初期表示。旧自動配信メタ4項目は削除済。
  *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄以外・個人の `pc_name` の JBIS 連番 max +1**。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない。共有の **S-JBIS は個人採番に含めない**）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
  *
  * Day 5 残タスク（未完了のみ）:
- *   - （一覧）**SKYSEA 状態チップ**: **当面 UI 非表示**（§4.8a）。`query` 内の `skysea_status in (...)` は **引き続き解釈**（旧 URL 互換）。再表示は SKYSEA 計画後。
+ *   - （一覧）旧 `skysea_status` チップ／query 互換は **廃止**（フィールド削除 2026-08-06）。手動台帳は `skysea_manual_*` のみ。
  *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）・M365切替／資産台帳（済／未）**を復元（当バーが生成した形式に準拠）。
  *   - （一覧）**M365切替**（`M365_kirikae`）・**資産台帳登録**（`shisandaicyo`）: チップ **済／未**（`in ("済")` / `not in ("済")`）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`。
@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-exclude-storage';
+  const BUILD = '2026-08-06-674-skysea-drop-legacy4';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -117,21 +117,13 @@
   /** §4.2.3a SKYSEA グループ（表示名 SKYSEA処理用）・admin 限定 UI */
   const ADMIN_LOGIN = 'admin';
   const FC_SKYSEA_GROUP = 'skysea_system_meta';
-  const FC_SKYSEA_STATUS = 'skysea_status';
-  const FC_SKYSEA_CHECKED_AT = 'skysea_checked_at';
-  const FC_SKYSEA_INSTALL_LOG = 'skysea_install_log';
-  const FC_SKYSEA_TARGET_FLAG = 'skysea_target_flag';
-  /** 手動インストール進捗（SPEC 2026-08-06）。既存4項目とは同期しない */
+  /** 手動インストール進捗（SPEC 2026-08-06）。旧自動配信メタ4項目は削除済 */
   const FC_SKYSEA_MANUAL_DONE = 'skysea_manual_done';
   const FC_SKYSEA_MANUAL_DATE = 'skysea_manual_date';
   const FC_SKYSEA_MANUAL_HANDLER = 'skysea_manual_handler';
   const SKYSEA_MANUAL_DONE_COMPLETE = '完了';
   const SKYSEA_MANUAL_DONE_PENDING = '未了';
   const SKYSEA_CHILD_CODES = [
-    FC_SKYSEA_STATUS,
-    FC_SKYSEA_CHECKED_AT,
-    FC_SKYSEA_INSTALL_LOG,
-    FC_SKYSEA_TARGET_FLAG,
     FC_SKYSEA_MANUAL_DONE,
     FC_SKYSEA_MANUAL_DATE,
     FC_SKYSEA_MANUAL_HANDLER,
@@ -8746,14 +8738,6 @@ ${bodyInner}\
     );
   }
 
-  /** §4.2.3a / 仕様ドロップダウンと一致 */
-  const SEARCH674_SKYSEA_CHIPS = [
-    { value: '未確認', label: 'SKYSEA: 未確認' },
-    { value: 'インストール済', label: 'SKYSEA: 済' },
-    { value: '未インストール', label: 'SKYSEA: 未Inst' },
-    { value: 'インストール対象外', label: 'SKYSEA: 対象外' },
-  ];
-
   /** 一覧チップ: CHECK_BOX「済」のみ／未チェック（`not in ("済")`） */
   const SEARCH674_DONE_CB_FILTERS = [
     { key: 'm365', field: FC_M365_KIRIKAE, labelDone: 'M365切替: 済', labelNone: 'M365切替: 未' },
@@ -8940,7 +8924,7 @@ ${bodyInner}\
 
   /**
    * 一覧 URL の `query` を、検索バーの状態に分解（当バーが build した形式を想定。手編集 query は部分一致のみ反映）。
-   * @returns {{ keyword: string, types: string[], skysea: string[], transferOnly: boolean, cbFilters: Record<string, 'checked'|'unchecked'|null>, statuses: string[], sort: string }}
+   * @returns {{ keyword: string, types: string[], transferOnly: boolean, cbFilters: Record<string, 'checked'|'unchecked'|null>, statuses: string[], sort: string }}
    */
   function parse674ListQueryToBarState674(listQuery) {
     const rawFull = String(listQuery || '').trim();
@@ -8949,7 +8933,6 @@ ${bodyInner}\
     const out = {
       keyword: '',
       types: [],
-      skysea: [],
       transferOnly: false,
       cbFilters: { m365: null, shisan: null },
       statuses: [],
@@ -8966,18 +8949,6 @@ ${bodyInner}\
       }));
       for (let ti = 0; ti < cand.length; ti++) {
         if (allowed.has(cand[ti])) out.types.push(cand[ti]);
-      }
-    }
-
-    const skyRe = new RegExp('\\(\\s*' + FC_SKYSEA_STATUS + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)');
-    const sm = skyRe.exec(raw);
-    if (sm) {
-      const candS = parse674QuotedListInner674(sm[1]);
-      const allowedS = new Set(SEARCH674_SKYSEA_CHIPS.map(function (c) {
-        return c.value;
-      }));
-      for (let si = 0; si < candS.length; si++) {
-        if (allowedS.has(candS[si])) out.skysea.push(candS[si]);
       }
     }
 
@@ -9093,8 +9064,6 @@ ${bodyInner}\
     if (ref.noteSearchBox) ref.noteSearchBox.checked = noteSearchOnly674;
     ref.selectedTypes.clear();
     for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
-    ref.selectedSkysea.clear();
-    for (let si = 0; si < st.skysea.length; si++) ref.selectedSkysea.add(st.skysea[si]);
     if (ref.transferBox) ref.transferBox.v = !!st.transferOnly;
     if (ref.cbFilterBoxes && st.cbFilters) {
       for (let cbi = 0; cbi < SEARCH674_DONE_CB_FILTERS.length; cbi++) {
@@ -9150,7 +9119,6 @@ ${bodyInner}\
   function build674IndexListQuery(
     keyword,
     selectedTypes,
-    selectedSkysea,
     transferOnly674,
     cbFilterBoxes674,
     recordsForKeyword674,
@@ -9166,15 +9134,6 @@ ${bodyInner}\
         })
         .join(', ');
       parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
-    }
-    const skies = selectedSkysea instanceof Set ? [...selectedSkysea] : [];
-    if (skies.length) {
-      const quotedS = skies
-        .map(function (t) {
-          return '"' + escape674QueryLike(t) + '"';
-        })
-        .join(', ');
-      parts.push('(' + FC_SKYSEA_STATUS + ' in (' + quotedS + '))');
     }
     if (transferOnly674) {
       parts.push('(' + FC_NPL_TRANSFER_MANUAL + ' in ("' + escape674QueryLike(FC_NPL_TRANSFER_MANUAL_OPT) + '"))');
@@ -9333,7 +9292,6 @@ ${bodyInner}\
     ref.inp.value = '';
     if (ref.noteSearchBox) ref.noteSearchBox.checked = false;
     ref.selectedTypes.clear();
-    ref.selectedSkysea.clear();
     ref.selectedStatuses.clear();
     init674DefaultStatusSet674().forEach(function (sv) {
       ref.selectedStatuses.add(sv);
@@ -9933,10 +9891,7 @@ ${bodyInner}\
     });
 
     const skyChipRow = document.createElement('div');
-    /** SKYSEA チップは当面出さないが、`selectedSkysea` と syncChips は URL 互換のため残す */
     skyChipRow.style.cssText = 'display:none;';
-
-    const selectedSkysea = new Set();
 
     function syncChips674() {
       chipRow.querySelectorAll('button[data-type-value]').forEach(function (b) {
@@ -9945,13 +9900,6 @@ ${bodyInner}\
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
         b.style.background = on ? '#cffafe' : '#fff';
         b.style.borderColor = on ? '#0e7490' : '#94a3b8';
-      });
-      skyChipRow.querySelectorAll('button[data-skysea-value]').forEach(function (b) {
-        const val = b.dataset.skyseaValue || '';
-        const on = selectedSkysea.has(val);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        b.style.background = on ? '#ede9fe' : '#fff';
-        b.style.borderColor = on ? '#6d28d9' : '#94a3b8';
       });
       const tb = chipRow.querySelector('button[data-npl-transfer-chip]');
       if (tb) {
@@ -10002,7 +9950,6 @@ ${bodyInner}\
           const q = build674IndexListQuery(
             inpKw.value,
             selectedTypes,
-            selectedSkysea,
             transferBox.v,
             cbFilterBoxes,
             recs,
@@ -10016,7 +9963,6 @@ ${bodyInner}\
           const q = build674IndexListQuery(
             inpKw.value,
             selectedTypes,
-            selectedSkysea,
             transferBox.v,
             cbFilterBoxes,
             null,
@@ -10047,7 +9993,6 @@ ${bodyInner}\
       inpKw.value = '';
       noteSearchBox.checked = false;
       selectedTypes.clear();
-      selectedSkysea.clear();
       selectedStatuses.clear();
       init674DefaultStatusSet674().forEach(function (sv) {
         selectedStatuses.add(sv);
@@ -10061,7 +10006,6 @@ ${bodyInner}\
       const q = build674IndexListQuery(
         '',
         selectedTypes,
-        selectedSkysea,
         false,
         cbFilterBoxes,
         null,
@@ -10090,7 +10034,6 @@ ${bodyInner}\
       noteSearchBox: noteSearchBox,
       sortSel: selSort,
       selectedTypes: selectedTypes,
-      selectedSkysea: selectedSkysea,
       selectedStatuses: selectedStatuses,
       transferBox: transferBox,
       cbFilterBoxes: cbFilterBoxes,

@@ -15,8 +15,8 @@ import path from 'node:path';
 const APP = 674;
 const GROUP_CODE = 'skysea_system_meta';
 const MANUAL_CODES = ['skysea_manual_done', 'skysea_manual_date', 'skysea_manual_handler'];
-const LEGACY_CODES = ['skysea_status', 'skysea_checked_at', 'skysea_install_log', 'skysea_target_flag'];
-const ACL_CODES = [...MANUAL_CODES, ...LEGACY_CODES];
+/** 旧自動配信メタ4項目は 2026-08-06 削除。ACL は手動3項目のみ */
+const ACL_CODES = [...MANUAL_CODES];
 const FRAGMENT_PATH = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   'data',

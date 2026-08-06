@@ -1,5 +1,6 @@
 /**
- * App 674: SKYSEA 関連 4 フィールドを kintone 標準フィールドグループ `skysea_system_meta` 内へ移動する。
+ * App 674: SKYSEA 手動管理 3 フィールドを kintone 標準フィールドグループ `skysea_system_meta` 内へ移動する。
+ * （旧自動配信メタ4項目は削除済。手動: done / date / handler）
  *
  * 前提: `properties` に GROUP `skysea_system_meta` が既に存在（preview POST 済み）。
  *
@@ -10,7 +11,7 @@ import 'dotenv/config';
 
 const APP = 674;
 const GROUP_CODE = 'skysea_system_meta';
-const CHILD_CODES = ['skysea_status', 'skysea_checked_at', 'skysea_install_log', 'skysea_target_flag'];
+const CHILD_CODES = ['skysea_manual_done', 'skysea_manual_date', 'skysea_manual_handler'];
 
 function requireEnv(key) {
   const v = process.env[key];
@@ -169,16 +170,31 @@ async function main() {
   const existing = findOurGroupNode(layout);
 
   if (existing && groupLayoutIsComplete(existing)) {
-    console.log(`674: "${GROUP_CODE}" 内に SKYSEA 4 件が既に配置済み。スキップ。`);
+    console.log(`674: "${GROUP_CODE}" 内に SKYSEA 手動 3 件が既に配置済み。スキップ。`);
     return;
   }
 
-  const { cells, changed } = stripFieldsFromLayout(layout, CHILD_CODES);
-  if (!changed) {
-    throw new Error(`674: レイアウトから SKYSEA 4 件を抜けませんでした（未配置または既に別 GROUP 内のみ等）。`);
+  const fieldsMetaRes = await fetch(`${baseUrl}/k/v1/preview/app/form/fields.json?app=${APP}`, {
+    headers: authHeaders,
+  });
+  const fieldsMeta = await fieldsMetaRes.json();
+  if (!fieldsMetaRes.ok) {
+    throw new Error(`GET preview fields: ${fieldsMeta.code} ${fieldsMeta.message}`);
   }
+
+  const { cells, changed } = stripFieldsFromLayout(layout, CHILD_CODES);
   for (const code of CHILD_CODES) {
-    if (!cells[code]) throw new Error(`674: フィールド "${code}" がレイアウトに見つかりません。`);
+    if (!cells[code] && fieldsMeta.properties?.[code]) {
+      cells[code] = {
+        type: fieldsMeta.properties[code].type,
+        code,
+        size: { width: '193' },
+      };
+    }
+    if (!cells[code]) throw new Error(`674: フィールド "${code}" がレイアウト／properties に見つかりません。`);
+  }
+  if (!changed && !(existing && !groupLayoutIsComplete(existing))) {
+    // グループ外に無いがグループ内欠落の場合は下で補完
   }
 
   const innerRows = CHILD_CODES.map((code) => ({
@@ -209,7 +225,9 @@ async function main() {
   const rev = await putPreviewLayout(lay.revision, newLayout);
   await deployPreview(rev);
   await waitDeploy();
-  console.log(`674: preview layout 更新 + deploy SUCCESS（GROUP "${GROUP_CODE}" 内に 4 フィールドを収容）revision=${rev}`);
+  console.log(
+    `674: preview layout 更新 + deploy SUCCESS（GROUP "${GROUP_CODE}" 内に手動 3 フィールドを収容）revision=${rev}`,
+  );
 }
 
 main().catch((e) => {
