@@ -5491,7 +5491,7 @@ npm run cio:morning:ready
 
 **要約**: 674 次番=max+1 deploy rev266・SPEC同期・浜田目視 JBIS0351 OK。SKYSEAは~8/17回答待ち継続。
 
-**次の1手**: **~8/17 前後のSKY社回答待ち**（届いたら共有）。それまで実配信・GPO・SGメンバ追加しない。
+**次の1手**: SKYSEA SPEC（`docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`）の **AIチーム確認** → 問題なければ実装GO。実配信・GPO・SGメンバ追加はしない。
 
 **Git**: `9956a345` — origin/main push済（9b0ee359 docs + a1f806b7 fix）
 
@@ -5500,5 +5500,19 @@ npm run cio:morning:ready
 **GO待ち**: なし
 
 **触らない**: 688/677-679/736/712・SKYSEA実配信
+
+---
+
+### 2026-08-06 JST — **2026-08-06 JST — SKYSEA手動+674台帳 SPEC**
+
+**要約**: リモート配信中止。SPEC起草・DeepSeek指摘反映・push 233bb73a。実装は確認後。
+
+**次の1手**: SPEC AIチーム確認→実装GO。実配信・GPO・SG追加しない。
+
+**Git**: `233bb73a` — 
+
+**GO待ち**: SKYSEA実装=SPEC確認後
+
+**触らない**: 実配信/GPO/SG一括/688/677-679/712/736
 
 ---
