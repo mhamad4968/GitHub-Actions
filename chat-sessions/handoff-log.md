@@ -5530,3 +5530,17 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-08-06 JST — **SKYSEA 674 visual OK (exclude storage)**
+
+**要約**: (要約未指定)
+
+**次の1手**: （任意）旧 SKYSEA 4フィールド（status/checked_at/install_log/target_flag）を削除するか非表示のままにするか — 浜田判断待ち。実配信・GPO・SGメンバ追加はしない。
+
+**Git**: `2c8b373a` — 
+
+**GO待ち**: なし
+
+**触らない**: 688 / 677–679 / SKYSEA — 触らない
+
+---
