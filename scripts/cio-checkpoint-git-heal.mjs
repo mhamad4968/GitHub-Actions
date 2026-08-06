@@ -3,11 +3,13 @@
  * checkpoint **Git** 行の heal CLI（D-CHKPT-02 / S-CLOSE-01）
  *
  * Usage:
- *   npm run cio:checkpoint:git-heal                 # worktree stamp のみ
+ *   npm run cio:checkpoint:git-heal                 # worktree stamp のみ（WAKE 推奨）
  *   npm run cio:checkpoint:git-heal -- --check      # 検査のみ exit 0/2
- *   npm run cio:checkpoint:git-heal -- --commit     # stamp + sync commit（SKIP）
+ *   npm run cio:checkpoint:git-heal -- --commit     # stamp + sync commit
  *   npm run cio:checkpoint:git-heal -- --commit --push  # + best-effort push
  *
+ * WAKE/cold-start: **stamp のみ** → export-handoff → wake:handoff-commit。
+ * heal --commit の直後に wake すると tip が進み Git が grandparent（#D-CLOSE-02 NG）。
  * amend / force-push 禁止（#S-R44-SKIP-01）。
  */
 import { spawnSync } from 'node:child_process';

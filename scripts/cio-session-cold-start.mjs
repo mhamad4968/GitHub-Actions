@@ -141,16 +141,25 @@ function main() {
     run('npm run session:bootstrap');
   }
 
-  // Phase 6b — D-CHKPT-02 恒久 heal（bootstrap 後の dirty/stale Git を sync commit）
-  // push は best-effort（失敗しても cold-start は続行 · ahead WARN）
-  console.log('\n▶ Phase 6b CHECKPOINT-GIT-HEAL');
+  // Phase 6b — D-CHKPT-02 worktree stamp のみ（--commit/--push 禁止）
+  // heal 単独 commit→直後 wake だと tip が進み Git が grandparent になり #D-CLOSE-02 NG（2026-08-06）
+  // 正: stamp → export → wake が checkpoint+bridge を 1 commit（R44 off-by-one = parent）
+  console.log('\n▶ Phase 6b CHECKPOINT-GIT-HEAL（worktree stamp）');
   try {
-    run('npm run cio:checkpoint:git-heal -- --commit --push');
+    run('npm run cio:checkpoint:git-heal');
   } catch {
-    console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal -- --commit');
+    console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal');
   }
 
-  // Phase 6b2 — export-handoff / score-spec 成果物を commit（bootstrap 3c 偽陽性の恒久）
+  // Phase 6b1 — bridge を現 tip に合わせてから wake（stamp 後の鮮度）
+  console.log('\n▶ Phase 6b1 EXPORT-HANDOFF（pre-wake）');
+  try {
+    run('npm run cio:session:export-handoff');
+  } catch {
+    console.warn('[cold-start] export-handoff NG — 手動で npm run cio:session:export-handoff');
+  }
+
+  // Phase 6b2 — stamp+export 成果物を 1 commit（bootstrap 3c 偽陽性の恒久）
   // SESSION-CLOCK は意図的 dirty のため対象外（verify-session-close-git-warn と同趣旨）
   console.log('\n▶ Phase 6b2 WAKE-HANDOFF-COMMIT');
   try {
