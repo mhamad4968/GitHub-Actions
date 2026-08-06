@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-print-fix';
+  const BUILD = '2026-08-06-674-skysea-dept-680-all';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7927,6 +7927,32 @@ ${bodyInner}\
     return out;
   }
 
+  /** 680マスタ全所属＋レコード側の余剰所属。件数は現在タブの対象件数 */
+  function buildSkysea674DeptOptions674(records, rankMap, masterRows) {
+    const counts = Object.create(null);
+    for (let i = 0; i < (records || []).length; i++) {
+      const d = cell674PlainForSearch(records[i], FC_DEPT_NAME) || '（所属なし）';
+      counts[d] = (counts[d] || 0) + 1;
+    }
+    const seen = Object.create(null);
+    const names = [];
+    for (let i = 0; i < (masterRows || []).length; i++) {
+      const name = String((masterRows[i] && masterRows[i].dept_name) || '').trim();
+      if (!name || seen[name]) continue;
+      seen[name] = true;
+      names.push(name);
+    }
+    const extras = uniqueDeptNamesFromSkysea674Records674(records);
+    for (let i = 0; i < extras.length; i++) {
+      if (seen[extras[i]]) continue;
+      seen[extras[i]] = true;
+      names.push(extras[i]);
+    }
+    return sortSkysea674DeptNamesByMaster674(names, rankMap).map(function (name) {
+      return { name: name, count: counts[name] || 0 };
+    });
+  }
+
   /** App 680 `sort_no` 順の順位マップ（同一所属名は先勝ち） */
   function buildSkysea674DeptRankMap674(masterRows) {
     const map = Object.create(null);
@@ -8012,16 +8038,17 @@ ${bodyInner}\
     if (!bar) return;
     while (bar.firstChild) bar.removeChild(bar.firstChild);
     const state = panel.__nplSkysea || {};
-    const depts = sortSkysea674DeptNamesByMaster674(
-      uniqueDeptNamesFromSkysea674Records674(records),
+    const options = buildSkysea674DeptOptions674(
+      records,
       state.deptRankMap,
+      state.deptMasterRows,
     );
     const prev = prevSelected instanceof Set ? prevSelected : new Set(prevSelected || []);
 
     const lbl = document.createElement('div');
     lbl.style.cssText =
       'width:100%;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;';
-    lbl.textContent = '①所属を選択 → ②「リスト表示」（680の並び）';
+    lbl.textContent = '①所属を選択（680全件・括弧内は件数）→ ②「リスト表示」';
     bar.appendChild(lbl);
 
     const actions = document.createElement('div');
@@ -8048,36 +8075,52 @@ ${bodyInner}\
       });
       syncSkysea674ActionButtons674(panel);
     });
+    const btnHas = document.createElement('button');
+    btnHas.type = 'button';
+    btnHas.textContent = '件数ありのみ選択';
+    btnHas.style.cssText =
+      'padding:2px 8px;border-radius:4px;border:1px solid #94a3b8;background:#fff;font-size:11px;cursor:pointer;font-weight:600;';
+    btnHas.addEventListener('click', function () {
+      bar.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
+        cb.checked = Number(cb.dataset.nplSkyseaCount || '0') > 0;
+      });
+      syncSkysea674ActionButtons674(panel);
+    });
     actions.appendChild(btnAll);
     actions.appendChild(btnNone);
+    actions.appendChild(btnHas);
     bar.appendChild(actions);
 
     const grid = document.createElement('div');
     grid.style.cssText =
-      'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 10px;';
-    if (!depts.length) {
+      'display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 10px;';
+    if (!options.length) {
       const empty = document.createElement('div');
       empty.style.cssText = 'font-size:12px;color:#64748b;';
-      empty.textContent = '該当レコードがありません。';
+      empty.textContent = '所属マスタ（680）を取得できませんでした。';
       bar.appendChild(empty);
       syncSkysea674ActionButtons674(panel);
       return;
     }
-    for (let i = 0; i < depts.length; i++) {
-      const name = depts[i];
+    for (let i = 0; i < options.length; i++) {
+      const opt = options[i];
+      const name = opt.name;
+      const count = opt.count;
       const lab = document.createElement('label');
       lab.style.cssText =
-        'display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;line-height:1.35;';
+        'display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;line-height:1.35;' +
+        (count === 0 ? 'opacity:0.55;' : '');
       const cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.value = name;
       cb.dataset.nplSkyseaDept = '1';
+      cb.dataset.nplSkyseaCount = String(count);
       cb.checked = prev.size ? prev.has(name) : false;
       cb.addEventListener('change', function () {
         syncSkysea674ActionButtons674(panel);
       });
       lab.appendChild(cb);
-      lab.appendChild(document.createTextNode(name));
+      lab.appendChild(document.createTextNode(name + '（' + count + '）'));
       grid.appendChild(lab);
     }
     bar.appendChild(grid);
@@ -8297,6 +8340,7 @@ ${bodyInner}\
         const recs = pair[0] || [];
         const master = pair[1] || [];
         state.doneMode = doneMode;
+        state.deptMasterRows = master;
         state.deptRankMap = buildSkysea674DeptRankMap674(master);
         state.records = sortSkysea674RecordsByMaster674(recs, state.deptRankMap);
         const subEl = panel.querySelector('.npl674-skysea-sub');
@@ -8460,6 +8504,7 @@ ${bodyInner}\
       records: [],
       doneMode: SKYSEA_MANUAL_DONE_PENDING,
       deptRankMap: Object.create(null),
+      deptMasterRows: [],
       viewMode: 'empty',
       btnPrint: btnPrint,
       btnShowList: btnShowList,

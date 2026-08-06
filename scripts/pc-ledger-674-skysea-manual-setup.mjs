@@ -266,30 +266,37 @@ async function bulkInitMishoryo(dryRun) {
     console.log('[bulk] skip — skysea_manual_done not live yet (deploy form first)');
     return;
   }
-  // 既存レコード: skysea_manual_done が空の個人PCのみ → 未了
-  const query =
-    'account_type in ("個人") and pc_status not in ("廃棄","取消") and skysea_manual_done not in ("完了","未了")';
+  // 注意: kintone の `not in ("完了","未了")` は空 DROP_DOWN を拾わないことがある。
+  // 個人・廃棄/取消除外を全件取得し、クライアント側で空だけ未了にする。
+  const query = 'account_type in ("個人") and pc_status not in ("廃棄","取消")';
   let offset = 0;
   let total = 0;
   for (;;) {
     const j = await api(
       'GET',
-      `/k/v1/records.json?app=${APP}&query=${encodeURIComponent(`${query} order by $id asc limit 100 offset ${offset}`)}&fields[0]=$id&fields[1]=skysea_manual_done`,
+      `/k/v1/records.json?app=${APP}&query=${encodeURIComponent(`${query} order by $id asc limit 100 offset ${offset}`)}&fields[0]=$id&fields[1]=skysea_manual_done&fields[2]=dept_name`,
     );
-    const records = j.records || [];
-    if (!records.length) break;
-    const updates = records.map((r) => ({
-      id: r.$id.value,
-      record: { skysea_manual_done: { value: '未了' } },
-    }));
-    if (dryRun) {
-      console.log(`[bulk] dry-run would update ${updates.length} (offset=${offset})`);
+    const records = (j.records || []).filter((r) => {
+      const v = r.skysea_manual_done && r.skysea_manual_done.value;
+      return v == null || String(v).trim() === '';
+    });
+    if (!(j.records || []).length) break;
+    if (records.length) {
+      const updates = records.map((r) => ({
+        id: r.$id.value,
+        record: { skysea_manual_done: { value: '未了' } },
+      }));
+      if (dryRun) {
+        console.log(`[bulk] dry-run would update ${updates.length} (offset=${offset})`);
+      } else {
+        await api('PUT', '/k/v1/records.json', { app: APP, records: updates });
+        console.log(`[bulk] updated ${updates.length} (offset=${offset})`);
+      }
+      total += updates.length;
     } else {
-      await api('PUT', '/k/v1/records.json', { app: APP, records: updates });
-      console.log(`[bulk] updated ${updates.length} (offset=${offset})`);
+      console.log(`[bulk] no empty at offset=${offset}`);
     }
-    total += updates.length;
-    if (records.length < 100) break;
+    if ((j.records || []).length < 100) break;
     offset += 100;
   }
   console.log(`[bulk] total=${total}`);
