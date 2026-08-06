@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-list-toggle-done';
+  const BUILD = '2026-08-06-674-skysea-print-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7766,6 +7766,7 @@ ${bodyInner}\
   // --- 一覧：SKYSEA対応一覧（admin 専用・個人のみ・パスワード列なし・所属複数印刷） ---
   const SKYSEA674_PANEL_ID = 'npl674-skysea-list-panel';
   const SKYSEA674_PRINT_STYLE_ID = 'npl674-skysea-list-print-style';
+  const SKYSEA674_PRINT_ROOT_ID = 'npl674-skysea-print-root';
   const SKYSEA674_EXPORT_COLS = [
     { label: '所属', code: FC_DEPT_NAME },
     { label: '利用者', code: FC_USER_NAME },
@@ -7775,45 +7776,95 @@ ${bodyInner}\
   ];
 
   function ensureSkysea674PrintStyles674() {
-    if (document.getElementById(SKYSEA674_PRINT_STYLE_ID)) return;
-    const st = document.createElement('style');
-    st.id = SKYSEA674_PRINT_STYLE_ID;
+    let st = document.getElementById(SKYSEA674_PRINT_STYLE_ID);
+    if (!st) {
+      st = document.createElement('style');
+      st.id = SKYSEA674_PRINT_STYLE_ID;
+      document.head.appendChild(st);
+    }
+    // visibility:hidden だと裏の kintone 一覧が余白のまま残って白紙が大量に出る。
+    // 印刷専用ルート以外は display:none、ルートだけ出す。
     st.textContent =
+      '#' +
+      SKYSEA674_PRINT_ROOT_ID +
+      '{display:none;}' +
       '@media print{@page{size:landscape;margin:10mm;}' +
-      'body *{visibility:hidden !important;}' +
+      'html,body{height:auto !important;overflow:visible !important;}' +
+      'body > *:not(#' +
+      SKYSEA674_PRINT_ROOT_ID +
+      '){display:none !important;}' +
       '#' +
-      SKYSEA674_PANEL_ID +
-      ',#' +
-      SKYSEA674_PANEL_ID +
-      ' *{visibility:visible !important;}' +
+      SKYSEA674_PRINT_ROOT_ID +
+      '{display:block !important;position:static !important;width:100% !important;' +
+      'background:#fff !important;color:#000 !important;font-family:sans-serif;}' +
       '#' +
-      SKYSEA674_PANEL_ID +
-      '{position:absolute !important;left:0 !important;top:0 !important;width:100% !important;' +
-      'max-height:none !important;background:#fff !important;}' +
+      SKYSEA674_PRINT_ROOT_ID +
+      ' .npl674-skysea-print-warn{display:block;margin:0 0 8px;font-size:12px;font-weight:700;}' +
       '#' +
-      SKYSEA674_PANEL_ID +
-      ' .npl674-skysea-toolbar{display:none !important;}' +
+      SKYSEA674_PRINT_ROOT_ID +
+      ' table{width:100%;border-collapse:collapse;font-size:11px;}' +
       '#' +
-      SKYSEA674_PANEL_ID +
-      ' .npl674-skysea-dept-bar{display:none !important;}' +
+      SKYSEA674_PRINT_ROOT_ID +
+      ' th,#' +
+      SKYSEA674_PRINT_ROOT_ID +
+      ' td{border:1px solid #333;padding:4px 6px;text-align:left;vertical-align:top;word-break:break-word;}' +
       '#' +
-      SKYSEA674_PANEL_ID +
-      ' .npl674-skysea-scroll{overflow:visible !important;max-height:none !important;}' +
-      '#' +
-      SKYSEA674_PANEL_ID +
-      ' .npl674-skysea-print-warn{display:block !important;}' +
-      '#' +
-      SKYSEA674_PANEL_ID +
-      ' .npl674-skysea-no-print{display:none !important;}' +
-      '#' +
-      SKYSEA674_PANEL_ID +
-      ' tr[data-npl-skysea-print-hide="1"]{display:none !important;}}';
-    document.head.appendChild(st);
+      SKYSEA674_PRINT_ROOT_ID +
+      ' thead th{background:#e2e8f0;}}';
+  }
+
+  function removeSkysea674PrintRoot674() {
+    const el = document.getElementById(SKYSEA674_PRINT_ROOT_ID);
+    if (el) el.remove();
+  }
+
+  function buildSkysea674PrintRoot674(records, doneMode) {
+    removeSkysea674PrintRoot674();
+    ensureSkysea674PrintStyles674();
+    const root = document.createElement('div');
+    root.id = SKYSEA674_PRINT_ROOT_ID;
+
+    const warn = document.createElement('div');
+    warn.className = 'npl674-skysea-print-warn';
+    warn.textContent =
+      '社内チェック用・第三者提示禁止／SKYSEA対応一覧（' +
+      (doneMode || '') +
+      '・' +
+      records.length +
+      '件）';
+    root.appendChild(warn);
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    SKYSEA674_EXPORT_COLS.forEach(function (col) {
+      const th = document.createElement('th');
+      th.textContent = col.label;
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    for (let i = 0; i < records.length; i++) {
+      const rec = records[i];
+      const tr = document.createElement('tr');
+      SKYSEA674_EXPORT_COLS.forEach(function (col) {
+        const td = document.createElement('td');
+        td.textContent = cell674PlainForSearch(rec, col.code);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    root.appendChild(table);
+    document.body.appendChild(root);
+    return root;
   }
 
   function closeSkysea674ListPanel674() {
     const p = document.getElementById(SKYSEA674_PANEL_ID);
     if (p) p.remove();
+    removeSkysea674PrintRoot674();
     showList674Loading674(false);
   }
 
@@ -8214,30 +8265,24 @@ ${bodyInner}\
       window.alert('印刷する所属を1つ以上選んでください。');
       return;
     }
-    const filtered = filterSkysea674RecordsByDepts674(state.records || [], selected);
-    if (!filtered.length) {
-      window.alert('選択した所属に該当する行がありません。');
+    const view = sortSkysea674RecordsByMaster674(
+      filterSkysea674RecordsByDepts674(state.records || [], selected),
+      state.deptRankMap,
+    );
+    if (!view.length) {
+      window.alert('選択した所属に該当する行がありません。表がないときは印刷しません。');
       return;
     }
-    // 印刷前に選択所属を画面へ反映（並びは680順）
+    // 画面にも同じ一覧を出しておく（操作感の一致）
     applySkysea674ListView674(panel, 'filtered');
-    if (state.viewMode !== 'filtered') return;
-    const tbody = panel.querySelector('tbody');
-    if (!tbody) return;
-    const rows = tbody.querySelectorAll('tr');
-    for (let i = 0; i < rows.length; i++) {
-      rows[i].removeAttribute('data-npl-skysea-print-hide');
-    }
-    const warnEl = panel.querySelector('.npl674-skysea-print-warn');
-    if (warnEl) warnEl.style.display = 'block';
-    ensureSkysea674PrintStyles674();
+    buildSkysea674PrintRoot674(view, state.doneMode);
     function cleanupPrint674() {
-      if (warnEl) warnEl.style.display = 'none';
+      removeSkysea674PrintRoot674();
       window.removeEventListener('afterprint', cleanupPrint674);
     }
     window.addEventListener('afterprint', cleanupPrint674);
     window.print();
-    setTimeout(cleanupPrint674, 1500);
+    setTimeout(cleanupPrint674, 2000);
   }
 
   function loadSkysea674ListIntoPanel674(panel, doneMode) {
