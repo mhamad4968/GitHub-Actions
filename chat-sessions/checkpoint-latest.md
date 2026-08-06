@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-06 19:50 JST — SKYSEA **手動インストール＋674台帳** 実装反映済（個人のみ）。リモート配信は凍結継続。
 **次の1手**: 浜田目視（admin＝フィールド＋SKYSEA対応一覧／非admin＝非表示／所属複数印刷／未了→完了で対応日）。問題なければ運用開始。実配信・GPO・SGメンバ追加はしない。
-**Git**: **`4552143f`** = `origin/main` — push 済
+**Git**: **`071b53b2`** = `origin/main` — push 済
 **本日状態（要約）**: 674 JBIS max+1 済。SKYSEA 手動台帳＝フィールド＋ACL＋customize deploy 済（rev **273** / BUILD `2026-08-06-674-skysea-manual-admin`）。目視待ち。
 ### 本日アクティブ（BUILD/rev — 2026-08-06）
 | App | BUILD | rev |
