@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-manual-admin';
+  const BUILD = '2026-08-06-674-skysea-manual-dept680-list';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7870,10 +7870,47 @@ ${bodyInner}\
       seen[d] = true;
       out.push(d);
     }
-    out.sort(function (a, b) {
-      return a.localeCompare(b, 'ja');
-    });
     return out;
+  }
+
+  /** App 680 `sort_no` 順の順位マップ（同一所属名は先勝ち） */
+  function buildSkysea674DeptRankMap674(masterRows) {
+    const map = Object.create(null);
+    for (let i = 0; i < (masterRows || []).length; i++) {
+      const name = String((masterRows[i] && masterRows[i].dept_name) || '').trim();
+      if (!name) continue;
+      if (map[name] == null) map[name] = i;
+    }
+    return map;
+  }
+
+  function sortSkysea674DeptNamesByMaster674(depts, rankMap) {
+    const map = rankMap || Object.create(null);
+    return depts.slice().sort(function (a, b) {
+      if (a === '（所属なし）' && b !== '（所属なし）') return 1;
+      if (b === '（所属なし）' && a !== '（所属なし）') return -1;
+      const ra = map[a] != null ? map[a] : 99999;
+      const rb = map[b] != null ? map[b] : 99999;
+      if (ra !== rb) return ra - rb;
+      return String(a).localeCompare(String(b), 'ja');
+    });
+  }
+
+  function sortSkysea674RecordsByMaster674(records, rankMap) {
+    const map = rankMap || Object.create(null);
+    return records.slice().sort(function (a, b) {
+      const da = cell674PlainForSearch(a, FC_DEPT_NAME) || '（所属なし）';
+      const db = cell674PlainForSearch(b, FC_DEPT_NAME) || '（所属なし）';
+      if (da === '（所属なし）' && db !== '（所属なし）') return 1;
+      if (db === '（所属なし）' && da !== '（所属なし）') return -1;
+      const ra = map[da] != null ? map[da] : 99999;
+      const rb = map[db] != null ? map[db] : 99999;
+      if (ra !== rb) return ra - rb;
+      if (da !== db) return String(da).localeCompare(String(db), 'ja');
+      const pa = cell674PlainForSearch(a, FC_PC_NAME);
+      const pb = cell674PlainForSearch(b, FC_PC_NAME);
+      return String(pa).localeCompare(String(pb), 'ja');
+    });
   }
 
   function readSelectedSkysea674Depts674(panel) {
@@ -7894,27 +7931,43 @@ ${bodyInner}\
     });
   }
 
-  function syncSkysea674PrintButton674(panel) {
+  function syncSkysea674ActionButtons674(panel) {
     if (!panel || !panel.__nplSkysea) return;
-    const btn = panel.__nplSkysea.btnPrint;
-    if (!btn) return;
     const n = readSelectedSkysea674Depts674(panel).length;
-    btn.disabled = n === 0;
-    btn.style.opacity = n === 0 ? '0.45' : '1';
-    btn.style.cursor = n === 0 ? 'not-allowed' : 'pointer';
+    const disabled = n === 0;
+    const buttons = [panel.__nplSkysea.btnPrint, panel.__nplSkysea.btnShowList];
+    for (let i = 0; i < buttons.length; i++) {
+      const btn = buttons[i];
+      if (!btn) continue;
+      btn.disabled = disabled;
+      btn.style.opacity = disabled ? '0.45' : '1';
+      btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+    }
+  }
+
+  function updateSkysea674TitleCount674(panel, doneMode, count, viewLabel) {
+    const titleEl = panel.querySelector('.npl674-skysea-title-count');
+    if (!titleEl) return;
+    const mode = doneMode || '';
+    const suffix = viewLabel ? '・' + viewLabel : '';
+    titleEl.textContent = 'SKYSEA対応一覧（' + mode + '・' + count + '件' + suffix + '）';
   }
 
   function rebuildSkysea674DeptBar674(panel, records, prevSelected) {
     const bar = panel.querySelector('.npl674-skysea-dept-bar');
     if (!bar) return;
     while (bar.firstChild) bar.removeChild(bar.firstChild);
-    const depts = uniqueDeptNamesFromSkysea674Records674(records);
+    const state = panel.__nplSkysea || {};
+    const depts = sortSkysea674DeptNamesByMaster674(
+      uniqueDeptNamesFromSkysea674Records674(records),
+      state.deptRankMap,
+    );
     const prev = prevSelected instanceof Set ? prevSelected : new Set(prevSelected || []);
 
     const lbl = document.createElement('div');
     lbl.style.cssText =
       'width:100%;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;';
-    lbl.textContent = '印刷する所属（1つ以上選択）';
+    lbl.textContent = '表示・印刷する所属（680の並び・1つ以上選択）';
     bar.appendChild(lbl);
 
     const actions = document.createElement('div');
@@ -7928,7 +7981,7 @@ ${bodyInner}\
       bar.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
         cb.checked = true;
       });
-      syncSkysea674PrintButton674(panel);
+      syncSkysea674ActionButtons674(panel);
     });
     const btnNone = document.createElement('button');
     btnNone.type = 'button';
@@ -7939,7 +7992,7 @@ ${bodyInner}\
       bar.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
         cb.checked = false;
       });
-      syncSkysea674PrintButton674(panel);
+      syncSkysea674ActionButtons674(panel);
     });
     actions.appendChild(btnAll);
     actions.appendChild(btnNone);
@@ -7953,7 +8006,7 @@ ${bodyInner}\
       empty.style.cssText = 'font-size:12px;color:#64748b;';
       empty.textContent = '該当レコードがありません。';
       bar.appendChild(empty);
-      syncSkysea674PrintButton674(panel);
+      syncSkysea674ActionButtons674(panel);
       return;
     }
     for (let i = 0; i < depts.length; i++) {
@@ -7967,14 +8020,14 @@ ${bodyInner}\
       cb.dataset.nplSkyseaDept = '1';
       cb.checked = prev.size ? prev.has(name) : false;
       cb.addEventListener('change', function () {
-        syncSkysea674PrintButton674(panel);
+        syncSkysea674ActionButtons674(panel);
       });
       lab.appendChild(cb);
       lab.appendChild(document.createTextNode(name));
       grid.appendChild(lab);
     }
     bar.appendChild(grid);
-    syncSkysea674PrintButton674(panel);
+    syncSkysea674ActionButtons674(panel);
   }
 
   function renderSkysea674TableBody674(tbody, records) {
@@ -7995,6 +8048,37 @@ ${bodyInner}\
     }
   }
 
+  function applySkysea674ListView674(panel, mode) {
+    const state = panel && panel.__nplSkysea;
+    if (!state) return;
+    const tbody = panel.querySelector('tbody');
+    if (!tbody) return;
+    const all = state.records || [];
+    let view = all;
+    let viewLabel = '全件';
+    if (mode === 'filtered') {
+      const selected = readSelectedSkysea674Depts674(panel);
+      if (!selected.length) {
+        window.alert('表示する所属を1つ以上選んでください。');
+        return;
+      }
+      view = sortSkysea674RecordsByMaster674(
+        filterSkysea674RecordsByDepts674(all, selected),
+        state.deptRankMap,
+      );
+      if (!view.length) {
+        window.alert('選択した所属に該当する行がありません。');
+        return;
+      }
+      viewLabel = '選択所属';
+      state.viewMode = 'filtered';
+    } else {
+      state.viewMode = 'all';
+    }
+    renderSkysea674TableBody674(tbody, view);
+    updateSkysea674TitleCount674(panel, state.doneMode, view.length, viewLabel);
+  }
+
   function printSkysea674List674(panel) {
     const state = panel && panel.__nplSkysea;
     if (!state) return;
@@ -8008,22 +8092,18 @@ ${bodyInner}\
       window.alert('選択した所属に該当する行がありません。');
       return;
     }
+    // 印刷前に選択所属を画面へ反映（並びは680順）
+    applySkysea674ListView674(panel, 'filtered');
     const tbody = panel.querySelector('tbody');
     if (!tbody) return;
-    const selSet = new Set(selected);
     const rows = tbody.querySelectorAll('tr');
     for (let i = 0; i < rows.length; i++) {
-      const d = rows[i].dataset.nplSkyseaDept || '';
-      if (selSet.has(d)) rows[i].removeAttribute('data-npl-skysea-print-hide');
-      else rows[i].setAttribute('data-npl-skysea-print-hide', '1');
+      rows[i].removeAttribute('data-npl-skysea-print-hide');
     }
     const warnEl = panel.querySelector('.npl674-skysea-print-warn');
     if (warnEl) warnEl.style.display = 'block';
     ensureSkysea674PrintStyles674();
     function cleanupPrint674() {
-      for (let j = 0; j < rows.length; j++) {
-        rows[j].removeAttribute('data-npl-skysea-print-hide');
-      }
       if (warnEl) warnEl.style.display = 'none';
       window.removeEventListener('afterprint', cleanupPrint674);
     }
@@ -8037,23 +8117,24 @@ ${bodyInner}\
     if (!state) return;
     const prevSelected = new Set(readSelectedSkysea674Depts674(panel));
     showList674Loading674(true);
-    fetchSkysea674ListRecords674(doneMode)
-      .then(function (recs) {
+    Promise.all([fetchSkysea674ListRecords674(doneMode), fetchDeptMasterRows674()])
+      .then(function (pair) {
         showList674Loading674(false);
+        const recs = pair[0] || [];
+        const master = pair[1] || [];
         state.doneMode = doneMode;
-        state.records = recs;
-        const titleEl = panel.querySelector('.npl674-skysea-title-count');
-        if (titleEl) {
-          titleEl.textContent = 'SKYSEA対応一覧（' + doneMode + '・' + recs.length + '件）';
-        }
+        state.deptRankMap = buildSkysea674DeptRankMap674(master);
+        state.records = sortSkysea674RecordsByMaster674(recs, state.deptRankMap);
+        state.viewMode = 'all';
         const subEl = panel.querySelector('.npl674-skysea-sub');
         if (subEl) {
           subEl.textContent =
-            '個人PCのみ（廃棄・取消除外）／列: 所属・利用者・PC名・完了未了・対応者（パスワードなし）';
+            '個人PCのみ（廃棄・取消除外）／所属並び=680／列: 所属・利用者・PC名・完了未了・対応者（パスワードなし）';
         }
-        rebuildSkysea674DeptBar674(panel, recs, prevSelected);
+        rebuildSkysea674DeptBar674(panel, state.records, prevSelected);
         const tbody = panel.querySelector('tbody');
-        if (tbody) renderSkysea674TableBody674(tbody, recs);
+        if (tbody) renderSkysea674TableBody674(tbody, state.records);
+        updateSkysea674TitleCount674(panel, doneMode, state.records.length, '全件');
         if (state.btnPending && state.btnComplete) {
           const isPending = doneMode === SKYSEA_MANUAL_DONE_PENDING;
           state.btnPending.style.background = isPending ? '#0d9488' : '#fff';
@@ -8119,6 +8200,27 @@ ${bodyInner}\
     btnComplete.style.cssText =
       'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
 
+    const btnShowList = document.createElement('button');
+    btnShowList.type = 'button';
+    btnShowList.textContent = 'リスト表示';
+    btnShowList.disabled = true;
+    btnShowList.title = '選択した所属だけを画面に表示';
+    btnShowList.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:not-allowed;opacity:0.45;';
+    btnShowList.addEventListener('click', function () {
+      applySkysea674ListView674(panel, 'filtered');
+    });
+
+    const btnShowAll = document.createElement('button');
+    btnShowAll.type = 'button';
+    btnShowAll.textContent = '全件表示';
+    btnShowAll.title = '所属フィルタを外して全件を表示';
+    btnShowAll.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
+    btnShowAll.addEventListener('click', function () {
+      applySkysea674ListView674(panel, 'all');
+    });
+
     const btnPrint = document.createElement('button');
     btnPrint.type = 'button';
     btnPrint.textContent = '印刷';
@@ -8140,6 +8242,8 @@ ${bodyInner}\
     toolbar.appendChild(toggleWrap);
     toggleWrap.appendChild(btnPending);
     toggleWrap.appendChild(btnComplete);
+    toolbar.appendChild(btnShowList);
+    toolbar.appendChild(btnShowAll);
     toolbar.appendChild(btnPrint);
     toolbar.appendChild(btnClose);
 
@@ -8185,7 +8289,10 @@ ${bodyInner}\
     panel.__nplSkysea = {
       records: [],
       doneMode: SKYSEA_MANUAL_DONE_PENDING,
+      deptRankMap: Object.create(null),
+      viewMode: 'all',
       btnPrint: btnPrint,
+      btnShowList: btnShowList,
       btnPending: btnPending,
       btnComplete: btnComplete,
     };

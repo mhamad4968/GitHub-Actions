@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-06-674-skysea-manual-admin",
-      "fileKey": "4a783a3a-d617-4a27-b8f0-7af06a07ded8",
-      "revision": "273",
+      "build": "2026-08-06-674-skysea-manual-dept680-list",
+      "fileKey": "04d4a87c-c76d-4c25-a8eb-18eebe296050",
+      "revision": "274",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-06T10:48:20.851Z",
+      "deployedAt": "2026-08-06T10:57:03.434Z",
       "note": null
     },
     "677": {
