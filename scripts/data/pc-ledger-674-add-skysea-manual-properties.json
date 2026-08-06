@@ -1,0 +1,37 @@
+{
+  "_comment": "674 SKYSEA手動管理フィールド（2026-08-06 SPEC）。preview POST fields 用。",
+  "properties": {
+    "skysea_manual_done": {
+      "type": "DROP_DOWN",
+      "code": "skysea_manual_done",
+      "label": "SKYSEA対応",
+      "noLabel": false,
+      "required": true,
+      "options": {
+        "未了": { "label": "未了", "index": "0" },
+        "完了": { "label": "完了", "index": "1" }
+      },
+      "defaultValue": "未了"
+    },
+    "skysea_manual_date": {
+      "type": "DATE",
+      "code": "skysea_manual_date",
+      "label": "SKYSEA対応日",
+      "noLabel": false,
+      "required": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "skysea_manual_handler": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "skysea_manual_handler",
+      "label": "SKYSEA対応者",
+      "noLabel": false,
+      "required": false,
+      "unique": false,
+      "maxLength": "64",
+      "minLength": "",
+      "defaultValue": ""
+    }
+  }
+}

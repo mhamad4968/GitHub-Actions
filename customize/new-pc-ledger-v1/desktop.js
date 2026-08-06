@@ -9,7 +9,7 @@
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
- *   - §4.2.3a: SKYSEA 4 件は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。アカウント部領域のため **権限のあるユーザーは編集可能**。運用で触るのは浜田のみと **周知**（customize ではログインによる非表示はしない）。通常はグループを閉じた初期表示
+ *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` のみ**表示・編集（手動完了フィールド含む）。非 admin はグループ＋子を `setFieldShown(false)`。一覧に「SKYSEA対応一覧」（admin 専用）。通常はグループを閉じた初期表示
  *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄以外・個人の `pc_name` の JBIS 連番 max +1**。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない。共有の **S-JBIS は個人採番に含めない**）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-jbis-max-plus-one';
+  const BUILD = '2026-08-06-674-skysea-manual-admin';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -114,17 +114,27 @@
     FC_CREATED_AT_JST,
   ];
 
-  /** §4.2.3a SKYSEA グループ（表示名 SKYSEA処理用） */
+  /** §4.2.3a SKYSEA グループ（表示名 SKYSEA処理用）・admin 限定 UI */
+  const ADMIN_LOGIN = 'admin';
   const FC_SKYSEA_GROUP = 'skysea_system_meta';
   const FC_SKYSEA_STATUS = 'skysea_status';
   const FC_SKYSEA_CHECKED_AT = 'skysea_checked_at';
   const FC_SKYSEA_INSTALL_LOG = 'skysea_install_log';
   const FC_SKYSEA_TARGET_FLAG = 'skysea_target_flag';
+  /** 手動インストール進捗（SPEC 2026-08-06）。既存4項目とは同期しない */
+  const FC_SKYSEA_MANUAL_DONE = 'skysea_manual_done';
+  const FC_SKYSEA_MANUAL_DATE = 'skysea_manual_date';
+  const FC_SKYSEA_MANUAL_HANDLER = 'skysea_manual_handler';
+  const SKYSEA_MANUAL_DONE_COMPLETE = '完了';
+  const SKYSEA_MANUAL_DONE_PENDING = '未了';
   const SKYSEA_CHILD_CODES = [
     FC_SKYSEA_STATUS,
     FC_SKYSEA_CHECKED_AT,
     FC_SKYSEA_INSTALL_LOG,
     FC_SKYSEA_TARGET_FLAG,
+    FC_SKYSEA_MANUAL_DONE,
+    FC_SKYSEA_MANUAL_DATE,
+    FC_SKYSEA_MANUAL_HANDLER,
   ];
 
   /** 全フィールドリセット対象（種別・PCステータス・作成日時JST・システム項目は除外） */
@@ -321,12 +331,28 @@
     }
   }
 
+  /** LoginID 厳密一致（大文字小文字区別）。SKYSEA UI・専用一覧のゲート */
+  function isSkyseaAdmin674() {
+    try {
+      const u = kintone.getLoginUser();
+      return !!(u && u.code === ADMIN_LOGIN);
+    } catch (_e) {
+      return false;
+    }
+  }
+
   /**
-   * §4.2.3a: SKYSEA は `skysea_system_meta` に収容。全員表示・編集可（運上は浜田のみが触る旨を周知）。
-   * 子は setFieldShown で隠さない。通常は畳んだまま（setGroupFieldOpen false）。
+   * §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta` に収容。
+   * **admin のみ**グループ＋子（手動完了フィールド含む）を表示。非 admin はすべて非表示。
+   * 通常は畳んだまま（setGroupFieldOpen false）。editable 時は手動フィールドを編集可。
+   * applyVisibilityByType の後に呼ぶこと（グループ再表示を上書きするため）。
    */
   function applySkyseaGroupUi(record, mode) {
     const skyseaCodes = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
+    if (!isSkyseaAdmin674()) {
+      setFieldsVisibility(skyseaCodes, false);
+      return;
+    }
     setFieldsVisibility(skyseaCodes, true);
     try {
       kintone.app.record.setGroupFieldOpen(FC_SKYSEA_GROUP, false);
@@ -549,7 +575,8 @@
       FC_M365_MASTER_RECORD_ID,
     ];
 
-    const GROUP_FIELD_CODES = [FC_INTERNAL_GROUP, FC_SKYSEA_GROUP];
+    const skyseaVisible = isSkyseaAdmin674();
+    const SKYSEA_VISIBILITY_CODES = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
 
     if (type === TYPE_SHARED || type === TYPE_JR) {
       const allow = new Set([
@@ -586,12 +613,14 @@
       }
       setFieldsVisibility(VPN_FIELDS, false);
       setFieldsVisibility(MAIL_CYBOZU, false);
-      setFieldsVisibility(GROUP_FIELD_CODES, true);
+      setFieldsVisibility([FC_INTERNAL_GROUP], true);
+      setFieldsVisibility(SKYSEA_VISIBILITY_CODES, skyseaVisible);
       return;
     }
 
     setFieldsVisibility(ALL_SCALAR_FOR_VISIBILITY, true);
-    setFieldsVisibility(GROUP_FIELD_CODES, true);
+    setFieldsVisibility([FC_INTERNAL_GROUP], true);
+    setFieldsVisibility(SKYSEA_VISIBILITY_CODES, skyseaVisible);
 
     if (type === TYPE_PERSONAL) {
       setFieldsVisibility([FC_SHARED_TERMINAL_NAME], false);
@@ -6979,8 +7008,8 @@ ${bodyInner}\
       event.type === 'mobile.app.record.create.show' ||
       event.type === 'mobile.app.record.edit.show';
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
-    applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
+    applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
     syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
@@ -7057,8 +7086,8 @@ ${bodyInner}\
     result = showJrAlertIfNeeded(result);
     removeDeptHelpBanner();
     applyInternalMetaFieldUi(result.record, 'editable');
-    applySkyseaGroupUi(result.record, 'editable');
     applyVisibilityByType(result.record);
+    applySkyseaGroupUi(result.record, 'editable');
     applyM365MasterRecordIdFieldUi674(result.record, 'editable');
     syncVpnFieldUiToForm674(result.record, 'editable');
     showJrBannerIfNeeded(result.record);
@@ -7115,6 +7144,39 @@ ${bodyInner}\
     'mobile.app.record.edit.change.pc_status',
   ];
   kintone.events.on(pcStatusChangeEvents, onAccountTypeOrPcStatusChange674);
+
+  /**
+   * 未了→完了に変えたとき、対応日が空なら今日（ローカル YYYY-MM-DD）をセット。
+   * 既存日付は上書きしない。未了のままでは日付を入れない。
+   */
+  function onSkyseaManualDoneChange674(event) {
+    if (!isSkyseaAdmin674()) return event;
+    const done = String(
+      (event.record[FC_SKYSEA_MANUAL_DONE] && event.record[FC_SKYSEA_MANUAL_DONE].value) || '',
+    ).trim();
+    if (done !== SKYSEA_MANUAL_DONE_COMPLETE) return event;
+    const dateCell = event.record[FC_SKYSEA_MANUAL_DATE];
+    if (!dateCell) return event;
+    const cur = String(dateCell.value || '').trim();
+    if (cur) return event;
+    dateCell.value = todayYmd674();
+    return event;
+  }
+
+  const skyseaManualDoneChangeEvents674 = [
+    'app.record.create.change.' + FC_SKYSEA_MANUAL_DONE,
+    'app.record.edit.change.' + FC_SKYSEA_MANUAL_DONE,
+  ];
+  kintone.events.on(skyseaManualDoneChangeEvents674, onSkyseaManualDoneChange674);
+  if (typeof kintone.mobile !== 'undefined') {
+    kintone.events.on(
+      [
+        'mobile.app.record.create.change.' + FC_SKYSEA_MANUAL_DONE,
+        'mobile.app.record.edit.change.' + FC_SKYSEA_MANUAL_DONE,
+      ],
+      onSkyseaManualDoneChange674,
+    );
+  }
 
   // --- 一覧：リスト一覧作成（同ページ全画面パネル・印刷横向き） ---
   const LIST674_MODAL_ID = 'npl674-list-create-modal';
@@ -7701,9 +7763,446 @@ ${bodyInner}\
     modal.style.display = 'flex';
   }
 
+  // --- 一覧：SKYSEA対応一覧（admin 専用・個人のみ・パスワード列なし・所属複数印刷） ---
+  const SKYSEA674_PANEL_ID = 'npl674-skysea-list-panel';
+  const SKYSEA674_PRINT_STYLE_ID = 'npl674-skysea-list-print-style';
+  const SKYSEA674_EXPORT_COLS = [
+    { label: '所属', code: FC_DEPT_NAME },
+    { label: '利用者', code: FC_USER_NAME },
+    { label: 'PC名', code: FC_PC_NAME },
+    { label: '完了・未了', code: FC_SKYSEA_MANUAL_DONE },
+    { label: '対応者', code: FC_SKYSEA_MANUAL_HANDLER },
+  ];
+
+  function ensureSkysea674PrintStyles674() {
+    if (document.getElementById(SKYSEA674_PRINT_STYLE_ID)) return;
+    const st = document.createElement('style');
+    st.id = SKYSEA674_PRINT_STYLE_ID;
+    st.textContent =
+      '@media print{@page{size:landscape;margin:10mm;}' +
+      'body *{visibility:hidden !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ',#' +
+      SKYSEA674_PANEL_ID +
+      ' *{visibility:visible !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      '{position:absolute !important;left:0 !important;top:0 !important;width:100% !important;' +
+      'max-height:none !important;background:#fff !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ' .npl674-skysea-toolbar{display:none !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ' .npl674-skysea-dept-bar{display:none !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ' .npl674-skysea-scroll{overflow:visible !important;max-height:none !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ' .npl674-skysea-print-warn{display:block !important;}' +
+      '#' +
+      SKYSEA674_PANEL_ID +
+      ' tr[data-npl-skysea-print-hide="1"]{display:none !important;}}';
+    document.head.appendChild(st);
+  }
+
+  function closeSkysea674ListPanel674() {
+    const p = document.getElementById(SKYSEA674_PANEL_ID);
+    if (p) p.remove();
+    showList674Loading674(false);
+  }
+
+  function buildSkysea674ListQuery674(doneMode) {
+    const done =
+      doneMode === SKYSEA_MANUAL_DONE_COMPLETE
+        ? SKYSEA_MANUAL_DONE_COMPLETE
+        : SKYSEA_MANUAL_DONE_PENDING;
+    return (
+      FC_ACCOUNT_TYPE +
+      ' in ("' +
+      escapeQueryValue(TYPE_PERSONAL) +
+      '") and ' +
+      buildPcStatusActiveOnlyQuery674() +
+      ' and ' +
+      FC_SKYSEA_MANUAL_DONE +
+      ' in ("' +
+      escapeQueryValue(done) +
+      '")'
+    );
+  }
+
+  function fetchSkysea674ListRecords674(doneMode) {
+    const app = kintone.app.getId();
+    const fields = ['$id'].concat(
+      SKYSEA674_EXPORT_COLS.map(function (c) {
+        return c.code;
+      }),
+    );
+    const base = buildSkysea674ListQuery674(doneMode);
+    const all = [];
+    return new Promise(function (resolve, reject) {
+      function page(off) {
+        const order =
+          ' order by ' + FC_DEPT_NAME + ' asc, ' + FC_PC_NAME + ' asc limit 500 offset ' + off;
+        const q = base + order;
+        kintone
+          .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, fields: fields })
+          .then(function (res) {
+            const recs = res.records || [];
+            for (let i = 0; i < recs.length; i++) all.push(recs[i]);
+            if (recs.length < 500) resolve(all);
+            else page(off + 500);
+          })
+          .catch(reject);
+      }
+      page(0);
+    });
+  }
+
+  function uniqueDeptNamesFromSkysea674Records674(records) {
+    const seen = Object.create(null);
+    const out = [];
+    for (let i = 0; i < records.length; i++) {
+      const d = cell674PlainForSearch(records[i], FC_DEPT_NAME) || '（所属なし）';
+      if (seen[d]) continue;
+      seen[d] = true;
+      out.push(d);
+    }
+    out.sort(function (a, b) {
+      return a.localeCompare(b, 'ja');
+    });
+    return out;
+  }
+
+  function readSelectedSkysea674Depts674(panel) {
+    const selected = [];
+    if (!panel) return selected;
+    panel.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
+      if (cb.checked) selected.push(cb.value);
+    });
+    return selected;
+  }
+
+  function filterSkysea674RecordsByDepts674(records, selectedDepts) {
+    if (!selectedDepts || !selectedDepts.length) return [];
+    const set = new Set(selectedDepts);
+    return records.filter(function (rec) {
+      const d = cell674PlainForSearch(rec, FC_DEPT_NAME) || '（所属なし）';
+      return set.has(d);
+    });
+  }
+
+  function syncSkysea674PrintButton674(panel) {
+    if (!panel || !panel.__nplSkysea) return;
+    const btn = panel.__nplSkysea.btnPrint;
+    if (!btn) return;
+    const n = readSelectedSkysea674Depts674(panel).length;
+    btn.disabled = n === 0;
+    btn.style.opacity = n === 0 ? '0.45' : '1';
+    btn.style.cursor = n === 0 ? 'not-allowed' : 'pointer';
+  }
+
+  function rebuildSkysea674DeptBar674(panel, records, prevSelected) {
+    const bar = panel.querySelector('.npl674-skysea-dept-bar');
+    if (!bar) return;
+    while (bar.firstChild) bar.removeChild(bar.firstChild);
+    const depts = uniqueDeptNamesFromSkysea674Records674(records);
+    const prev = prevSelected instanceof Set ? prevSelected : new Set(prevSelected || []);
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText =
+      'width:100%;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;';
+    lbl.textContent = '印刷する所属（1つ以上選択）';
+    bar.appendChild(lbl);
+
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;';
+    const btnAll = document.createElement('button');
+    btnAll.type = 'button';
+    btnAll.textContent = '全選択';
+    btnAll.style.cssText =
+      'padding:2px 8px;border-radius:4px;border:1px solid #94a3b8;background:#fff;font-size:11px;cursor:pointer;font-weight:600;';
+    btnAll.addEventListener('click', function () {
+      bar.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
+        cb.checked = true;
+      });
+      syncSkysea674PrintButton674(panel);
+    });
+    const btnNone = document.createElement('button');
+    btnNone.type = 'button';
+    btnNone.textContent = '全解除';
+    btnNone.style.cssText =
+      'padding:2px 8px;border-radius:4px;border:1px solid #94a3b8;background:#fff;font-size:11px;cursor:pointer;font-weight:600;';
+    btnNone.addEventListener('click', function () {
+      bar.querySelectorAll('input[type=checkbox][data-npl-skysea-dept]').forEach(function (cb) {
+        cb.checked = false;
+      });
+      syncSkysea674PrintButton674(panel);
+    });
+    actions.appendChild(btnAll);
+    actions.appendChild(btnNone);
+    bar.appendChild(actions);
+
+    const grid = document.createElement('div');
+    grid.style.cssText =
+      'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px 10px;';
+    if (!depts.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:12px;color:#64748b;';
+      empty.textContent = '該当レコードがありません。';
+      bar.appendChild(empty);
+      syncSkysea674PrintButton674(panel);
+      return;
+    }
+    for (let i = 0; i < depts.length; i++) {
+      const name = depts[i];
+      const lab = document.createElement('label');
+      lab.style.cssText =
+        'display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;line-height:1.35;';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = name;
+      cb.dataset.nplSkyseaDept = '1';
+      cb.checked = prev.size ? prev.has(name) : false;
+      cb.addEventListener('change', function () {
+        syncSkysea674PrintButton674(panel);
+      });
+      lab.appendChild(cb);
+      lab.appendChild(document.createTextNode(name));
+      grid.appendChild(lab);
+    }
+    bar.appendChild(grid);
+    syncSkysea674PrintButton674(panel);
+  }
+
+  function renderSkysea674TableBody674(tbody, records) {
+    while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+    for (let ri = 0; ri < records.length; ri++) {
+      const rec = records[ri];
+      const tr = document.createElement('tr');
+      tr.style.background = ri % 2 ? '#f8fafc' : '#fff';
+      tr.dataset.nplSkyseaDept = cell674PlainForSearch(rec, FC_DEPT_NAME) || '（所属なし）';
+      SKYSEA674_EXPORT_COLS.forEach(function (col) {
+        const td = document.createElement('td');
+        td.textContent = cell674PlainForSearch(rec, col.code);
+        td.style.cssText =
+          'border:1px solid #e2e8f0;padding:6px 10px;vertical-align:top;word-break:break-word;';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+  }
+
+  function printSkysea674List674(panel) {
+    const state = panel && panel.__nplSkysea;
+    if (!state) return;
+    const selected = readSelectedSkysea674Depts674(panel);
+    if (!selected.length) {
+      window.alert('印刷する所属を1つ以上選んでください。');
+      return;
+    }
+    const filtered = filterSkysea674RecordsByDepts674(state.records || [], selected);
+    if (!filtered.length) {
+      window.alert('選択した所属に該当する行がありません。');
+      return;
+    }
+    const tbody = panel.querySelector('tbody');
+    if (!tbody) return;
+    const selSet = new Set(selected);
+    const rows = tbody.querySelectorAll('tr');
+    for (let i = 0; i < rows.length; i++) {
+      const d = rows[i].dataset.nplSkyseaDept || '';
+      if (selSet.has(d)) rows[i].removeAttribute('data-npl-skysea-print-hide');
+      else rows[i].setAttribute('data-npl-skysea-print-hide', '1');
+    }
+    const warnEl = panel.querySelector('.npl674-skysea-print-warn');
+    if (warnEl) warnEl.style.display = 'block';
+    ensureSkysea674PrintStyles674();
+    function cleanupPrint674() {
+      for (let j = 0; j < rows.length; j++) {
+        rows[j].removeAttribute('data-npl-skysea-print-hide');
+      }
+      if (warnEl) warnEl.style.display = 'none';
+      window.removeEventListener('afterprint', cleanupPrint674);
+    }
+    window.addEventListener('afterprint', cleanupPrint674);
+    window.print();
+    setTimeout(cleanupPrint674, 1500);
+  }
+
+  function loadSkysea674ListIntoPanel674(panel, doneMode) {
+    const state = panel.__nplSkysea;
+    if (!state) return;
+    const prevSelected = new Set(readSelectedSkysea674Depts674(panel));
+    showList674Loading674(true);
+    fetchSkysea674ListRecords674(doneMode)
+      .then(function (recs) {
+        showList674Loading674(false);
+        state.doneMode = doneMode;
+        state.records = recs;
+        const titleEl = panel.querySelector('.npl674-skysea-title-count');
+        if (titleEl) {
+          titleEl.textContent = 'SKYSEA対応一覧（' + doneMode + '・' + recs.length + '件）';
+        }
+        const subEl = panel.querySelector('.npl674-skysea-sub');
+        if (subEl) {
+          subEl.textContent =
+            '個人PCのみ（廃棄・取消除外）／列: 所属・利用者・PC名・完了未了・対応者（パスワードなし）';
+        }
+        rebuildSkysea674DeptBar674(panel, recs, prevSelected);
+        const tbody = panel.querySelector('tbody');
+        if (tbody) renderSkysea674TableBody674(tbody, recs);
+        if (state.btnPending && state.btnComplete) {
+          const isPending = doneMode === SKYSEA_MANUAL_DONE_PENDING;
+          state.btnPending.style.background = isPending ? '#0d9488' : '#fff';
+          state.btnPending.style.color = isPending ? '#fff' : '#0f172a';
+          state.btnPending.setAttribute('aria-pressed', isPending ? 'true' : 'false');
+          state.btnComplete.style.background = !isPending ? '#0d9488' : '#fff';
+          state.btnComplete.style.color = !isPending ? '#fff' : '#0f172a';
+          state.btnComplete.setAttribute('aria-pressed', !isPending ? 'true' : 'false');
+        }
+      })
+      .catch(function (e) {
+        showList674Loading674(false);
+        console.warn('[NEW-PC-LEDGER-V1] skysea list', e);
+        window.alert(
+          'SKYSEA対応一覧の取得に失敗しました。フィールド追加・権限を確認してください。',
+        );
+      });
+  }
+
+  function openSkysea674ListPanel674() {
+    if (!isSkyseaAdmin674()) return;
+    closeList674ResultPanel674();
+    closeSkysea674ListPanel674();
+    ensureSkysea674PrintStyles674();
+
+    const panel = document.createElement('div');
+    panel.id = SKYSEA674_PANEL_ID;
+    panel.style.cssText =
+      'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
+      'font-family:system-ui,sans-serif;color:#0f172a;';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'npl674-skysea-toolbar';
+    toolbar.style.cssText =
+      'flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;' +
+      'background:#0f172a;color:#fff;';
+
+    const titleWrap = document.createElement('div');
+    titleWrap.style.cssText = 'flex:1;min-width:200px;';
+    const title = document.createElement('div');
+    title.className = 'npl674-skysea-title-count';
+    title.style.cssText = 'font-size:15px;font-weight:700;';
+    title.textContent = 'SKYSEA対応一覧';
+    const sub = document.createElement('div');
+    sub.className = 'npl674-skysea-sub';
+    sub.style.cssText = 'font-size:12px;font-weight:500;opacity:.9;margin-top:4px;';
+    sub.textContent = '読み込み中…';
+    titleWrap.appendChild(title);
+    titleWrap.appendChild(sub);
+
+    const toggleWrap = document.createElement('div');
+    toggleWrap.style.cssText = 'display:flex;gap:6px;align-items:center;';
+    const btnPending = document.createElement('button');
+    btnPending.type = 'button';
+    btnPending.textContent = SKYSEA_MANUAL_DONE_PENDING;
+    btnPending.setAttribute('aria-pressed', 'true');
+    btnPending.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#0d9488;color:#fff;font-weight:700;cursor:pointer;';
+    const btnComplete = document.createElement('button');
+    btnComplete.type = 'button';
+    btnComplete.textContent = SKYSEA_MANUAL_DONE_COMPLETE;
+    btnComplete.setAttribute('aria-pressed', 'false');
+    btnComplete.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
+
+    const btnPrint = document.createElement('button');
+    btnPrint.type = 'button';
+    btnPrint.textContent = '印刷';
+    btnPrint.disabled = true;
+    btnPrint.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:none;background:#0d9488;color:#fff;font-weight:700;cursor:not-allowed;opacity:0.45;';
+    btnPrint.addEventListener('click', function () {
+      printSkysea674List674(panel);
+    });
+
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.textContent = '閉じる';
+    btnClose.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
+    btnClose.addEventListener('click', closeSkysea674ListPanel674);
+
+    toolbar.appendChild(titleWrap);
+    toolbar.appendChild(toggleWrap);
+    toggleWrap.appendChild(btnPending);
+    toggleWrap.appendChild(btnComplete);
+    toolbar.appendChild(btnPrint);
+    toolbar.appendChild(btnClose);
+
+    const deptBar = document.createElement('div');
+    deptBar.className = 'npl674-skysea-dept-bar';
+    deptBar.style.cssText =
+      'flex:0 0 auto;padding:10px 16px;background:#e2e8f0;border-bottom:1px solid #cbd5e1;';
+
+    const warn = document.createElement('div');
+    warn.className = 'npl674-skysea-print-warn';
+    warn.style.cssText =
+      'display:none;padding:8px 16px;background:#fef3c7;color:#92400e;font-size:13px;font-weight:700;';
+    warn.textContent = '社内チェック用・第三者提示禁止';
+
+    const scroll = document.createElement('div');
+    scroll.className = 'npl674-skysea-scroll';
+    scroll.style.cssText = 'flex:1 1 auto;overflow:auto;padding:12px 16px 24px;';
+
+    const table = document.createElement('table');
+    table.style.cssText =
+      'width:100%;border-collapse:collapse;background:#fff;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);';
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    SKYSEA674_EXPORT_COLS.forEach(function (col) {
+      const th = document.createElement('th');
+      th.textContent = col.label;
+      th.style.cssText =
+        'position:sticky;top:0;background:#e2e8f0;border:1px solid #cbd5e1;padding:8px 10px;text-align:left;white-space:nowrap;';
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+
+    panel.appendChild(toolbar);
+    panel.appendChild(deptBar);
+    panel.appendChild(warn);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+
+    panel.__nplSkysea = {
+      records: [],
+      doneMode: SKYSEA_MANUAL_DONE_PENDING,
+      btnPrint: btnPrint,
+      btnPending: btnPending,
+      btnComplete: btnComplete,
+    };
+
+    btnPending.addEventListener('click', function () {
+      loadSkysea674ListIntoPanel674(panel, SKYSEA_MANUAL_DONE_PENDING);
+    });
+    btnComplete.addEventListener('click', function () {
+      loadSkysea674ListIntoPanel674(panel, SKYSEA_MANUAL_DONE_COMPLETE);
+    });
+
+    loadSkysea674ListIntoPanel674(panel, SKYSEA_MANUAL_DONE_PENDING);
+  }
+
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-07-17-v9-note-search';
+  const SEARCH674_WRAP_VER = '2026-08-06-v10-skysea-manual';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
@@ -8944,6 +9443,17 @@ ${bodyInner}\
       'padding:6px 12px;border-radius:6px;border:none;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;';
     btnList.addEventListener('click', openList674CreateModal674);
 
+    let btnSkyseaList = null;
+    if (isSkyseaAdmin674()) {
+      btnSkyseaList = document.createElement('button');
+      btnSkyseaList.type = 'button';
+      btnSkyseaList.textContent = 'SKYSEA対応一覧';
+      btnSkyseaList.setAttribute('aria-label', 'SKYSEA手動インストール対応一覧（admin専用）');
+      btnSkyseaList.style.cssText =
+        'padding:6px 12px;border-radius:6px;border:none;background:#b45309;color:#fff;font-weight:700;cursor:pointer;';
+      btnSkyseaList.addEventListener('click', openSkysea674ListPanel674);
+    }
+
     const btnInvBulk = document.createElement('button');
     btnInvBulk.type = 'button';
     btnInvBulk.id = 'npl674-btn-inventory-bulk';
@@ -8967,6 +9477,7 @@ ${bodyInner}\
     row.appendChild(btnGo);
     row.appendChild(btnClr);
     row.appendChild(btnList);
+    if (btnSkyseaList) row.appendChild(btnSkyseaList);
     row.appendChild(btnInvBulk);
     row.appendChild(btnInvUninv);
 

@@ -295,19 +295,22 @@ PC レコード保存・廃棄時:
 #### 4.2.3 SKYSEA 関連（昨夜 #K1 で 594 に追加・新アプリにも継承）
 | code | type | 内容 |
 |---|---|---|
-| `skysea_status` | DROP_DOWN | 画面上の項目名＝SKYSEAインストール種別。選択肢: 未確認 / インストール済 / 未インストール / インストール対象外 |
+| `skysea_status` | DROP_DOWN | 画面上の項目名＝SKYSEAインストール種別。選択肢: 未確認 / インストール済 / 未インストール / インストール対象外（**自動配信用メタ・手動完了とは同期しない**） |
 | `skysea_checked_at` | DATETIME | SKYSEA 最終確認日時 |
 | `skysea_install_log` | MULTI_LINE_TEXT | SKYSEA インストール履歴 |
-| `skysea_target_flag` | CHECK_BOX | 配信対象フラグ |
+| `skysea_target_flag` | CHECK_BOX | 配信対象フラグ（**リモート配信凍結中は運用しない**） |
+| `skysea_manual_done` | DROP_DOWN | 手動インストール **完了／未了**（必須・既定＝未了）。正本: `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md` |
+| `skysea_manual_date` | DATE | 手動対応日（未了の間は空可。未了→完了で空なら今日） |
+| `skysea_manual_handler` | SINGLE_LINE_TEXT | 対応者（自由記述・最大64） |
 
 #### 4.2.3a SKYSEA グループの UI（標準フィールドグループ + customize）
 
 | フィールド code | 役割 | UI 方針 |
 |---|---|---|
-| `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウト API で **`skysea_status` / `skysea_checked_at` / `skysea_install_log` / `skysea_target_flag`** を **このグループ内に配置**（リポ: `npm run pc-ledger:674:layout-skysea-group`）。フィールド追加は `npm run pc-ledger:674:add-skysea-group-preview`（Tier B） |
-| skysea_status ほか 4 件 | §4.2.3 の SKYSEA 施策用メタ（**アカウント部の管轄に近い領域**） | グループ内に配置。**閉じた状態を維持**（`setGroupFieldOpen('skysea_system_meta', false)`）。**編集権限**はアプリの閲覧・編集権を持つユーザーに従う（技術的には編集可）。**運用ルール**として「日々触るのは浜田のみ」と **周知**する（customize ではログインによる非表示は行わない） |
+| `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウトで **§4.2.3 の全 SKYSEA フィールド**（既存4＋`skysea_manual_*`）をこのグループ内に配置（`npm run pc-ledger:674:layout-skysea-group`／手動分は `npm run pc-ledger:674:skysea-manual-setup`） |
+| skysea_*（グループ子） | 施策メタ＋手動完了 | **LoginID `admin` のみ**表示・編集（フィールド ACL: admin WRITE / everyone NONE ＋ customize `isSkyseaAdmin674`）。非 admin はグループ＋子を非表示。通常は閉じた初期表示。一覧に **「SKYSEA対応一覧」**（admin 専用・個人のみ・廃棄/取消除外・パスワード列なし・所属複数印刷） |
 
-**注**: 値の参照範囲は **アプリ権限・API・CSV エクスポート**に依存する。運用の取り決めと権限設計を併せて管理する。
+**注**: 値の参照範囲は **フィールド権限・API・CSV**に依存する。非 admin は API でも取得不可（ACL）。詳細運用は **2026-08-06 手動インストール SPEC** を正とする。
 
 #### 4.2.4 M365 リンク参照（自動更新）
 | code | type | 内容 |
