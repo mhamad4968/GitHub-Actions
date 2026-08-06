@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-manual-dept680-list';
+  const BUILD = '2026-08-06-674-skysea-select-then-list';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7967,7 +7967,7 @@ ${bodyInner}\
     const lbl = document.createElement('div');
     lbl.style.cssText =
       'width:100%;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;';
-    lbl.textContent = '表示・印刷する所属（680の並び・1つ以上選択）';
+    lbl.textContent = '①所属を選択 → ②「リスト表示」（680の並び）';
     bar.appendChild(lbl);
 
     const actions = document.createElement('div');
@@ -8048,35 +8048,57 @@ ${bodyInner}\
     }
   }
 
+  /** 所属未選択時の空表示（一覧は「リスト表示」後に出す） */
+  function renderSkysea674EmptyHint674(panel, totalAvailable) {
+    const tbody = panel.querySelector('tbody');
+    if (!tbody) return;
+    while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = SKYSEA674_EXPORT_COLS.length;
+    td.style.cssText =
+      'padding:28px 16px;text-align:center;color:#475569;font-size:14px;line-height:1.6;border:1px solid #e2e8f0;background:#fff;';
+    const n = typeof totalAvailable === 'number' ? totalAvailable : 0;
+    td.textContent =
+      '上で所属を1つ以上選び、「リスト表示」を押すと一覧が出ます' +
+      (n > 0 ? '（対象データ ' + n + ' 件）' : '') +
+      '。';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
   function applySkysea674ListView674(panel, mode) {
     const state = panel && panel.__nplSkysea;
     if (!state) return;
     const tbody = panel.querySelector('tbody');
     if (!tbody) return;
     const all = state.records || [];
-    let view = all;
-    let viewLabel = '全件';
     if (mode === 'filtered') {
       const selected = readSelectedSkysea674Depts674(panel);
       if (!selected.length) {
         window.alert('表示する所属を1つ以上選んでください。');
         return;
       }
-      view = sortSkysea674RecordsByMaster674(
+      const view = sortSkysea674RecordsByMaster674(
         filterSkysea674RecordsByDepts674(all, selected),
         state.deptRankMap,
       );
       if (!view.length) {
         window.alert('選択した所属に該当する行がありません。');
+        renderSkysea674EmptyHint674(panel, all.length);
+        state.viewMode = 'empty';
+        updateSkysea674TitleCount674(panel, state.doneMode, 0, '未表示');
         return;
       }
-      viewLabel = '選択所属';
       state.viewMode = 'filtered';
-    } else {
-      state.viewMode = 'all';
+      renderSkysea674TableBody674(tbody, view);
+      updateSkysea674TitleCount674(panel, state.doneMode, view.length, '選択所属');
+      return;
     }
-    renderSkysea674TableBody674(tbody, view);
-    updateSkysea674TitleCount674(panel, state.doneMode, view.length, viewLabel);
+    // 既定は空（所属選択→リスト表示）
+    state.viewMode = 'empty';
+    renderSkysea674EmptyHint674(panel, all.length);
+    updateSkysea674TitleCount674(panel, state.doneMode, all.length, '所属選択待ち');
   }
 
   function printSkysea674List674(panel) {
@@ -8094,6 +8116,7 @@ ${bodyInner}\
     }
     // 印刷前に選択所属を画面へ反映（並びは680順）
     applySkysea674ListView674(panel, 'filtered');
+    if (state.viewMode !== 'filtered') return;
     const tbody = panel.querySelector('tbody');
     if (!tbody) return;
     const rows = tbody.querySelectorAll('tr');
@@ -8116,6 +8139,7 @@ ${bodyInner}\
     const state = panel.__nplSkysea;
     if (!state) return;
     const prevSelected = new Set(readSelectedSkysea674Depts674(panel));
+    const keepFiltered = state.viewMode === 'filtered' && prevSelected.size > 0;
     showList674Loading674(true);
     Promise.all([fetchSkysea674ListRecords674(doneMode), fetchDeptMasterRows674()])
       .then(function (pair) {
@@ -8125,16 +8149,17 @@ ${bodyInner}\
         state.doneMode = doneMode;
         state.deptRankMap = buildSkysea674DeptRankMap674(master);
         state.records = sortSkysea674RecordsByMaster674(recs, state.deptRankMap);
-        state.viewMode = 'all';
         const subEl = panel.querySelector('.npl674-skysea-sub');
         if (subEl) {
           subEl.textContent =
-            '個人PCのみ（廃棄・取消除外）／所属並び=680／列: 所属・利用者・PC名・完了未了・対応者（パスワードなし）';
+            '個人PCのみ／所属を選んで「リスト表示」／並び=680／パスワード列なし';
         }
         rebuildSkysea674DeptBar674(panel, state.records, prevSelected);
-        const tbody = panel.querySelector('tbody');
-        if (tbody) renderSkysea674TableBody674(tbody, state.records);
-        updateSkysea674TitleCount674(panel, doneMode, state.records.length, '全件');
+        if (keepFiltered) {
+          applySkysea674ListView674(panel, 'filtered');
+        } else {
+          applySkysea674ListView674(panel, 'empty');
+        }
         if (state.btnPending && state.btnComplete) {
           const isPending = doneMode === SKYSEA_MANUAL_DONE_PENDING;
           state.btnPending.style.background = isPending ? '#0d9488' : '#fff';
@@ -8204,21 +8229,11 @@ ${bodyInner}\
     btnShowList.type = 'button';
     btnShowList.textContent = 'リスト表示';
     btnShowList.disabled = true;
-    btnShowList.title = '選択した所属だけを画面に表示';
+    btnShowList.title = '選択した所属の一覧を画面に出す';
     btnShowList.style.cssText =
       'padding:6px 14px;border-radius:6px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:not-allowed;opacity:0.45;';
     btnShowList.addEventListener('click', function () {
       applySkysea674ListView674(panel, 'filtered');
-    });
-
-    const btnShowAll = document.createElement('button');
-    btnShowAll.type = 'button';
-    btnShowAll.textContent = '全件表示';
-    btnShowAll.title = '所属フィルタを外して全件を表示';
-    btnShowAll.style.cssText =
-      'padding:6px 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;';
-    btnShowAll.addEventListener('click', function () {
-      applySkysea674ListView674(panel, 'all');
     });
 
     const btnPrint = document.createElement('button');
@@ -8243,7 +8258,6 @@ ${bodyInner}\
     toggleWrap.appendChild(btnPending);
     toggleWrap.appendChild(btnComplete);
     toolbar.appendChild(btnShowList);
-    toolbar.appendChild(btnShowAll);
     toolbar.appendChild(btnPrint);
     toolbar.appendChild(btnClose);
 
@@ -8290,7 +8304,7 @@ ${bodyInner}\
       records: [],
       doneMode: SKYSEA_MANUAL_DONE_PENDING,
       deptRankMap: Object.create(null),
-      viewMode: 'all',
+      viewMode: 'empty',
       btnPrint: btnPrint,
       btnShowList: btnShowList,
       btnPending: btnPending,
