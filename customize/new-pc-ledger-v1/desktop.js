@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-skysea-dept-summary';
+  const BUILD = '2026-08-07-674-skysea-summary-tbody-fix';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -8069,6 +8069,7 @@ ${bodyInner}\
     scroll.style.cssText = 'max-height:240px;overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;';
 
     const table = document.createElement('table');
+    table.className = 'npl674-skysea-summary-table';
     table.style.cssText = 'width:100%;border-collapse:collapse;font-size:11px;';
     const thead = document.createElement('thead');
     const hr = document.createElement('tr');
@@ -8388,7 +8389,7 @@ ${bodyInner}\
           filterSkysea674RecordsByDepts674(state.records, selected),
           state.deptRankMap,
         );
-        const tbody = panel.querySelector('tbody');
+        const tbody = getSkysea674ListTbody674(panel);
         if (!tbody) return;
         if (!view.length) {
           while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
@@ -8454,9 +8455,15 @@ ${bodyInner}\
     }
   }
 
+  function getSkysea674ListTbody674(panel) {
+    if (!panel) return null;
+    return panel.querySelector('.npl674-skysea-list-table tbody') ||
+      panel.querySelector('.npl674-skysea-scroll tbody');
+  }
+
   /** 所属未選択時の空表示（一覧は「リスト表示」後に出す） */
   function renderSkysea674EmptyHint674(panel, totalAvailable) {
-    const tbody = panel.querySelector('tbody');
+    const tbody = getSkysea674ListTbody674(panel);
     if (!tbody) return;
     while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
     const tr = document.createElement('tr');
@@ -8476,7 +8483,7 @@ ${bodyInner}\
   function applySkysea674ListView674(panel, mode) {
     const state = panel && panel.__nplSkysea;
     if (!state) return;
-    const tbody = panel.querySelector('tbody');
+    const tbody = getSkysea674ListTbody674(panel);
     if (!tbody) return;
     const all = state.records || [];
     if (mode === 'filtered') {
@@ -8693,6 +8700,7 @@ ${bodyInner}\
     scroll.style.cssText = 'flex:1 1 auto;overflow:auto;padding:12px 16px 24px;';
 
     const table = document.createElement('table');
+    table.className = 'npl674-skysea-list-table';
     table.style.cssText =
       'width:100%;border-collapse:collapse;background:#fff;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);';
     const thead = document.createElement('thead');
