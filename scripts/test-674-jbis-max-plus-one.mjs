@@ -11,14 +11,14 @@ import { kintoneGetJson } from './lib/kintone-read-client.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = fs.readFileSync(path.join(root, 'customize/new-pc-ledger-v1/desktop.js'), 'utf8');
 
-assert.match(src, /2026-08-07-674-index-all-status-id-desc-jbis-collision/);
+assert.match(src, /2026-08-07-674-index-inuse-id-desc/);
 assert.match(src, /fetchNextPersonalJbisSerial674/);
 assert.match(src, /fetchNextSharedSjbisSerial674/);
 assert.match(src, /resolveNextPcSerialFromMax674/);
 assert.doesNotMatch(src, /fetchNextFreePersonalJbisSerial674/);
 assert.doesNotMatch(src, /fetchNextFreeSharedSjbisSerial674/);
 assert.match(src, /dig !== 9999/);
-assert.match(src, /init674DefaultStatusSet674\(\)\s*\{\s*return init674AllStatusSet674\(\)/);
+assert.match(src, /init674DefaultStatusSet674\(\)\s*\{\s*return new Set\(\[PC_STATUS_IN_USE_674\]\)/);
 
 function resolveNext(maxFromLedger, floor) {
   const maxBase = Math.max(0, Math.floor(Number(maxFromLedger) || 0));

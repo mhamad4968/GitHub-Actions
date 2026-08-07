@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-shared-jbis-warn-note';
+  const BUILD = '2026-08-07-674-index-inuse-id-desc';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -8749,7 +8749,7 @@ ${bodyInner}\
   ];
 
   function init674DefaultStatusSet674() {
-    return init674AllStatusSet674();
+    return new Set([PC_STATUS_IN_USE_674]);
   }
 
   function init674AllStatusSet674() {

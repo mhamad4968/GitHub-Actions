@@ -1266,7 +1266,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 2026-05-12 | v2.1 追記 | **`legacy_pc_name_594` / `legacy_record_id_594` を kintone アプリ定義から削除**（リポ: `npm run pc-ledger:674:delete-legacy594-fields`）。B-1 CSV・採番は `pc_name` / `extra_info_2` / `import_source` に追跡を寄せる。 |
 | 2026-08-06 | v2.1 追記 | **§4.3.1 / §4.2.1a・浜田 GO**: 個人・共有 PC 名の次連番を **空き若番（歯抜け再利用）から廃止**し、**有効 `pc_name` の JBIS/S-JBIS 連番 max + 1** に統一。個人は **670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67）** 未満にしない。番兵 **9999** は max 除外。一覧「次採番」と自動生成は **同一式**。個人は **`pc_serial_no` 最大を採番ソースに使わない**。実装 BUILD `2026-08-06-674-jbis-max-plus-one` / live rev **266**。 |
 | 2026-08-06 | v2.1 追記 | **§4.2.3 SKYSEA**: 手動台帳 `skysea_manual_*` を正本化。旧自動配信メタ4項目（status／checked_at／install_log／target_flag）を **削除**。SCOPE=個人・保管/廃棄/取消除外。BUILD `2026-08-06-674-skysea-drop-legacy4` / rev **282** 系。正本 `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`（as-built）。 |
-| 2026-08-07 | v2.1 追記 | **§4.3.1 / 674**: 個人 JBIS max+1 は **全 account_type** の `pc_name` から JBIS 連番を走査（共有行の JBIS 名再利用時の衝突回避）。一覧既定は **すべて表示**（取消除外）＋ **`$id:desc`**。BUILD `2026-08-07-674-index-all-status-id-desc-jbis-collision`。 |
+| 2026-08-07 | v2.1 追記 | **§4.3.1 / 674**: 個人 JBIS max+1 は **全 account_type** の `pc_name` から JBIS 連番を走査（共有行の JBIS 名再利用時の衝突回避）。一覧OPEN既定は **ステータス=利用中** + **`$id:desc`**（転用OFF）。キーワード時の3ステータス全選択は従来どおり。BUILD `2026-08-07-674-index-inuse-id-desc`。 |
 | 2026-08-07 | v2.1 追記 | **§4.3.1 浜田 GO**: 個人→共有等で **JBIS 名維持可**。保存時 **非個人＋個人JBIS形式** → confirm 警告＋ **`note` 定型1行**（重複防止）。BUILD `2026-08-07-674-shared-jbis-warn-note`。 |
 
 ---
