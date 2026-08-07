@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-06 20:45 JST — SKYSEA 手動台帳運用可・旧4フィールド削除済・夕反省全GO反映。
 **次の1手**: 実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。
-**Git**: **`a77f8691`** = `origin/main` — push 済
+**Git**: **`5ffb9698`** = `origin/main` — push 済
 **本日状態（要約）**: 674 JBIS max+1済。SKYSEA手動台帳運用可（BUILD drop-legacy4 / rev282系）。旧4フィールド削除済。夕反省全GO反映。
 ### 本日アクティブ（BUILD/rev — 2026-08-06）
 | App | BUILD | rev |
