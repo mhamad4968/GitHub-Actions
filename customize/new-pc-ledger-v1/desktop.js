@@ -20,7 +20,7 @@
  *   - （一覧）**絞り込み URL**: `query` と `npl674kw` から **キーワード・種別（・SKYSEA in）・M365切替／資産台帳（済／未）**を復元（当バーが生成した形式に準拠）。
  *   - （一覧）**M365切替**（`M365_kirikae`）・**資産台帳登録**（`shisandaicyo`）: チップ **済／未**（`in ("済")` / `not in ("済")`）。
  *   - **PC買替は実装済**（§4.10.3）。594 同趣旨。**627 二重更新なし**。v0.9.14: ボタン掛け先フォールバック＋遅延再 inject、`import_source=PC_REPLACE_FROM_674:<旧$id>`。
- *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
+ *   - 新規・編集: **所属ヘルプ `<details>`（入れ方・コピー一覧）は表示しない**（2026-05-05 浜田指示）。**入力支援**: `document` **capture** でフィールド内クリックを捕捉（kintone 内側の `stopPropagation` より先）。**はい／いいえ** の z-index は kintone ヘッダより上。**編集不可フィールド**（record.disabled・閲覧画面・disabled/readOnly input）では確認を出さない。**明示ボタン**は **`#new-pc-ledger-buttons` 帯**に **「入力支援利用」**（個人・非保管→595／共有・JR→680。表示名は同一、`aria-label` で区別）（フィールド直下 DOM 挿入は廃止）。ヘッダの旧「社員名検索／所属候補」ボタンは**廃止**。**`pc_status`=保管**のときは種別横断で **ヘッダは全フィールドリセットのみ**。**種別／ステータス**は record を DOM と突合。**共有・個人の自動生成**: `m365_master_record_id` は **set 前に disabled 解除**。**`pc_serial_no` 等内部メタ子**（§4.2.1a）も **`record.set` 同期間だけ** disabled 解除してから反映。
  *   - **備考（note）**: 全種別で任意（保存前チェックでは必須にしない）。
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-skysea-personal-exact-pcname';
+  const BUILD = '2026-08-07-674-assist-skip-readonly-user';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -4037,6 +4037,35 @@
     return false;
   }
 
+  /** 入力支援クリック: record / DOM 上で編集可能か（閲覧・disabled フィールドは false） */
+  function isFieldEditableForAssist674(code, record) {
+    if (record && record[code] && record[code].disabled === true) return false;
+    const root = tryGetFieldElement674(code);
+    if (!root) return false;
+    let inp = root.querySelector(
+      'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+    );
+    if (!inp) {
+      try {
+        const all = root.querySelectorAll('*');
+        for (let j = 0; j < all.length; j++) {
+          const node = all[j];
+          if (node.shadowRoot) {
+            inp = node.shadowRoot.querySelector(
+              'textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])',
+            );
+            if (inp) break;
+          }
+        }
+      } catch (_e) {
+        /* ignore */
+      }
+    }
+    if (!inp || (inp.tagName !== 'INPUT' && inp.tagName !== 'TEXTAREA')) return false;
+    if (inp.disabled || inp.readOnly) return false;
+    return true;
+  }
+
   /**
    * §4.2.0b: **個人** — 利用者名・所属名・所属グループをクリック →「入力支援を利用しますか？」（はい／いいえ）→ はいで 595。
    * **共有・JR** — 共有PCのため利用者の概念はなく、**所属名・所属グループ**のみ同様に確認 → はいで 680。
@@ -4121,6 +4150,10 @@
     if (is674AssistModalVisible674()) return;
 
     if (isPcStatusStorage674(rec)) return;
+
+    if (inUser && !isFieldEditableForAssist674(FC_USER_NAME, rec)) return;
+    if (inDept && !isFieldEditableForAssist674(FC_DEPT_NAME, rec)) return;
+    if (inGrp && !isFieldEditableForAssist674(FC_GROUP_NAME, rec)) return;
 
     if (inM365 && type !== TYPE_SHARED && type !== TYPE_JR) return;
 
