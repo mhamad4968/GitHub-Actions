@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-07 20:01 JST — 正式締め: 仕様差分確定・topic-index追記・Desktop同期済・clock:clear・close-git。
 **次の1手**: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。
-**Git**: **`afd40f21`** = `origin/main` — push 済
+**Git**: **`33a78e8f`** = `origin/main` — push 済
 **closeStatus**: closing
 **本日状態（要約）**:
 - Index OPEN default: 利用中 + $id desc
