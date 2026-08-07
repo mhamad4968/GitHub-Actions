@@ -10,7 +10,7 @@
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
  *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` のみ**表示・編集（手動完了フィールドのみ）。非 admin はグループ＋子を `setFieldShown(false)`。一覧に「SKYSEA対応一覧」（admin 専用）。通常はグループを閉じた初期表示。旧自動配信メタ4項目は削除済。
- *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄以外・個人の `pc_name` の JBIS 連番 max +1**。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない。共有の **S-JBIS は個人採番に含めない**）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
+ *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄・取消以外・全種別の `pc_name` から JBIS 連番 max +1**（**S-JBIS は除外**）。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-06-674-skysea-drop-legacy4';
+  const BUILD = '2026-08-07-674-index-all-status-id-desc-jbis-collision';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2189,8 +2189,8 @@
 
   /**
    * §4.3.1: 台帳上の参照用最大連番（数値）。**空き番は見ない**（max のみ）。
-   * - **個人**: 廃棄以外・個人行の `pc_name` から JBIS 連番だけ走査した最大（**`pc_serial_no` は使わない**）。
-   * - **共有**: 廃棄以外・共有行の `pc_serial_no>0` の最大と、同条件の **`pc_name` の S-JBIS 連番**の最大の **いずれか大きい方**。
+   * - **個人**: 廃棄・取消以外・**全 account_type** の `pc_name` から **JBIS** 連番だけ走査した最大（**S-JBIS は extract 側で除外**・**`pc_serial_no` は使わない**）。共有行が JBIS 名を再利用したときの衝突回避。
+   * - **共有**: 廃棄・取消以外・共有行の `pc_serial_no>0` の最大と、同条件の **`pc_name` の S-JBIS 連番**の最大の **いずれか大きい方**（個人 JBIS は含めない）。
    * 番兵 **9999**（`JBIS9999` / `S-JBIS9999`）は max に含めない（プレースホルダ）。
    * 無い・失敗時は 0。次番は `resolveNextPcSerialFromMax674`（個人は 670 下限と併用）。
    * @param {'personal'|'shared'} kind
@@ -2200,7 +2200,7 @@
     const notDisposed = buildPcStatusActiveOnlyQuery674() + ' and ';
     const serialScope =
       (kind === 'personal'
-        ? 'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and '
+        ? ''
         : 'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ') + notDisposed;
     const fromField =
       kind === 'personal'
@@ -2223,9 +2223,9 @@
 
     function scanPcNames674(offset, accMax) {
       const nameScope =
-        (kind === 'personal'
-          ? 'account_type in ("' + escapeQueryValue(TYPE_PERSONAL) + '") and '
-          : 'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ') + notDisposed;
+        kind === 'personal'
+          ? notDisposed
+          : 'account_type in ("' + escapeQueryValue(TYPE_SHARED) + '") and ' + notDisposed;
       const qOr = nameScope + FC_PC_NAME + ' != "" order by $id asc limit 500 offset ' + String(offset);
       return kintoneApiGet('/k/v1/records.json', {
         app: appId,
@@ -8711,7 +8711,7 @@ ${bodyInner}\
   ];
 
   function init674DefaultStatusSet674() {
-    return new Set([PC_STATUS_IN_USE_674]);
+    return init674AllStatusSet674();
   }
 
   function init674AllStatusSet674() {
@@ -9067,7 +9067,10 @@ ${bodyInner}\
     if (ref.noteSearchBox) ref.noteSearchBox.checked = noteSearchOnly674;
     ref.selectedTypes.clear();
     for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
-    if (ref.transferBox) ref.transferBox.v = !!st.transferOnly;
+    const kwFromUrlEarly =
+      urlKwDecoded ||
+      (urlNativeQ && !urlQuery ? extract674KeywordFromNativeQ674(urlNativeQ) : '');
+    if (ref.transferBox) ref.transferBox.v = kwFromUrlEarly ? false : !!st.transferOnly;
     if (ref.cbFilterBoxes && st.cbFilters) {
       for (let cbi = 0; cbi < SEARCH674_DONE_CB_FILTERS.length; cbi++) {
         const defCb = SEARCH674_DONE_CB_FILTERS[cbi];
@@ -9091,7 +9094,7 @@ ${bodyInner}\
     }
     ref.syncChips();
     if (ref.sortSel) {
-      ref.sortSel.value = urlSortParam || st.sort || '';
+      ref.sortSel.value = urlSortParam || st.sort || '$id:desc';
     }
 
     wrap.setAttribute('data-npl-synced-query', syncKey);
@@ -9710,6 +9713,7 @@ ${bodyInner}\
       opt.textContent = defSort.label;
       selSort.appendChild(opt);
     }
+    selSort.value = '$id:desc';
     sortWrap.appendChild(sortLbl);
     sortWrap.appendChild(selSort);
 
@@ -10003,7 +10007,7 @@ ${bodyInner}\
       transferBox.v = false;
       cbFilterBoxes.m365.v = null;
       cbFilterBoxes.shisan.v = null;
-      selSort.value = '';
+      selSort.value = '$id:desc';
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
       const q = build674IndexListQuery(
@@ -10015,7 +10019,7 @@ ${bodyInner}\
         selectedStatuses,
         false,
       );
-      navigate674ListWithQuery(q, '', '', false);
+      navigate674ListWithQuery(q, '', '$id:desc', false);
     });
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
@@ -10216,7 +10220,6 @@ ${bodyInner}\
     const defaultQ = build674IndexListQuery(
       '',
       new Set(),
-      new Set(),
       false,
       null,
       null,
@@ -10226,7 +10229,7 @@ ${bodyInner}\
     if (!defaultQ) return;
 
     if (!effectiveQ) {
-      navigate674ListWithQuery(defaultQ, '', '', false);
+      navigate674ListWithQuery(defaultQ, '', '$id:desc', false);
       return;
     }
 
@@ -10246,7 +10249,7 @@ ${bodyInner}\
           kw = read.urlKwParam;
         }
       }
-      navigate674ListWithQuery(merged, kw, read.urlSort || '', read.urlNote === '1');
+      navigate674ListWithQuery(merged, kw, read.urlSort || '$id:desc', read.urlNote === '1');
     }
   }
 

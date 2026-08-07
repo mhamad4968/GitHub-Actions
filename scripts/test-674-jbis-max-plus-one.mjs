@@ -11,13 +11,14 @@ import { kintoneGetJson } from './lib/kintone-read-client.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = fs.readFileSync(path.join(root, 'customize/new-pc-ledger-v1/desktop.js'), 'utf8');
 
-assert.match(src, /2026-08-06-674-jbis-max-plus-one/);
+assert.match(src, /2026-08-07-674-index-all-status-id-desc-jbis-collision/);
 assert.match(src, /fetchNextPersonalJbisSerial674/);
 assert.match(src, /fetchNextSharedSjbisSerial674/);
 assert.match(src, /resolveNextPcSerialFromMax674/);
 assert.doesNotMatch(src, /fetchNextFreePersonalJbisSerial674/);
 assert.doesNotMatch(src, /fetchNextFreeSharedSjbisSerial674/);
 assert.match(src, /dig !== 9999/);
+assert.match(src, /init674DefaultStatusSet674\(\)\s*\{\s*return init674AllStatusSet674\(\)/);
 
 function resolveNext(maxFromLedger, floor) {
   const maxBase = Math.max(0, Math.floor(Number(maxFromLedger) || 0));
@@ -30,14 +31,16 @@ assert.equal(resolveNext(349, 67), 350);
 assert.equal(resolveNext(0, 67), 67);
 
 async function scanMax(kind) {
-  const type = kind === 'personal' ? '個人' : '共有';
   const re = kind === 'personal' ? /^JBIS(\d+)(?=-|$)/i : /^S-JBIS(\d+)(?=-|$)/i;
+  // personal: all account types (collision-aware). shared: 共有 only.
+  const typeClause =
+    kind === 'personal' ? '' : 'account_type in ("共有") and ';
   let offset = 0;
   let max = 0;
   while (true) {
     const qs = new URLSearchParams({
       app: '674',
-      query: `account_type in ("${type}") and pc_status not in ("廃棄", "取消") and pc_name != "" order by $id asc limit 500 offset ${offset}`,
+      query: `${typeClause}pc_status not in ("廃棄", "取消") and pc_name != "" order by $id asc limit 500 offset ${offset}`,
       'fields[0]': 'pc_name',
     });
     const resp = await kintoneGetJson(`/k/v1/records.json?${qs.toString()}`);
@@ -76,5 +79,9 @@ console.log(
   ),
 );
 
-assert.equal(personalNext, 350, 'expected JBIS0350 after max 349 (9999 excluded)');
+assert.equal(
+  personalNext,
+  351,
+  'expected JBIS0351 after collision-aware max 350 (共有 JBIS0350 + 個人 349, 9999 excluded)',
+);
 console.log('[test:674-jbis-max-plus-one] OK');

@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-06-674-skysea-drop-legacy4",
-      "fileKey": "f7ac220a-4971-4b9e-90da-ea17dfe58888",
-      "revision": "280",
+      "build": "2026-08-07-674-index-all-status-id-desc-jbis-collision",
+      "fileKey": "e575f3eb-518a-4239-afdb-6027431a8267",
+      "revision": "283",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-06T11:37:16.087Z",
+      "deployedAt": "2026-08-07T09:35:25.296Z",
       "note": null
     },
     "677": {
