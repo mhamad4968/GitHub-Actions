@@ -32,14 +32,6 @@ function runNode(script, args = []) {
   };
 }
 
-function runNpm(script) {
-  const r = spawnSync('npm', ['run', script, '--silent'], {
-    cwd: root,
-    encoding: 'utf8',
-  });
-  return { ok: r.status === 0, status: r.status ?? 1, out: (r.stdout || '') + (r.stderr || '') };
-}
-
 function git(args) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
   return { ok: r.status === 0, out: (r.stdout || '').trim(), err: (r.stderr || '').trim() };
@@ -61,20 +53,25 @@ function purgeTmpCloseReports() {
 
 /** rag 不一致 → 1 回 mirror + stage（無限ループ禁止） */
 function healRagMirrorOnce() {
-  const check = runNpm('verify:rag-mirror-canonical');
+  const check = runNode('scripts/rag-mirror-canonical-docs.mjs', ['--check']);
   if (check.ok) {
     console.log('[cio:wake:preflight-heal] rag-mirror OK（heal 不要）');
     return false;
   }
   console.warn('[cio:wake:preflight-heal] rag-mirror NG → Self-Heal 1 回');
-  const heal = runNpm('rag:mirror:canonical-docs');
+  if (check.err) console.warn(check.err);
+  if (check.out) console.warn(check.out);
+  const heal = runNode('scripts/rag-mirror-canonical-docs.mjs');
   if (!heal.ok) {
     console.error('[cio:wake:preflight-heal] ❌ rag:mirror:canonical-docs 失敗');
+    if (heal.err) console.error(heal.err);
+    if (heal.out) console.error(heal.out);
     process.exit(heal.status || 2);
   }
-  const re = runNpm('verify:rag-mirror-canonical');
+  const re = runNode('scripts/rag-mirror-canonical-docs.mjs', ['--check']);
   if (!re.ok) {
     console.error('[cio:wake:preflight-heal] ❌ Self-Heal 後も rag-mirror NG');
+    if (re.err) console.error(re.err);
     process.exit(re.status || 2);
   }
   const add = git([
