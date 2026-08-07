@@ -15,10 +15,15 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { WAKE_HANDOFF_ALLOWLIST } from './lib/cio-wake-handoff-allowlist.mjs';
+import {
+  WAKE_HANDOFF_ALLOWLIST,
+  isWakeHandoffPathAllowed,
+} from './lib/cio-wake-handoff-allowlist.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ALLOWLIST = [...WAKE_HANDOFF_ALLOWLIST];
+/** rollup archive 用の追加 pathspec（dated 名） */
+const EXTRA_PATHSPECS = ['chat-sessions/checkpoints/checkpoint-archive-*.md'];
 
 function git(args, opts = {}) {
   const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', ...opts });
@@ -32,13 +37,13 @@ function git(args, opts = {}) {
 }
 
 function dirtyAllowlist() {
-  const st = git(['status', '--porcelain', '--', ...ALLOWLIST]);
+  const st = git(['status', '--porcelain', '--', ...ALLOWLIST, ...EXTRA_PATHSPECS]);
   if (!st.ok) return [];
   return st.out
     .split(/\r?\n/)
     .filter(Boolean)
     .map((line) => line.slice(3).trim().replace(/^"(.*)"$/, '$1').replace(/\\/g, '/'))
-    .filter((rel) => ALLOWLIST.includes(rel));
+    .filter((rel) => isWakeHandoffPathAllowed(rel));
 }
 
 function commitAllowlist(paths, message) {

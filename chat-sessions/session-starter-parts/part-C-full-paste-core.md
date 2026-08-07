@@ -72,12 +72,12 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-06 反映・2026-08-07 WAKE）】
-- 本日レーン: **SKYSEA 凍結継続**（手動台帳運用可・旧4フィールド削除済）。**実配信・GPO・SGメンバ追加はしない**。新アプリは相談・GO後のみ。
-- checkpoint: `2026-08-06 20:45` — 674 `drop-legacy4` rev**282** / 719@14 / 721@15 / 683@112維持 / 756@318維持
-- 正本: `chat-sessions/checkpoint-latest.md` · closures=9 · `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`
+【今やってる主タスク（2026-08-07 反映・2026-08-08 WAKE）】
+- 本日レーン: **SKYSEA 手動台帳 active**（配信レーンなし）。**実配信・GPO・SG追加はしない**。完了登録は **xlsx 依頼時のみ** AI 対応。新アプリは相談・GO後のみ。
+- checkpoint: `2026-08-07 20:01` — 674 `skysea-exclude-4-depts` rev**292** / 719@14 / 721@15 / 683@112維持 / 756@318維持
+- 正本: `chat-sessions/checkpoint-latest.md` · closures=9 · `docs/runbooks/cio-ops-2026-08-07-evening-improvements.md`（あれば）／08-06 ops 併読可
 - 触らない: 688（WBGT以外）/ 677–679 / 712 deploy / 736 / SKYSEA 実配信・GPO・SG追加
 - 当日コミット (上位・WAKE 後に更新可):
   - chore(handoff): sync bridge + WAKE artifacts after cold-start
-  - chore(handoff): sync bridge at close tip
-  - chore(checkpoint): sync Git line after heal
+  - chore(session): close 2026-08-07 — 674 SKYSEA + evening GO + Desktop sync
+  - docs(ops): SKYSEA manual-only + EOD gates

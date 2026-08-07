@@ -27,7 +27,22 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   '.rag/extra-docs/AGENTS.md',
   'WORKFLOW.md',
   '.rag/extra-docs/WORKFLOW.md',
+  // #S-CREDIT-WAKE-01 — Plan & Usage 記録（credit:set）を WAKE/残件 commit に同梱可
+  'data/credit-usage.json',
 ]);
+
+/**
+ * allowlist 厳密一致以外で WAKE commit に載せる相対パス（dated archive 等）
+ * #S-CHKPT-ROLLUP-01 — Phase 3 rollup の archive が allowlist 漏れで残件化するのを防ぐ
+ * @param {string} rel posix 相対パス
+ */
+export function isWakeHandoffPathAllowed(rel) {
+  if (WAKE_HANDOFF_ALLOWLIST.includes(rel)) return true;
+  if (/^chat-sessions\/checkpoints\/checkpoint-archive-\d{4}-\d{2}-\d{2}\.md$/.test(rel)) {
+    return true;
+  }
+  return false;
+}
 
 export function gitHeadShort(root) {
   try {
@@ -65,7 +80,7 @@ export function commitTouchesOnly(root, ref, allowedFiles) {
       .filter(Boolean);
     if (!names.length) return false;
     const allowed = new Set(allowedFiles);
-    return names.every((n) => allowed.has(n));
+    return names.every((n) => allowed.has(n) || isWakeHandoffPathAllowed(n));
   } catch {
     return false;
   }
