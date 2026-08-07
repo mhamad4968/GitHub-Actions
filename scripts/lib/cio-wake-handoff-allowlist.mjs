@@ -29,6 +29,8 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   '.rag/extra-docs/WORKFLOW.md',
   // #S-CREDIT-WAKE-01 — Plan & Usage 記録（credit:set）を WAKE/残件 commit に同梱可
   'data/credit-usage.json',
+  // #S-WAKE-ORDER-01 — Part C WAKE 同期を early wake-commit に同梱
+  'chat-sessions/session-starter-parts/part-C-full-paste-core.md',
 ]);
 
 /**

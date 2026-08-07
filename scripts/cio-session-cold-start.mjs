@@ -6,7 +6,13 @@
  *   npm run cio:session:cold-start -- --skip-bootstrap
  *   npm run cio:session:cold-start -- --full-morning   # 朝報をフル生成
  *
- * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → BOOTSTRAP → IMPORT → READY
+ * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK
+ *   → MANDATORY_READS → KNOWLEDGE_WAKE → GROK-RESET
+ *   → **WAKE-PREFLIGHT-HEAL → EARLY-WAKE-COMMIT** → BOOTSTRAP
+ *   → CHECKPOINT-GIT-HEAL → EXPORT → WAKE-COMMIT → IMPORT → READY
+ *
+ * #S-WAKE-ORDER-01: rollup/rag/stamp の dirty を bootstrap の Git 残件検査より前に commit し、
+ * 毎回の「未コミット N 件」偽陽性を根絶する。
  *
  * WALL-CLOCK（§51-6-2）: bootstrap 直前に session:clock:clear → session:clock:set。
  * 続けて watch / web を確保（manual-desktop / trialPaused でも WAKE 後の stale watch を防ぐ）。
@@ -135,6 +141,23 @@ function main() {
   run('npm run cio:grok:execution-guard -- --session-reset --reason WAKE');
   clearWarnEscalation(root);
 
+  // Phase 5e — bootstrap 前残件予防（tmp purge / rag heal / Part C sync）
+  // #S-WAKE-ORDER-01: bootstrap 1e の Git 残件 NG 偽陽性を根絶するため、stamp 後・bootstrap 前に commit
+  console.log('\n▶ Phase 5e WAKE-PREFLIGHT-HEAL');
+  try {
+    run('npm run cio:wake:preflight-heal');
+  } catch {
+    console.warn('[cold-start] wake:preflight-heal NG — 手動で npm run cio:wake:preflight-heal');
+  }
+
+  // Phase 5f — early wake-commit（rollup archive / rag / knowledge / Part C を bootstrap 前に確定）
+  console.log('\n▶ Phase 5f EARLY-WAKE-HANDOFF-COMMIT');
+  try {
+    run('npm run cio:wake:handoff-commit -- --push');
+  } catch {
+    console.warn('[cold-start] early wake:handoff-commit NG — 手動で npm run cio:wake:handoff-commit -- --push');
+  }
+
   // Phase 6 — bootstrap + import
   if (!skipBootstrap) {
     console.log('\n▶ Phase 6 BOOTSTRAP');
@@ -159,9 +182,9 @@ function main() {
     console.warn('[cold-start] export-handoff NG — 手動で npm run cio:session:export-handoff');
   }
 
-  // Phase 6b2 — stamp+export 成果物を 1 commit（bootstrap 3c 偽陽性の恒久）
+  // Phase 6b2 — stamp+export 成果物を 1 commit（heal 後の tip 追随）
   // SESSION-CLOCK は意図的 dirty のため対象外（verify-session-close-git-warn と同趣旨）
-  console.log('\n▶ Phase 6b2 WAKE-HANDOFF-COMMIT');
+  console.log('\n▶ Phase 6b2 WAKE-HANDOFF-COMMIT（post-heal）');
   try {
     run('npm run cio:wake:handoff-commit -- --push');
   } catch {

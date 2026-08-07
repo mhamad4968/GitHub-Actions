@@ -8,6 +8,8 @@
  *   node scripts/rag-mirror-canonical-docs.mjs           # ルート → .rag/extra-docs へ上書きコピー
  *   node scripts/rag-mirror-canonical-docs.mjs --check   # 差分があれば exit 1（CI / verify:agent-env）
  *   node scripts/rag-mirror-canonical-docs.mjs --dry-run # コピーせず差分のみ表示
+ *   node scripts/rag-mirror-canonical-docs.mjs --staged  # pre-commit: staged 正本↔ミラー一致検査
+ *   node scripts/rag-mirror-canonical-docs.mjs --staged --heal  # 不一致なら dest を worktree 正本から補完して stage（#S-RAG-PRECOMMIT-01）
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,6 +39,7 @@ const argv = process.argv.slice(2);
 const CHECK = argv.includes('--check');
 const DRY = argv.includes('--dry-run');
 const STAGED = argv.includes('--staged');
+const HEAL = argv.includes('--heal');
 
 function git(args) {
   return spawnSync('git', args, {
@@ -46,8 +49,8 @@ function git(args) {
   });
 }
 
-function verifyStaged() {
-  const pairs = [
+function mirrorPairs() {
+  return [
     ...FILES.map((name) => ({ src: name, dest: `.rag/extra-docs/${name}` })),
     ...PROJECT_DOCS_MIRROR.map(({ src, dest }) => ({
       src,
@@ -58,40 +61,88 @@ function verifyStaged() {
       dest: `.rag/extra-docs/${dest}`,
     })),
   ];
+}
+
+function listStaged() {
   const stagedResult = git(['diff', '--cached', '--name-only', '--no-renames', '-z']);
   if (stagedResult.status !== 0) {
     console.error('❌ rag-mirror-canonical-docs: staged ファイル一覧を取得できません');
     process.exit(2);
   }
-  const staged = new Set(
+  return new Set(
     stagedResult.stdout
       .toString('utf8')
       .split('\0')
       .filter(Boolean)
       .map((name) => name.replaceAll('\\', '/')),
   );
+}
+
+function pairMismatch(src, dest) {
+  const srcBlob = git(['show', `:${src}`]);
+  const destBlob = git(['show', `:${dest}`]);
+  return (
+    srcBlob.status !== 0 ||
+    destBlob.status !== 0 ||
+    !Buffer.from(srcBlob.stdout).equals(Buffer.from(destBlob.stdout))
+  );
+}
+
+/** staged 正本があるとき dest を index 正本から補完して stage（1 回限り） */
+function healStagedMirrors(touched) {
+  const healed = [];
+  for (const { src, dest } of touched) {
+    if (!pairMismatch(src, dest)) continue;
+    const srcBlob = git(['show', `:${src}`]);
+    const destPath = path.join(ROOT, dest);
+    fs.mkdirSync(path.dirname(destPath), { recursive: true });
+    if (srcBlob.status === 0) {
+      fs.writeFileSync(destPath, Buffer.from(srcBlob.stdout));
+    } else {
+      const srcPath = path.join(ROOT, src);
+      if (!fs.existsSync(srcPath)) {
+        console.error(`❌ rag-mirror heal: 正本欠落 ${src}`);
+        process.exit(1);
+      }
+      fs.copyFileSync(srcPath, destPath);
+    }
+    const add = git(['add', '--', dest]);
+    if (add.status !== 0) {
+      console.error(`❌ rag-mirror heal: git add 失敗 ${dest}`);
+      process.exit(1);
+    }
+    healed.push(`${src} → ${dest}`);
+  }
+  if (healed.length) {
+    console.log('rag-mirror-canonical-docs: --staged --heal 補完:', healed.join(', '));
+  }
+}
+
+function verifyStaged() {
+  const pairs = mirrorPairs();
+  const staged = listStaged();
   const touched = pairs.filter(({ src, dest }) => staged.has(src) || staged.has(dest));
   if (touched.length === 0) {
     console.log('✅ rag-mirror-canonical-docs: staged ミラー対象なし');
     return;
   }
 
+  if (HEAL) {
+    healStagedMirrors(touched);
+  }
+
   const diffs = [];
   for (const { src, dest } of touched) {
-    const srcBlob = git(['show', `:${src}`]);
-    const destBlob = git(['show', `:${dest}`]);
-    if (
-      srcBlob.status !== 0 ||
-      destBlob.status !== 0 ||
-      !Buffer.from(srcBlob.stdout).equals(Buffer.from(destBlob.stdout))
-    ) {
-      diffs.push(`${src} ↔ ${dest}`);
-    }
+    if (pairMismatch(src, dest)) diffs.push(`${src} ↔ ${dest}`);
   }
   if (diffs.length > 0) {
     console.error('❌ rag-mirror-canonical-docs: staged 正本と RAG ミラーが一致しません:');
     for (const pair of diffs) console.error(`   - ${pair}`);
-    console.error('   対応: npm run rag:mirror:canonical-docs && git add <正本> .rag/extra-docs/');
+    console.error(
+      HEAL
+        ? '   （--heal 後も不一致）対応: npm run rag:mirror:canonical-docs && git add <正本> .rag/extra-docs/'
+        : '   対応: npm run rag:mirror:canonical-docs && git add <正本> .rag/extra-docs/  または --staged --heal',
+    );
     process.exit(1);
   }
   console.log(`✅ rag-mirror-canonical-docs: staged ミラー一致 (${touched.length} 組)`);

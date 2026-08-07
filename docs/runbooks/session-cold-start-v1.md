@@ -18,7 +18,7 @@ npm run cio:session:cold-start
 ### 状態遷移
 
 ```
-MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → **MANDATORY_READS** → **KNOWLEDGE_WAKE** → BOOTSTRAP → IMPORT → READY
+MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → **MANDATORY_READS** → **KNOWLEDGE_WAKE** → **WAKE-PREFLIGHT-HEAL** → **EARLY-WAKE-COMMIT** → BOOTSTRAP → CHECKPOINT-GIT-HEAL → EXPORT → WAKE-COMMIT → IMPORT → READY
 ```
 
 | Phase | 内容 |
@@ -26,12 +26,21 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → **MANDATORY
 | MORNING | 当日 `*-morning-prep.md` 無ければ **fast 生成**（1〜3 分） |
 | PREFLIGHT | `cio:task:score-spec` + 必要時 `export-handoff`（**gitHead 不一致**含む bridge 陳腐化） |
 | ROLLUP | 凍結ゾーン verify（`verify:checkpoint-freeze-zone --auto-rollup`）+ checkpoint rollup + export + integrity + closure |
-| QUICK-HEALTH | 朝報 ensure + kintone:test + guard:check |
+| QUICK-HEALTH | 朝報 ensure + kintone:test + guard:check + rag-mirror Self-Heal |
 | WALL-CLOCK | **`session:clock:clear` → `session:clock:set`**（§51-6-2。前セッション `開始:` 残留で bootstrap NG を防ぐ） |
 | MANDATORY_READS | **`cio:mandatory-reads:stamp`**（`data/cio-rule-entry-points.json` E1 · wake 7 + session 2 実在検査） |
 | KNOWLEDGE_WAKE | **`cio:knowledge:wake-stamp`**（`data/cio-active-knowledge-needles.json` · sessionStart と同型注入 · M-RAG-04） |
-| BOOTSTRAP | `session:bootstrap`（憲法・desktop sync・smoke 15） |
+| **WAKE-PREFLIGHT-HEAL** | **`cio:wake:preflight-heal`**（#S-WAKE-ORDER-01）tmp-close purge / rag heal / Part C←checkpoint 同期 |
+| **EARLY-WAKE-COMMIT** | **`cio:wake:handoff-commit -- --push`** — bootstrap **前**に archive/rag/stamp/PartC を確定（Git 残件偽陽性の根絶） |
+| BOOTSTRAP | `session:bootstrap`（憲法・desktop sync・smoke。1e Git 残件は SESSION-CLOCK 以外クリーン想定） |
+| CHECKPOINT-GIT-HEAL〜WAKE-COMMIT | stamp → export → 再 wake-commit（R44 off-by-one） |
 | IMPORT | `verify:session-handoff-integrity --import` |
+
+### 毎回エラーだった根因（2026-08-08 抜本）
+
+1. **順序**: rollup / rag Self-Heal / knowledge stamp が dirty を作ったあと、**bootstrap の `verify:session-close-git-warn` が先に走り**、その後でやっと wake-commit → **毎回「未コミット N 件」と見える**
+2. **rag**: 正本だけ commit されると `.rag` がズレる → WAKE で Self-Heal。pre-commit は **`--staged --heal`** で同一 commit にミラー補完（#S-RAG-PRECOMMIT-01）
+3. **Part C**: checkpoint より古い主タスクで誤ブリーフィング → WAKE で checkpoint 同期（D-PARTC-01）
 
 ### オプション
 
