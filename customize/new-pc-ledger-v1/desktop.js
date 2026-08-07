@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-assist-skip-readonly-user';
+  const BUILD = '2026-08-07-674-skysea-dept-summary';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7988,6 +7988,215 @@ ${bodyInner}\
     });
   }
 
+  function formatSkysea674SummaryRate674(done, total) {
+    if (!total) return '—';
+    const pct = Math.round((done / total) * 1000) / 10;
+    return String(pct) + '%';
+  }
+
+  /** 完了・未了を所属別に集計（個人 SCOPE は fetch 側で同一） */
+  function aggregateSkysea674DeptSummary674(doneRecs, pendingRecs, rankMap) {
+    const counts = Object.create(null);
+    function bump(recs, key) {
+      for (let i = 0; i < (recs || []).length; i++) {
+        const d = cell674PlainForSearch(recs[i], FC_DEPT_NAME) || '（所属なし）';
+        if (!counts[d]) counts[d] = { done: 0, pending: 0 };
+        counts[d][key]++;
+      }
+    }
+    bump(doneRecs, 'done');
+    bump(pendingRecs, 'pending');
+    const depts = sortSkysea674DeptNamesByMaster674(Object.keys(counts), rankMap);
+    let totalDone = 0;
+    let totalPending = 0;
+    const rows = depts.map(function (dept) {
+      const c = counts[dept] || { done: 0, pending: 0 };
+      const done = c.done || 0;
+      const pending = c.pending || 0;
+      const total = done + pending;
+      totalDone += done;
+      totalPending += pending;
+      return {
+        dept: dept,
+        done: done,
+        pending: pending,
+        total: total,
+        rate: formatSkysea674SummaryRate674(done, total),
+      };
+    });
+    const grandTotal = totalDone + totalPending;
+    return {
+      rows: rows,
+      totals: {
+        done: totalDone,
+        pending: totalPending,
+        total: grandTotal,
+        rate: formatSkysea674SummaryRate674(totalDone, grandTotal),
+      },
+    };
+  }
+
+  function renderSkysea674SummaryTable674(hostEl, summary) {
+    if (!hostEl) return;
+    while (hostEl.firstChild) hostEl.removeChild(hostEl.firstChild);
+    const data = summary || { rows: [], totals: { done: 0, pending: 0, total: 0, rate: '—' } };
+    const totals = data.totals || { done: 0, pending: 0, total: 0, rate: '—' };
+
+    const banner = document.createElement('div');
+    banner.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:700;color:#0f172a;';
+    banner.innerHTML =
+      '<span>完了合計 <span style="color:#0d9488;">' +
+      totals.done +
+      '</span></span>' +
+      '<span>未了合計 <span style="color:#b45309;">' +
+      totals.pending +
+      '</span></span>' +
+      '<span>計 <span style="color:#334155;">' +
+      totals.total +
+      '</span></span>' +
+      '<span>完了率 <span style="color:#1d4ed8;">' +
+      totals.rate +
+      '</span></span>';
+    hostEl.appendChild(banner);
+
+    const caption = document.createElement('div');
+    caption.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:6px;';
+    caption.textContent = '個人PC・保管/廃棄/取消除外';
+    hostEl.appendChild(caption);
+
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'max-height:240px;overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;';
+
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;font-size:11px;';
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    ['所属', '完了', '未了', '計', '完了率'].forEach(function (label, idx) {
+      const th = document.createElement('th');
+      th.textContent = label;
+      th.style.cssText =
+        'position:sticky;top:0;z-index:1;background:#e2e8f0;border:1px solid #cbd5e1;padding:5px 8px;text-align:' +
+        (idx === 0 ? 'left' : 'right') +
+        ';white-space:nowrap;font-weight:700;';
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    const rows = data.rows || [];
+    if (!rows.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 5;
+      td.style.cssText =
+        'padding:12px 8px;text-align:center;color:#64748b;border:1px solid #e2e8f0;';
+      td.textContent = '集計対象がありません';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    } else {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const tr = document.createElement('tr');
+        tr.style.background = i % 2 ? '#f8fafc' : '#fff';
+        const cells = [
+          { text: row.dept, align: 'left' },
+          { text: String(row.done), align: 'right' },
+          { text: String(row.pending), align: 'right' },
+          { text: String(row.total), align: 'right' },
+          { text: row.rate, align: 'right' },
+        ];
+        for (let ci = 0; ci < cells.length; ci++) {
+          const td = document.createElement('td');
+          td.textContent = cells[ci].text;
+          td.style.cssText =
+            'border:1px solid #e2e8f0;padding:4px 8px;text-align:' +
+            cells[ci].align +
+            ';vertical-align:top;word-break:break-word;';
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      const trTot = document.createElement('tr');
+      trTot.style.cssText = 'background:#e2e8f0;font-weight:700;';
+      const totCells = [
+        { text: '合計', align: 'left' },
+        { text: String(totals.done), align: 'right' },
+        { text: String(totals.pending), align: 'right' },
+        { text: String(totals.total), align: 'right' },
+        { text: totals.rate, align: 'right' },
+      ];
+      for (let ti = 0; ti < totCells.length; ti++) {
+        const td = document.createElement('td');
+        td.textContent = totCells[ti].text;
+        td.style.cssText =
+          'border:1px solid #cbd5e1;padding:5px 8px;text-align:' +
+          totCells[ti].align +
+          ';';
+        trTot.appendChild(td);
+      }
+      tbody.appendChild(trTot);
+    }
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    hostEl.appendChild(scroll);
+  }
+
+  function refreshSkysea674Summary674(panel) {
+    const state = panel && panel.__nplSkysea;
+    if (!state) return;
+    const host = panel.querySelector('.npl674-skysea-summary');
+    if (!host) return;
+
+    function renderFromCache() {
+      const summary = aggregateSkysea674DeptSummary674(
+        state.summaryDoneRecs,
+        state.summaryPendingRecs,
+        state.deptRankMap,
+      );
+      renderSkysea674SummaryTable674(host, summary);
+    }
+
+    if (state.summaryDoneRecs && state.summaryPendingRecs) {
+      renderFromCache();
+      return;
+    }
+
+    host.textContent = '所属別集計を読み込み中…';
+    Promise.all([
+      fetchSkysea674ListRecords674(SKYSEA_MANUAL_DONE_COMPLETE),
+      fetchSkysea674ListRecords674(SKYSEA_MANUAL_DONE_PENDING),
+    ])
+      .then(function (pair) {
+        state.summaryDoneRecs = pair[0] || [];
+        state.summaryPendingRecs = pair[1] || [];
+        renderFromCache();
+      })
+      .catch(function (e) {
+        console.warn('[NEW-PC-LEDGER-V1] skysea summary', e);
+        host.textContent = '所属別集計の取得に失敗しました';
+      });
+  }
+
+  function adjustSkysea674SummaryCaches674(state, rec, fromDoneMode) {
+    if (!state || !rec) return;
+    const idStr = String((rec.$id && rec.$id.value) || '');
+    if (!idStr) return;
+    const filterId = function (list) {
+      return (list || []).filter(function (r) {
+        return String((r.$id && r.$id.value) || '') !== idStr;
+      });
+    };
+    if (fromDoneMode === SKYSEA_MANUAL_DONE_PENDING) {
+      state.summaryPendingRecs = filterId(state.summaryPendingRecs);
+      state.summaryDoneRecs = (state.summaryDoneRecs || []).concat([rec]);
+    } else if (fromDoneMode === SKYSEA_MANUAL_DONE_COMPLETE) {
+      state.summaryDoneRecs = filterId(state.summaryDoneRecs);
+      state.summaryPendingRecs = (state.summaryPendingRecs || []).concat([rec]);
+    }
+  }
+
   function readSelectedSkysea674Depts674(panel) {
     const selected = [];
     if (!panel) return selected;
@@ -8167,6 +8376,9 @@ ${bodyInner}\
     kintoneApiPut('/k/v1/record.json', body)
       .then(function () {
         const idStr = String(id);
+        const fromDoneMode = state.doneMode;
+        adjustSkysea674SummaryCaches674(state, rec, fromDoneMode);
+        refreshSkysea674Summary674(panel);
         state.records = (state.records || []).filter(function (r) {
           return String((r.$id && r.$id.value) || '') !== idStr;
         });
@@ -8329,20 +8541,29 @@ ${bodyInner}\
     const prevSelected = new Set(readSelectedSkysea674Depts674(panel));
     const keepFiltered = state.viewMode === 'filtered' && prevSelected.size > 0;
     showList674Loading674(true);
-    Promise.all([fetchSkysea674ListRecords674(doneMode), fetchDeptMasterRows674()])
-      .then(function (pair) {
+    Promise.all([
+      fetchSkysea674ListRecords674(SKYSEA_MANUAL_DONE_COMPLETE),
+      fetchSkysea674ListRecords674(SKYSEA_MANUAL_DONE_PENDING),
+      fetchDeptMasterRows674(),
+    ])
+      .then(function (triple) {
         showList674Loading674(false);
-        const recs = pair[0] || [];
-        const master = pair[1] || [];
+        const doneRecs = triple[0] || [];
+        const pendingRecs = triple[1] || [];
+        const master = triple[2] || [];
+        state.summaryDoneRecs = doneRecs;
+        state.summaryPendingRecs = pendingRecs;
         state.doneMode = doneMode;
         state.deptMasterRows = master;
         state.deptRankMap = buildSkysea674DeptRankMap674(master);
+        const recs = doneMode === SKYSEA_MANUAL_DONE_COMPLETE ? doneRecs : pendingRecs;
         state.records = sortSkysea674RecordsByMaster674(recs, state.deptRankMap);
         const subEl = panel.querySelector('.npl674-skysea-sub');
         if (subEl) {
           subEl.textContent =
             '個人PCのみ（保管・廃棄・取消除外）／所属を選んで「リスト表示」／並び=680／パスワード列なし';
         }
+        refreshSkysea674Summary674(panel);
         rebuildSkysea674DeptBar674(panel, state.records, prevSelected);
         if (keepFiltered) {
           applySkysea674ListView674(panel, 'filtered');
@@ -8455,6 +8676,12 @@ ${bodyInner}\
     deptBar.style.cssText =
       'flex:0 0 auto;padding:10px 16px;background:#e2e8f0;border-bottom:1px solid #cbd5e1;';
 
+    const summaryWrap = document.createElement('div');
+    summaryWrap.className = 'npl674-skysea-summary npl674-skysea-no-print';
+    summaryWrap.style.cssText =
+      'flex:0 0 auto;padding:8px 16px;background:#f1f5f9;border-bottom:1px solid #cbd5e1;';
+    summaryWrap.textContent = '所属別集計を読み込み中…';
+
     const warn = document.createElement('div');
     warn.className = 'npl674-skysea-print-warn';
     warn.style.cssText =
@@ -8490,6 +8717,7 @@ ${bodyInner}\
     scroll.appendChild(table);
 
     panel.appendChild(toolbar);
+    panel.appendChild(summaryWrap);
     panel.appendChild(deptBar);
     panel.appendChild(warn);
     panel.appendChild(scroll);
@@ -8497,6 +8725,8 @@ ${bodyInner}\
 
     panel.__nplSkysea = {
       records: [],
+      summaryDoneRecs: null,
+      summaryPendingRecs: null,
       doneMode: SKYSEA_MANUAL_DONE_PENDING,
       deptRankMap: Object.create(null),
       deptMasterRows: [],

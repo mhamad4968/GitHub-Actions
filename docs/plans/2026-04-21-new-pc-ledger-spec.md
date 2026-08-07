@@ -1270,6 +1270,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 2026-08-07 | v2.1 追記 | **§4.3.1 / 674**: 個人 JBIS max+1 は **全 account_type** の `pc_name` から JBIS 連番を走査（共有行の JBIS 名再利用時の衝突回避）。一覧OPEN既定は **ステータス=利用中** + **`$id:desc`**（転用OFF）。キーワード時の3ステータス全選択は従来どおり。BUILD `2026-08-07-674-index-inuse-id-desc`。 |
 | 2026-08-07 | v2.1 追記 | **§4.3.1 浜田 GO**: 個人→共有等で **JBIS 名維持可**。保存時 **非個人＋個人JBIS形式** → confirm 警告＋ **`note` 定型1行**（重複防止）。BUILD `2026-08-07-674-shared-jbis-warn-note`。 |
 | 2026-08-07 | v2.1 追記 | **§4.2.3a / §4.3.1 浜田 GO**: SKYSEA フォーム UI は **admin かつ種別=個人のみ**表示。個人 PC 名重複は **全く同一 `pc_name` のみハードブロック**（JBIS コアのみ同じ＝月違いは可・室長確認ソフト警告廃止）。BUILD `2026-08-07-674-skysea-personal-exact-pcname`。 |
+| 2026-08-07 | v2.1 追記 | **§4.2.3a / SKYSEA対応一覧**: admin パネル上部に **所属別 完了/未了 集計表**（個人 SCOPE・680 順・印刷対象外）。BUILD `2026-08-07-674-skysea-dept-summary`。 |
 | 2026-08-07 | v2.1 追記 | **§4.2.0b / 674**: フィールドクリックの入力支援確認は **編集不可**（閲覧・disabled フィールド）では表示しない。BUILD `2026-08-07-674-assist-skip-readonly-user`。 |
 
 ---
