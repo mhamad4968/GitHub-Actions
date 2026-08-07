@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-skysea-summary-tbody-fix';
+  const BUILD = '2026-08-07-674-skysea-exclude-4-depts';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7761,6 +7761,22 @@ ${bodyInner}\
     { label: '完了・未了', code: FC_SKYSEA_MANUAL_DONE },
     { label: '対応者', code: FC_SKYSEA_MANUAL_HANDLER },
   ];
+  const SKYSEA674_EXCLUDED_DEPTS = [
+    'システム推進室',
+    '関越支店施工部',
+    '東京支店橋りょうリペア部',
+    '東京支店施工部',
+  ];
+  function isSkysea674ExcludedDept674(deptName) {
+    const d = String(deptName || '').trim();
+    return SKYSEA674_EXCLUDED_DEPTS.indexOf(d) !== -1;
+  }
+  function filterSkysea674RecordsExcludeDepts674(records) {
+    return (records || []).filter(function (rec) {
+      const d = cell674PlainForSearch(rec, FC_DEPT_NAME) || '（所属なし）';
+      return !isSkysea674ExcludedDept674(d);
+    });
+  }
 
   function ensureSkysea674PrintStyles674() {
     let st = document.getElementById(SKYSEA674_PRINT_STYLE_ID);
@@ -7924,22 +7940,23 @@ ${bodyInner}\
   /** S-DEPT-MASTER-01: 所属セレクトは App680（sort_no）正。レコード出現集合だけから組み立てない */
   /** 680マスタ全所属＋レコード側の余剰所属。件数は現在タブの対象件数 */
   function buildSkysea674DeptOptions674(records, rankMap, masterRows) {
+    const filtered = filterSkysea674RecordsExcludeDepts674(records);
     const counts = Object.create(null);
-    for (let i = 0; i < (records || []).length; i++) {
-      const d = cell674PlainForSearch(records[i], FC_DEPT_NAME) || '（所属なし）';
+    for (let i = 0; i < filtered.length; i++) {
+      const d = cell674PlainForSearch(filtered[i], FC_DEPT_NAME) || '（所属なし）';
       counts[d] = (counts[d] || 0) + 1;
     }
     const seen = Object.create(null);
     const names = [];
     for (let i = 0; i < (masterRows || []).length; i++) {
       const name = String((masterRows[i] && masterRows[i].dept_name) || '').trim();
-      if (!name || seen[name]) continue;
+      if (!name || seen[name] || isSkysea674ExcludedDept674(name)) continue;
       seen[name] = true;
       names.push(name);
     }
-    const extras = uniqueDeptNamesFromSkysea674Records674(records);
+    const extras = uniqueDeptNamesFromSkysea674Records674(filtered);
     for (let i = 0; i < extras.length; i++) {
-      if (seen[extras[i]]) continue;
+      if (seen[extras[i]] || isSkysea674ExcludedDept674(extras[i])) continue;
       seen[extras[i]] = true;
       names.push(extras[i]);
     }
@@ -8000,6 +8017,7 @@ ${bodyInner}\
     function bump(recs, key) {
       for (let i = 0; i < (recs || []).length; i++) {
         const d = cell674PlainForSearch(recs[i], FC_DEPT_NAME) || '（所属なし）';
+        if (isSkysea674ExcludedDept674(d)) continue;
         if (!counts[d]) counts[d] = { done: 0, pending: 0 };
         counts[d][key]++;
       }
@@ -8555,8 +8573,8 @@ ${bodyInner}\
     ])
       .then(function (triple) {
         showList674Loading674(false);
-        const doneRecs = triple[0] || [];
-        const pendingRecs = triple[1] || [];
+        const doneRecs = filterSkysea674RecordsExcludeDepts674(triple[0] || []);
+        const pendingRecs = filterSkysea674RecordsExcludeDepts674(triple[1] || []);
         const master = triple[2] || [];
         state.summaryDoneRecs = doneRecs;
         state.summaryPendingRecs = pendingRecs;
