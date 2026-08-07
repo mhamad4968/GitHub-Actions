@@ -9,7 +9,7 @@
  * Day 4 雛形スコープ:
  *   - 種別 (account_type) による表示制御 (show/hide)
  *   - §4.2.1a: 内部メタは kintone 標準グループ `internal_system_meta` に収容（レイアウトは `npm run pc-ledger:674:layout-internal-group`）。表示時はグループを閉じる・新規・編集では子を disabled
- *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` のみ**表示・編集（手動完了フィールドのみ）。非 admin はグループ＋子を `setFieldShown(false)`。一覧に「SKYSEA対応一覧」（admin 専用）。通常はグループを閉じた初期表示。旧自動配信メタ4項目は削除済。
+ *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` かつ種別=個人**のときのみ表示・編集（手動完了フィールドのみ）。admin でも共有/JR端末/サーバーNAS/その他は非 admin と同様に非表示。一覧に「SKYSEA対応一覧」（admin 専用・個人 SCOPE）。通常はグループを閉じた初期表示。旧自動配信メタ4項目は削除済。
  *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄・取消以外・全種別の `pc_name` から JBIS 連番 max +1**（**S-JBIS は除外**）。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
  *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
@@ -25,14 +25,14 @@
  *   - **モバイル**: 当面は利用想定なし（`kintone.mobile` 分岐は既存のまま残すが、専用UXは追わない）。
  *   - **M365管理マスタレコード番号（671 `$id`）**: 共有・JR は同一671行の **usage_count / 5 台**運用で紐づく。個人は表示するが多くは空（自動生成はメール由来M365中心）。**手入力不可**（自動生成・保存後同期のみ更新）。
  *   - **PC名（`pc_name`）**: 全種別で **保存必須**（運用: **PCの管理番号＝PC名**）。
- *   - **個人の JBIS+4桁**: 他の個人レコード（廃棄以外）と **同一 JBISxxxx** のとき保存前に室長確認の警告（赤）＋はい/いいえ。詳細・編集でも赤バナー表示。
+ *   - **個人の PC 名重複**: 他の個人レコード（廃棄・取消以外）と **全く同一の `pc_name`**（trim 後・大文字小文字無視）のとき **保存不可（ハードブロック）**。JBIS コアのみ同じで月違い（例 JBIS0016-202401 vs -202402）は可。詳細・編集でも赤バナー表示。
  *
  * **674 本番**: `npl_disposed_pc_copy` を一覧キーワード検索に含める。**フィールド未追加のまま本 BUILD の JS だけ載せると一覧 REST が失敗し得る**ため、先に **`npm run pc-ledger:674:add-npl-disposed-pc-field-preview`**（`kintone-apps.md` 674 行の反映順）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-index-inuse-id-desc';
+  const BUILD = '2026-08-07-674-skysea-personal-exact-pcname';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -338,13 +338,15 @@
 
   /**
    * §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta` に収容。
-   * **admin のみ**グループ＋子（手動完了フィールド含む）を表示。非 admin はすべて非表示。
+   * **admin かつ種別=個人**のときのみグループ＋子（手動完了フィールド含む）を表示。
+   * admin でも共有/JR端末/サーバーNAS/その他は非 admin と同様にすべて非表示。
    * 通常は畳んだまま（setGroupFieldOpen false）。editable 時は手動フィールドを編集可。
    * applyVisibilityByType の後に呼ぶこと（グループ再表示を上書きするため）。
    */
   function applySkyseaGroupUi(record, mode) {
     const skyseaCodes = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
-    if (!isSkyseaAdmin674()) {
+    const type = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (!isSkyseaAdmin674() || type !== TYPE_PERSONAL) {
       setFieldsVisibility(skyseaCodes, false);
       return;
     }
@@ -570,7 +572,8 @@
       FC_M365_MASTER_RECORD_ID,
     ];
 
-    const skyseaVisible = isSkyseaAdmin674();
+    // 最終表示は applySkyseaGroupUi が上書き（admin ∧ 個人のみ）。ここで一旦畳む。
+    const skyseaVisible = isSkyseaAdmin674() && type === TYPE_PERSONAL;
     const SKYSEA_VISIBILITY_CODES = [FC_SKYSEA_GROUP, ...SKYSEA_CHILD_CODES];
 
     if (type === TYPE_SHARED || type === TYPE_JR) {
@@ -863,28 +866,37 @@
     return 'JBIS' + m[1];
   }
 
+  /** trim 後・大文字小文字無視で PC 名が同一か */
+  function isSamePcName674(a, b) {
+    return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+  }
+
   /**
-   * 同一 JBIS コアの **他** 個人レコード（廃棄以外）。`excludeId` は編集時に自分自身の $id。
+   * **全く同一** `pc_name` の **他** 個人レコード（廃棄・取消以外）。`excludeId` は編集時に自分自身の $id。
+   * REST は `pc_name = "…"`（SINGLE_LINE_TEXT）。大文字小文字ゆれはクエリ OR + クライアント突合。
    * @returns {Promise<Array<{id:string,pc_name:string,user_name:string}>>}
    */
-  function fetchOtherPersonalSameJbisCore674(jbisCore, excludeId) {
-    const core = String(jbisCore || '').trim();
-    if (!core) return Promise.resolve([]);
-    const escU = escapeQueryValue(core.toUpperCase());
-    const escL = escapeQueryValue(core.toLowerCase());
-    // DROP_DOWN は REST クエリで = 不可 → in ("…") を使う（GAIA_IQ03）。
-    // like は部分文字列のみ（SQL の % は不可・400 になる）。
+  function fetchOtherPersonalSamePcName674(pcName, excludeId) {
+    const normalized = String(pcName || '').trim();
+    if (!normalized) return Promise.resolve([]);
+    const esc = escapeQueryValue(normalized);
+    const escU = escapeQueryValue(normalized.toUpperCase());
+    const escL = escapeQueryValue(normalized.toLowerCase());
+    let nameClause = 'pc_name = "' + esc + '"';
+    if (escU !== esc) {
+      nameClause = '(pc_name = "' + esc + '" or pc_name = "' + escU + '")';
+    }
+    if (escL !== esc && escL !== escU) {
+      nameClause = '(pc_name = "' + esc + '" or pc_name = "' + escU + '" or pc_name = "' + escL + '")';
+    }
     const q =
       'account_type in ("' +
       escapeQueryValue(TYPE_PERSONAL) +
       '") and ' +
       buildPcStatusActiveOnlyQuery674() +
       ' and ' +
-      '(pc_name like "' +
-      escU +
-      '" or pc_name like "' +
-      escL +
-      '") limit 500';
+      nameClause +
+      ' limit 500';
     const ex = excludeId != null && String(excludeId).trim() !== '' ? String(excludeId).trim() : '';
     return kintoneApiGet('/k/v1/records.json', {
       app: kintone.app.getId(),
@@ -896,8 +908,7 @@
         const idStr = row.$id != null && row.$id.value != null ? String(row.$id.value) : '';
         if (ex && idStr === ex) continue;
         const pn = String((row[FC_PC_NAME] && row[FC_PC_NAME].value) || '').trim();
-        const rowCore = extractPersonalJbisCore674(pn);
-        if (!rowCore || rowCore !== core) continue;
+        if (!isSamePcName674(pn, normalized)) continue;
         out.push({
           id: idStr,
           pc_name: pn,
@@ -914,7 +925,7 @@
   }
 
   /**
-   * 個人・JBIS 形式で他レコードとコア重複時、ヘッダに赤バナー（詳細・新規・編集）。
+   * 個人で他レコードと PC 名が全く同一のとき、ヘッダに赤バナー（詳細・新規・編集）。
    * @returns {Promise<void>}
    */
   function refreshPcNameDupBanner674(record) {
@@ -924,12 +935,11 @@
     const st = String(record[FC_PC_STATUS]?.value || '').trim();
     if (type !== TYPE_PERSONAL || isPcStatusInactive674(st)) return Promise.resolve();
     const pcn = trimmedScalarValue674(record, FC_PC_NAME);
-    const core = extractPersonalJbisCore674(pcn);
-    if (!core) return Promise.resolve();
+    if (!pcn) return Promise.resolve();
     const rid = record.$id && record.$id.value != null ? String(record.$id.value) : '';
     const space = getHeaderSpace674();
     if (!space) return Promise.resolve();
-    return fetchOtherPersonalSameJbisCore674(core, rid).then(function (others) {
+    return fetchOtherPersonalSamePcName674(pcn, rid).then(function (others) {
       if (!others.length) return;
       const banner = document.createElement('div');
       banner.id = 'jb674-pc-name-dup-banner';
@@ -938,14 +948,14 @@
         'font-size:13px;line-height:1.45;color:#842029;';
       const title = document.createElement('div');
       title.style.cssText = 'color:#b02a37;font-weight:bold;font-size:14px;margin-bottom:6px;';
-      title.textContent = 'PC名重複';
+      title.textContent = 'PC名重複（登録不可）';
       banner.appendChild(title);
       const lead = document.createElement('div');
       lead.style.marginBottom = '6px';
       lead.innerHTML =
-        '個人のPC名の <strong style="color:#b02a37;">' +
-        core +
-        '</strong>（JBIS＋連番の管理番号部分）が、他の利用中・保管レコードと重複しています。室長へ確認してください。';
+        '全く同じPC名が他レコードにあります／登録不可。PC名「<strong style="color:#b02a37;">' +
+        pcn +
+        '</strong>」は、他の利用中・保管の個人レコードと重複しています。';
       banner.appendChild(lead);
       const ul = document.createElement('ul');
       ul.style.cssText = 'margin:4px 0 0 18px;padding:0;color:#b02a37;';
@@ -968,106 +978,18 @@
     });
   }
 
-  function removeJbisDupConfirmModal674() {
-    const n = document.getElementById('jb674-jbis-dup-modal');
-    if (n) n.remove();
-  }
-
   /**
-   * JBIS コア重複時の室長確認ダイアログ（赤文字・はい／いいえ）。
-   * @returns {kintone.Promise<boolean>} true=保存続行
-   */
-  function confirmJbisDuplicateWithChief674(jbisCore, others) {
-    return new kintone.Promise(function (resolve) {
-      removeJbisDupConfirmModal674();
-      const overlay = document.createElement('div');
-      overlay.id = 'jb674-jbis-dup-modal';
-      overlay.style.cssText =
-        'position:fixed;inset:0;z-index:200000;background:rgba(15,23,42,.45);' +
-        'display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
-      const box = document.createElement('div');
-      box.style.cssText =
-        'background:#fff;max-width:520px;width:100%;border-radius:8px;padding:20px 22px;' +
-        'box-shadow:0 12px 40px rgba(0,0,0,.2);font-family:inherit;';
-      const redTitle = document.createElement('div');
-      redTitle.style.cssText = 'color:#b02a37;font-weight:bold;font-size:16px;margin-bottom:10px;';
-      redTitle.textContent = 'PC名（JBIS+4桁）が重複しています';
-      box.appendChild(redTitle);
-      const msg = document.createElement('div');
-      msg.style.cssText = 'color:#b02a37;font-size:14px;line-height:1.55;margin-bottom:12px;';
-      msg.innerHTML =
-        '<strong>' +
-        jbisCore +
-        '</strong> が他レコードと重複しています。このまま登録してよいか<strong>室長へ確認</strong>してください。';
-      box.appendChild(msg);
-      const sub = document.createElement('div');
-      sub.style.cssText = 'color:#495057;font-size:13px;margin-bottom:10px;';
-      sub.textContent = '問題なく登録してよい場合は「はい」、取りやめる場合は「いいえ」を選んでください。';
-      box.appendChild(sub);
-      const ul = document.createElement('ul');
-      ul.style.cssText = 'margin:0 0 14px 18px;padding:0;font-size:13px;color:#842029;max-height:160px;overflow:auto;';
-      for (let i = 0; i < others.length && i < 10; i++) {
-        const o = others[i];
-        const li = document.createElement('li');
-        li.style.marginBottom = '3px';
-        li.textContent = 'No.' + o.id + ' ／ 「' + o.pc_name + '」' + (o.user_name ? '（' + o.user_name + '）' : '');
-        ul.appendChild(li);
-      }
-      if (others.length > 10) {
-        const li = document.createElement('li');
-        li.textContent = '…他 ' + (others.length - 10) + ' 件';
-        ul.appendChild(li);
-      }
-      box.appendChild(ul);
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;';
-      const btnNo = document.createElement('button');
-      btnNo.type = 'button';
-      btnNo.textContent = 'いいえ';
-      btnNo.style.cssText =
-        'padding:8px 18px;border:1px solid #ced4da;border-radius:4px;background:#fff;cursor:pointer;font-weight:bold;';
-      const btnYes = document.createElement('button');
-      btnYes.type = 'button';
-      btnYes.textContent = 'はい';
-      btnYes.style.cssText =
-        'padding:8px 18px;border:none;border-radius:4px;background:#0d6efd;color:#fff;cursor:pointer;font-weight:bold;';
-      function done(ok) {
-        removeJbisDupConfirmModal674();
-        resolve(ok);
-      }
-      btnNo.addEventListener('click', function () {
-        done(false);
-      });
-      btnYes.addEventListener('click', function () {
-        done(true);
-      });
-      row.appendChild(btnNo);
-      row.appendChild(btnYes);
-      box.appendChild(row);
-      overlay.appendChild(box);
-      overlay.addEventListener('click', function (ev) {
-        if (ev.target === overlay) done(false);
-      });
-      document.body.appendChild(overlay);
-    });
-  }
-
-  /**
-   * 個人・JBIS 形式で他レコードとコア重複時、室長確認モーダル。
+   * 個人で他レコードと PC 名が全く同一のとき、保存をハードブロック。
    * @returns {Promise<'ok'|'cancelled'>}
    */
   function checkPersonalJbisDuplicateBeforeSave674(event) {
     const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
     if (type !== TYPE_PERSONAL) return Promise.resolve('ok');
     const pcn = trimmedScalarValue674(event.record, FC_PC_NAME);
-    const core = extractPersonalJbisCore674(pcn);
-    if (!core) return Promise.resolve('ok');
+    if (!pcn) return Promise.resolve('ok');
     const rid = event.record.$id && event.record.$id.value != null ? String(event.record.$id.value) : '';
-    return fetchOtherPersonalSameJbisCore674(core, rid).then(function (others) {
-      if (!others.length) return 'ok';
-      return confirmJbisDuplicateWithChief674(core, others).then(function (yes) {
-        return yes ? 'ok' : 'cancelled';
-      });
+    return fetchOtherPersonalSamePcName674(pcn, rid).then(function (others) {
+      return others.length ? 'cancelled' : 'ok';
     });
   }
 
@@ -10416,7 +10338,7 @@ ${bodyInner}\
         .then(function (dupRes) {
           if (dupRes === 'cancelled') {
             const dm =
-              'JBIS+4桁の管理番号が他レコードと重複しています。室長へ確認のうえ、登録してよい場合は再度「保存」し「はい」を選んでください。';
+              '同じPC名が既に登録されています（全く同一のPC名のみ登録不可）。別のPC名に変更してください。';
             event.error = dm;
             event.errors = Object.assign(event.errors || {}, {
               [FC_PC_NAME]: dm,

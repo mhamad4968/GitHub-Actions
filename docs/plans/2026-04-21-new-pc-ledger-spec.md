@@ -310,7 +310,7 @@ PC レコード保存・廃棄時:
 | フィールド code | 役割 | UI 方針 |
 |---|---|---|
 | `skysea_system_meta` | kintone **標準のフィールドグループ**（ラベル **SKYSEA処理用**） | `openGroup: false`。レイアウトは **`skysea_manual_*` のみ**（`npm run pc-ledger:674:layout-skysea-group`／`skysea-manual-setup`） |
-| skysea_manual_*（グループ子） | 手動完了 | **LoginID `admin` のみ**表示・編集（ACL + customize）。一覧に **「SKYSEA対応一覧」**（個人のみ・保管/廃棄/取消除外・680並び・print-root・パスワード列なし） |
+| skysea_manual_*（グループ子） | 手動完了 | **LoginID `admin` かつ種別=個人**のときのみ表示・編集（ACL + customize）。一覧に **「SKYSEA対応一覧」**（admin 専用・個人のみ・保管/廃棄/取消除外・680並び・print-root・パスワード列なし） |
 
 **注**: 詳細運用の正本は **`docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`（as-built）**。運用針は `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`。
 
@@ -338,6 +338,7 @@ PC レコード保存・廃棄時:
 - **既存PC・従来名（浜田合意 2026-04-28）**: 個人・共有でも **`pc_name` は手入力した表記をそのまま保存してよい**（上記 `JBIS` / `S-JBIS` 形式に**合わせる義務はない**）。594 等の旧台帳名・現場で使っている名称を登録する。**自動採番は任意**（§4.4 の「手入力済値は保護＝マージ」に従い、ボタンで上書きしない運用とする）。`pc_serial_no` は **移行 `0`** のまま、または **手入力 `pc_name` の連番と数値が一致しない**場合がありうる（カウンタは**新規自動採番用**と位置づけ、既存名登録と独立）。
 - **個人→共有等で JBIS 名維持（浜田 GO 2026-08-07）**: 種別を個人から共有・JR 等へ変更する際、**現場ラベルとして個人 JBIS 形式（`JBIS…`・`S-JBIS` で始まらない）の `pc_name` を維持してよい**。個人 JBIS の次採番は **全 account_type** 走査で衝突回避済み（上段「個人」連番ソース参照）。
 - **保存時ガード（674 customize・2026-08-07）**: **`account_type`≠個人** かつ **`pc_name` が個人 JBIS 形式**（`JBIS`+数字、`S-JBIS` は対象外）のとき、保存前に **確認ダイアログ**（日本語）— 共有等なのに個人 JBIS 名のまま／採番衝突回避済／備考に記録する旨。**キャンセル**で保存中止。**OK** で **`note`（備考）** に定型1行 `[運用] 共有等だがPC名が個人JBIS形式（現場ラベル維持・採番は衝突回避）` を追記（NFKC＋空白正規化で **重複防止**）。必須項目エラー等のハードチェック通過後に実行。
+- **個人 PC 名の重複（674 customize・2026-08-07 浜田 GO）**: **種別=個人**かつ **廃棄・取消以外**の他レコードと **`pc_name` が全く同一**（trim 後・大文字小文字無視）のとき **保存不可（ハードブロック）**。JBIS コアのみ同じで月違い（例 `JBIS0016-202401` vs `JBIS0016-202402`）は **可**。詳細・編集では赤バナー（全く同じPC名が他レコードにあります／登録不可）。旧 **JBIS+4桁コア重複の室長確認（ソフト警告）** は廃止。
 
 #### 4.3.2 WindowsID（v2.1 改訂 / 新採番マスタ参照 + 厳格ルール）
 
@@ -1268,6 +1269,7 @@ snapshot: `data/snapshots/594-pre-migration-scan-2026-04-22.json`
 | 2026-08-06 | v2.1 追記 | **§4.2.3 SKYSEA**: 手動台帳 `skysea_manual_*` を正本化。旧自動配信メタ4項目（status／checked_at／install_log／target_flag）を **削除**。SCOPE=個人・保管/廃棄/取消除外。BUILD `2026-08-06-674-skysea-drop-legacy4` / rev **282** 系。正本 `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`（as-built）。 |
 | 2026-08-07 | v2.1 追記 | **§4.3.1 / 674**: 個人 JBIS max+1 は **全 account_type** の `pc_name` から JBIS 連番を走査（共有行の JBIS 名再利用時の衝突回避）。一覧OPEN既定は **ステータス=利用中** + **`$id:desc`**（転用OFF）。キーワード時の3ステータス全選択は従来どおり。BUILD `2026-08-07-674-index-inuse-id-desc`。 |
 | 2026-08-07 | v2.1 追記 | **§4.3.1 浜田 GO**: 個人→共有等で **JBIS 名維持可**。保存時 **非個人＋個人JBIS形式** → confirm 警告＋ **`note` 定型1行**（重複防止）。BUILD `2026-08-07-674-shared-jbis-warn-note`。 |
+| 2026-08-07 | v2.1 追記 | **§4.2.3a / §4.3.1 浜田 GO**: SKYSEA フォーム UI は **admin かつ種別=個人のみ**表示。個人 PC 名重複は **全く同一 `pc_name` のみハードブロック**（JBIS コアのみ同じ＝月違いは可・室長確認ソフト警告廃止）。BUILD `2026-08-07-674-skysea-personal-exact-pcname`。 |
 
 ---
 
