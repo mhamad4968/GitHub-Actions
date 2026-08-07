@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-index-all-status-id-desc-jbis-collision';
+  const BUILD = '2026-08-07-674-shared-jbis-warn-note';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -138,6 +138,9 @@
   const FC_MANUFACTURING_NO = 'manufacturing_no';
   const FC_MODEL_NAME = 'model_name';
   const FC_NOTE = 'note';
+  /** 非個人×個人JBIS形式 PC 名保存時に備考へ追記する運用マーカー（重複防止・§4.3.1 浜田 GO 2026-08-07） */
+  const NOTE_SHARED_JBIS_OPS_MARKER_674 =
+    '[運用] 共有等だがPC名が個人JBIS形式（現場ラベル維持・採番は衝突回避）';
   /** 部署レビュー（2026-05-11）: 転用フロー A — チェック後にヘッダから「元PC廃棄」を確定（`npm run pc-ledger:674:add-transfer-manual-preview`） */
   const FC_NPL_TRANSFER_MANUAL = 'npl_transfer_manual';
   const FC_NPL_TRANSFER_MANUAL_OPT = '転用';
@@ -2166,6 +2169,41 @@
     if (!m) return null;
     const n = Number(m[1]);
     return Number.isFinite(n) && n > 0 && n <= Number.MAX_SAFE_INTEGER ? Math.floor(n) : null;
+  }
+
+  /** 個人 JBIS 形式（S-JBIS は除外）。個人→共有等で現場ラベル維持の判定用 */
+  function isPersonalStyleJbisPcName674(pcName) {
+    const s = String(pcName || '').trim();
+    if (/^S-JBIS/i.test(s)) return false;
+    if (extractJbisFourDigitFromPcName674(s) != null) return true;
+    return /^JBIS(\d+)/i.test(s);
+  }
+
+  function normalize674NoteTextForCompare674(noteText) {
+    return String(noteText || '')
+      .normalize('NFKC')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function noteHasSharedJbisOpsMarker674(noteText) {
+    const norm = normalize674NoteTextForCompare674(noteText);
+    const markerNorm = normalize674NoteTextForCompare674(NOTE_SHARED_JBIS_OPS_MARKER_674);
+    return norm.indexOf(markerNorm) !== -1;
+  }
+
+  /** 備考に運用マーカー1行を追記（既存なら何もしない） */
+  function appendSharedJbisOpsNote674(record) {
+    if (!record) return;
+    if (!record[FC_NOTE]) {
+      record[FC_NOTE] = { type: 'MULTI_LINE_TEXT', value: '' };
+    }
+    const prev = String(record[FC_NOTE].value || '');
+    if (noteHasSharedJbisOpsMarker674(prev)) return;
+    const next = prev.trim()
+      ? prev.replace(/\s+$/, '') + '\n' + NOTE_SHARED_JBIS_OPS_MARKER_674
+      : NOTE_SHARED_JBIS_OPS_MARKER_674;
+    record[FC_NOTE].value = next;
   }
 
   /**
@@ -10324,6 +10362,23 @@ ${bodyInner}\
         event.error = errors.join(' ');
         resolve(event);
         return;
+      }
+
+      const pcNameSubmit674 = String(event.record[FC_PC_NAME]?.value || '').trim();
+      if (type !== TYPE_PERSONAL && isPersonalStyleJbisPcName674(pcNameSubmit674)) {
+        const okSharedJbis674 = window.confirm(
+          '種別が「個人」以外ですが、PC名が個人JBIS形式（JBIS…）のままです。\n\n' +
+            '個人から共有等へ転換する際、現場ラベルを維持することは運用上許容されています。\n' +
+            '個人JBISの次採番は全種別の pc_name 走査で衝突回避済みです。\n\n' +
+            '「OK」で保存すると、備考（note）に運用記録を1行追記します（既に同じ行があれば重複しません）。\n' +
+            '「キャンセル」で保存を中止します。',
+        );
+        if (!okSharedJbis674) {
+          event.error = '個人JBIS形式のPC名のまま保存するには確認が必要です。';
+          resolve(event);
+          return;
+        }
+        appendSharedJbisOpsNote674(event.record);
       }
 
       const vpnMsg = validateVpnFieldsNotManuallyChanged674(event);
