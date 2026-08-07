@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-07 20:01 JST — 正式締め: 仕様差分確定・topic-index追記・Desktop同期済・clock:clear・close-git。
 **次の1手**: 依頼効率化 Step0済 → v0.2（ログ/Skill）は実装GO後。完了通知は最後。MCP月次は①の後。SKYSEA配信しない（xlsx依頼時のみ）。
-**Git**: **`994a7f1d`** = `origin/main` — push 済
+**Git**: **`922736bb`** = `origin/main` — push 済
 **closeStatus**: closing
 **本日状態（要約）**:
 - Index OPEN default: 利用中 + $id desc
