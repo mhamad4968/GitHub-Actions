@@ -9,6 +9,7 @@ import { buildRoutePlan, loadToolRoutingManifest } from './cio-tool-routing.mjs'
 
 export const TEMPLATES_REL = 'data/cio-request-compose-templates.json';
 export const CEO_BASELINE_REL = 'chat-sessions/CEO-MINIMUM-ABSOLUTE-BASELINE.txt';
+export const COMPOSE_LOG_DIR_REL = 'chat-sessions/request-compose-logs';
 
 /** @param {string} root */
 export function loadRequestComposeTemplates(root) {
@@ -163,4 +164,35 @@ export function buildComposeBlock(root, opts) {
 /** @param {object} templates */
 export function listLaneIds(templates) {
   return Object.keys(templates.lanes || {}).sort();
+}
+
+/**
+ * compose 実行ログ（監査・観測用 · 確認Aの記録。実装着手の証拠にはしない）
+ * @param {string} root
+ * @param {object} result buildComposeBlock の戻り
+ * @param {{ laneId: string, intent: string, app?: string|null, phase?: string, goWait?: string|null, noTouch?: string[] }} input
+ * @returns {string} repo-relative log path
+ */
+export function writeComposeLog(root, result, input = {}) {
+  const dir = path.join(root, COMPOSE_LOG_DIR_REL);
+  fs.mkdirSync(dir, { recursive: true });
+  const ts = new Date().toISOString().replace(/[:.]/g, '-');
+  const laneSafe = String(result.laneId || input.laneId || 'unknown').replace(/[^\w-]/g, '_');
+  const appPart = result.app || input.app ? `_app${String(result.app || input.app).replace(/[^\w-]/g, '')}` : '';
+  const filename = `${ts}_${laneSafe}${appPart}.json`;
+  const payload = {
+    timestamp: new Date().toISOString(),
+    schema: 'cio-request-compose-log/v1',
+    note: '確認A用ブロック生成の記録。このファイルの存在は実装GOではない。',
+    laneId: result.laneId,
+    phase: result.phase,
+    intent: String(input.intent || '').trim(),
+    app: input.app || null,
+    goWait: input.goWait || null,
+    noTouch: input.noTouch || [],
+    block: result.block,
+    lines: result.lines,
+  };
+  fs.writeFileSync(path.join(dir, filename), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return path.join(COMPOSE_LOG_DIR_REL, filename).replace(/\\/g, '/');
 }

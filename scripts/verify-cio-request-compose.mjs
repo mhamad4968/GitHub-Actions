@@ -7,9 +7,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   buildComposeBlock,
+  COMPOSE_LOG_DIR_REL,
   loadRequestComposeTemplates,
   TEMPLATES_REL,
   validateRequestComposeTemplates,
+  writeComposeLog,
 } from './lib/cio-request-compose.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -22,6 +24,8 @@ const required = [
   'docs/plans/2026-07-11-request-efficiency-tool-spec.md',
   'docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md',
   'chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt',
+  'chat-sessions/request-compose-logs/.gitkeep',
+  '.cursor/skills/cio-request-compose/SKILL.md',
 ];
 
 const needles = [
@@ -31,15 +35,28 @@ const needles = [
   },
   {
     rel: 'docs/runbooks/cio-request-compose.md',
-    needles: ['浜田 OK', 'cio:request:compose', '【レーン】', '確認 A', 'G0', 'GO境界・3行'],
+    needles: [
+      '浜田 OK',
+      'cio:request:compose',
+      '【レーン】',
+      '確認 A',
+      'G0',
+      'GO境界・3行',
+      'request-compose-logs',
+      'cio-request-compose/SKILL.md',
+    ],
   },
   {
     rel: 'chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt',
-    needles: ['GO境界・3行', 'GO 段階対応表', '--phase investigate'],
+    needles: ['GO境界・3行', 'GO 段階対応表', '--phase investigate', 'cio-request-compose'],
   },
   {
     rel: 'docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md',
     needles: ['確認A（compose OK）', 'G0（「調査から」）', 'G2（「実装GO」明示）'],
+  },
+  {
+    rel: '.cursor/skills/cio-request-compose/SKILL.md',
+    needles: ['確認A（compose OK）', 'cio:request:compose', '実装GO'],
   },
 ];
 
@@ -115,8 +132,33 @@ function main() {
     console.log('[verify:cio-request-compose] OK kintone requires --app');
   }
 
+  try {
+    const logRel = writeComposeLog(root, sample, {
+      laneId: 'kintone',
+      intent: 'verify smoke',
+      app: '736',
+    });
+    const logAbs = path.join(root, logRel);
+    if (!fs.existsSync(logAbs)) {
+      console.error('[verify:cio-request-compose] NG compose log not written');
+      bad = true;
+    } else {
+      const parsed = JSON.parse(fs.readFileSync(logAbs, 'utf8'));
+      if (parsed.schema !== 'cio-request-compose-log/v1' || !parsed.block) {
+        console.error('[verify:cio-request-compose] NG compose log schema');
+        bad = true;
+      } else {
+        console.log(`[verify:cio-request-compose] OK log → ${COMPOSE_LOG_DIR_REL}/`);
+      }
+      fs.unlinkSync(logAbs);
+    }
+  } catch (e) {
+    console.error('[verify:cio-request-compose] NG writeComposeLog', e.message);
+    bad = true;
+  }
+
   if (bad) process.exit(2);
-  console.log('[verify:cio-request-compose] ✅ OK（5レーン · 貼付ブロック生成）');
+  console.log('[verify:cio-request-compose] ✅ OK（5レーン · 貼付 · ログ · Skill）');
 }
 
 main();

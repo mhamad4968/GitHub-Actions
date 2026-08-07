@@ -47,6 +47,8 @@ npm run cio:request:compose -- --lane doc-lane --intent "経営会議 2026年7�
 npm run cio:request:compose -- --list
 ```
 
+ログは **既定ON**（`chat-sessions/request-compose-logs/`）。抑止は `--no-log`。確認Aの記録であり実装GOの証拠ではない。
+
 ---
 
 ## 5. 確認 A と GO 段階（必須 · #R-GO-BOUNDARY-01 · Step0）
@@ -75,7 +77,7 @@ G2（「実装GO」明示）＝当該スコープの実装・gate・deploy 可�
 
 ## 6. 確認 A の手順
 
-1. AI が **5行ブロック**をチャットに提示  
+1. AI が **6行ブロック**をチャットに提示  
 2. 浜田が **OK** または修正1行  
 3. **確認 A 完了** — ここではまだ本題に入らない（次は浜田の **調査指示** または **実装 GO** を待つ）
 
@@ -131,9 +133,11 @@ npm run cio:tool:route -- --app <APP>
 
 ---
 
-## 10. Desktop 早見
+## 10. Desktop 早見 · Skill
 
-`36-REQUEST-COMPOSE-INDEX.txt`（`session-starter:sync-desktop` で同期）
+- Desktop: `36-REQUEST-COMPOSE-INDEX.txt`（`session-starter:sync-desktop` で同期）
+- Cursor Skill: `.cursor/skills/cio-request-compose/SKILL.md`
+- ログ: `chat-sessions/request-compose-logs/`（gitignore · `.gitkeep` のみ追跡）
 
 ---
 

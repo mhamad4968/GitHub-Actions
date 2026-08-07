@@ -1,4 +1,4 @@
-【依頼効率化ツール — 早見】2026-08-08（v0.1 + Step0 GO境界 / #R-GO-BOUNDARY-01）
+【依頼効率化ツール — 早見】2026-08-08（v0.2 · Step0 GO境界 / #R-GO-BOUNDARY-01）
 
 **使い方（浜田）**: チャットで「依頼文を作って」+ やりたいことを自然文で。
 
@@ -11,10 +11,12 @@ G2（「実装GO」明示）＝当該スコープの実装・gate・deploy 可�
 
 正本ポインタ: docs/constitution/28-ceo-go-phases-charter.md（本文は非置換）
 計画: docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md
+Skill: .cursor/skills/cio-request-compose/SKILL.md
+ログ: chat-sessions/request-compose-logs/（確認A記録 · 実装GOではない）
 
 **AI の役割**:
   1. 足りない項目だけ聞き返し（レーン / 一行 / app / GO）
-  2. `npm run cio:request:compose` でブロック生成（先頭に【段階】）
+  2. `npm run cio:request:compose` でブロック生成（先頭に【段階】· 既定ログ）
   3. **ブロック提示 → 浜田 OK（確認A）**
   4. **確認Aの次は調査指示 or 実装GOを待つ**（勝手に実装しない）
 

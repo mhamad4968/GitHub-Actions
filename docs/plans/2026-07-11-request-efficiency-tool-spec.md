@@ -61,8 +61,11 @@
 npm run verify:cio-request-compose
 ```
 
-## 7. v0.2 候補（今回やらない）
+## 7. v0.2（2026-08-08）
 
-- CEO最低基準のレーン別デフォルト
-- compose ログ `chat-sessions/request-compose-logs/`
-- Cursor Skill 専用ファイル
+| ID | 内容 | 状態 |
+|----|------|------|
+| V2-1 | compose ログ `chat-sessions/request-compose-logs/`（既定ON · `--no-log` 抑止） | 実装 |
+| V2-2 | Cursor Skill `.cursor/skills/cio-request-compose/SKILL.md` | 実装 |
+| V2-3 | レーン別デフォルト（CEO最低基準） | 未 · 要否確認 |
+| V2-N | 完了通知 | **最後** |
