@@ -1,11 +1,11 @@
 {
-  "scoredAt": "2026-08-07T09:11:53.844Z",
+  "scoredAt": "2026-08-07T11:00:56.353Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
+  "topTask": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
   "tasks": [
     {
-      "id": "checkpoint:実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
-      "text": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
+      "id": "checkpoint:SKYSEA配信はしない。完了登録は_xlsx_依頼時のみ_AI_対応。新アプリ",
+      "text": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
       "source": "checkpoint",
       "difficulty": 2,
       "tokens": "中",

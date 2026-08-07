@@ -1,14 +1,17 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-07 19:41 JST — 674 SKYSEA exclude-4-depts rev292・Index OPEN default・JBIS warn+note・xlsx 147件完了・GitHub gates 全成功。
-**次の1手**: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。実配信・GPO・SG追加は凍結。
-**Git**: **`5a5bea19`** = `origin/main` — push 済
+**最終更新**: 2026-08-07 20:01 JST — 正式締め: 仕様差分確定・topic-index追記・Desktop同期済・clock:clear・close-git。
+**次の1手**: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。
+**Git**: 締め時点 HEAD を close-git が同期（push 要否は締め報告で明示）
+**closeStatus**: closing
 **本日状態（要約）**:
 - Index OPEN default: 利用中 + $id desc
 - Shared JBIS warn+note on save
 - SKYSEA xlsx mark 完了 147（date 2026-08-07 / handler 濱田）
 - SKYSEA UI: personal-only; exact pc_name hard-block; assist skip when field not editable
 - SKYSEA対応一覧: dept summary table + tbody fix + exclude 4 depts（システム推進室, 関越支店施工部, 東京支店橋りょうリペア部, 東京支店施工部）
+- 夕反省GO実装済（schedule手動のみ・用語辞書・deploy-ready:674・eod:github・DOM tbody verify）
 - GitHub EOD: constitution-gates + kintone-customize-deploy 直近30 runs 全成功
+- SPEC changelog: AI完了登録のみ運用GO 追記
 ### 本日アクティブ（BUILD/rev — 2026-08-07）
 | App | BUILD | rev |
 |-----|-------|-----|

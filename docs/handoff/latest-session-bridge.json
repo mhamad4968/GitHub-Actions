@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-07T09:14:40.952Z",
-  "gitHead": "32fd6017",
+  "exportedAt": "2026-08-07T11:00:57.800Z",
+  "gitHead": "5bf6c4c1",
   "gitStatus": "## main...origin/main",
-  "nextTask": "実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。",
+  "nextTask": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=32fd6017 | 次=実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=5bf6c4c1 | 次=SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-08-07T11:00:59.662Z",
+  "crosscheckOk": true
 }
