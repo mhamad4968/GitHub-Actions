@@ -20,6 +20,7 @@ const required = [
   'scripts/lib/cio-request-compose.mjs',
   'docs/runbooks/cio-request-compose.md',
   'docs/plans/2026-07-11-request-efficiency-tool-spec.md',
+  'docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md',
   'chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt',
 ];
 
@@ -30,11 +31,15 @@ const needles = [
   },
   {
     rel: 'docs/runbooks/cio-request-compose.md',
-    needles: ['浜田 OK', 'cio:request:compose', '【レーン】', '確認 A', 'G0'],
+    needles: ['浜田 OK', 'cio:request:compose', '【レーン】', '確認 A', 'G0', 'GO境界・3行'],
   },
   {
     rel: 'chat-sessions/desktop-ai-emergency-read-pack/36-REQUEST-COMPOSE-INDEX.txt',
-    needles: ['GO 段階対応表', '--phase investigate'],
+    needles: ['GO境界・3行', 'GO 段階対応表', '--phase investigate'],
+  },
+  {
+    rel: 'docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md',
+    needles: ['確認A（compose OK）', 'G0（「調査から」）', 'G2（「実装GO」明示）'],
   },
 ];
 
@@ -68,11 +73,15 @@ function main() {
     intent: 'verify smoke',
     app: '736',
   });
-  for (const key of ['【レーン】', '【やりたいこと】', '【触らない】', '【GO待ち】', '【AIへ】']) {
+  for (const key of ['【段階】', '【レーン】', '【やりたいこと】', '【触らない】', '【GO待ち】', '【AIへ】']) {
     if (!sample.block.includes(key)) {
       console.error(`[verify:cio-request-compose] NG block missing ${key}`);
       bad = true;
     }
+  }
+  if (!sample.block.includes('確認A（このOK≠実装GO）')) {
+    console.error('[verify:cio-request-compose] NG block missing 確認A stage label');
+    bad = true;
   }
   if (!sample.block.includes('app 736')) {
     console.error('[verify:cio-request-compose] NG app not in block');

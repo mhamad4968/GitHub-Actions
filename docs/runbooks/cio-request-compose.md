@@ -49,9 +49,19 @@ npm run cio:request:compose -- --list
 
 ---
 
-## 5. 確認 A と GO 段階（必須 · #R-GO-BOUNDARY-01）
+## 5. 確認 A と GO 段階（必須 · #R-GO-BOUNDARY-01 · Step0）
 
-**確認 A ≠ 実装 GO ≠ 調査 GO**。正本: `docs/constitution/28-ceo-go-phases-charter.md`（依頼 compose 接続節）
+**確認 A ≠ 実装 GO ≠ 調査 GO**。正本ポインタ: `docs/constitution/28-ceo-go-phases-charter.md`（依頼 compose 接続節・**本文非置換**）。
+
+**GO境界・3行（依頼レーンで必ずこれ・Desktop 36 と同文）**:
+
+```
+確認A（compose OK）＝依頼文の確定のみ。コード変更・deploy・commit 禁止。
+G0（「調査から」）＝読取・報告・修正案のみ。実装・deploy・commit 禁止。
+G2（「実装GO」明示）＝当該スコープの実装・gate・deploy 可。確認Aや調査だけでは入らない。
+```
+
+計画: `docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md`
 
 | 段階 | 浜田 | AI |
 |------|------|-----|
@@ -59,7 +69,7 @@ npm run cio:request:compose -- --list
 | **G0 調査** | 「調査から」等 | 読取・報告・修正案提示。**コード変更・commit・deploy 禁止** |
 | **G2 実装** | 「実装GO」「修正して」等（明示） | 当該スコープの実装 · gate · deploy |
 
-調査依頼時は `--phase investigate` を付けてブロック生成（§4 参照）。
+調査依頼時は `--phase investigate` を付けてブロック生成（§4 参照）。貼付ブロック先頭の **`【段階】`** が確認Aであることを毎回明示する。
 
 ---
 
@@ -100,9 +110,10 @@ npm run cio:tool:route -- --app <APP>
 
 ---
 
-## 9. 出力例（実装 GO 後）
+## 9. 出力例（実装向けヒント生成時）
 
 ```
+【段階】確認A（このOK≠実装GO）· 生成phase=implement（実装GO後の手順ヒント）
 【レーン】kintone-customize · app 736
 【やりたいこと】PH1d 外注④〜⑦ブロック任意化の続き
 【触らない】688 / 677–679 / SKYSEA
@@ -113,6 +124,7 @@ npm run cio:tool:route -- --app <APP>
 **調査時の出力例**（`--phase investigate`）:
 
 ```
+【段階】確認A（このOK≠実装GO）· 生成phase=investigate（調査向けヒント）
 【GO待ち】浜田の実装GOまで customize 編集・commit・deploy 禁止
 【AIへ】調査のみ · 実装GO待ち — API/ログ読取・原因報告・修正案提示可
 ```

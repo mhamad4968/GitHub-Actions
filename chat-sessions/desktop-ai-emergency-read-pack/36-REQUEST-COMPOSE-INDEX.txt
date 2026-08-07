@@ -1,15 +1,25 @@
-【依頼効率化ツール v0.1 — 早見】2026-07-11（#R-GO-BOUNDARY-01 追補）
+【依頼効率化ツール — 早見】2026-08-08（v0.1 + Step0 GO境界 / #R-GO-BOUNDARY-01）
 
 **使い方（浜田）**: チャットで「依頼文を作って」+ やりたいことを自然文で。
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【GO境界・3行（必ずこれ）— Step0】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+確認A（compose OK）＝依頼文の確定のみ。コード変更・deploy・commit 禁止。
+G0（「調査から」）＝読取・報告・修正案のみ。実装・deploy・commit 禁止。
+G2（「実装GO」明示）＝当該スコープの実装・gate・deploy 可。確認Aや調査だけでは入らない。
+
+正本ポインタ: docs/constitution/28-ceo-go-phases-charter.md（本文は非置換）
+計画: docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md
+
 **AI の役割**:
   1. 足りない項目だけ聞き返し（レーン / 一行 / app / GO）
-  2. `npm run cio:request:compose` でブロック生成
-  3. **5行ブロックを提示 → 浜田 OK（確認A）**
-  4. **確認A ≠ 実装GO** — 次は浜田の調査指示 or 実装GOを待つ
+  2. `npm run cio:request:compose` でブロック生成（先頭に【段階】）
+  3. **ブロック提示 → 浜田 OK（確認A）**
+  4. **確認Aの次は調査指示 or 実装GOを待つ**（勝手に実装しない）
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【GO 段階対応表 — 忘れないこと（F0 教訓）】
+【GO 段階対応表】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | 浜田 | 段階 | AI がしてよい | 禁止 |
@@ -17,8 +27,6 @@
 | compose **OK** | 確認A | 依頼文確定 | コード変更 |
 | **「調査から」** | G0調査 | 読取・報告・修正案 | 実装・deploy・commit |
 | **「実装GO」**等 | G2実装 | コード変更・gate・deploy | スコープ外 |
-
-正本: docs/constitution/28-ceo-go-phases-charter.md（依頼 compose 接続節）
 
 **調査時の compose**:
   npm run cio:request:compose -- --lane kintone --intent "…" --app NNN --phase investigate
@@ -35,13 +43,14 @@
   ops          … bootstrap / handoff / 壁時計
   report       … 報告・棚卸し・合議
 
-**触らない（現行 checkpoint 優先）**: 688（許可範囲外）/ 677–679 / SKYSEA 7月 / 712 deploy / 736 ver.02（依頼者 Excel 受領前）
+**触らない（現行 checkpoint 優先）**: 688（許可範囲外）/ 677–679 / SKYSEA（実配信・GPO・SG）/ 712 deploy / 736（触らない）
 
 **688 customize 運用（#R-688-DEPLOY-01）**:
   実装GO後 · コード修正したら同一セッション内 cio:preflight:688 → deploy:688 必須
 
 **正本**: docs/runbooks/cio-request-compose.md
-**spec**: docs/plans/2026-07-11-request-efficiency-tool-spec.md
+**spec v0.1**: docs/plans/2026-07-11-request-efficiency-tool-spec.md
+**計画 v0.2**: docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md
 
 **例（AI が実行）**:
   npm run cio:request:compose -- --lane kintone --intent "736 PH1d" --app 736

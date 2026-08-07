@@ -128,8 +128,13 @@ export function buildComposeBlock(root, opts) {
     '—';
   const laneLine = opts.app ? `${lane.label} · app ${opts.app}` : lane.label;
   const aiHint = buildAiHintLine(root, templates, lane, opts.laneId, { ...opts, phase });
+  const stageLine =
+    phase === 'investigate'
+      ? '確認A（このOK≠実装GO）· 生成phase=investigate（調査向けヒント）'
+      : '確認A（このOK≠実装GO）· 生成phase=implement（実装GO後の手順ヒント）';
 
   const lines = [
+    `【段階】${stageLine}`,
     `【レーン】${laneLine}`,
     `【やりたいこと】${opts.intent.trim()}`,
     `【触らない】${noTouch.join(' / ')}`,
