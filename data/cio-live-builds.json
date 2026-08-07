@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-07-674-skysea-dept-summary",
-      "fileKey": "3881b3ce-0a17-4393-84a1-980fff526b68",
-      "revision": "289",
-      "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-07T10:24:12.873Z",
+      "build": "2026-08-07-674-skysea-summary-tbody-fix",
+      "fileKey": "223d1a68-f83f-4513-b7fe-e1f3496410d2",
+      "revision": "291",
+      "relPath": ".kintone-deploy/upload-674.js",
+      "deployedAt": "2026-08-07T10:31:09.138Z",
       "note": null
     },
     "677": {
