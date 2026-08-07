@@ -25,6 +25,15 @@ function main() {
     process.exit(1);
   }
 
+  const partC = spawnSync(process.execPath, ['scripts/verify-part-c-main-task-freshness.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  if (partC.status !== 0) {
+    console.error('\n[cio:briefing:recognition-gate] NG — Part C 主タスク鮮度（D-PARTC-01）を先に修復');
+    process.exit(1);
+  }
+
   const nextTask = readCheckpointNextTask(root) || '(未設定)';
   const { closures } = loadProjectClosures(root);
   const appsPath = path.join(root, 'kintone-apps.md');

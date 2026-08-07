@@ -235,6 +235,15 @@ if (fs.existsSync(cpPath)) {
 // NEW-SESSION-STARTER.md と Windows 版 .txt の該当ブロックを上書き更新する。
 function updateNewSessionStarter() {
   const summary = [];
+  // checkpoint 正本（次の1手・最終更新）— plan mtime より優先（陳腐化再発防止 2026-08-07）
+  const cpPath = path.join(REPO_ROOT, 'chat-sessions', 'checkpoint-latest.md');
+  if (fs.existsSync(cpPath)) {
+    const cp = fs.readFileSync(cpPath, 'utf8');
+    const next = cp.match(/\*\*次の1手\*\*:\s*(.+)/);
+    const updated = cp.match(/\*\*最終更新\*\*:\s*(.+)/);
+    if (next) summary.push(`- 次の1手: ${next[1].trim().slice(0, 160)}`);
+    if (updated) summary.push(`- checkpoint: ${updated[1].trim().slice(0, 120)}`);
+  }
   // 直近の plan
   const plansDir = path.join(REPO_ROOT, 'docs', 'plans');
   if (fs.existsSync(plansDir)) {

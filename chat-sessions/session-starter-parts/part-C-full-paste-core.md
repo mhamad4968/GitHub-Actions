@@ -72,11 +72,12 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-02）】
-- 本日レーン: **683 印刷報告**（`…-print-page2-break-v24` rev112）＋ **ナレッジWAKE M-RAG-04**（`cio:knowledge:wake-stamp`）
-- 正本: `docs/runbooks/user683-weekly-summary-and-print.md` · GO `docs/approved-changes/2026-08-02-evening-reflection-hamada-go.md`
-- LIVE 参考: App683 rev**112** / App756 rev**318**
-- 当日コミット (上位):
-  - feat(ops): knowledge-wake stamp injects active needles at session start
-  - docs(683): evening GO print MediaBox checklist and MCP mirror ops
-  - fix(683): split print page1/page2 CSS to avoid clip regression
+【今やってる主タスク（2026-08-06 反映・2026-08-07 WAKE）】
+- 本日レーン: **SKYSEA 凍結継続**（手動台帳運用可・旧4フィールド削除済）。**実配信・GPO・SGメンバ追加はしない**。新アプリは相談・GO後のみ。
+- checkpoint: `2026-08-06 20:45` — 674 `drop-legacy4` rev**282** / 719@14 / 721@15 / 683@112維持 / 756@318維持
+- 正本: `chat-sessions/checkpoint-latest.md` · closures=9 · `docs/runbooks/cio-ops-2026-08-06-evening-improvements.md`
+- 触らない: 688（WBGT以外）/ 677–679 / 712 deploy / 736 / SKYSEA 実配信・GPO・SG追加
+- 当日コミット (上位・WAKE 後に更新可):
+  - chore(handoff): sync bridge + WAKE artifacts after cold-start
+  - chore(handoff): sync bridge at close tip
+  - chore(checkpoint): sync Git line after heal

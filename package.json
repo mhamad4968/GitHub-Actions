@@ -773,6 +773,7 @@
     "cio:morning:ready": "node scripts/cio-morning-ready.mjs",
     "cio:project:close": "node scripts/cio-project-close.mjs",
     "verify:checkpoint-project-closure": "node scripts/verify-checkpoint-project-closure.mjs",
+    "verify:part-c-main-task-freshness": "node scripts/verify-part-c-main-task-freshness.mjs",
     "verify:spec-progress-sync": "node scripts/verify-spec-progress-sync.mjs",
     "verify:736-july-schedule": "node scripts/verify-736-july-schedule.mjs",
     "verify:c-tmp-registry": "node scripts/verify-c-tmp-registry.mjs",
