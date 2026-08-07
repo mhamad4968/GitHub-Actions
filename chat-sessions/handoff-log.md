@@ -7,6 +7,24 @@ AI は、セッション切替・終了・浜田さんが引き継ぎテンプ�
 
 ---
 
+### 2026-08-07 JST — **2026-08-07 夜 EOD（674 SKYSEA exclude-4-depts）**
+
+**要約**: 674 rev292 exclude-4-depts deploy。Index OPEN default・JBIS warn+note・SKYSEA xlsx 147件完了・対応一覧 dept summary。SKYSEA 手動台帳 active、remote deploy 凍結。GitHub gates 直近30 runs 全成功。
+
+**次の1手**: 実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。
+
+**Git**: `5a5bea19` — origin/main
+
+**BUILD**: 674 BUILD=`2026-08-07-674-skysea-exclude-4-depts` rev292 fileKey `15480b94-cee0-44ba-b0e0-f9c0b2acab78`
+
+**GO待ち**: なし
+
+**触らない**: 688/677-679/736/712・SKYSEA remote deploy
+
+**次セッションへの 1 行**: continue from checkpoint; 674 SKYSEA manual ops; no remote deploy.
+
+---
+
 ### 2026-04-26 19:25 JST
 
 **浜田メモ（原文 / 本セッション内訓示）**:
