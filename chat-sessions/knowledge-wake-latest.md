@@ -1,6 +1,6 @@
 # ナレッジWAKE（最新）
 
-> 自動生成: 2026-08-06T09:56:00.167Z · `npm run cio:knowledge:wake-stamp`
+> 自動生成: 2026-08-07T09:12:08.370Z · `npm run cio:knowledge:wake-stamp`
 > 正本 registry: `data/cio-active-knowledge-needles.json`
 
 **スタンプ**: ナレッジWAKE: 1件OK（683-print-mediabox · gitミラー優先 · Memory/RAG補助 · 免除しない）
