@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-07 19:41 JST — 674 SKYSEA exclude-4-depts rev292・Index OPEN default・JBIS warn+note・xlsx 147件完了・GitHub gates 全成功。
-**次の1手**: 実配信・GPO・SGメンバ追加はしない（凍結継続）。新アプリは相談・GO後のみ。
+**次の1手**: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。実配信・GPO・SG追加は凍結。
 **Git**: **`5a5bea19`** = `origin/main` — push 済
 **本日状態（要約）**:
 - Index OPEN default: 利用中 + $id desc
@@ -20,8 +20,9 @@
 **674 live fileKey**: `15480b94-cee0-44ba-b0e0-f9c0b2acab78`
 
 **継続メモ**:
-1. **SKYSEA**: 手動台帳 **active（運用可）**。remote deploy **凍結**。配信・GPO・SG追加禁止。
+1. **SKYSEA**: 手動台帳 **active**。配信レーン **なし**（schedule 2026-08-07 改訂）。AI定常＝**xlsx等の完了登録依頼時のみ**。GPO・SG追加禁止。
 2. **674**: rev292 exclude-4-depts。対応一覧 dept summary + tbody fix + 4 dept exclude 済。
+3. **夕反省GO（2026-08-07）**: S-UI-WHERE / S-DOM-SCOPE / 用語辞書 / `cio:deploy-ready:674` / `cio:eod:github` 反映済。
 3. **719/721**: closed-v1 微小 UI／印刷は明示依頼で再開可（O-CLOSED-01）。
 **GO待ち**: 新アプリ＝相談・GO後のみ。
 

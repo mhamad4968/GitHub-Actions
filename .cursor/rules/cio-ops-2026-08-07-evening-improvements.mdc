@@ -1,0 +1,38 @@
+---
+description: 2026-08-07 夕反省 GO — UI配置先・DOMスコープ・曖昧語・SKYSEA手動のみ
+alwaysApply: true
+---
+
+# 夕反省改善（2026-08-07 浜田全承認）
+
+正本メモ: `docs/runbooks/cio-ops-2026-08-07-evening-improvements.md`  
+用語: `docs/runbooks/674-term-dictionary.md`
+
+## S-UI-WHERE-01（配置先1行）
+
+UI・表・集計・一覧を作る前に **1行で配置先を確定**する。未決なら実装しない。
+
+- 例: `配置先=674 SKYSEA対応一覧パネル内` / `配置先=Canvas（台帳外）` / `配置先=C:\tmp Excel`
+- 「表を出せ」だけでは不足。kintone画面か別成果物かを聞く。
+
+## S-DOM-SCOPE-01（tbody 裸セレクタ禁止）
+
+同一パネル／同一 `document` 配下に **複数 table** がある（または追加する）とき:
+
+- `panel.querySelector('tbody')` / `querySelector('table')` の **裸指定禁止**
+- クラス付き（例: `.npl674-skysea-list-table tbody`）必須
+- Diff または自己レビューで「既存セレクタ衝突」を1行残す
+
+## S-ASSIST-EDITABLE-01
+
+入力支援・confirm は **編集可能なフィールドのみ**。詳細画面・disabled・readOnly では出さない。
+
+## 曖昧語ストップ
+
+「すべて」「登録」「表」「不要」は解釈候補を **2つ以上**出してから着手（浜田確認または自明な既定がある場合のみ省略可）。
+
+## SKYSEA（手動のみ）
+
+- 配信・GPO・SG追加は **しない**（凍結）。
+- AI 定常対応は **xlsx 等による 674 完了登録依頼時のみ**。
+- 正本: `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md` / `docs/runbooks/skysea-2026-schedule.md`
