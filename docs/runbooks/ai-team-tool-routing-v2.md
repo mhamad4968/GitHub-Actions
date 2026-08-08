@@ -32,6 +32,26 @@ npm run cio:tool:route -- --intent "736 deploy 文言修正" --app 736
 npm run cio:tool:route -- --intent "736 deploy" --app 736 --log
 ```
 
+### 2.1 実戦シナリオ3本（2026-08-08 MCP月次パック · ops / constitution / report）
+
+依頼 compose のレーンと揃えた **固定フレーズ**。handoff/checkpoint を ops に混ぜると `session-close` に吸われるので避ける。
+
+| レーン | 推奨 `--intent` | 期待 id |
+|--------|-----------------|---------|
+| **ops** | `壁時計 session-clock opsレーン` | `ops-session` |
+| **constitution** | `憲法 R20 4要素 compliance` | `compliance-constitution` |
+| **report** | `棚卸し 合議 報告レーン` | `report-lane` |
+
+```bash
+npm run cio:tool:route -- --intent "壁時計 session-clock opsレーン"
+npm run cio:tool:route -- --intent "憲法 R20 4要素 compliance"
+npm run cio:tool:route -- --intent "棚卸し 合議 報告レーン"
+# 依頼文作成は別 intent
+npm run cio:tool:route -- --intent "依頼文を作って composeブロック"
+```
+
+回帰: `data/cio-tool-routing-test-intents.json`（`verify:cio-tool-routing-infra`）
+
 **出力例**
 
 ```

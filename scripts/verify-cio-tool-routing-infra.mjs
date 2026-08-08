@@ -29,6 +29,10 @@ const needles = [
     needles: ['cio:tool:route', 'ai-team-tool-routing-v2'],
   },
   {
+    rel: 'docs/runbooks/ai-team-tool-routing-v2.md',
+    needles: ['実戦シナリオ3本', 'ops-session', 'report-lane'],
+  },
+  {
     rel: 'data/cio-handoff-template.json',
     needles: ['ai-team-tool-routing-v2.md'],
   },

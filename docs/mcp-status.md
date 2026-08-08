@@ -1,6 +1,21 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-07-15（現行ステータスバナー · mintlify DEL-1 + cyber-news DEL-2 正式クローズ）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-08-08（MCP月次パック · refresh-usage + gate 緑 · 死蔵0）
+
+### §監査スナップ（2026-08-08 JST — MCP月次パック）
+
+| ゲート | 結果 |
+|--------|------|
+| `mcp-status:refresh-usage` | OK（memory/kintone/kintone-dev 回数更新） |
+| `verify:cio-mcp-registry` | merged **26** · active=26 · 必須名 OK |
+| `cio:mcp:env` | **SUMMARY: OK 6/6** |
+| `cio:mcp:gate` | BASE_URL OK · Space **48** status 200 |
+| `verify:mcp-deleted-refs` | OK（cyber-news / mintlify 再追加なし） |
+| 死蔵（7日） | **稼動16 / 死蔵0 / 削除候補0 / exempt10** |
+
+**死蔵3択（2026-08-08）**: 削除候補なし → 全件 **残す**。Cold/exempt（a11y・cve・figma 等）は **Cold維持**。mcp.json 整理（Tier B）は **不要・見送り**。
+
+**計画**: `docs/plans/2026-08-08-mcp-monthly-pack.md`
 
 ### §現行ステータス（2026-07-15 · 履歴スナップは改変しない）
 
@@ -175,11 +190,11 @@
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
 | 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **3 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
-| 6 | memory | ✅ **active 化済** | **71 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
+| 6 | memory | ✅ **active 化済** | **86 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
 | 8 | sequential-thinking | ✅ active | **98 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
-| 9 | **kintone (公式)** | ✅ active | **196 回** | kintone API CRUD | 5/13 後（本番運用後）|
-| 10 | **kintone-dev (自作)** | ✅ active | **21 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
+| 9 | **kintone (公式)** | ✅ active | **204 回** | kintone API CRUD | 5/13 後（本番運用後）|
+| 10 | **kintone-dev (自作)** | ✅ active | **23 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
 | 11 | **kintone-space (自作)** | ✅ active | **5 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回（削除済） | （除去）Web 検索は **duckduckgo-search** | — |
 | 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **7 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |

@@ -1,8 +1,18 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-07 20:01 JST — 正式締め: 仕様差分確定・topic-index追記・Desktop同期済・clock:clear・close-git。
-**次の1手**: 依頼効率化 Step0済 → v0.2（ログ/Skill）は実装GO後。完了通知は最後。MCP月次は①の後。SKYSEA配信しない（xlsx依頼時のみ）。
-**Git**: **`b883b21a`** = `origin/main` — push 済
-**closeStatus**: closing
+**最終更新**: 2026-08-08 09:20 JST — 依頼効率化 v0.2 完了 · MCP月次パック Tier A 進行中。
+**次の1手**: MCP月次パック残り（eslint V1 同梱可）→ 夜=完了通知。憲法G0/B-MDFLOWは次枠。SKYSEA配信しない（xlsx依頼時のみ）。
+**Git**: 作業中（本セッションで push）
+**closeStatus**: open
+**8月提案レーン（空月）**:
+| # | 内容 | 状態 |
+|---|------|------|
+| ① | 依頼効率化 v0.2（Step0〜V2-3） | **済** |
+| ② | MCP月次パック | **本線** |
+| V2-N | 完了通知 | **今夜** |
+| ③ | 憲法形骸化点検（G0のみ） | 次枠 |
+| ④ | B-MDFLOW 薄い版（G0） | 次枠 |
+| — | 経営会議資料 | **8/13まで触らない** |
+
 **本日状態（要約）**:
 - Index OPEN default: 利用中 + $id desc
 - Shared JBIS warn+note on save
@@ -12,6 +22,7 @@
 - 夕反省GO実装済（schedule手動のみ・用語辞書・deploy-ready:674・eod:github・DOM tbody verify）
 - GitHub EOD: constitution-gates + kintone-customize-deploy 直近30 runs 全成功
 - SPEC changelog: AI完了登録のみ運用GO 追記
+- 2026-08-08: request-compose v0.2 + MCP月次パック Tier A
 ### 本日アクティブ（BUILD/rev — 2026-08-07）
 | App | BUILD | rev |
 |-----|-------|-----|

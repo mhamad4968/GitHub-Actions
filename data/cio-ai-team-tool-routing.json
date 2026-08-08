@@ -104,6 +104,43 @@
       "verify": ["verify:cio-request-compose"]
     },
     {
+      "id": "ops-session",
+      "category": "session",
+      "phase": ["WORK", "WAKE"],
+      "keywords": [
+        "壁時計",
+        "session-clock",
+        "SESSION-CLOCK",
+        "opsレーン",
+        "session:bootstrap"
+      ],
+      "priority": 11,
+      "mcp": [],
+      "npm": ["cio:session:bootstrap"],
+      "skill": ".cursor/skills/kintone-session-bootstrap/SKILL.md",
+      "runbook": "docs/runbooks/session-lifecycle-v2.md",
+      "secondReviewer": null,
+      "verify": ["verify:session-handoff-integrity"]
+    },
+    {
+      "id": "report-lane",
+      "category": "session",
+      "phase": ["WORK", "CLOSE"],
+      "keywords": [
+        "棚卸し",
+        "合議",
+        "報告レーン",
+        "chat-report-selfcheck",
+        "レビュー棚卸"
+      ],
+      "priority": 11,
+      "mcp": [],
+      "npm": ["cio:chat-report-selfcheck"],
+      "runbook": "docs/session-report-checklist.md",
+      "secondReviewer": null,
+      "verify": ["cio:chat-report-selfcheck"]
+    },
+    {
       "id": "governance-second-review",
       "category": "governance",
       "phase": ["WORK"],

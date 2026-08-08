@@ -1,0 +1,13 @@
+{
+  "id": "V1",
+  "category": "V",
+  "type": "run_command",
+  "package": "eslint",
+  "current_version": "10.6.0",
+  "target_version": "10.8.1",
+  "classification": "minor",
+  "command": "npm update eslint",
+  "manual_only": false,
+  "created_at": "2026-08-07T21:01:35.292Z",
+  "note": "eslint 10.6.0 → 10.8.1 (minor)"
+}
