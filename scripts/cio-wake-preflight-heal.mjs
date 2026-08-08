@@ -7,6 +7,7 @@
  * 1) tmp-close-report-*.md を削除（締め済残骸・文字化けゴミの再発防止）
  * 2) rag-mirror 不一致なら 1 回 Self-Heal + stage（quick-health と同趣旨）
  * 3) Part C「今やってる主タスク」を checkpoint に合わせて同期（D-PARTC-01）
+ * 4) phantom git dirty（hash=HEAD なのに M）と空白のみ .gitkeep を解消（B1 偽陽性）
  *
  * cold-start: Phase 5e（stamps 後・bootstrap 前）→ 続けて early wake-handoff-commit
  */
@@ -92,6 +93,52 @@ function healRagMirrorOnce() {
 }
 
 /**
+ * Windows 等で内容ハッシュが HEAD と同一なのに status=M になる phantom dirty を解消。
+ * また request-compose-logs/.gitkeep が空白のみなら空ファイルへ戻す（B1 偽陽性防止）。
+ */
+function healPhantomGitDirty() {
+  const st = git(['status', '--porcelain']);
+  if (!st.ok || !st.out) return 0;
+  let n = 0;
+  for (const line of st.out.split('\n')) {
+    const m = line.match(/^([ MADRCU?]{2})\s+(.+)$/);
+    if (!m) continue;
+    const code = m[1];
+    const rel = m[2].replace(/^"|"$/g, '').replace(/\\/g, '/');
+    if (!code.includes('M') && code.trim() !== 'M') continue;
+    if (code[0] === '?' || code[1] === '?') continue;
+
+    const abs = path.join(root, rel);
+    if (!fs.existsSync(abs)) continue;
+
+    // .gitkeep が空白のみ → 空に戻して phantom/ノイズを止める
+    if (/(^|\/)\.gitkeep$/.test(rel)) {
+      const raw = fs.readFileSync(abs);
+      if (raw.length > 0 && /^\s*$/.test(raw.toString('utf8'))) {
+        fs.writeFileSync(abs, '');
+        console.log(`[cio:wake:preflight-heal] .gitkeep 空白→空に復元 ${rel}`);
+        n += 1;
+      }
+    }
+
+    const work = git(['hash-object', '--', rel]);
+    const head = git(['rev-parse', `HEAD:${rel}`]);
+    if (!work.ok || !head.ok) continue;
+    if (work.out && head.out && work.out === head.out) {
+      const co = git(['checkout', '--', rel]);
+      if (co.ok) {
+        console.log(`[cio:wake:preflight-heal] phantom dirty 解消（hash一致） ${rel}`);
+        n += 1;
+      }
+    }
+  }
+  if (n === 0) {
+    console.log('[cio:wake:preflight-heal] phantom dirty なし');
+  }
+  return n;
+}
+
+/**
  * Part C 主タスクを checkpoint の「次の1手」「最終更新」に同期。
  * evening-reflect の代替ではない（夕反省ブロックは触らない）— WAKE 誤誘導だけ防ぐ。
  */
@@ -148,9 +195,10 @@ function main() {
   console.log('[cio:wake:preflight-heal] start (#S-WAKE-ORDER-01)');
   const purged = purgeTmpCloseReports();
   const ragHealed = healRagMirrorOnce();
+  const phantom = healPhantomGitDirty();
   const partSynced = syncPartCFromCheckpoint();
   console.log(
-    `[cio:wake:preflight-heal] OK purged=${purged} ragHealed=${ragHealed} partC=${partSynced}`,
+    `[cio:wake:preflight-heal] OK purged=${purged} ragHealed=${ragHealed} phantom=${phantom} partC=${partSynced}`,
   );
 }
 
