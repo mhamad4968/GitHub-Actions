@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 09:35 JST — 依頼効率化v0.2・MCP月次・DEL-3完了。昼メンテ中。
+**最終更新**: 2026-08-08 09:40 JST — 昼メンテ完了（pending掃除・score・monthly・G0境界追記）。
 **次の1手**: 夜セッションで完了通知配線を実施する。
-**Git**: **`4e26595b`** = `origin/main` — push 済（DEL-3）
+**Git**: **`dfacf7f7`** = `origin/main` — push 済
 **closeStatus**: open
 **8月提案レーン（空月）**:
 | # | 内容 | 状態 |
@@ -12,12 +12,10 @@
 | ③ | 憲法形骸化点検（G0） | **済** · 大統合は見送り |
 | ④ | B-MDFLOW 薄い版（G0） | **済** · フル実装は見送り |
 | — | 経営会議資料 | **8/13まで触らない** |
-
 **制約（workではない · score では constraint）**:
 - SKYSEA配信・GPO・SG **しない**（xlsx完了登録依頼時のみ）
 - 閉済9件 / 688 heat外 / 677–679 / 712 deploy / 736 **触らない**
 - 新アプリ＝相談・GO後のみ
-
 **本日状態（要約）**:
 - 2026-08-08: request-compose v0.2 · MCP月次 · DEL-3（shadcn/figma/colors/a11y）
 - Index OPEN default: 利用中 + $id desc
@@ -77,6 +75,7 @@
 
 
 
+
 ## 2026-08-06
 
 ### 2026-08-06 朝（午前締め）
@@ -84,6 +83,7 @@
 - SPEC §4.3.1 / runbook / kintone-apps 同期・push（`9b0ee359`）
 - 浜田目視: 個人 PC名 **JBIS0351** OK
 - close-git / clock:clear（本締め）
+
 
 
 
@@ -99,3 +99,4 @@
 
 
 <!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-07.md -->
+
