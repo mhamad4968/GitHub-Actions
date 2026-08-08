@@ -88,6 +88,7 @@
     "deploy:629": "node scripts/cio-deploy-preflight-guard.mjs 629 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 629 customize/shucccho-seisan/desktop.js",
     "cio:preflight:674": "node scripts/cio-preflight-stamp.mjs --app 674",
     "cio:deploy-ready:674": "node scripts/cio-deploy-ready-674.mjs",
+    "cio:674:inventory-hub-diag": "npx dotenv -e .env -e .env.proxy -- node scripts/cio-674-inventory-hub-diag.mjs",
     "cio:eod:github": "node scripts/cio-eod-github.mjs",
     "verify:dom-scope-tbody": "node scripts/verify-dom-scope-tbody.mjs",
     "pc-ledger:674:bundle-desktop": "node scripts/pc-ledger-674-bundle-desktop.mjs",

@@ -43,4 +43,15 @@ if (!fs.existsSync(stamp5038)) {
 }
 
 run(['run', 'cio:preflight:674', '--', '--note', note]);
+console.log('[cio:deploy-ready:674] inventory hub diag (O1・失敗しても止めない)');
+{
+  const r = spawnSync(
+    process.platform === 'win32' ? 'npm.cmd' : 'npm',
+    ['run', 'cio:674:inventory-hub-diag'],
+    { cwd: root, stdio: 'inherit', shell: false },
+  );
+  if (r.status !== 0) {
+    console.warn('[cio:deploy-ready:674] inventory-hub-diag exit', r.status, '— 続行可');
+  }
+}
 console.log('[cio:deploy-ready:674] OK — 続けて npm run deploy:674');

@@ -1,0 +1,55 @@
+---
+description: 2026-08-08 夕反省 GO — 集計DoD・Event直渡し禁止・期間二系統・§50-3-8定型
+alwaysApply: false
+globs:
+  - customize/new-pc-ledger-v1/**
+  - customize/**/*.js
+  - docs/runbooks/cio-ops-2026-08-08-evening-improvements.md
+  - docs/runbooks/674-term-dictionary.md
+  - docs/plans/2026-08-08-evening-improvements-spec.md
+  - docs/approved-changes/2026-08-08-evening-reflection-hamada-go.md
+  - scripts/cio-674-inventory-hub-diag.mjs
+  - chat-sessions/checkpoint-latest.md
+---
+
+# 夕反省改善（2026-08-08 浜田全承認）
+
+正本: `docs/runbooks/cio-ops-2026-08-08-evening-improvements.md`
+
+## R1 — Event を業務フィルタにしない
+
+- `addEventListener('click', openXxx)` 直渡し禁止（`openXxx` が第1引数を業務オプションとして読む場合）
+- 必ず `function () { openXxx(null); }` または明示引数
+- 関数先頭で `instanceof Event` なら無視するガードを推奨
+
+## R2 — 集計マスタ外
+
+- deploy 前に未一致件数を確認（`npm run cio:674:inventory-hub-diag`）
+- マスタ外が残るなら **集計表に出さない／「集計外 N件」注記**のいずれか必須
+
+## T1 — 実装前チェック（集計・表）
+
+1. 列定義 1行
+2. マスタ行（並び）固定
+3. live サンプル突合（件数）
+
+未完了なら Diff しない。
+
+## T2 / M2 — §50-3-8 定型追記
+
+一覧・アコーディオン・フィルタ実装の着手前 DeepSeek 短問に、次を含める:
+
+- click／Event 直渡しで業務引数になっていないか
+- 期間キー（670）と年次（5/1〜翌4/30）の二重表示・二重判定のずれはないか
+
+## T3 — 破壊的フロー
+
+買替・廃棄・一括更新は、浜田検収前に代表1パス実施内容を1行残す。
+
+## O2 — 期間ラベル
+
+棚卸状況一覧メタに **キャンペーン（670）** と **年次参考（5/1〜翌4/30）** を併記。統合は別GO（O3見送り）。
+
+## C1 / M1
+
+憲法大改訂・新MCPサーバー作成はしない。

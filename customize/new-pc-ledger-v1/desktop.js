@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-08-674-harden-env-map-click';
+  const BUILD = '2026-08-08-674-inv-period-dual-label';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2373,21 +2373,29 @@
     return out;
   }
 
+  function formatFiscalInventoryPeriodLabel674() {
+    const bounds = computeInventoryPeriodBounds674(null);
+    return bounds.start + ' 〜 ' + bounds.end;
+  }
+
   function renderInventoryHubSummaryTable674(hostEl, rows, periodLabel) {
     if (!hostEl) return;
     hostEl.innerHTML = '';
     const meta = document.createElement('div');
-    meta.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:6px;';
+    meta.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:6px;line-height:1.45;';
     let skippedBlank = 0;
     (rows || []).forEach(function (r) {
       if (r && r.kind === 'grand' && r.skippedBlankAffiliation) {
         skippedBlank = Number(r.skippedBlankAffiliation) || 0;
       }
     });
+    const fiscalLabel = formatFiscalInventoryPeriodLabel674();
     meta.textContent =
-      '期間: ' +
+      '済／未了の集計期間（670キャンペーン）: ' +
       (periodLabel || '—') +
-      ' ／ 棚卸済＝今期内 latest_inventory_date あり（747集計表イメージ・グループ小計あり）' +
+      ' ／ 年次参考（5/1〜翌4/30）: ' +
+      fiscalLabel +
+      ' ／ 棚卸済＝集計期間内に latest_inventory_date あり（747集計表・グループ小計）' +
       (skippedBlank > 0
         ? ' ／ 所属未設定 ' + skippedBlank + '件は集計外'
         : '');

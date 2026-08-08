@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-08-674-harden-env-map-click",
-      "fileKey": "6a73253c-b6b2-42c2-9130-0f0803323f63",
-      "revision": "306",
+      "build": "2026-08-08-674-inv-period-dual-label",
+      "fileKey": "71bd5bb4-3608-4f0e-9d1f-f7fad6ca2c60",
+      "revision": "307",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-08T11:54:07.916Z",
+      "deployedAt": "2026-08-08T12:00:53.867Z",
       "note": null
     },
     "677": {
