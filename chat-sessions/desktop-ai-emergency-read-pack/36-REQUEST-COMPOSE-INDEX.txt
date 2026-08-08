@@ -61,3 +61,5 @@ Skill: .cursor/skills/cio-request-compose/SKILL.md
   npm run cio:request:compose -- --lane kintone --intent "736 PH1d" --app 736
   npm run cio:request:compose -- --lane kintone --intent "688 WBGT調査" --app 688 --phase investigate
   npm run cio:request:compose -- --lane report --intent "締め報告" --with-ceo-baseline
+
+**薄い統合の入口**: Desktop **37**-SPEC-IMPL-VERIFY-MAP（仕様 md / 実装 code / 検証 verify · ポインタのみ）

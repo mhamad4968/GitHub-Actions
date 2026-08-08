@@ -1,5 +1,5 @@
 /**
- * Desktop「AI緊急用」で期待する番号付きファイル名の集合（00〜36・歯抜けなし）。
+ * Desktop「AI緊急用」で期待する番号付きファイル名の集合（00〜37・歯抜けなし）。
  * @see scripts/sync-session-starter-to-desktop.mjs
  * @see scripts/verify-desktop-ai-emergency-sync.mjs
  */
@@ -138,7 +138,7 @@ export function pruneUnexpectedNumberedDesktopFiles(destDir, expected) {
 }
 
 /**
- * Explorer 名前順で 00〜36 が揃っているか（19 / 26 は md または SLOT）。
+ * Explorer 名前順で 00〜37 が揃っているか（19 / 26 は md または SLOT）。
  * @param {Set<string>} expected
  * @returns {{ ok: boolean, missing: number[] }}
  */

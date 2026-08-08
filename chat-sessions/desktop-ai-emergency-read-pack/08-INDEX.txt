@@ -1,4 +1,4 @@
-【読取順インデックス】CIO 準備済み（2026-07-11・**スターター 00〜07**／**read-pack 08〜20・26・27・28・31〜33・36**／**儀式 21〜23**（リポ別正本）／**鏡 24〜25**（AI同期）／**LITE 34〜35**（浜田メモ帳）／**26**（夕反省 md または SLOT）／ファイル名＝読取順・**1番号1ファイル**）
+【読取順インデックス】CIO 準備済み（2026-07-11・**スターター 00〜07**／**read-pack 08〜20・26・27・28・31〜33・36・37**／**儀式 21〜23**（リポ別正本）／**鏡 24〜25**（AI同期）／**LITE 34〜35**（浜田メモ帳）／**26**（夕反省 md または SLOT）／ファイル名＝読取順・**1番号1ファイル**）
 
 **Desktop「AI緊急用」**では Explorer の **名前順＝推奨読取順**（先頭 2 桁＋ハイフン）。**read-pack（08〜20・27〜29）**の正本は **`chat-sessions/desktop-ai-emergency-read-pack/`**。**21〜23** は同フォルダ名で Desktop に置くが、編集正本は **`chat-sessions/`** 側（`SESSION-BOOTSTRAP`・`HANDOFF-HUMAN`・`AI緊急用-README`）。**憲法・ルールの細分化でファイルが増えたとき**は **リポと本索引を先に更新**し、**同一ターンで** `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`（歯抜け番号は **詰めてから** sync。中間名は prune 対象）。
 
@@ -54,6 +54,8 @@
 33-META-28-ceo-go-phases-charter.txt … **CEO GO G0–G3**（憲法・ルール変更前 · 正本 `docs/constitution/28-…md`）
 
 36-REQUEST-COMPOSE-INDEX.txt … **依頼効率化ツール早見**（チャット式 · 確認 A · 正本 `docs/runbooks/cio-request-compose.md`）
+
+37-SPEC-IMPL-VERIFY-MAP.txt … **薄い統合早見**（仕様=md / 実装=code / 検証=verify · ポインタのみ · 大統合ではない）
 
 **ルール索引メンテ（2026-05-31）**: `npm run constitution:sync-genre-desktop-map` → `npm run constitution:sync-meta-charters-desktop` → `npm run rules:sync-index-all` → `npm run rules:regenerate-constitution` → `npm run verify:constitution-genre-kernels` → `npm run verify:constitution-mdc-freshness` → `npm run verify:cio-four-ai-governance`
 

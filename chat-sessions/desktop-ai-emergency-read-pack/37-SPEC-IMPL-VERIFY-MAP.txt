@@ -1,0 +1,36 @@
+【薄い統合・早見】2026-08-08（仕様 md / 実装 code / 検証 verify）
+
+地位: **ポインタのみ** · AGENTS・constitution 本文は非置換 · 条文の転記禁止
+目的: 「どこを見るか」を1枚に結ぶ（大統合・全文マージではない）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【3層 — 迷ったらこれだけ】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+仕様 = **md** … docs/constitution/* · docs/runbooks/* · Desktop META（31–33）
+実装 = **code** … scripts/* · .cursor/skills/* · customize/*
+検証 = **verify** … npm run verify:* · cio:guard:* · smoke:quiet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【憲法の入口 — 詳細は各控えへ（転記しない）】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+E1 毎ターン … Desktop **32**-META-27（3入口・mandatory_reads）
+E2 タスク着手 … Desktop **28**-GENRE-MAP → ジャンル 1〜2 本
+E3 セッション … WAKE pack / cio:session:cold-start · close-git
+GO 段階 G0–G3 … Desktop **33**-META-28
+依頼レーン GO3行 … Desktop **36**-REQUEST-COMPOSE-INDEX（確認A≠G0≠実装GO）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【2026-08-08 までに薄い固定したもの】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+依頼効率化 v0.2 … 36 + docs/runbooks/cio-request-compose.md + Skill
+MCP 月次 / DEL-3 … docs/mcp-status.md · verify:mcp-deleted-refs（再追加禁止4件）
+憲法健全性 G0 … docs/plans/2026-08-08-constitution-health-g0.md（大統合はしない）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【検証ワンショット（この薄い統合の後）】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+npm run session-starter:sync-desktop
+npm run verify:desktop-ai-emergency-sync
+npm run verify:constitution-evening
+
+触らない: AGENTS 全文改定 · H9 early GREEN · 閉鎖 v1 再オープン · SKYSEA 実配信

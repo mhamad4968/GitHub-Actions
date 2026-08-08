@@ -316,12 +316,12 @@ function main() {
   const numbering = verifyDesktopNumberingContinuity(expected);
   if (!numbering.ok) {
     console.warn(
-      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜36（欠番: ${numbering.missing.join(', ')}）\n` +
+      `[verify-desktop-ai-emergency-sync] NG: 番号歯抜け 00〜37（欠番: ${numbering.missing.join(', ')}）\n` +
         '  先に: read-pack / sync を整備して session-starter:sync-desktop'
     );
     bad = true;
   } else {
-    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜36 連続（19=一報またはSLOT、26=夕反省、28=ジャンル早見、31–33=METAチャーター、34–35=LITE、36=依頼compose）');
+    console.log('[verify-desktop-ai-emergency-sync] OK 番号 00〜37 連続（19=一報またはSLOT、26=夕反省、28=ジャンル早見、31–33=METAチャーター、34–35=LITE、36=依頼compose、37=薄い統合）');
   }
 
   if (bad) {

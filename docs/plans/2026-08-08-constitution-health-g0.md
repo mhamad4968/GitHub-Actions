@@ -45,10 +45,17 @@
 | AGENTS / constitution 全文統合 | **しない**（退行・観測破壊リスク） |
 | Desktop META ポインタ維持 | **既に十分** |
 | GO3行（依頼レーン） | **①で済** |
-| G1 起票（統合の範囲定義だけ） | **任意・別日** — 対象ファイル一覧と「触らない」を1枚にする程度 |
+| **薄い統合**（仕様/実装/検証の1枚） | **済** — Desktop `37-SPEC-IMPL-VERIFY-MAP.txt`（ポインタのみ） |
+| G1 起票（大統合の範囲定義） | **任意・別日** — 対象ファイル一覧と「触らない」を1枚にする程度 |
 
 **やれるところ（本追記）**: 統合の前提条件を固定するだけ。
 
 1. 正本は `docs/constitution/*` + Desktop META · AGENTS は索引  
 2. 統合しても **H9 early GREEN 禁止**・**alwaysApply 2件**は不変  
 3. 着手条件 = 浜田の明示GO + 観測期間の扱い合意
+
+## 7. 薄い統合（実装メモ · 2026-08-08）
+
+- **何をしたか**: Desktop 37 = 仕様 md / 実装 code / 検証 verify の結線 + E1–E3・36 へのポインタ
+- **何をしなかったか**: AGENTS 改定 · constitution 全文マージ · 08-INDEX の日次書き換え
+- **機械**: `META_CHARTER_DESKTOP_MAX_PREFIX` 36→37 · `verify:desktop-ai-emergency-sync` 連番更新

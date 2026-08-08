@@ -23,4 +23,5 @@ export const META_CHARTER_DESKTOP_SYNC = [
   },
 ];
 
-export const META_CHARTER_DESKTOP_MAX_PREFIX = 36;
+/** Desktop 連番上限（薄い統合早見 37 を含む · 歯抜け検査に使用） */
+export const META_CHARTER_DESKTOP_MAX_PREFIX = 37;

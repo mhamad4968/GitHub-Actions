@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 09:40 JST — 昼メンテ完了（pending掃除・score・monthly・G0境界追記）。
+**最終更新**: 2026-08-08 09:45 JST — 薄い統合（Desktop 37）+ 今日の総確認・是正。
 **次の1手**: 夜セッションで完了通知配線を実施する。
-**Git**: **`dfacf7f7`** = `origin/main` — push 済
+**Git**: （薄い統合 commit 後に同期）
 **closeStatus**: open
 **8月提案レーン（空月）**:
 | # | 内容 | 状態 |
@@ -9,7 +9,7 @@
 | ① | 依頼効率化 v0.2（Step0〜V2-3） | **済** |
 | ② | MCP月次パック + DEL-3 | **済** |
 | V2-N | 完了通知 | **今夜** |
-| ③ | 憲法形骸化点検（G0） | **済** · 大統合は見送り |
+| ③ | 憲法形骸化点検（G0）+ **薄い統合** | **済** · Desktop `37` · 大統合は見送り |
 | ④ | B-MDFLOW 薄い版（G0） | **済** · フル実装は見送り |
 | — | 経営会議資料 | **8/13まで触らない** |
 **制約（workではない · score では constraint）**:
@@ -17,7 +17,7 @@
 - 閉済9件 / 688 heat外 / 677–679 / 712 deploy / 736 **触らない**
 - 新アプリ＝相談・GO後のみ
 **本日状態（要約）**:
-- 2026-08-08: request-compose v0.2 · MCP月次 · DEL-3（shadcn/figma/colors/a11y）
+- 2026-08-08: request-compose v0.2 · MCP月次 · DEL-3 · **薄い統合 Desktop37** · score constraint 反映
 - Index OPEN default: 利用中 + $id desc
 - Shared JBIS warn+note on save
 - SKYSEA xlsx mark 完了 147（date 2026-08-07 / handler 濱田）
