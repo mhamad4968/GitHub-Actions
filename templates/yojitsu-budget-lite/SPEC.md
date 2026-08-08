@@ -464,7 +464,7 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
-| 1 | 明日=756 再確認・微調整。lab次=7/27確認パック送付。 | 2/5 | 中 | 5/5 | 0 |
+| 1 | 夜セッションで完了通知配線を実施する。 | 2/5 | 中 | 5/5 | 0 |
 | 2 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->
