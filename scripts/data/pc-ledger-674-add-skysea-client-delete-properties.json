@@ -1,0 +1,26 @@
+{
+  "properties": {
+    "skysea_client_delete_status": {
+      "type": "DROP_DOWN",
+      "code": "skysea_client_delete_status",
+      "label": "SKYSEAクライアント削除",
+      "noLabel": false,
+      "required": false,
+      "options": {
+        "未了": { "label": "未了", "index": "0" },
+        "完了": { "label": "完了", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "skysea_client_delete_date": {
+      "type": "DATE",
+      "code": "skysea_client_delete_date",
+      "label": "SKYSEAクライアント削除日",
+      "noLabel": false,
+      "required": false,
+      "unique": false,
+      "defaultValue": "",
+      "defaultNowValue": false
+    }
+  }
+}

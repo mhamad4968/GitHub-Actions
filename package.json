@@ -615,6 +615,7 @@
     "pc-ledger:674:delete-legacy594-fields:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-delete-legacy594-fields-preview.mjs --dry-run",
     "pc-ledger:674:delete-legacy594-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-delete-legacy594-fields-preview.mjs",
     "pc-ledger:674:add-skysea-group-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-add-skysea-group-preview.mjs",
+    "pc-ledger:674:add-skysea-client-delete-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-add-skysea-client-delete-preview.mjs",
     "pc-ledger:674:add-transfer-manual-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-add-transfer-manual-preview.mjs",
     "pc-ledger:674:add-pc-status-cancel-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-add-pc-status-cancel-preview.mjs",
     "pc-ledger:674:add-inventory-history-subtable-preview": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-add-inventory-history-subtable-preview.mjs",

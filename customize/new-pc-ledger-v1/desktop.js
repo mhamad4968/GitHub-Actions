@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-07-674-skysea-exclude-4-depts';
+  const BUILD = '2026-08-08-674-replace-inventory-skysea-delete-ux';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -121,13 +121,36 @@
   const FC_SKYSEA_MANUAL_DONE = 'skysea_manual_done';
   const FC_SKYSEA_MANUAL_DATE = 'skysea_manual_date';
   const FC_SKYSEA_MANUAL_HANDLER = 'skysea_manual_handler';
+  const FC_SKYSEA_CLIENT_DELETE_STATUS = 'skysea_client_delete_status';
+  const FC_SKYSEA_CLIENT_DELETE_DATE = 'skysea_client_delete_date';
   const SKYSEA_MANUAL_DONE_COMPLETE = '完了';
   const SKYSEA_MANUAL_DONE_PENDING = '未了';
+  const SKYSEA_CLIENT_DELETE_PENDING = '未了';
+  const SKYSEA_CLIENT_DELETE_DONE = '完了';
   const SKYSEA_CHILD_CODES = [
     FC_SKYSEA_MANUAL_DONE,
     FC_SKYSEA_MANUAL_DATE,
     FC_SKYSEA_MANUAL_HANDLER,
+    FC_SKYSEA_CLIENT_DELETE_STATUS,
+    FC_SKYSEA_CLIENT_DELETE_DATE,
   ];
+  /** 674 棚卸状況一覧の拠点行（JREクラウド745と同粒度） */
+  const INVENTORY674_HUBS = [
+    '本社',
+    '東京支店',
+    '東北支店',
+    '関越支店',
+    '湾岸工事所',
+    '仙台営業所',
+    '盛岡営業所',
+    '秋田営業所',
+    '新潟営業所',
+    '長野営業所',
+    '高崎営業所',
+    '千葉営業所',
+    '水戸営業所',
+  ];
+  const STORAGE_KEY_674_REPLACE_HW_OK = 'npl674-replace-hw-ok:';
 
   /** 全フィールドリセット対象（種別・PCステータス・作成日時JST・システム項目は除外） */
   const FC_EXTRA_INFO_1 = 'extra_info_1';
@@ -1055,7 +1078,87 @@
   }
 
   function inventoryPeriodStartYmd674(envMap) {
-    return parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_START]) || '') || '';
+    const bounds = computeInventoryPeriodBounds674(envMap);
+    return bounds.start || '';
+  }
+
+  function inventoryPeriodEndYmd674(envMap) {
+    const bounds = computeInventoryPeriodBounds674(envMap);
+    return bounds.end || '';
+  }
+
+  /** 670 期間キー優先。無ければ毎年5/1〜翌4/30 */
+  function computeInventoryPeriodBounds674(envMap) {
+    const envStart = parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_START]) || '');
+    const envEnd = parseYmd674((envMap && envMap[ENV_PC_INV_PERIOD_END]) || '');
+    if (envStart && envEnd) {
+      return { start: envStart, end: envEnd };
+    }
+    const today = todayYmd674();
+    const y = parseInt(today.substring(0, 4), 10);
+    const mo = parseInt(today.substring(5, 7), 10);
+    let startY;
+    let endY;
+    if (mo >= 5) {
+      startY = y;
+      endY = y + 1;
+    } else {
+      startY = y - 1;
+      endY = y;
+    }
+    return {
+      start: String(startY) + '-05-01',
+      end: String(endY) + '-04-30',
+    };
+  }
+
+  function isInventoryTargetPcStatus674(record) {
+    const st = String((record && record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
+    return st === PC_STATUS_IN_USE_674 || st === PC_STATUS_STORAGE;
+  }
+
+  function isInventoryTargetAccountType674(record) {
+    const t = String((record && record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+    return t === TYPE_PERSONAL || t === TYPE_SHARED || t === TYPE_JR;
+  }
+
+  function isInventoryTargetRecord674(record) {
+    return isInventoryTargetPcStatus674(record) && isInventoryTargetAccountType674(record);
+  }
+
+  function resolveInventoryHub674(deptName) {
+    const d = String(deptName || '').trim();
+    if (!d) return '（未分類）';
+    for (let i = 0; i < INVENTORY674_HUBS.length; i++) {
+      if (d === INVENTORY674_HUBS[i]) return INVENTORY674_HUBS[i];
+    }
+    const sorted = INVENTORY674_HUBS.slice().sort(function (a, b) {
+      return b.length - a.length;
+    });
+    for (let j = 0; j < sorted.length; j++) {
+      const hub = sorted[j];
+      if (d.indexOf(hub) === 0) return hub;
+    }
+    return '（未分類）';
+  }
+
+  function isInventoryDoneInPeriod674(record, periodStart, periodEnd) {
+    const latest = parseYmd674(
+      (record && record[FC_LATEST_INVENTORY_DATE] && record[FC_LATEST_INVENTORY_DATE].value) || '',
+    );
+    if (!latest || !periodStart || !periodEnd) return false;
+    return latest >= periodStart && latest <= periodEnd;
+  }
+
+  function markSkyseaClientDeletePending674(putRecord, accountType) {
+    const out = putRecord || {};
+    if (accountType !== TYPE_PERSONAL) return out;
+    const cur = String(
+      (out[FC_SKYSEA_CLIENT_DELETE_STATUS] && out[FC_SKYSEA_CLIENT_DELETE_STATUS].value) || '',
+    ).trim();
+    if (cur === SKYSEA_CLIENT_DELETE_DONE) return out;
+    out[FC_SKYSEA_CLIENT_DELETE_STATUS] = { value: SKYSEA_CLIENT_DELETE_PENDING };
+    return out;
   }
 
   function ensureInventoryPeriodLoaded674() {
@@ -1070,11 +1173,6 @@
         npl674InventoryPeriodActive674 = false;
         return false;
       });
-  }
-
-  function isInventoryTargetPcStatus674(record) {
-    const st = String((record && record[FC_PC_STATUS] && record[FC_PC_STATUS].value) || '').trim();
-    return st === PC_STATUS_IN_USE_674 || st === PC_STATUS_STORAGE;
   }
 
   function getLoginUserDisplayName674() {
@@ -1109,7 +1207,16 @@
   /** REST PUT 用: `{ type, value }` ではなく `{ value }` のみ（type 付きは CB_VA01 になり得る） */
   function inventoryHistPutField674(histField) {
     const rows = (histField && Array.isArray(histField.value) ? histField.value : []) || [];
-    return { value: rows };
+    const filtered = rows.filter(function (row) {
+      const v = (row && row.value) || {};
+      const date = parseYmd674(v[FC_INV_HIST_DATE] && v[FC_INV_HIST_DATE].value);
+      const person = String((v[FC_INV_HIST_PERSON] && v[FC_INV_HIST_PERSON].value) || '').trim();
+      const location = String((v[FC_INV_HIST_LOCATION] && v[FC_INV_HIST_LOCATION].value) || '').trim();
+      const method = String((v[FC_INV_HIST_METHOD] && v[FC_INV_HIST_METHOD].value) || '').trim();
+      if (!date && !person && !location && !method) return false;
+      return true;
+    });
+    return { value: filtered };
   }
 
   /**
@@ -1150,11 +1257,16 @@
   }
 
   function appendInventoryHistoryRow674(subField, dateYmd, person, location, method) {
+    const date = parseYmd674(dateYmd);
+    const per = String(person || '').trim();
+    if (!date || !per) {
+      throw new Error('棚卸日と棚卸者を入力してください。');
+    }
     const rows = cloneSubtableRows674(subField);
     rows.push({
       value: {
-        [FC_INV_HIST_DATE]: { value: dateYmd },
-        [FC_INV_HIST_PERSON]: { value: String(person || '').trim() },
+        [FC_INV_HIST_DATE]: { value: date },
+        [FC_INV_HIST_PERSON]: { value: per },
         [FC_INV_HIST_LOCATION]: { value: String(location || '').trim() },
         [FC_INV_HIST_METHOD]: { value: method },
       },
@@ -1227,9 +1339,27 @@
     );
   }
 
+  function buildInventoryTargetAccountTypeQueryPart674() {
+    return (
+      FC_ACCOUNT_TYPE +
+      ' in ("' +
+      escapeQueryValue(TYPE_PERSONAL) +
+      '", "' +
+      escapeQueryValue(TYPE_SHARED) +
+      '", "' +
+      escapeQueryValue(TYPE_JR) +
+      '")'
+    );
+  }
+
+  function buildInventoryTargetQueryPart674() {
+    return buildInventoryTargetStatusQueryPart674() + ' and ' + buildInventoryTargetAccountTypeQueryPart674();
+  }
+
   function buildUninventoriedQuery674(envMap) {
-    const start = inventoryPeriodStartYmd674(envMap || npl674InventoryEnvMap674);
-    const parts = [buildInventoryTargetStatusQueryPart674()];
+    const bounds = computeInventoryPeriodBounds674(envMap || npl674InventoryEnvMap674);
+    const start = bounds.start;
+    const parts = [buildInventoryTargetQueryPart674()];
     if (start) {
       parts.push(
         '(' +
@@ -1269,8 +1399,8 @@
       FC_SKYSEA_MANUAL_DONE,
     ];
     return fetchRecord674ById674(recordId, fields).then(function (rec) {
-      if (!isInventoryTargetPcStatus674(rec)) {
-        throw new Error('棚卸対象外です（利用中・保管のみ）。');
+      if (!isInventoryTargetRecord674(rec)) {
+        throw new Error('棚卸対象外です（利用中・保管かつ個人・共有・JR端末のみ）。');
       }
       const hist = rec[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
       let loc = String(location || '').trim();
@@ -1500,7 +1630,7 @@
     return new Promise(function (resolve, reject) {
       function page(off) {
         const order = ' order by ' + FC_DEPT_NAME + ' asc, ' + FC_PC_NAME + ' asc limit 500 offset ' + off;
-        const q = (String(queryCond || '').trim() || buildInventoryTargetStatusQueryPart674()) + order;
+        const q = (String(queryCond || '').trim() || buildInventoryTargetQueryPart674()) + order;
         kintone
           .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, fields: flds })
           .then(function (res) {
@@ -1600,7 +1730,7 @@
       for (let i = 0; i < fullRecs.length; i++) {
         const rec = fullRecs[i];
         const id = rec.$id && rec.$id.value;
-        if (!id || !isInventoryTargetPcStatus674(rec)) continue;
+        if (!id || !isInventoryTargetRecord674(rec)) continue;
         const sid = String(id);
         const resolved = resolveBulkRowFields674(sid, defPer, defLoc, defDate, overrides, rowUiById);
         const dateYmd = assertInventoryDateOk674(resolved.date || defDate);
@@ -1643,7 +1773,7 @@
       for (let j = 0; j < fullRecs.length; j++) {
         const rec = fullRecs[j];
         const id = rec.$id && rec.$id.value;
-        if (!id || !isInventoryTargetPcStatus674(rec)) continue;
+        if (!id || !isInventoryTargetRecord674(rec)) continue;
         const sid = String(id);
         const row = resolvedById[sid];
         if (!row) continue;
@@ -1668,7 +1798,7 @@
   }
 
   function fetchDistinctDeptNames674() {
-    return fetchInventoryRecordsPaged674(buildInventoryTargetStatusQueryPart674(), [FC_DEPT_NAME]).then(
+    return fetchInventoryRecordsPaged674(buildInventoryTargetQueryPart674(), [FC_DEPT_NAME]).then(
       function (recs) {
         const set = new Set();
         recs.forEach(function (r) {
@@ -1903,7 +2033,7 @@
       }
       btnLoad.disabled = true;
       const q =
-        buildInventoryTargetStatusQueryPart674() +
+        buildInventoryTargetQueryPart674() +
         ' and (' +
         FC_DEPT_NAME +
         ' = "' +
@@ -1991,7 +2121,144 @@
     renderTable();
   }
 
-  function renderUninventoriedPanel674(records) {
+  function aggregateInventoryHubSummary674(records, periodStart, periodEnd) {
+    const hubMap = Object.create(null);
+    INVENTORY674_HUBS.forEach(function (hub) {
+      hubMap[hub] = { hub: hub, total: 0, done: 0, pending: 0, rate: '—' };
+    });
+    hubMap['（未分類）'] = { hub: '（未分類）', total: 0, done: 0, pending: 0, rate: '—' };
+    (records || []).forEach(function (rec) {
+      if (!isInventoryTargetRecord674(rec)) return;
+      const dept = String((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '').trim();
+      const hub = resolveInventoryHub674(dept);
+      if (!hubMap[hub]) {
+        hubMap[hub] = { hub: hub, total: 0, done: 0, pending: 0, rate: '—' };
+      }
+      hubMap[hub].total++;
+      if (isInventoryDoneInPeriod674(rec, periodStart, periodEnd)) {
+        hubMap[hub].done++;
+      } else {
+        hubMap[hub].pending++;
+      }
+    });
+    const rows = [];
+    INVENTORY674_HUBS.forEach(function (hub) {
+      const row = hubMap[hub];
+      row.rate = row.total ? formatSkysea674SummaryRate674(row.done, row.total) : '—';
+      rows.push(row);
+    });
+    const uncat = hubMap['（未分類）'];
+    if (uncat.total > 0) {
+      uncat.rate = formatSkysea674SummaryRate674(uncat.done, uncat.total);
+      rows.push(uncat);
+    }
+    return rows;
+  }
+
+  function renderInventoryHubSummaryTable674(hostEl, rows, periodLabel) {
+    if (!hostEl) return;
+    hostEl.innerHTML = '';
+    const meta = document.createElement('div');
+    meta.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:6px;';
+    meta.textContent = '期間: ' + (periodLabel || '—') + ' ／ 完了＝今期内 latest_inventory_date あり';
+    hostEl.appendChild(meta);
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;';
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
+    const thead = document.createElement('thead');
+    thead.innerHTML =
+      '<tr style="background:#f1f5f9;">' +
+      '<th style="padding:6px 8px;text-align:left;">拠点</th>' +
+      '<th style="padding:6px 8px;text-align:right;">対象</th>' +
+      '<th style="padding:6px 8px;text-align:right;">完了</th>' +
+      '<th style="padding:6px 8px;text-align:right;">未了</th>' +
+      '<th style="padding:6px 8px;text-align:right;">完了率</th>' +
+      '</tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+    (rows || []).forEach(function (row) {
+      const tr = document.createElement('tr');
+      tr.style.borderTop = '1px solid #e2e8f0';
+      function mkTd(txt, align, extraStyle) {
+        const td = document.createElement('td');
+        td.style.cssText =
+          'padding:6px 8px;text-align:' + (align || 'left') + ';' + (extraStyle || '');
+        td.textContent = txt;
+        return td;
+      }
+      tr.appendChild(mkTd(row.hub, 'left', 'font-weight:600;'));
+      tr.appendChild(mkTd(String(row.total), 'right'));
+      tr.appendChild(mkTd(String(row.done), 'right', 'color:#0d9488;font-weight:700;'));
+      const tdPending = mkTd(String(row.pending), 'right', 'color:#b45309;font-weight:700;');
+      if (row.pending > 0) {
+        tdPending.style.cursor = 'pointer';
+        tdPending.style.textDecoration = 'underline';
+        tdPending.title = 'クリックで当該拠点の未棚卸一覧を開く';
+        tdPending.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          openUninventoriedList674(row.hub);
+        });
+      }
+      tr.appendChild(tdPending);
+      tr.appendChild(mkTd(row.rate, 'right', 'color:#1d4ed8;font-weight:700;'));
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    hostEl.appendChild(scroll);
+  }
+
+  function refreshInventoryHubSummaryAccordion674(accEl) {
+    if (!accEl) return;
+    const body = accEl.querySelector('.npl674-inv-hub-body');
+    if (!body) return;
+    body.textContent = '読み込み中…';
+    ensureInventoryPeriodLoaded674()
+      .then(function () {
+        const bounds = computeInventoryPeriodBounds674(npl674InventoryEnvMap674);
+        const periodLabel = bounds.start + ' 〜 ' + bounds.end;
+        const q = buildInventoryTargetQueryPart674();
+        const fields = ['$id', FC_DEPT_NAME, FC_ACCOUNT_TYPE, FC_PC_STATUS, FC_LATEST_INVENTORY_DATE];
+        return fetchInventoryRecordsPaged674(q, fields).then(function (recs) {
+          const rows = aggregateInventoryHubSummary674(recs, bounds.start, bounds.end);
+          renderInventoryHubSummaryTable674(body, rows, periodLabel);
+        });
+      })
+      .catch(function (e) {
+        body.textContent = '棚卸状況の取得に失敗: ' + (e && e.message ? e.message : String(e));
+      });
+  }
+
+  function ensureInventoryHubSummaryAccordion674(wrap) {
+    if (!wrap || document.getElementById('npl674-inv-hub-acc')) return;
+    const acc = document.createElement('details');
+    acc.id = 'npl674-inv-hub-acc';
+    acc.style.cssText = 'margin:0 0 8px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;';
+    const sum = document.createElement('summary');
+    sum.style.cssText = 'padding:8px 12px;font-size:13px;font-weight:700;color:#0f172a;cursor:pointer;';
+    sum.textContent = '棚卸状況一覧';
+    const body = document.createElement('div');
+    body.className = 'npl674-inv-hub-body';
+    body.style.cssText = 'padding:8px 12px 12px;border-top:1px solid #e2e8f0;';
+    body.textContent = '開くと拠点別の棚卸進捗を表示します。';
+    acc.appendChild(sum);
+    acc.appendChild(body);
+    acc.addEventListener('toggle', function () {
+      if (acc.open) refreshInventoryHubSummaryAccordion674(acc);
+    });
+    const summaryRow = document.getElementById('npl674-index-summary-row');
+    if (summaryRow && summaryRow.parentNode) {
+      summaryRow.parentNode.insertBefore(acc, summaryRow.nextSibling);
+    } else {
+      wrap.appendChild(acc);
+    }
+    ensureInventoryPeriodLoaded674().then(function (active) {
+      acc.style.display = active ? '' : 'none';
+    });
+  }
+
+  function renderUninventoriedPanel674(records, hubFilter) {
     const panelId = 'npl674-inventory-uninv-panel';
     const old = document.getElementById(panelId);
     if (old) old.remove();
@@ -2007,7 +2274,17 @@
       'flex:0 0 auto;display:flex;gap:8px;align-items:center;padding:12px 16px;background:#0f172a;color:#fff;';
     const title = document.createElement('div');
     title.style.cssText = 'flex:1;font-weight:700;';
-    title.textContent = '未棚卸一覧（' + records.length + '件）';
+    const hubLabel = hubFilter ? ' — ' + hubFilter : '';
+    title.textContent = '未棚卸一覧' + hubLabel + '（' + records.length + '件）';
+    const btnBulk = document.createElement('button');
+    btnBulk.type = 'button';
+    btnBulk.textContent = '一括棚卸へ';
+    btnBulk.style.cssText =
+      'padding:6px 12px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+    btnBulk.addEventListener('click', function () {
+      panel.remove();
+      openInventoryBulkModal674();
+    });
     const btnClose = document.createElement('button');
     btnClose.type = 'button';
     btnClose.textContent = '閉じる';
@@ -2016,6 +2293,7 @@
       panel.remove();
     });
     toolbar.appendChild(title);
+    toolbar.appendChild(btnBulk);
     toolbar.appendChild(btnClose);
 
     const scroll = document.createElement('div');
@@ -2023,8 +2301,9 @@
     const table = document.createElement('table');
     table.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px;background:#fff;';
     table.innerHTML =
-      '<thead><tr style="background:#e2e8f0;"><th>PC名</th><th>所属</th><th>利用者</th><th>状態</th><th>最新棚卸日</th></tr></thead>';
+      '<thead><tr style="background:#e2e8f0;"><th>PC名</th><th>所属</th><th>利用者</th><th>状態</th><th>最新棚卸日</th><th>操作</th></tr></thead>';
     const tbody = document.createElement('tbody');
+    const appId = kintone.app.getId();
     records.forEach(function (rec) {
       const tr = document.createElement('tr');
       tr.style.borderTop = '1px solid #e2e8f0';
@@ -2039,6 +2318,22 @@
       tr.appendChild(td((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || ''));
       tr.appendChild(td((rec[FC_PC_STATUS] && rec[FC_PC_STATUS].value) || ''));
       tr.appendChild(td((rec[FC_LATEST_INVENTORY_DATE] && rec[FC_LATEST_INVENTORY_DATE].value) || '—'));
+      const tdAct = document.createElement('td');
+      tdAct.style.padding = '6px 8px';
+      const rid = rec.$id && rec.$id.value;
+      if (rid) {
+        const btnInd = document.createElement('button');
+        btnInd.type = 'button';
+        btnInd.textContent = '個別';
+        btnInd.style.cssText =
+          'padding:4px 10px;border-radius:6px;border:1px solid #047857;background:#ecfdf5;color:#047857;font-weight:700;cursor:pointer;font-size:12px;';
+        btnInd.addEventListener('click', function () {
+          location.href =
+            location.origin + '/k/' + encodeURIComponent(String(appId)) + '/show#record=' + encodeURIComponent(String(rid));
+        });
+        tdAct.appendChild(btnInd);
+      }
+      tr.appendChild(tdAct);
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -2048,26 +2343,37 @@
     document.body.appendChild(panel);
   }
 
-  function openUninventoriedList674() {
-    ensureInventoryPeriodLoaded674().then(function () {
-      const q = buildUninventoriedQuery674(npl674InventoryEnvMap674);
-      showInventoryLoading674(true, '未棚卸を取得中…');
-      return fetchInventoryRecordsPaged674(q).then(function (recs) {
+  function openUninventoriedList674(hubFilter) {
+    ensureInventoryPeriodLoaded674()
+      .then(function () {
+        const q = buildUninventoriedQuery674(npl674InventoryEnvMap674);
+        showInventoryLoading674(true, '未棚卸を取得中…');
+        return fetchInventoryRecordsPaged674(q).then(function (recs) {
+          showInventoryLoading674(false);
+          let filtered = recs;
+          if (hubFilter) {
+            filtered = recs.filter(function (rec) {
+              const dept = String((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '').trim();
+              return resolveInventoryHub674(dept) === hubFilter;
+            });
+          }
+          renderUninventoriedPanel674(filtered, hubFilter || '');
+        });
+      })
+      .catch(function (e) {
         showInventoryLoading674(false);
-        renderUninventoriedPanel674(recs);
+        window.alert('取得失敗: ' + (e && e.message ? e.message : String(e)));
       });
-    }).catch(function (e) {
-      showInventoryLoading674(false);
-      window.alert('取得失敗: ' + (e && e.message ? e.message : String(e)));
-    });
   }
 
   function wire674IndexInventoryButtons674() {
     ensureInventoryPeriodLoaded674().then(function (active) {
       const btnBulk = document.getElementById('npl674-btn-inventory-bulk');
       const btnUninv = document.getElementById('npl674-btn-inventory-uninv');
+      const acc = document.getElementById('npl674-inv-hub-acc');
       if (btnBulk) btnBulk.style.display = active ? '' : 'none';
       if (btnUninv) btnUninv.style.display = active ? '' : 'none';
+      if (acc) acc.style.display = active ? '' : 'none';
     });
   }
 
@@ -5663,14 +5969,19 @@
           (opId || '（未保存）') +
           ' により本PCを廃棄扱いに変更';
         const nextNote = prevNote ? prevNote + '\n' + stamp : stamp;
+        const acType = String((tr[FC_ACCOUNT_TYPE] && tr[FC_ACCOUNT_TYPE].value) || '').trim();
+        const putRec = markSkyseaClientDeletePending674(
+          {
+            [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
+            [FC_NOTE]: { value: nextNote },
+          },
+          acType,
+        );
         return kintoneApiPut('/k/v1/record.json', {
           app: kintone.app.getId(),
           id: tid,
           revision: rev,
-          record: {
-            [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
-            [FC_NOTE]: { value: nextNote },
-          },
+          record: putRec,
         })
           .catch(function (e) {
             if (attemptNum < maxAttempts && is674KintoneRevisionConflictError674(e)) {
@@ -6194,12 +6505,21 @@
       out[FC_IMPORT_SOURCE] = { type: 'SINGLE_LINE_TEXT', value: tag };
     }
 
+    const oldPcName = String((srcRecord[FC_PC_NAME] && srcRecord[FC_PC_NAME].value) || '').trim();
+    const replaceNoteStamp =
+      '[PC買替 ' +
+      todayYmd674() +
+      '] 旧PC「' +
+      oldPcName +
+      '」を廃棄に変更（旧レコード番号: ' +
+      (oid || '—') +
+      '）';
+    out[FC_NOTE] = { type: 'MULTI_LINE_TEXT', value: replaceNoteStamp };
+
     return out;
   }
 
   function show674ReplacementFollowupBanner674() {
-    const msg =
-      '【PC買替の続き】シリアル・メーカー・モデル・購入日・在庫日・備考・SKYSEA 関連など、ハード側の項目は必ず入力してください。';
     const inject = function () {
       if (document.getElementById('jbis674-replace-banner')) return true;
       const host = getHeaderSpace674() || document.querySelector('.gaia-argoui-app-toolbar') || document.body;
@@ -6210,7 +6530,10 @@
       el.setAttribute('tabindex', '0');
       el.style.cssText =
         'margin:8px 12px;padding:14px 18px;background:#fee2e2;border:2px solid #b91c1c;border-radius:6px;color:#991b1b;font-size:14px;font-weight:bold;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.12);position:relative;z-index:99999;';
-      el.textContent = msg;
+      el.innerHTML =
+        '【PC買替の続き】PCを切り替えたので、<strong>シリアル・メーカー・モデル・購入日・在庫日・備考</strong>など端末情報の入力を忘れないでください。<br>' +
+        '<span style="color:#b91c1c;font-weight:800;">旧PCの SKYSEA クライアント削除が必要です。室長へ手順を確認し必ず実施してください。</span><br>' +
+        '旧PCは admin の「SKYSEAクライアント削除対応」リストで完了にしてください。';
       host.insertBefore(el, host.firstChild);
       return true;
     };
@@ -6221,7 +6544,9 @@
     }
     setTimeout(function () {
       try {
-        window.alert(msg);
+        window.alert(
+          'PC買替後は端末情報の入力と、旧PCの SKYSEA クライアント削除（室長確認・必須）を忘れないでください。',
+        );
       } catch (_a) {
         /* noop */
       }
@@ -6248,22 +6573,32 @@
       window.alert('PC買替は、保存済みのレコード（詳細／編集を開いた状態）でのみ使用できます。');
       return Promise.resolve();
     }
-    const ok = window.confirm(
-      'PC買替を実行しますか？\n\n' +
-        '・現在のレコードは「' +
-        STATUS_AFTER_REPLACE_OLD_674 +
-        '」になります。\n' +
-        '・アカウント情報を引き継いだ新しいレコードが追加され、596 で新しい PC 名が採番されます。\n' +
-        '（処理後は新レコードの画面へ移動します）',
-    );
-    if (!ok) return Promise.resolve();
 
     let claim = null;
     /** POST 成功後にセット。以降の 671/595 で失敗した場合は 596 ロールバックや旧ステータス復元はしない */
     let createdNewId = '';
 
-    return peek596HasUnused674()
+    return get674RecordPayloadById674(oldId)
+      .then(function (payloadPre) {
+        const srcPre = (payloadPre && payloadPre.record) || {};
+        const stPre = (srcPre[FC_PC_STATUS] && srcPre[FC_PC_STATUS].value) || '';
+        if (shouldBeInactiveForReplace674(stPre)) {
+          window.alert('このレコードはすでに廃棄・取消等の状態です。PC買替は実行できません。');
+          return null;
+        }
+        const oldPcName = String((srcPre[FC_PC_NAME] && srcPre[FC_PC_NAME].value) || '').trim() || '（PC名未設定）';
+        const ok1 = window.confirm('旧PC「' + oldPcName + '」は廃棄になります。よろしいですか？');
+        if (!ok1) return null;
+        const ok2 = window.confirm('買替後PCへアカウント情報を引き継ぎます。よろしいですか？');
+        if (!ok2) return null;
+        return payloadPre;
+      })
+      .then(function (payloadPre) {
+        if (!payloadPre) return null;
+        return peek596HasUnused674();
+      })
       .then(function (has596) {
+        if (has596 === null) return null;
         if (!has596) {
           window.alert(
             'PC採番マスタ(596)に未使用の番号がありません。処理を中止しました（596・674は未変更です）。',
@@ -6305,13 +6640,17 @@
             if (!freshOld.revision) {
               throw new Error('旧レコードのリビジョンを取得できませんでした。');
             }
+            const oldPut = markSkyseaClientDeletePending674(
+              {
+                [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
+              },
+              acType,
+            );
             return kintoneApiPut('/k/v1/record.json', {
               app: kintone.app.getId(),
               id: oldId,
               revision: freshOld.revision,
-              record: {
-                [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
-              },
+              record: oldPut,
             }).then(function () {
               return kintoneApiPost('/k/v1/record.json', {
                 app: kintone.app.getId(),
@@ -6324,7 +6663,24 @@
             if (!newId) throw new Error('新規レコードの id を取得できませんでした。');
             createdNewId = newId;
 
-            let chain = Promise.resolve();
+            let chain = get674RecordPayloadById674(oldId).then(function (payloadOldNote) {
+              const tr = payloadOldNote.record || {};
+              const prevNote = String((tr[FC_NOTE] && tr[FC_NOTE].value) || '').trim();
+              const stamp =
+                '[PC買替 ' + todayYmd674() + '] 本PCを廃棄に変更。新レコード番号: ' + newId;
+              const nextNote = prevNote ? prevNote + '\n' + stamp : stamp;
+              if (!payloadOldNote.revision) return;
+              return kintoneApiPut('/k/v1/record.json', {
+                app: kintone.app.getId(),
+                id: oldId,
+                revision: payloadOldNote.revision,
+                record: {
+                  [FC_NOTE]: { value: nextNote },
+                },
+              }).catch(function (eNote) {
+                console.warn('[NEW-PC-LEDGER-V1] PC買替 旧PC備考追記', eNote);
+              });
+            });
             if (mid && (acType === TYPE_SHARED || acType === TYPE_JR)) {
               chain = chain.then(function () {
                 return sync671MasterFrom674674(mid);
@@ -6921,7 +7277,7 @@ ${bodyInner}\
     if (
       isRecordDetail674 &&
       npl674InventoryPeriodActive674 &&
-      isInventoryTargetPcStatus674(event.record) &&
+      isInventoryTargetRecord674(event.record) &&
       event.record &&
       event.record[FC_INVENTORY_HISTORY]
     ) {
@@ -7931,6 +8287,230 @@ ${bodyInner}\
     if (p) p.remove();
     removeSkysea674PrintRoot674();
     showList674Loading674(false);
+  }
+
+  // --- 一覧：SKYSEAクライアント削除対応（admin 専用・個人・未了） ---
+  const SKYSEA674_CLIENT_DELETE_PANEL_ID = 'npl674-skysea-client-delete-panel';
+  const SKYSEA674_CLIENT_DELETE_BANNER_ID = 'npl674-skysea-client-delete-banner';
+
+  function buildSkyseaClientDeleteListQuery674() {
+    return (
+      FC_ACCOUNT_TYPE +
+      ' in ("' +
+      escapeQueryValue(TYPE_PERSONAL) +
+      '") and ' +
+      FC_SKYSEA_CLIENT_DELETE_STATUS +
+      ' in ("' +
+      escapeQueryValue(SKYSEA_CLIENT_DELETE_PENDING) +
+      '")'
+    );
+  }
+
+  function fetchSkyseaClientDeletePendingRecords674() {
+    const app = kintone.app.getId();
+    const fields = [
+      '$id',
+      '$revision',
+      FC_PC_NAME,
+      FC_USER_NAME,
+      FC_DEPT_NAME,
+      FC_PC_STATUS,
+      FC_SKYSEA_CLIENT_DELETE_STATUS,
+      FC_SKYSEA_CLIENT_DELETE_DATE,
+    ];
+    const all = [];
+    const base = buildSkyseaClientDeleteListQuery674();
+    return new Promise(function (resolve, reject) {
+      function page(off) {
+        const q =
+          base +
+          ' order by ' +
+          FC_DEPT_NAME +
+          ' asc, ' +
+          FC_PC_NAME +
+          ' asc limit 500 offset ' +
+          off;
+        kintone
+          .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, fields: fields })
+          .then(function (res) {
+            const recs = res.records || [];
+            for (let i = 0; i < recs.length; i++) all.push(recs[i]);
+            if (recs.length < 500) resolve(all);
+            else page(off + 500);
+          })
+          .catch(reject);
+      }
+      page(0);
+    });
+  }
+
+  function countSkyseaClientDeletePending674() {
+    if (!isSkyseaAdmin674()) return Promise.resolve(0);
+    const app = kintone.app.getId();
+    const q = buildSkyseaClientDeleteListQuery674() + ' limit 1';
+    return kintone
+      .api(kintone.api.url('/k/v1/records', true), 'GET', { app: app, query: q, totalCount: true, fields: ['$id'] })
+      .then(function (res) {
+        return Number(res.totalCount || 0);
+      })
+      .catch(function () {
+        return fetchSkyseaClientDeletePendingRecords674().then(function (rows) {
+          return rows.length;
+        });
+      });
+  }
+
+  function completeSkyseaClientDelete674(recordId, revision) {
+    return kintoneApiPut('/k/v1/record.json', {
+      app: kintone.app.getId(),
+      id: String(recordId),
+      revision: revision,
+      record: {
+        [FC_SKYSEA_CLIENT_DELETE_STATUS]: { value: SKYSEA_CLIENT_DELETE_DONE },
+        [FC_SKYSEA_CLIENT_DELETE_DATE]: { value: todayYmd674() },
+      },
+    });
+  }
+
+  function closeSkyseaClientDeleteListPanel674() {
+    const p = document.getElementById(SKYSEA674_CLIENT_DELETE_PANEL_ID);
+    if (p) p.remove();
+    showList674Loading674(false);
+  }
+
+  function openSkyseaClientDeleteListPanel674() {
+    if (!isSkyseaAdmin674()) return;
+    closeSkyseaClientDeleteListPanel674();
+    closeList674ResultPanel674();
+    closeSkysea674ListPanel674();
+
+    const panel = document.createElement('div');
+    panel.id = SKYSEA674_CLIENT_DELETE_PANEL_ID;
+    panel.style.cssText =
+      'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
+      'font-family:system-ui,sans-serif;color:#0f172a;';
+
+    const toolbar = document.createElement('div');
+    toolbar.style.cssText =
+      'flex:0 0 auto;display:flex;gap:8px;align-items:center;padding:12px 16px;background:#7f1d1d;color:#fff;';
+    const title = document.createElement('div');
+    title.style.cssText = 'flex:1;font-weight:700;';
+    title.textContent = 'SKYSEAクライアント削除対応';
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.textContent = '閉じる';
+    btnClose.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #fecaca;background:#fff;color:#7f1d1d;font-weight:700;cursor:pointer;';
+    btnClose.addEventListener('click', closeSkyseaClientDeleteListPanel674);
+    toolbar.appendChild(title);
+    toolbar.appendChild(btnClose);
+
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'flex:1;overflow:auto;padding:12px 16px;';
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;background:#fff;font-size:13px;';
+    table.innerHTML =
+      '<thead><tr style="background:#fee2e2;">' +
+      '<th style="padding:8px;text-align:left;">所属</th>' +
+      '<th style="padding:8px;text-align:left;">利用者</th>' +
+      '<th style="padding:8px;text-align:left;">PC名</th>' +
+      '<th style="padding:8px;text-align:left;">状態</th>' +
+      '<th style="padding:8px;text-align:left;">操作</th>' +
+      '</tr></thead>';
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    panel.appendChild(toolbar);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+
+    showList674Loading674(true, 'SKYSEA削除未了を取得中…');
+    fetchSkyseaClientDeletePendingRecords674()
+      .then(function (rows) {
+        showList674Loading674(false);
+        title.textContent = 'SKYSEAクライアント削除対応（未了 ' + rows.length + '件）';
+        tbody.innerHTML = '';
+        if (!rows.length) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 5;
+          td.style.padding = '16px';
+          td.textContent = '未了の対象はありません。';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (rec) {
+          const tr = document.createElement('tr');
+          tr.style.borderTop = '1px solid #fecaca';
+          function td(txt) {
+            const c = document.createElement('td');
+            c.style.padding = '8px';
+            c.textContent = txt || '';
+            return c;
+          }
+          tr.appendChild(td(cell674PlainForSearch(rec, FC_DEPT_NAME)));
+          tr.appendChild(td(cell674PlainForSearch(rec, FC_USER_NAME)));
+          tr.appendChild(td(cell674PlainForSearch(rec, FC_PC_NAME)));
+          tr.appendChild(td(cell674PlainForSearch(rec, FC_PC_STATUS)));
+          const tdAct = document.createElement('td');
+          tdAct.style.padding = '8px';
+          const btnDone = document.createElement('button');
+          btnDone.type = 'button';
+          btnDone.textContent = '完了';
+          btnDone.style.cssText =
+            'padding:4px 12px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+          btnDone.addEventListener('click', function () {
+            btnDone.disabled = true;
+            const rid = rec.$id && rec.$id.value;
+            const rev = rec.$revision && rec.$revision.value;
+            completeSkyseaClientDelete674(rid, rev)
+              .then(function () {
+                tr.remove();
+                refresh674SkyseaClientDeleteBanner674();
+                const remain = tbody.querySelectorAll('tr').length;
+                title.textContent = 'SKYSEAクライアント削除対応（未了 ' + remain + '件）';
+              })
+              .catch(function (e) {
+                btnDone.disabled = false;
+                window.alert('完了処理に失敗: ' + formatKintoneApiError674(e));
+              });
+          });
+          tdAct.appendChild(btnDone);
+          tr.appendChild(tdAct);
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(function (e) {
+        showList674Loading674(false);
+        window.alert('取得失敗: ' + formatKintoneApiError674(e));
+        closeSkyseaClientDeleteListPanel674();
+      });
+  }
+
+  function refresh674SkyseaClientDeleteBanner674() {
+    const old = document.getElementById(SKYSEA674_CLIENT_DELETE_BANNER_ID);
+    if (old) old.remove();
+    if (!isSkyseaAdmin674()) return;
+    countSkyseaClientDeletePending674().then(function (n) {
+      if (!n) return;
+      const banner = document.createElement('div');
+      banner.id = SKYSEA674_CLIENT_DELETE_BANNER_ID;
+      banner.setAttribute('role', 'alert');
+      banner.style.cssText =
+        'margin:0 0 10px;padding:10px 14px;background:#fef2f2;border:2px solid #b91c1c;border-radius:8px;' +
+        'color:#991b1b;font-size:13px;font-weight:700;cursor:pointer;line-height:1.45;';
+      banner.textContent =
+        'SKYSEAアカウント削除しなければいけない対象が残っています（' + String(n) + '件）';
+      banner.title = 'クリックで SKYSEAクライアント削除対応リストを開く';
+      banner.addEventListener('click', function () {
+        openSkyseaClientDeleteListPanel674();
+      });
+      const wrap = document.getElementById(SEARCH674_WRAP_ID);
+      if (wrap && wrap.parentNode) {
+        wrap.parentNode.insertBefore(banner, wrap);
+      }
+    });
   }
 
   function buildSkysea674ListQuery674(doneMode) {
@@ -10079,6 +10659,7 @@ ${bodyInner}\
     btnList.addEventListener('click', openList674CreateModal674);
 
     let btnSkyseaList = null;
+    let btnSkyseaClientDelete = null;
     if (isSkyseaAdmin674()) {
       btnSkyseaList = document.createElement('button');
       btnSkyseaList.type = 'button';
@@ -10087,6 +10668,14 @@ ${bodyInner}\
       btnSkyseaList.style.cssText =
         'padding:6px 12px;border-radius:6px;border:none;background:#b45309;color:#fff;font-weight:700;cursor:pointer;';
       btnSkyseaList.addEventListener('click', openSkysea674ListPanel674);
+
+      btnSkyseaClientDelete = document.createElement('button');
+      btnSkyseaClientDelete.type = 'button';
+      btnSkyseaClientDelete.textContent = 'SKYSEAクライアント削除対応';
+      btnSkyseaClientDelete.setAttribute('aria-label', 'SKYSEAクライアント削除未了一覧（admin専用）');
+      btnSkyseaClientDelete.style.cssText =
+        'padding:6px 12px;border-radius:6px;border:none;background:#b91c1c;color:#fff;font-weight:700;cursor:pointer;';
+      btnSkyseaClientDelete.addEventListener('click', openSkyseaClientDeleteListPanel674);
     }
 
     const btnInvBulk = document.createElement('button');
@@ -10113,6 +10702,7 @@ ${bodyInner}\
     row.appendChild(btnClr);
     row.appendChild(btnList);
     if (btnSkyseaList) row.appendChild(btnSkyseaList);
+    if (btnSkyseaClientDelete) row.appendChild(btnSkyseaClientDelete);
     row.appendChild(btnInvBulk);
     row.appendChild(btnInvUninv);
 
@@ -10345,6 +10935,7 @@ ${bodyInner}\
     wrap.appendChild(nextSerialBar);
     wrap.appendChild(row);
     wrap.appendChild(summaryRow);
+    ensureInventoryHubSummaryAccordion674(wrap);
     wrap.appendChild(chipRow);
     wrap.appendChild(statusChipRow);
 
@@ -10503,6 +11094,7 @@ ${bodyInner}\
       })
       .then(function () {
         wire674IndexInventoryButtons674();
+        refresh674SkyseaClientDeleteBanner674();
       });
   }
 
@@ -10681,6 +11273,7 @@ ${bodyInner}\
     if (wSearch) wSearch.removeAttribute('data-npl-synced-query');
     schedule674IndexSearch();
     wire674IndexInventoryButtons674();
+    refresh674SkyseaClientDeleteBanner674();
     schedule674IndexStatusPaint674();
     setTimeout(ensure674IndexHidesCancelledOnLoad674, 100);
     setTimeout(request674IndexSearchHydrateFromUrl674, 200);
@@ -10695,7 +11288,33 @@ ${bodyInner}\
     'app.record.edit.submit',
   ];
 
+  function check674ReplaceFirstSaveHwGate674(event) {
+    const importSrc = String((event.record[FC_IMPORT_SOURCE] && event.record[FC_IMPORT_SOURCE].value) || '').trim();
+    if (importSrc.indexOf('PC_REPLACE_FROM_674') !== 0) return true;
+    const rid = String((event.record.$id && event.record.$id.value) || '').trim();
+    const gateKey = STORAGE_KEY_674_REPLACE_HW_OK + (rid || importSrc);
+    try {
+      if (sessionStorage.getItem(gateKey)) return true;
+    } catch (_e) {
+      return true;
+    }
+    const ok = window.confirm('端末情報は入力しましたか？');
+    if (!ok) {
+      event.error = '必ず端末情報を入れてください。入力後に保存できます。';
+      return false;
+    }
+    try {
+      sessionStorage.setItem(gateKey, '1');
+    } catch (_e2) {
+      /* noop */
+    }
+    return true;
+  }
+
   function onBeforeSubmit674(event) {
+    if (!check674ReplaceFirstSaveHwGate674(event)) {
+      return event;
+    }
     return new kintone.Promise(function (resolve) {
       const type = event.record[FC_ACCOUNT_TYPE]?.value || '';
       const errors = [];

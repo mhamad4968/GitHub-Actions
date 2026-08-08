@@ -11,7 +11,13 @@ import 'dotenv/config';
 
 const APP = 674;
 const GROUP_CODE = 'skysea_system_meta';
-const CHILD_CODES = ['skysea_manual_done', 'skysea_manual_date', 'skysea_manual_handler'];
+const CHILD_CODES = [
+  'skysea_manual_done',
+  'skysea_manual_date',
+  'skysea_manual_handler',
+  'skysea_client_delete_status',
+  'skysea_client_delete_date',
+];
 
 function requireEnv(key) {
   const v = process.env[key];
