@@ -9,5 +9,7 @@
   "command": "# major manual review required",
   "manual_only": true,
   "created_at": "2026-06-30T21:02:29.281Z",
-  "note": "nodemailer 7.0.13 → 9.0.3 (major / 破壊的変更レビュー必須)"
+  "note": "nodemailer 7.0.13 → 9.0.3 (major / 破壊的変更レビュー必須)",
+  "resolved_at": "2026-08-08",
+  "resolution": "already at nodemailer@9.0.3 in package.json — pending closed without re-apply"
 }

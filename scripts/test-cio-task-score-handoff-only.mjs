@@ -90,12 +90,23 @@ try {
   const writtenScores = fs.readFileSync(scoresPath);
   const payload = JSON.parse(writtenScores.toString("utf8"));
   assert.equal(payload.topTask, checkpointTopTask);
+  assert.equal(payload.tasks[0].kind, "work");
   assert.ok(
     Array.isArray(payload.tasks) && payload.tasks.length > 0,
     "tasks must be non-empty",
   );
   assert.equal(payload.tasks[0].source, "checkpoint");
   assert.equal(payload.tasks[0].text, checkpointTopTask);
+
+  // constraint tagging smoke
+  fs.writeFileSync(
+    checkpointPath,
+    "# Fixture checkpoint\n**次の1手**: SKYSEA配信はしない。触らない。\n",
+  );
+  const constraintRun = run(["--handoff-only"]);
+  const constraintPayload = JSON.parse(fs.readFileSync(scoresPath, "utf8"));
+  assert.equal(constraintPayload.topTaskKind, "constraint");
+  assert.match(constraintRun.stdout, /topWork:/);
 
   const specBeforeDryRun = fs.readFileSync(specPath);
   const scoresBeforeDryRun = fs.readFileSync(scoresPath);

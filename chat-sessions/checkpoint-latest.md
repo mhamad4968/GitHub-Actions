@@ -1,28 +1,32 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 09:20 JST — 依頼効率化 v0.2 完了 · MCP月次パック Tier A 進行中。
-**次の1手**: 夜=完了通知。③④ G0メモ済。score constraint区別は任意。SKYSEA配信しない（xlsx依頼時のみ）。
-**Git**: 作業中（本セッションで push）
+**最終更新**: 2026-08-08 09:35 JST — 依頼効率化v0.2・MCP月次・DEL-3完了。昼メンテ中。
+**次の1手**: 夜セッションで完了通知配線を実施する。
+**Git**: **`4e26595b`** = `origin/main` — push 済（DEL-3）
 **closeStatus**: open
 **8月提案レーン（空月）**:
 | # | 内容 | 状態 |
 |---|------|------|
 | ① | 依頼効率化 v0.2（Step0〜V2-3） | **済** |
-| ② | MCP月次パック | **済**（Tier A） |
+| ② | MCP月次パック + DEL-3 | **済** |
 | V2-N | 完了通知 | **今夜** |
-| ③ | 憲法形骸化点検（G0のみ） | **済**（`2026-08-08-constitution-health-g0.md`） |
-| ④ | B-MDFLOW 薄い版（G0） | **済**（`2026-08-08-b-mdflow-thin-g0.md`） |
+| ③ | 憲法形骸化点検（G0） | **済** · 大統合は見送り |
+| ④ | B-MDFLOW 薄い版（G0） | **済** · フル実装は見送り |
 | — | 経営会議資料 | **8/13まで触らない** |
 
+**制約（workではない · score では constraint）**:
+- SKYSEA配信・GPO・SG **しない**（xlsx完了登録依頼時のみ）
+- 閉済9件 / 688 heat外 / 677–679 / 712 deploy / 736 **触らない**
+- 新アプリ＝相談・GO後のみ
+
 **本日状態（要約）**:
+- 2026-08-08: request-compose v0.2 · MCP月次 · DEL-3（shadcn/figma/colors/a11y）
 - Index OPEN default: 利用中 + $id desc
 - Shared JBIS warn+note on save
 - SKYSEA xlsx mark 完了 147（date 2026-08-07 / handler 濱田）
 - SKYSEA UI: personal-only; exact pc_name hard-block; assist skip when field not editable
-- SKYSEA対応一覧: dept summary table + tbody fix + exclude 4 depts（システム推進室, 関越支店施工部, 東京支店橋りょうリペア部, 東京支店施工部）
-- 夕反省GO実装済（schedule手動のみ・用語辞書・deploy-ready:674・eod:github・DOM tbody verify）
-- GitHub EOD: constitution-gates + kintone-customize-deploy 直近30 runs 全成功
-- SPEC changelog: AI完了登録のみ運用GO 追記
-- 2026-08-08: request-compose v0.2 + MCP月次パック Tier A
+- SKYSEA対応一覧: dept summary + tbody + exclude 4 depts
+- 夕反省GO実装済（2026-08-07）
+- GitHub EOD: constitution-gates + kintone-customize-deploy 直近成功
 ### 本日アクティブ（BUILD/rev — 2026-08-07）
 | App | BUILD | rev |
 |-----|-------|-----|

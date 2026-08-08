@@ -25,11 +25,19 @@ function read(rel) {
   return fs.existsSync(p) ? fs.readFileSync(p, "utf8") : "";
 }
 
+function isConstraintText(text) {
+  const t = String(text || "");
+  return /しない|触らない|禁止|凍結|GO前|配信しない|xlsx依頼時のみ|再開しない|8\/13まで|まで触らない|constraint/i.test(
+    t,
+  );
+}
+
 function scoreTask(text, source) {
   const t = text.toLowerCase();
   let difficulty = 2;
   let tokens = 2;
   let impact = 3;
+  const kind = isConstraintText(text) ? "constraint" : "work";
 
   if (/deploy|customize|put|delete|本番|677|678|679/.test(t)) {
     difficulty = 5;
@@ -53,6 +61,12 @@ function scoreTask(text, source) {
     impact = 2;
   }
 
+  // 制約文は「仕事」として高難度扱いにしない（空月の誤誘導防止）
+  if (kind === "constraint" && source !== "checkpoint") {
+    difficulty = Math.min(difficulty, 1);
+    impact = Math.min(impact, 2);
+  }
+
   const tokenLabel = tokens === 1 ? "低" : tokens === 2 ? "中" : "高";
   let priority = difficulty * 10 + tokens * 5 - impact * 3;
   if (source === "checkpoint") {
@@ -66,6 +80,7 @@ function scoreTask(text, source) {
     id: `${source}:${text.slice(0, 40).replace(/\s+/g, "_")}`,
     text: text.trim(),
     source,
+    kind,
     difficulty,
     tokens: tokenLabel,
     tokenScore: tokens,
@@ -139,8 +154,9 @@ function buildAutoSection(sorted) {
     "|------|------|--------|-------|--------|----------|",
   ];
   sorted.forEach((t, i) => {
+    const kindMark = t.kind === "constraint" ? "〔制約〕" : "";
     lines.push(
-      `| ${i + 1} | ${t.text.replace(/\|/g, "\\|").slice(0, 60)} | ${t.difficulty}/5 | ${t.tokens} | ${t.impact}/5 | ${t.priority} |`,
+      `| ${i + 1} | ${kindMark}${t.text.replace(/\|/g, "\\|").slice(0, 60)} | ${t.difficulty}/5 | ${t.tokens} | ${t.impact}/5 | ${t.priority} |`,
     );
   });
   lines.push("", AUTO_END);
@@ -187,6 +203,8 @@ function main() {
     scoredAt: new Date().toISOString(),
     specPath: SPEC_REL,
     topTask: tasks[0]?.text || null,
+    topTaskKind: tasks[0]?.kind || null,
+    topWorkTask: tasks.find((t) => t.kind === "work")?.text || null,
     tasks,
   };
 
@@ -205,9 +223,13 @@ function main() {
   console.log("[cio:task:score-spec] OK", tasks.length, "tasks");
   console.log("[cio:task:score-spec] top:", tasks[0]?.text);
   for (const t of tasks.slice(0, 5)) {
+    const kind = t.kind === "constraint" ? "C" : "W";
     console.log(
-      `  D${t.difficulty} Tok=${t.tokens} I${t.impact} P${t.priority} — ${t.text.slice(0, 70)}`,
+      `  [${kind}] D${t.difficulty} Tok=${t.tokens} I${t.impact} P${t.priority} — ${t.text.slice(0, 70)}`,
     );
+  }
+  if (payload.topTaskKind === "constraint" && payload.topWorkTask) {
+    console.log("[cio:task:score-spec] topWork:", payload.topWorkTask);
   }
   process.exit(0);
 }

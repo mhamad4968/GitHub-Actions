@@ -1,12 +1,15 @@
 {
-  "scoredAt": "2026-08-07T23:28:26.267Z",
+  "scoredAt": "2026-08-08T00:34:21.669Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
+  "topTask": "夜セッションで完了通知配線を実施する。",
+  "topTaskKind": "work",
+  "topWorkTask": "夜セッションで完了通知配線を実施する。",
   "tasks": [
     {
-      "id": "checkpoint:SKYSEA配信はしない。完了登録は_xlsx_依頼時のみ_AI_対応。新アプリ",
-      "text": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
+      "id": "checkpoint:夜セッションで完了通知配線を実施する。",
+      "text": "夜セッションで完了通知配線を実施する。",
       "source": "checkpoint",
+      "kind": "work",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
@@ -18,6 +21,7 @@
       "id": "backlog:B-MDFLOW:_**Markdown_ベースの開発フロー**（仕様・実装・レ",
       "text": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
       "source": "backlog",
+      "kind": "work",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
