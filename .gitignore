@@ -113,3 +113,6 @@ docs/reports/*-morning-prep.md
 data/cio-r63-v2-pending.json
 
 scripts/mcp-deepseek-v4/node_modules/
+
+# Cursor MCP sync backups (do not commit)
+.cursor/mcp.json.bak*
