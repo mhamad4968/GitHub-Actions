@@ -42,11 +42,7 @@
         "duckduckgo-search",
         "github",
         "cve-search",
-        "figma",
-        "colors-fonts",
         "chrome-devtools",
-        "shadcn-ui",
-        "accessibility-scanner",
         "repo-tree",
         "eslint-mcp",
         "context7",
@@ -69,7 +65,6 @@
         "playwright",
         "rag",
         "markdownify",
-        "shadcn-ui",
         "chrome-devtools",
         "duckduckgo-search",
         "memory",
@@ -79,7 +74,7 @@
         "kintone-schema-mcp",
         "git-history-mcp"
       ],
-      "note": "diff のみ。単独 GO なし save/deploy"
+      "note": "diff のみ。単独 GO なし save/deploy · DEL-3: shadcn/figma/colors/a11y 削除"
     },
     "kimi": {
       "model": "Kimi",

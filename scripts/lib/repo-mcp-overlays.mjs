@@ -1,16 +1,15 @@
 /**
- * リポ `.cursor/mcp.json` のワークスペース専用 MCP（figma / colors-fonts / repo-tree 等）を
+ * リポ `.cursor/mcp.json` のワークスペース専用 MCP（repo-tree / eslint-mcp 等）を
  * Windows 正本へマージするための正規化ヘルパ。
  *
- * ⚠ mintlify は DEL-1（2026-07-11 · 浜田追認 2026-07-15）済み — REPO_OVERLAY に戻さない（△10）。
+ * ⚠ mintlify は DEL-1（2026-07-11）済み。
+ * ⚠ figma / colors-fonts / shadcn-ui / accessibility-scanner は DEL-3（2026-08-08 浜田GO）済み — REPO_OVERLAY に戻さない。
  */
 import fs from 'node:fs';
 import path from 'node:path';
 
 /** リポ側のみ定義し、WSL→Win sync 後にも載せるサーバ名 */
 export const REPO_OVERLAY_SERVER_NAMES = [
-  'figma',
-  'colors-fonts',
   'repo-tree',
   'eslint-mcp',
   'context7',
@@ -19,20 +18,10 @@ export const REPO_OVERLAY_SERVER_NAMES = [
 ];
 
 /**
- * colors-fonts の WSL 絶対 npx パスをクロスプラットフォーム `npx` に正規化。
  * @param {string} name
  * @param {Record<string, unknown>} srv
  */
 export function normalizeOverlayServer(name, srv) {
-  if (name !== 'colors-fonts' || !srv || typeof srv !== 'object') return srv;
-  const cmd = String(srv.command || '');
-  if (cmd.includes('/home/') || cmd.includes('.nvm')) {
-    return {
-      command: 'npx',
-      args: ['-y', '@colorsandfonts/mcp@1.1.0'],
-      ...(srv.env && typeof srv.env === 'object' ? { env: srv.env } : {}),
-    };
-  }
   return srv;
 }
 

@@ -37,10 +37,10 @@ const ROW_KEY = {
   13: 'playwright',
   14: 'cve-search',
   15: 'rag',
-  16: 'accessibility-scanner',
-  17: 'figma',
-  18: null, // 任意 MCP・台帳にキーが無い場合は据え置き
-  19: 'colors-fonts',
+  16: null, // DEL-3 a11y scanner
+  17: null, // DEL-3 figma
+  18: null,
+  19: null, // DEL-3 colors-fonts
 };
 
 function jstYmd() {

@@ -196,10 +196,6 @@ export function buildWindowsMcp(S) {
       "BASE_DIR=/mnt/c/Users/mhamada202408224/kintone-ai-lab && exec npx -y mcp-local-rag",
   );
 
-  out.mcpServers["accessibility-scanner"] = wslBash(
-    "export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y mcp-accessibility-scanner",
-  );
-
   out.mcpServers["duckduckgo-search"] = wslBash(
     "export DDG_REGION=jp-ja PATH=/home/mhamada202408224/.local/bin:$PATH && exec /home/mhamada202408224/.local/bin/uvx duckduckgo-mcp-server",
   );
@@ -244,11 +240,7 @@ export function buildWindowsMcp(S) {
       "export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y chrome-devtools-mcp@latest",
     );
   }
-  if (S["shadcn-ui"] && typeof S["shadcn-ui"] === "object") {
-    out.mcpServers["shadcn-ui"] = wslBash(
-      "export PATH=/home/mhamada202408224/.nvm/versions/node/v24.14.1/bin:$PATH && exec npx -y @jpisnice/shadcn-ui-mcp-server",
-    );
-  }
+  // DEL-3 (2026-08-08): shadcn UI MCP / a11y scanner は同期対象外（再注入禁止）
 
   return out;
 }

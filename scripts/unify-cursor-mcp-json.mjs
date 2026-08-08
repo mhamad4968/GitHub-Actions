@@ -47,12 +47,6 @@ function writeWslJson(cfg) {
 /** リポ overlay を WSL パス体系向けに正規化 */
 function overlayForWsl(name, srv) {
   if (!srv || typeof srv !== 'object') return srv;
-  if (name === 'colors-fonts') {
-    return {
-      command: 'npx',
-      args: ['-y', '@colorsandfonts/mcp@1.1.0'],
-    };
-  }
   if (name === 'ffmpeg-mcp' || name === 'heygen-mcp' || name === 'kintone-schema-mcp' || name === 'git-history-mcp') {
     const sub = name.replace('-mcp', '').replace('git-history', 'git-history-mcp');
     const rel =

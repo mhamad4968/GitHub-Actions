@@ -230,10 +230,12 @@
       "keywords": ["a11y", "WCAG", "アクセシビリティ", "axe", "キーボード", "60歳"],
       "priority": 10,
       "mcp": [
-        { "server": "accessibility-scanner", "tools": ["audit_site", "scan_page_matrix", "audit_keyboard"], "priority": 10 }
+        { "server": "chrome-devtools", "tools": ["take_screenshot", "evaluate_script"], "priority": 10 },
+        { "server": "playwright", "priority": 20 }
       ],
       "npm": [],
-      "runbook": "docs/mcp-design-kintone-tables.md",
+      "runbook": "docs/runbooks/chrome-devtools-mcp-setup.md",
+      "note": "DEL-3: accessibility-scanner 削除 · chrome-devtools/playwright で代替",
       "secondReviewer": null,
       "verify": []
     },
@@ -380,7 +382,6 @@
           ],
           "priority": 10
         },
-        { "server": "figma", "tools": ["generate_diagram"], "priority": 20 },
         {
           "server": "office-word",
           "tools": [
@@ -430,11 +431,12 @@
       "keywords": ["Figma", "配色", "トークン", "ダッシュデザイン", "WCAG contrast"],
       "priority": 10,
       "mcp": [
-        { "server": "figma", "tools": ["get_design_context", "get_screenshot"], "priority": 10 },
-        { "server": "colors-fonts", "tools": ["generate_palette", "check_contrast"], "priority": 20 }
+        { "server": "chrome-devtools", "priority": 10 },
+        { "server": "duckduckgo-search", "tools": ["search"], "priority": 30 }
       ],
       "npm": [],
-      "runbook": "docs/mcp-design-figma.md",
+      "runbook": "docs/mcp-design-kintone-tables.md",
+      "note": "DEL-3: figma/colors-fonts 削除 · 内蔵 GenerateImage + chrome-devtools で代替",
       "secondReviewer": null,
       "verify": []
     },
@@ -529,11 +531,11 @@
           "tools": ["chat_completion"],
           "priority": 10,
           "note": "V1 openai/gpt-4.1-nano — CIO validates syntax/labels"
-        },
-        { "server": "figma", "tools": ["generate_diagram"], "priority": 30, "note": "OpenRouter 2x fail fallback" }
+        }
       ],
       "npm": [],
       "runbook": "docs/runbooks/cio-visual-diagram-openrouter.md",
+      "note": "DEL-3: figma fallback 削除 · OpenRouter のみ",
       "secondReviewer": null,
       "verify": [],
       "specRel": "docs/plans/2026-07-04-ai-team-six-roles-spec.md"

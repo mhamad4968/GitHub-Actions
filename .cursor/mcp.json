@@ -1,12 +1,5 @@
 {
   "mcpServers": {
-    "figma": {
-      "url": "https://mcp.figma.com/mcp"
-    },
-    "colors-fonts": {
-      "command": "npx",
-      "args": ["-y", "@colorsandfonts/mcp@1.1.0"]
-    },
     "repo-tree": {
       "command": "npx",
       "args": ["-y", "@andredezzy/deep-directory-tree-mcp"],
@@ -24,7 +17,7 @@
     "context7": {
       "url": "https://mcp.context7.com/mcp",
       "_meta": {
-        "purpose": "ライブラリ/API 最新 docs（kintone JS・React・shadcn 等・2026-06-05）"
+        "purpose": "ライブラリ/API 最新 docs（kintone JS・React 等・2026-06-05）"
       }
     },
     "chrome-devtools": {

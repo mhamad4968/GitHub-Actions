@@ -17,8 +17,15 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SELF = fileURLToPath(import.meta.url);
 
-/** spec §6 DEL 対象 — SCR 完走後は稼働正本からゼロであること */
-const DELETED_NAMES = ['cyber-news', 'mintlify'];
+/** spec §6 DEL + DEL-3（2026-08-08）— 稼働正本からゼロであること */
+const DELETED_NAMES = [
+  'cyber-news',
+  'mintlify',
+  'shadcn-ui',
+  'colors-fonts',
+  'figma',
+  'accessibility-scanner',
+];
 
 /** ファイル内に残ってはならない「稼働参照」パターン（履歴語の bare 言及より厳しめ） */
 const ACTIVE_PATTERNS = [
@@ -26,7 +33,13 @@ const ACTIVE_PATTERNS = [
   /CyberNewsMCP/i,
   /['"]cyber-news['"]/,
   /['"]mintlify['"]/,
+  /['"]shadcn-ui['"]/,
+  /['"]colors-fonts['"]/,
+  /['"]accessibility-scanner['"]/,
+  /"server"\s*:\s*"figma"/,
   /REPO_OVERLAY_SERVER_NAMES[\s\S]*mintlify/,
+  /REPO_OVERLAY_SERVER_NAMES[\s\S]*figma/,
+  /REPO_OVERLAY_SERVER_NAMES[\s\S]*colors-fonts/,
 ];
 
 const SCAN_FILES = [
@@ -57,8 +70,17 @@ const EXCLUDE_PATH_PARTS = [
   `${path.sep}.rag${path.sep}`,
 ];
 
+/** DEL 台帳そのもの（削除名の列挙は許可） */
+const EXCLUDE_FILE_NAMES = new Set([
+  'cio-mcp-manifest.json',
+  'cio-mcp-profiles.json',
+  'verify-mcp-deleted-refs.mjs',
+  'verify-cursor-mcp-windows.mjs',
+]);
+
 function shouldSkipPath(abs) {
   if (abs === SELF) return true;
+  if (EXCLUDE_FILE_NAMES.has(path.basename(abs))) return true;
   for (const part of EXCLUDE_PATH_PARTS) {
     if (abs.includes(part)) return true;
   }

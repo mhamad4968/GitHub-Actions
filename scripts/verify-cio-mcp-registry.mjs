@@ -32,11 +32,7 @@ const REQUIRED_CIO = [
 
 const RECOMMENDED = [
   'chrome-devtools',
-  'shadcn-ui',
   'cve-search',
-  'accessibility-scanner',
-  'figma',
-  'colors-fonts',
   'context7',
   'repo-tree',
   'eslint-mcp',

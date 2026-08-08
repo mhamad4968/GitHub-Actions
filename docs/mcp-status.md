@@ -1,6 +1,16 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-08-08（MCP月次パック · refresh-usage + gate 緑 · 死蔵0）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-08-08（DEL-3 · FE低頻度4本削除 · MCP月次パック）
+
+### §監査スナップ（2026-08-08 JST — DEL-3 浜田GO）
+
+| 項目 | 状態 |
+|------|------|
+| **削除** | `shadcn-ui` / `colors-fonts` / `figma` / `accessibility-scanner`（**再追加禁止**） |
+| **残す** | Core10 · Protected · eslint-mcp（Composer監査）· cve-search · github · schema 等 |
+| **台帳本数** | merged **22** active |
+| **代替** | chrome-devtools · Playwright · GenerateImage · `npm run lint:*` |
+| **ゲート** | `verify:mcp-deleted-refs` · `cio:mcp:env` 6/6 · routing OK |
 
 ### §監査スナップ（2026-08-08 JST — MCP月次パック）
 

@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-06",
+  "version": "2026-08-08",
   "mergePolicy": "user_mcp_json ∪ repo_.cursor/mcp.json（同名は user 優先・repo は overlay 追加）",
   "sources": {
     "user": "%USERPROFILE%/.cursor/mcp.json",
@@ -20,23 +20,24 @@
   ],
   "recommended": [
     "chrome-devtools",
-    "shadcn-ui",
-    "accessibility-scanner",
     "context7",
     "eslint-mcp",
     "repo-tree",
-    "figma",
-    "colors-fonts",
     "github",
     "kintone-dev",
     "kintone-space",
     "cve-search",
     "kintone-schema-mcp",
-    "git-history-mcp"
+    "git-history-mcp",
+    "office-powerpoint",
+    "office-word"
   ],
+  "deleted": {
+    "DEL-1": ["mintlify"],
+    "DEL-2": ["cyber-news"],
+    "DEL-3": ["shadcn-ui", "colors-fonts", "figma", "accessibility-scanner"]
+  },
   "repoOverlayOnly": [
-    "figma",
-    "colors-fonts",
     "repo-tree",
     "eslint-mcp",
     "context7",
@@ -45,10 +46,10 @@
   ],
   "phaseD": {
     "chrome-devtools": "repo overlay 有効化済（docs/runbooks/chrome-devtools-mcp-setup.md）",
-    "accessibility-scanner": "業務改善 Q55・60歳以上 UX（customize 後）",
-    "playwright": "7/1 デモ導線スモーク",
-    "rag": "spec 横断 QA — data/rag-business-improvement-manifest.json",
-    "tool-routing-v2": "依頼意図→MCP/npm — docs/runbooks/ai-team-tool-routing-v2.md / npm run cio:tool:route"
+    "playwright": "customize スモーク",
+    "rag": "spec 横断 QA",
+    "tool-routing-v2": "依頼意図→MCP/npm — docs/runbooks/ai-team-tool-routing-v2.md / npm run cio:tool:route",
+    "DEL-3": "2026-08-08 浜田GO — FE系低頻度4本削除（代替: chrome-devtools / GenerateImage / npm lint）"
   },
   "verify": "npm run verify:cio-mcp-manifest"
 }

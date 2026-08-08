@@ -1,7 +1,7 @@
 {
-  "version": "2026-07-11",
+  "version": "2026-08-08",
   "defaultProfile": "governance",
-  "spec": "docs/plans/2026-07-11-mcp-tools-consolidation-spec.md §4 §6.3",
+  "spec": "docs/plans/2026-07-11-mcp-tools-consolidation-spec.md §4 §6.3 · DEL-3 2026-08-08",
   "neverDisable": [
     "deepseek",
     "kimi",
@@ -17,10 +17,16 @@
     "office-powerpoint",
     "kintone-space"
   ],
+  "deletedDoNotReadd": [
+    "mintlify",
+    "cyber-news",
+    "shadcn-ui",
+    "colors-fonts",
+    "figma",
+    "accessibility-scanner"
+  ],
   "intentToProfile": {
     "frontend-ui": "fe",
-    "accessibility-audit": "fe",
-    "design-figma": "fe",
     "library-docs": "kintone",
     "kintone-schema-live": "kintone",
     "github-ci": "governance",
@@ -29,12 +35,9 @@
   },
   "profiles": {
     "governance": {
-      "label": "運用日 — Core10 + Warm · Cold 6 disabled",
+      "label": "運用日 — Core + Warm · FE Cold disabled",
       "disable": [
         "chrome-devtools",
-        "shadcn-ui",
-        "colors-fonts",
-        "accessibility-scanner",
         "github",
         "kintone-dev",
         "context7"
@@ -43,22 +46,22 @@
     },
     "kintone": {
       "label": "kintone schema / dev docs",
-      "disable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "accessibility-scanner", "github"],
+      "disable": ["chrome-devtools", "github"],
       "enable": ["kintone-dev", "context7", "kintone-schema-mcp"]
     },
     "fe": {
-      "label": "FE customize / WCAG / DevTools",
+      "label": "FE customize / DevTools（DEL-3後）",
       "disable": ["kintone-dev", "context7", "github"],
-      "enable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "accessibility-scanner"]
+      "enable": ["chrome-devtools"]
     },
     "doc-lane": {
       "label": "Word/PPT doc-lane — office protected",
-      "disable": ["chrome-devtools", "shadcn-ui", "github"],
+      "disable": ["chrome-devtools", "github"],
       "enable": ["office-word", "office-powerpoint", "markdownify"]
     },
     "security": {
       "label": "CVE / security intent",
-      "disable": ["chrome-devtools", "shadcn-ui", "colors-fonts", "figma"],
+      "disable": ["chrome-devtools"],
       "enable": ["cve-search", "duckduckgo-search"]
     }
   }

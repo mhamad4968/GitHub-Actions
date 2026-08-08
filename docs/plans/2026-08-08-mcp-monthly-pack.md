@@ -20,7 +20,7 @@
 | M5 | eslint 10.6→10.8.1（V1 minor）同梱メンテ | A | **済** |
 | M6 | checkpoint「8月提案レーン」節 + 次の1手更新 | A | **済** |
 | MX | `cio:periodic:monthly`（live-schema portfolio） | A | **見送り**（API負荷・必要時） |
-| MB | mcp.json 整理・npx @latest 一括 | **B** | **CEO GO後** |
+| MB | mcp.json 整理（DEL-3 低頻度4本削除） | **B→済** | **2026-08-08 浜田GO** |
 
 ## 3. やらない
 

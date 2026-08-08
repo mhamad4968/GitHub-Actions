@@ -22,7 +22,7 @@ globs: "**/*"
 | 役割 | 主 MCP キー（mcp.json） |
 |------|-------------------------|
 | **CIO（Opus 4.7/4.8）** | 下表すべて＋統合判断（§1-2-3-4-B）。**画像生成 MCP は使わない**（計画削除・内蔵 GenerateImage のみ・`cursor-generate-image-assets.mdc`） |
-| **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `shadcn-ui`, `chrome-devtools`, `duckduckgo-search`, `memory`, `repo-tree`, `eslint-mcp`, `context7` |
+| **Composer 2.5** | `kintone`, `playwright`, `rag`, `markdownify`, `chrome-devtools`, `duckduckgo-search`, `memory`, `repo-tree`, `eslint-mcp`, `context7` |
 | **Kimi** | `kimi`, `openrouter`, `markdownify`, `rag`, `memory` |
 | **DeepSeek** | `deepseek`, `openrouter`, `memory`, `sequential-thinking` |
 | **Grok 4.5 L2b** | `eslint-mcp`, `kintone-schema-mcp`, `git-history-mcp`, `repo-tree`（**read-only・横断検証のみ**） |
@@ -46,8 +46,7 @@ globs: "**/*"
 - **user-fetch**: **単一 URL の生本文**（HTML/JSON）が正で、ブラウザ操作が不要なとき。
 - **user-duckduckgo-search**: **Web 検索**（横断調査・仕様確認・既知バグ調査）。**Tavily MCP は 2026-05-06 に mcp.json から削除済**（浜田合意）。要約付き検索が必要なら WebFetch＋モデル要約や別経路を検討。
 - **user-playwright**: **ログイン後 UI・E2E・実画面 DOM**が必要なとき（kintone 画面・自社アプリ）。
-- **shadcn-ui**（`@jpisnice/shadcn-ui-mcp-server`）: **Shadcn／Radix 系コンポーネント**の追加・変更で、**現行の使い方・API**を正にしたいとき（詳細運用は **`mcp-frontend-shadcn-chrome.mdc`**）。
-- **chrome-devtools**（`chrome-devtools-mcp`）: **フロントのバグ調査・表示・コンソール**が主題のとき。**実ブラウザの事実**を取る（Playwright との使い分け: E2E／ログイン後画面なら Playwright、DevTools プロトコルで深掘りするなら本サーバも検討）。
+- **chrome-devtools**（`chrome-devtools-mcp`）: **フロントのバグ調査・表示・コンソール**が主題のとき。**実ブラウザの事実**を取る（Playwright との使い分け: E2E／ログイン後画面なら Playwright、DevTools プロトコルで深掘りするなら本サーバも検討）。**DEL-3（2026-08-08）**: 旧 shadcn UI MCP / Figma / colors-fonts / a11y scanner は削除済 — FE は本サーバ + Playwright + 内蔵 GenerateImage。
 - **user-rag**: **`kintone-ai-lab` 内ドキュメント**の根拠検索（TSB / 手順 / spec）。憲法 §50 系と併用。**2026-07-26〜試行**: ルール／夕反省／runbook 断定前は `query_documents` → **正本 Read**（RAG は aide のみ・権威禁止）。正本 `docs/runbooks/rag-constitution-aide-trial.md`／再 ingest `npm run rag:ingest:constitution-aide-trial`。
 - **repo-tree**（`@andredezzy/deep-directory-tree-mcp`）: **リポ構造の俯瞰**・depth 指定ツリー（画像 MCP 代替・2026-05-29）。
 - **eslint-mcp**（`@eslint/mcp`）: **lint 実行・fix 候補・品質監査**（JS/TS 変更後の客体検証）。
@@ -59,9 +58,7 @@ globs: "**/*"
 - **user-markdownify**: **長文 HTML → Markdown** の一括変換が目的のとき（小さな表は手直しでよい）。
 - **office-powerpoint** / **user-office-powerpoint**: **PowerPoint 新規・図解・グラフ・フロー**（資料作成 / doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-pptx-phase1`。正本 **`doc-lane-pptx-mcp.md`**。
 - **office-word** / **user-office-word**: **Word 新規・表・画像・セキュリティレポート図解**（doc-lane）。**Win Cursor 必須**。着手前 `verify:doc-lane-governance` + `verify:doc-lane-word-phase2`。月次定型は **`doc-lane:security-report`** 先行。正本 **`doc-lane-docx-mcp.md`**。既存 docx 精密パッチは **python-docx**（`docx-patch-windows.md`）。
-- **Figma 系 MCP**（サーバ名は環境依存: 例 `figma` / `figma-desktop` / `figma-developer-mcp`）: **Figma ファイル・フレーム URL が正**で、**表やダッシュの配色・タイポ・間隔・自動レイアウト**を設計データとして取り込みたいとき。**スクリーンショットだけではトークンが不明**なときはこちらを優先。手順の正本は **`docs/mcp-design-figma.md`**。**留置＋四半期再判定**（次: 2026-10）。
-- **colors-fonts**（`@colorsandfonts/mcp`）: **パレット生成**・**WCAG/APCA コントラスト**・CSS / Tailwind / **Figma トークン JSON** が欲しいとき（**Figma がまだ無い**表配色のたたき台、または Figma と併用して数値検証）。**kintone 表・ダッシュ**の流れは **`docs/mcp-design-kintone-tables.md`**。**留置＋四半期再判定**（次: 2026-10）。
-- **accessibility-scanner**: 2026-08-02 運用日は **disabled**（FE a11y 検収時だけ enable）。`office-powerpoint` は **neverDisable** のため無効化しない。
+- **DEL-3 削除済（2026-08-08 浜田GO）**: 旧 Figma MCP / colors-fonts / shadcn UI MCP / accessibility scanner — 再追加禁止。配色・a11y は chrome-devtools + 手動 / GenerateImage。
 - **user-memory**: **セッション横断で再利用すべきユーザ設定**があるとき（乱用しない・機密を書かない）。
 - **user-sequential-thinking**: **分岐が多い設計判断**で段階化が有効なとき（短問には使わない）。
 - **user-openrouter**: **他 LLM（DeepSeek/Kimi）が失敗・未設定**の代替。**`model` を必ず指定**（MCP 側に既定が無い場合あり。運用では `OPENROUTER_DEFAULT_MODEL` の設定推奨）。
