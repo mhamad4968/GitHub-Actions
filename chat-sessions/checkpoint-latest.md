@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-08 09:45 JST — 薄い統合（Desktop 37）+ 今日の総確認・是正。
 **次の1手**: 夜セッションで完了通知配線を実施する。
-**Git**: **`19a84d1c`** = `origin/main` — push 済（薄い統合 + score SPEC）
+**Git**: **main** = `origin/main` — push 済（薄い統合 `1710dec9` · score `e2a3ff06`）
 **closeStatus**: open
 **8月提案レーン（空月）**:
 | # | 内容 | 状態 |
