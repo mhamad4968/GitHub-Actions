@@ -1097,8 +1097,41 @@
           nv[code] = { value: cell.value };
         }
       });
-      return { value: nv };
+      const out = { value: nv };
+      // 既存行 id を残さないと PUT 時に全行削除→再作成になり、検証エラー（入力内容が正しくありません）になりやすい
+      if (row.id != null && String(row.id) !== '') {
+        out.id = String(row.id);
+      }
+      return out;
     });
+  }
+
+  /** REST PUT 用: `{ type, value }` ではなく `{ value }` のみ（type 付きは CB_VA01 になり得る） */
+  function inventoryHistPutField674(histField) {
+    const rows = (histField && Array.isArray(histField.value) ? histField.value : []) || [];
+    return { value: rows };
+  }
+
+  function formatKintoneApiError674(err) {
+    if (!err) return '不明なエラー';
+    if (typeof err === 'string') return err;
+    let msg = String(err.message || err.error || '').trim();
+    const errors = err.errors;
+    if (errors && typeof errors === 'object') {
+      const parts = [];
+      Object.keys(errors).forEach(function (k) {
+        const e = errors[k];
+        let m = e;
+        if (e && typeof e === 'object') {
+          m = e.messages || e.message || JSON.stringify(e);
+        }
+        parts.push(k + ': ' + (Array.isArray(m) ? m.join(' / ') : String(m)));
+      });
+      if (parts.length) {
+        msg = (msg ? msg + ' — ' : '') + parts.join('; ');
+      }
+    }
+    return msg || String(err);
   }
 
   function appendInventoryHistoryRow674(subField, dateYmd, person, location, method) {
@@ -1259,9 +1292,13 @@
         app: app,
         id: recordId,
         record: {
-          [FC_INVENTORY_HISTORY]: hist,
+          [FC_INVENTORY_HISTORY]: inventoryHistPutField674(hist),
           [FC_LATEST_INVENTORY_DATE]: { value: dateYmd },
         },
+      }).catch(function (err) {
+        const e = new Error(formatKintoneApiError674(err));
+        e.cause = err;
+        throw e;
       });
     });
   }
@@ -1474,7 +1511,11 @@
           .then(function () {
             next();
           })
-          .catch(reject);
+          .catch(function (err) {
+            const e = new Error(formatKintoneApiError674(err));
+            e.cause = err;
+            reject(e);
+          });
       }
       next();
     });
@@ -1593,7 +1634,7 @@
         puts.push({
           id: id,
           record: {
-            [FC_INVENTORY_HISTORY]: row.hist,
+            [FC_INVENTORY_HISTORY]: inventoryHistPutField674(row.hist),
             [FC_LATEST_INVENTORY_DATE]: { value: row.dateYmd },
           },
         });
@@ -1910,7 +1951,7 @@
         .catch(function (e) {
           showInventoryLoading674(false);
           btnSave.disabled = false;
-          window.alert('保存失敗: ' + (e && e.message ? e.message : String(e)));
+          window.alert('保存失敗: ' + formatKintoneApiError674(e));
         });
     });
 
@@ -8786,8 +8827,8 @@ ${bodyInner}\
 
   const SEARCH674_SORT_PRESETS = [
     { value: '', label: '一覧の既定' },
-    { value: '$id:desc', label: 'レコード番号 ↓新しい順' },
-    { value: '$id:asc', label: 'レコード番号 ↑古い順' },
+    { value: '$id:desc', label: '新しい順（レコード番号↓）' },
+    { value: '$id:asc', label: '古い順（レコード番号↑）' },
     { value: FC_PC_NAME + ':asc', label: 'PC名 A→Z' },
     { value: FC_PC_NAME + ':desc', label: 'PC名 Z→A' },
     { value: FC_USER_NAME + ':asc', label: '利用者名 A→Z' },
@@ -9927,9 +9968,10 @@ ${bodyInner}\
     inpKw.id = 'npl674-index-search-kw';
     inpKw.setAttribute('list', SEARCH674_DL_ID);
     inpKw.setAttribute('autocomplete', 'off');
-    inpKw.placeholder = '例: 674#123';
+    inpKw.placeholder = 'PC名 / 所属 / 利用者 / WindowsID / M365 など';
+    inpKw.title = 'キーワード検索（複数語は空白区切り）。例: JBIS0123 浜田';
     inpKw.style.cssText =
-      'min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;';
+      'min-width:260px;flex:1;max-width:480px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
     const dl = document.createElement('datalist');
     dl.id = SEARCH674_DL_ID;
@@ -9947,14 +9989,15 @@ ${bodyInner}\
 
     const sortWrap = document.createElement('label');
     sortWrap.style.cssText =
-      'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#334155;';
+      'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#0f172a;' +
+      'padding:4px 8px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;';
     const sortLbl = document.createElement('span');
-    sortLbl.textContent = '並び';
+    sortLbl.textContent = '並び（現在）';
     const selSort = document.createElement('select');
     selSort.id = 'npl674-index-sort';
-    selSort.setAttribute('aria-label', '一覧の並び順');
+    selSort.setAttribute('aria-label', '一覧の並び順（既定は新しい順）');
     selSort.style.cssText =
-      'padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;max-width:200px;';
+      'padding:6px 8px;border:1px solid #64748b;border-radius:6px;background:#fff;font-size:12px;font-weight:700;max-width:220px;';
     for (let spi = 0; spi < SEARCH674_SORT_PRESETS.length; spi++) {
       const defSort = SEARCH674_SORT_PRESETS[spi];
       const opt = document.createElement('option');
@@ -9975,8 +10018,36 @@ ${bodyInner}\
     const btnClr = document.createElement('button');
     btnClr.type = 'button';
     btnClr.textContent = '条件クリア';
+    btnClr.setAttribute('aria-label', '検索条件をすべてクリアして既定（利用中・新しい順）に戻す');
     btnClr.style.cssText =
-      'padding:6px 12px;border-radius:6px;border:1px solid #64748b;background:#fff;color:#334155;font-weight:700;cursor:pointer;';
+      'padding:7px 14px;border-radius:6px;border:2px solid #c2410c;background:#fff7ed;color:#9a3412;' +
+      'font-weight:800;cursor:pointer;box-shadow:0 1px 0 rgba(194,65,12,.15);';
+
+    const presetWrap = document.createElement('div');
+    presetWrap.style.cssText = 'display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;';
+    const presetLbl = document.createElement('span');
+    presetLbl.textContent = 'すぐ絞る:';
+    presetLbl.style.cssText = 'font-size:11px;font-weight:700;color:#475569;';
+    presetWrap.appendChild(presetLbl);
+
+    const btnPresetPersonal = document.createElement('button');
+    btnPresetPersonal.type = 'button';
+    btnPresetPersonal.textContent = '個人';
+    btnPresetPersonal.setAttribute('aria-label', '種別を個人だけに絞る');
+    btnPresetPersonal.style.cssText =
+      'padding:5px 10px;border-radius:6px;border:1px solid #0e7490;background:#ecfeff;color:#155e75;' +
+      'font-size:12px;font-weight:800;cursor:pointer;';
+
+    const btnPresetInUse = document.createElement('button');
+    btnPresetInUse.type = 'button';
+    btnPresetInUse.textContent = '利用中';
+    btnPresetInUse.setAttribute('aria-label', 'ステータスを利用中だけに絞る');
+    btnPresetInUse.style.cssText =
+      'padding:5px 10px;border-radius:6px;border:1px solid #15803d;background:#f0fdf4;color:#166534;' +
+      'font-size:12px;font-weight:800;cursor:pointer;';
+
+    presetWrap.appendChild(btnPresetPersonal);
+    presetWrap.appendChild(btnPresetInUse);
 
     const btnList = document.createElement('button');
     btnList.type = 'button';
@@ -10017,12 +10088,20 @@ ${bodyInner}\
     row.appendChild(dl);
     row.appendChild(noteSearchLabel);
     row.appendChild(sortWrap);
+    row.appendChild(presetWrap);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
     row.appendChild(btnList);
     if (btnSkyseaList) row.appendChild(btnSkyseaList);
     row.appendChild(btnInvBulk);
     row.appendChild(btnInvUninv);
+
+    const activeSummary = document.createElement('div');
+    activeSummary.id = 'npl674-index-active-summary';
+    activeSummary.setAttribute('aria-live', 'polite');
+    activeSummary.style.cssText =
+      'margin:0 0 8px;padding:6px 10px;border-radius:6px;border:1px solid #bae6fd;background:#f0f9ff;' +
+      'font-size:12px;font-weight:600;color:#0c4a6e;line-height:1.45;';
 
     const chipRow = document.createElement('div');
     chipRow.style.cssText =
@@ -10149,6 +10228,43 @@ ${bodyInner}\
     const skyChipRow = document.createElement('div');
     skyChipRow.style.cssText = 'display:none;';
 
+    function updateActiveSummary674() {
+      const parts = [];
+      const kw = String(inpKw.value || '').trim();
+      if (kw) parts.push('キーワード「' + kw + '」');
+      if (noteSearchBox.checked) parts.push('備考検索ON');
+      if (selectedTypes.size) {
+        parts.push(
+          '種別: ' +
+            Array.from(selectedTypes)
+              .map(function (t) {
+                return t;
+              })
+              .join('・'),
+        );
+      } else {
+        parts.push('種別: すべて');
+      }
+      if (selectedStatuses.size) {
+        parts.push('ステータス: ' + Array.from(selectedStatuses).join('・'));
+      }
+      if (transferBox.v) parts.push('転用PCのみ');
+      if (cbFilterBoxes.m365.v === 'checked') parts.push('M365切替 済');
+      if (cbFilterBoxes.m365.v === 'unchecked') parts.push('M365切替 未');
+      if (cbFilterBoxes.shisan.v === 'checked') parts.push('資産台帳 済');
+      if (cbFilterBoxes.shisan.v === 'unchecked') parts.push('資産台帳 未');
+      let sortLabel = '新しい順（レコード番号↓）';
+      const sv = String(selSort.value || '');
+      for (let si = 0; si < SEARCH674_SORT_PRESETS.length; si++) {
+        if (SEARCH674_SORT_PRESETS[si].value === sv) {
+          sortLabel = SEARCH674_SORT_PRESETS[si].label || sortLabel;
+          break;
+        }
+      }
+      parts.push('並び: ' + sortLabel);
+      activeSummary.textContent = 'いまの条件: ' + parts.join(' ／ ');
+    }
+
     function syncChips674() {
       chipRow.querySelectorAll('button[data-type-value]').forEach(function (b) {
         const val = b.dataset.typeValue || '';
@@ -10192,15 +10308,18 @@ ${bodyInner}\
           b.style.color = '#0f172a';
         }
       });
+      updateActiveSummary674();
     }
 
     wrap.appendChild(title);
     wrap.appendChild(nextSerialBar);
     wrap.appendChild(row);
+    wrap.appendChild(activeSummary);
     wrap.appendChild(chipRow);
     wrap.appendChild(statusChipRow);
 
     const apply674 = function () {
+      updateActiveSummary674();
       ensure674SearchCache()
         .then(function (recs) {
           const q = build674IndexListQuery(
@@ -10243,7 +10362,21 @@ ${bodyInner}\
           selectedStatuses.add(sv);
         });
         syncChips674();
+      } else {
+        updateActiveSummary674();
       }
+    });
+    btnPresetPersonal.addEventListener('click', function () {
+      selectedTypes.clear();
+      selectedTypes.add(TYPE_PERSONAL);
+      syncChips674();
+      apply674();
+    });
+    btnPresetInUse.addEventListener('click', function () {
+      selectedStatuses.clear();
+      selectedStatuses.add(PC_STATUS_IN_USE_674);
+      syncChips674();
+      apply674();
     });
     btnClr.addEventListener('click', function () {
       inpKw.value = '';
@@ -10294,6 +10427,7 @@ ${bodyInner}\
       transferBox: transferBox,
       cbFilterBoxes: cbFilterBoxes,
       syncChips: syncChips674,
+      updateActiveSummary: updateActiveSummary674,
       ensure674SearchCache: ensure674SearchCache,
       refreshNextSerial: function () {
         fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
@@ -10305,6 +10439,7 @@ ${bodyInner}\
     fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
 
     inpKw.addEventListener('input', function () {
+      updateActiveSummary674();
       if (split674IndexKeywords674(inpKw.value).length) {
         selectedStatuses.clear();
         init674AllStatusSet674().forEach(function (sv) {
