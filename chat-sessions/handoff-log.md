@@ -5562,3 +5562,19 @@ npm run cio:morning:ready
 **触らない**: 688 / 677–679 / SKYSEA — 触らない
 
 ---
+
+### 2026-08-08 JST — **2026-08-08 full CLOSE — 674 done + evening GO**
+
+**要約**: 674 Index/買替棚卸SKYSEA UX・棚卸状況・未棚卸修正・夕反省改善全GO。Desktop同期・本日完了。
+
+**次の1手**: 新セッション項番 -0（浜田指示）。買替は実運用不具合時のみ再開。
+
+**Git**: `f5f4afd5` — 
+
+**BUILD**: 674=2026-08-08-674-inv-period-dual-label rev307
+
+**GO待ち**: なし（本日完了）
+
+**触らない**: 688 / 677-679 / 712 / 736 / SKYSEA実配信GPO-SG
+
+---

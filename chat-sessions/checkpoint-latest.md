@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 21:05 JST — 674夕反省改善全GO反映（仕様・DoD・diag・期間二系統ラベル）。
-**次の1手**: 浜田指示待ち。
-**Git**: push 後に本行を commit SHA へ更新
-**closeStatus**: open-night
-**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済**（`cio:done-notify`） / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
+**最終更新**: 2026-08-08 21:10 JST — **本日フル締め**（674対応完了・夕反省改善GO反映・Desktop同期）。
+**次の1手**: 新セッション項番 -0（浜田指示）。買替は実運用不具合時のみ再開。
+**Git**: `f5f4afd5`（締め時に close-git で更新可）
+**closeStatus**: closed-day
+**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
 **制約**: SKYSEA実配信・GPO・SGしない（xlsx完了登録時のみ）／閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ
-**本日状態**: 08-08 674 UX+棚卸OK · 夕反省改善GO反映 · V2-N完了通知
+**本日状態**: 08-08 **完了** — 674 Index/買替棚卸SKYSEA UX・棚卸状況一覧・未棚卸バグ修正・夕反省改善GO・GHA緑
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
@@ -15,7 +15,7 @@
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 **674 live fileKey**: `71bd5bb4-3608-4f0e-9d1f-f7fad6ca2c60`
-**継続メモ**: SKYSEA手動台帳 active（配信なし・xlsx依頼時のみ）／674 rev292 exclude-4-depts済／夕反省GO(S-UI-WHERE等)済／719·721は closed-v1 明示依頼で再開可
+**継続メモ**: SKYSEA手動台帳 active（配信なし・xlsx依頼時のみ）／夕反省GO 08-07+08-08済／719·721は closed-v1 明示依頼で再開可
 **GO待ち**: 新アプリ＝相談・GO後のみ。**案内規律**: 完了済を GO待ち／次の1手／質問に出さない。
 **調査正本**: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` · **H9/△2**: eligible 2026-07-18 / review 2026-07-25 · early GREEN禁止
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 表示面マトリクス · 688 heat外 · 674採番max+1済 · 736触らない · 756/757/758 rev318 · 712 deploy禁止
@@ -35,6 +35,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-08-08
+
+### 2026-08-08 夜（本日最終締め）
+- 674: Index UX / 買替・棚卸・SKYSEA削除UX / 棚卸状況一覧 / 未棚卸click修正 / 夕反省改善GO
+- BUILD `2026-08-08-674-inv-period-dual-label` rev **307**
+- 夕反省: `docs/reports/2026-08-08-evening-reflection.md` · approved-changes 全GO
+- Desktop AI緊急用: sync で最新化（旧番号 prune）
+- closeStatus: **closed-day**
+
 ## 2026-08-07
 
 ### 2026-08-07 夜（本日最終締め）
@@ -45,31 +54,3 @@
 - SKYSEA対応一覧: dept summary table + tbody fix + exclude 4 depts
 - 674 deploy rev292 BUILD=`2026-08-07-674-skysea-exclude-4-depts` fileKey `15480b94-cee0-44ba-b0e0-f9c0b2acab78`
 - GitHub EOD: constitution-gates + kintone-customize-deploy 直近30 runs 全成功
-
-
-
-
-## 2026-08-06
-
-### 2026-08-06 朝（午前締め）
-- 674: JBIS/S-JBIS 次番=max+1（空き無視・9999除外・個人下限67）deploy rev266
-- SPEC §4.3.1 / runbook / kintone-apps 同期・push（`9b0ee359`）
-- 浜田目視: 個人 PC名 **JBIS0351** OK
-- close-git / clock:clear（本締め）
-
-
-
-
-
-## 2026-08-03
-
-### 2026-08-03 夜（本日最終締め）
-- 719: 社外禁止注記＝拠点印刷のみ（rev14）
-- 721: 一覧印刷マルチ部署＋ヘッダー画面／モーダル（rev15）
-- 夕反省全GO反映（A1–A3・S/O/M/C）・Desktop 最新入替・close-git／clock:clear
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-07.md -->
-
