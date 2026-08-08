@@ -134,21 +134,42 @@
     FC_SKYSEA_CLIENT_DELETE_STATUS,
     FC_SKYSEA_CLIENT_DELETE_DATE,
   ];
-  /** 674 棚卸状況一覧の拠点行（JREクラウド745と同粒度） */
-  const INVENTORY674_HUBS = [
-    '本社',
-    '東京支店',
-    '東北支店',
-    '関越支店',
-    '湾岸工事所',
-    '仙台営業所',
-    '盛岡営業所',
-    '秋田営業所',
-    '新潟営業所',
-    '長野営業所',
-    '高崎営業所',
-    '千葉営業所',
-    '水戸営業所',
+  /**
+   * 棚卸状況一覧の行順（747 JRE-C_Hub 集計の所属グループ×部署イメージ）。
+   * 浜田提示 2026-08-08。マッチは主に dept_name（部署）。
+   */
+  const INVENTORY674_ORG_DEPT_ROWS = [
+    { group: '本社', dept: '役員室' },
+    { group: '本社', dept: '顧問室' },
+    { group: '本社', dept: '経理部' },
+    { group: '本社', dept: '総務部' },
+    { group: '本社', dept: '経営企画部' },
+    { group: '本社', dept: '人事研修部' },
+    { group: '本社', dept: '人事研修部出向者' },
+    { group: '本社', dept: '安全推進部' },
+    { group: '本社', dept: '施工推進部' },
+    { group: '本社', dept: 'メンテナンス技術部' },
+    { group: '本社', dept: '塗装技術部' },
+    { group: '本社', dept: '品質管理部' },
+    { group: '東北支店', dept: '東北支店' },
+    { group: '東北支店', dept: '秋田営業所' },
+    { group: '東北支店', dept: '盛岡営業所' },
+    { group: '関越支店', dept: '関越支店' },
+    { group: '関越支店', dept: '新潟営業所' },
+    { group: '関越支店', dept: '長野営業所' },
+    { group: '関越支店', dept: '高崎営業所' },
+    { group: '東京支店', dept: '東京支店' },
+    { group: '東京支店', dept: '水戸営業所' },
+    { group: '東京支店', dept: '千葉営業所' },
+    { group: '東海支店', dept: '東海支店' },
+    { group: '東海支店', dept: '東京営業所' },
+    { group: '東海支店', dept: '静岡営業所' },
+    { group: '東海支店', dept: '名古屋営業所' },
+    { group: '東海支店', dept: '関西営業所' },
+    { group: 'リフォーム統括事業部', dept: '札幌支店' },
+    { group: 'リフォーム統括事業部', dept: '首都圏支店' },
+    { group: '鉄構支店', dept: '鉄構支店' },
+    { group: '湾岸工事所', dept: '湾岸工事所' },
   ];
   const STORAGE_KEY_674_REPLACE_HW_OK = 'npl674-replace-hw-ok:';
 
@@ -1126,20 +1147,45 @@
     return isInventoryTargetPcStatus674(record) && isInventoryTargetAccountType674(record);
   }
 
-  function resolveInventoryHub674(deptName) {
-    const d = String(deptName || '').trim();
-    if (!d) return '（未分類）';
-    for (let i = 0; i < INVENTORY674_HUBS.length; i++) {
-      if (d === INVENTORY674_HUBS[i]) return INVENTORY674_HUBS[i];
+  function normalizeInventoryOrgDeptLabel674(s) {
+    return String(s || '')
+      .normalize('NFKC')
+      .replace(/\u3000/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function inventoryOrgDeptRowKey674(group, dept) {
+    return normalizeInventoryOrgDeptLabel674(group) + '\t' + normalizeInventoryOrgDeptLabel674(dept);
+  }
+
+  /** レコードの所属グループ／所属名を、棚卸状況マスタ行へ寄せる（未一致は null） */
+  function resolveInventoryOrgDeptRow674(record) {
+    const group = normalizeInventoryOrgDeptLabel674(
+      (record && record[FC_GROUP_NAME] && record[FC_GROUP_NAME].value) || '',
+    );
+    const dept = normalizeInventoryOrgDeptLabel674(
+      (record && record[FC_DEPT_NAME] && record[FC_DEPT_NAME].value) || '',
+    );
+    if (!dept && !group) return null;
+    for (let i = 0; i < INVENTORY674_ORG_DEPT_ROWS.length; i++) {
+      const row = INVENTORY674_ORG_DEPT_ROWS[i];
+      const rg = normalizeInventoryOrgDeptLabel674(row.group);
+      const rd = normalizeInventoryOrgDeptLabel674(row.dept);
+      if (dept && dept === rd) {
+        if (!group || group === rg || group === rd) return row;
+      }
     }
-    const sorted = INVENTORY674_HUBS.slice().sort(function (a, b) {
-      return b.length - a.length;
-    });
-    for (let j = 0; j < sorted.length; j++) {
-      const hub = sorted[j];
-      if (d.indexOf(hub) === 0) return hub;
+    // 支店本体: 部署空で所属グループだけ支店名、または所属＝部署＝支店名
+    for (let j = 0; j < INVENTORY674_ORG_DEPT_ROWS.length; j++) {
+      const row2 = INVENTORY674_ORG_DEPT_ROWS[j];
+      const rg2 = normalizeInventoryOrgDeptLabel674(row2.group);
+      const rd2 = normalizeInventoryOrgDeptLabel674(row2.dept);
+      if (rg2 === rd2 && (group === rg2 || dept === rd2) && (!dept || dept === rd2 || dept === '－' || dept === '-')) {
+        return row2;
+      }
     }
-    return '（未分類）';
+    return null;
   }
 
   function isInventoryDoneInPeriod674(record, periodStart, periodEnd) {
@@ -2122,36 +2168,61 @@
   }
 
   function aggregateInventoryHubSummary674(records, periodStart, periodEnd) {
-    const hubMap = Object.create(null);
-    INVENTORY674_HUBS.forEach(function (hub) {
-      hubMap[hub] = { hub: hub, total: 0, done: 0, pending: 0, rate: '—' };
+    const rowMap = Object.create(null);
+    INVENTORY674_ORG_DEPT_ROWS.forEach(function (def) {
+      const key = inventoryOrgDeptRowKey674(def.group, def.dept);
+      rowMap[key] = {
+        group: def.group,
+        dept: def.dept,
+        key: key,
+        total: 0,
+        done: 0,
+        pending: 0,
+      };
     });
-    hubMap['（未分類）'] = { hub: '（未分類）', total: 0, done: 0, pending: 0, rate: '—' };
+    const uncatRows = [];
     (records || []).forEach(function (rec) {
       if (!isInventoryTargetRecord674(rec)) return;
-      const dept = String((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '').trim();
-      const hub = resolveInventoryHub674(dept);
-      if (!hubMap[hub]) {
-        hubMap[hub] = { hub: hub, total: 0, done: 0, pending: 0, rate: '—' };
+      const matched = resolveInventoryOrgDeptRow674(rec);
+      const done = isInventoryDoneInPeriod674(rec, periodStart, periodEnd);
+      if (matched) {
+        const key = inventoryOrgDeptRowKey674(matched.group, matched.dept);
+        const row = rowMap[key];
+        row.total++;
+        if (done) row.done++;
+        else row.pending++;
+        return;
       }
-      hubMap[hub].total++;
-      if (isInventoryDoneInPeriod674(rec, periodStart, periodEnd)) {
-        hubMap[hub].done++;
-      } else {
-        hubMap[hub].pending++;
+      const g = normalizeInventoryOrgDeptLabel674(
+        (rec[FC_GROUP_NAME] && rec[FC_GROUP_NAME].value) || '',
+      );
+      const d = normalizeInventoryOrgDeptLabel674((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '');
+      const ukey = inventoryOrgDeptRowKey674(g || '（未分類）', d || '（未分類）');
+      let urow = rowMap[ukey];
+      if (!urow) {
+        urow = {
+          group: g || '（未分類）',
+          dept: d || '（未分類）',
+          key: ukey,
+          total: 0,
+          done: 0,
+          pending: 0,
+          uncategorized: true,
+        };
+        rowMap[ukey] = urow;
+        uncatRows.push(urow);
       }
+      urow.total++;
+      if (done) urow.done++;
+      else urow.pending++;
     });
     const rows = [];
-    INVENTORY674_HUBS.forEach(function (hub) {
-      const row = hubMap[hub];
-      row.rate = row.total ? formatSkysea674SummaryRate674(row.done, row.total) : '—';
-      rows.push(row);
+    INVENTORY674_ORG_DEPT_ROWS.forEach(function (def) {
+      rows.push(rowMap[inventoryOrgDeptRowKey674(def.group, def.dept)]);
     });
-    const uncat = hubMap['（未分類）'];
-    if (uncat.total > 0) {
-      uncat.rate = formatSkysea674SummaryRate674(uncat.done, uncat.total);
-      rows.push(uncat);
-    }
+    uncatRows.forEach(function (r) {
+      rows.push(r);
+    });
     return rows;
   }
 
@@ -2160,50 +2231,69 @@
     hostEl.innerHTML = '';
     const meta = document.createElement('div');
     meta.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:6px;';
-    meta.textContent = '期間: ' + (periodLabel || '—') + ' ／ 完了＝今期内 latest_inventory_date あり';
+    meta.textContent =
+      '期間: ' +
+      (periodLabel || '—') +
+      ' ／ 棚卸済＝今期内 latest_inventory_date あり（747集計表イメージ・グループ×部署）';
     hostEl.appendChild(meta);
     const scroll = document.createElement('div');
-    scroll.style.cssText = 'overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;';
+    scroll.style.cssText = 'overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;max-height:420px;';
     const table = document.createElement('table');
     table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
     const thead = document.createElement('thead');
     thead.innerHTML =
-      '<tr style="background:#f1f5f9;">' +
-      '<th style="padding:6px 8px;text-align:left;">拠点</th>' +
-      '<th style="padding:6px 8px;text-align:right;">対象</th>' +
-      '<th style="padding:6px 8px;text-align:right;">完了</th>' +
-      '<th style="padding:6px 8px;text-align:right;">未了</th>' +
-      '<th style="padding:6px 8px;text-align:right;">完了率</th>' +
+      '<tr style="background:#f1f5f9;position:sticky;top:0;">' +
+      '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid #cbd5e1;">グループ</th>' +
+      '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid #cbd5e1;">部署</th>' +
+      '<th style="padding:6px 8px;text-align:right;border-bottom:1px solid #cbd5e1;">棚卸済</th>' +
+      '<th style="padding:6px 8px;text-align:right;border-bottom:1px solid #cbd5e1;">棚卸未了</th>' +
       '</tr>';
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
+    let sumDone = 0;
+    let sumPending = 0;
     (rows || []).forEach(function (row) {
+      sumDone += row.done || 0;
+      sumPending += row.pending || 0;
       const tr = document.createElement('tr');
       tr.style.borderTop = '1px solid #e2e8f0';
+      if (row.uncategorized) tr.style.background = '#fff7ed';
       function mkTd(txt, align, extraStyle) {
         const td = document.createElement('td');
         td.style.cssText =
-          'padding:6px 8px;text-align:' + (align || 'left') + ';' + (extraStyle || '');
+          'padding:6px 8px;text-align:' + (align || 'left') + ';white-space:nowrap;' + (extraStyle || '');
         td.textContent = txt;
         return td;
       }
-      tr.appendChild(mkTd(row.hub, 'left', 'font-weight:600;'));
-      tr.appendChild(mkTd(String(row.total), 'right'));
+      tr.appendChild(mkTd(row.group, 'left', 'font-weight:600;'));
+      tr.appendChild(mkTd(row.dept, 'left', 'font-weight:600;'));
       tr.appendChild(mkTd(String(row.done), 'right', 'color:#0d9488;font-weight:700;'));
       const tdPending = mkTd(String(row.pending), 'right', 'color:#b45309;font-weight:700;');
       if (row.pending > 0) {
         tdPending.style.cursor = 'pointer';
         tdPending.style.textDecoration = 'underline';
-        tdPending.title = 'クリックで当該拠点の未棚卸一覧を開く';
+        tdPending.title = 'クリックで当該部署の未棚卸一覧を開く';
         tdPending.addEventListener('click', function (ev) {
           ev.preventDefault();
-          openUninventoriedList674(row.hub);
+          openUninventoriedList674({ group: row.group, dept: row.dept });
         });
       }
       tr.appendChild(tdPending);
-      tr.appendChild(mkTd(row.rate, 'right', 'color:#1d4ed8;font-weight:700;'));
       tbody.appendChild(tr);
     });
+    const trSum = document.createElement('tr');
+    trSum.style.cssText = 'border-top:2px solid #64748b;background:#f8fafc;font-weight:800;';
+    function mkSumTd(txt, align) {
+      const td = document.createElement('td');
+      td.style.cssText = 'padding:6px 8px;text-align:' + (align || 'left') + ';';
+      td.textContent = txt;
+      return td;
+    }
+    trSum.appendChild(mkSumTd('全社', 'left'));
+    trSum.appendChild(mkSumTd('合計', 'left'));
+    trSum.appendChild(mkSumTd(String(sumDone), 'right'));
+    trSum.appendChild(mkSumTd(String(sumPending), 'right'));
+    tbody.appendChild(trSum);
     table.appendChild(tbody);
     scroll.appendChild(table);
     hostEl.appendChild(scroll);
@@ -2219,7 +2309,14 @@
         const bounds = computeInventoryPeriodBounds674(npl674InventoryEnvMap674);
         const periodLabel = bounds.start + ' 〜 ' + bounds.end;
         const q = buildInventoryTargetQueryPart674();
-        const fields = ['$id', FC_DEPT_NAME, FC_ACCOUNT_TYPE, FC_PC_STATUS, FC_LATEST_INVENTORY_DATE];
+        const fields = [
+          '$id',
+          FC_GROUP_NAME,
+          FC_DEPT_NAME,
+          FC_ACCOUNT_TYPE,
+          FC_PC_STATUS,
+          FC_LATEST_INVENTORY_DATE,
+        ];
         return fetchInventoryRecordsPaged674(q, fields).then(function (recs) {
           const rows = aggregateInventoryHubSummary674(recs, bounds.start, bounds.end);
           renderInventoryHubSummaryTable674(body, rows, periodLabel);
@@ -2241,7 +2338,7 @@
     const body = document.createElement('div');
     body.className = 'npl674-inv-hub-body';
     body.style.cssText = 'padding:8px 12px 12px;border-top:1px solid #e2e8f0;';
-    body.textContent = '開くと拠点別の棚卸進捗を表示します。';
+    body.textContent = '開くとグループ×部署の棚卸進捗を表示します。';
     acc.appendChild(sum);
     acc.appendChild(body);
     acc.addEventListener('toggle', function () {
@@ -2343,21 +2440,57 @@
     document.body.appendChild(panel);
   }
 
-  function openUninventoriedList674(hubFilter) {
+  function openUninventoriedList674(orgDeptFilter) {
     ensureInventoryPeriodLoaded674()
       .then(function () {
         const q = buildUninventoriedQuery674(npl674InventoryEnvMap674);
         showInventoryLoading674(true, '未棚卸を取得中…');
-        return fetchInventoryRecordsPaged674(q).then(function (recs) {
+        return fetchInventoryRecordsPaged674(q, [
+          '$id',
+          FC_PC_NAME,
+          FC_USER_NAME,
+          FC_GROUP_NAME,
+          FC_DEPT_NAME,
+          FC_PC_STATUS,
+          FC_ACCOUNT_TYPE,
+          FC_LATEST_INVENTORY_DATE,
+        ]).then(function (recs) {
           showInventoryLoading674(false);
           let filtered = recs;
-          if (hubFilter) {
+          let label = '';
+          if (orgDeptFilter && typeof orgDeptFilter === 'object') {
+            const fg = normalizeInventoryOrgDeptLabel674(orgDeptFilter.group);
+            const fd = normalizeInventoryOrgDeptLabel674(orgDeptFilter.dept);
+            label = (fg ? fg + ' / ' : '') + (fd || '');
             filtered = recs.filter(function (rec) {
-              const dept = String((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '').trim();
-              return resolveInventoryHub674(dept) === hubFilter;
+              const matched = resolveInventoryOrgDeptRow674(rec);
+              if (matched) {
+                return (
+                  normalizeInventoryOrgDeptLabel674(matched.group) === fg &&
+                  normalizeInventoryOrgDeptLabel674(matched.dept) === fd
+                );
+              }
+              const g = normalizeInventoryOrgDeptLabel674(
+                (rec[FC_GROUP_NAME] && rec[FC_GROUP_NAME].value) || '',
+              );
+              const d = normalizeInventoryOrgDeptLabel674(
+                (rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '',
+              );
+              return (
+                (g || '（未分類）') === (fg || '（未分類）') &&
+                (d || '（未分類）') === (fd || '（未分類）')
+              );
+            });
+          } else if (typeof orgDeptFilter === 'string' && orgDeptFilter) {
+            label = orgDeptFilter;
+            filtered = recs.filter(function (rec) {
+              const d = normalizeInventoryOrgDeptLabel674(
+                (rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '',
+              );
+              return d === normalizeInventoryOrgDeptLabel674(orgDeptFilter);
             });
           }
-          renderUninventoriedPanel674(filtered, hubFilter || '');
+          renderUninventoriedPanel674(filtered, label);
         });
       })
       .catch(function (e) {
