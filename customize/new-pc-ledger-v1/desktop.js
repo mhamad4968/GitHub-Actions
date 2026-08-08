@@ -10109,7 +10109,6 @@ ${bodyInner}\
     row.appendChild(dl);
     row.appendChild(noteSearchLabel);
     row.appendChild(sortWrap);
-    row.appendChild(presetWrap);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
     row.appendChild(btnList);
@@ -10121,8 +10120,18 @@ ${bodyInner}\
     activeSummary.id = 'npl674-index-active-summary';
     activeSummary.setAttribute('aria-live', 'polite');
     activeSummary.style.cssText =
-      'margin:0 0 8px;padding:6px 10px;border-radius:6px;border:1px solid #bae6fd;background:#f0f9ff;' +
+      'flex:1;min-width:220px;margin:0;padding:6px 10px;border-radius:6px;border:1px solid #bae6fd;background:#f0f9ff;' +
       'font-size:12px;font-weight:600;color:#0c4a6e;line-height:1.45;';
+
+    const summaryRow = document.createElement('div');
+    summaryRow.id = 'npl674-index-summary-row';
+    summaryRow.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 8px;';
+    presetWrap.style.cssText =
+      'display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;flex:0 0 auto;' +
+      'padding:4px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;';
+    summaryRow.appendChild(activeSummary);
+    summaryRow.appendChild(presetWrap);
 
     const chipRow = document.createElement('div');
     chipRow.style.cssText =
@@ -10335,7 +10344,7 @@ ${bodyInner}\
     wrap.appendChild(title);
     wrap.appendChild(nextSerialBar);
     wrap.appendChild(row);
-    wrap.appendChild(activeSummary);
+    wrap.appendChild(summaryRow);
     wrap.appendChild(chipRow);
     wrap.appendChild(statusChipRow);
 
