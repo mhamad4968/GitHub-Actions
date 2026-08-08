@@ -27,10 +27,10 @@
     },
     "674": {
       "build": "2026-08-07-674-skysea-exclude-4-depts",
-      "fileKey": "cc148656-89e7-4e62-9be4-4dcf98867ae3",
-      "revision": "293",
+      "fileKey": "d8216e59-c121-4c2f-89af-f578a15d3c1e",
+      "revision": "294",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-08T10:00:05.896Z",
+      "deployedAt": "2026-08-08T10:03:54.272Z",
       "note": null
     },
     "677": {

@@ -1112,6 +1112,21 @@
     return { value: rows };
   }
 
+  /**
+   * 部分 PUT でも必須フィールドが空の既存レコードは検証エラーになる。
+   * SKYSEA対応が空のときは既定「未了」を同梱して棚卸保存を通す（値がある場合は触らない）。
+   */
+  function withInventoryRequiredBackfill674(rec, putRecord) {
+    const out = putRecord || {};
+    const done = String(
+      (rec && rec[FC_SKYSEA_MANUAL_DONE] && rec[FC_SKYSEA_MANUAL_DONE].value) || '',
+    ).trim();
+    if (!done) {
+      out[FC_SKYSEA_MANUAL_DONE] = { value: SKYSEA_MANUAL_DONE_PENDING };
+    }
+    return out;
+  }
+
   function formatKintoneApiError674(err) {
     if (!err) return '不明なエラー';
     if (typeof err === 'string') return err;
@@ -1246,7 +1261,13 @@
     const o = opts || {};
     const dateYmd = assertInventoryDateOk674(o.dateYmd || todayYmd674());
     const year = ymdCalendarYear674(dateYmd);
-    const fields = [FC_INVENTORY_HISTORY, FC_LATEST_INVENTORY_DATE, FC_PC_STATUS, FC_USER_NAME];
+    const fields = [
+      FC_INVENTORY_HISTORY,
+      FC_LATEST_INVENTORY_DATE,
+      FC_PC_STATUS,
+      FC_USER_NAME,
+      FC_SKYSEA_MANUAL_DONE,
+    ];
     return fetchRecord674ById674(recordId, fields).then(function (rec) {
       if (!isInventoryTargetPcStatus674(rec)) {
         throw new Error('棚卸対象外です（利用中・保管のみ）。');
@@ -1291,10 +1312,10 @@
       return kintoneApiPut('/k/v1/record.json', {
         app: app,
         id: recordId,
-        record: {
+        record: withInventoryRequiredBackfill674(rec, {
           [FC_INVENTORY_HISTORY]: inventoryHistPutField674(hist),
           [FC_LATEST_INVENTORY_DATE]: { value: dateYmd },
-        },
+        }),
       }).catch(function (err) {
         const e = new Error(formatKintoneApiError674(err));
         e.cause = err;
@@ -1561,7 +1582,7 @@
     });
     if (!ids.length) throw new Error('棚卸する行にチェックを付けてください。');
     showInventoryLoading674(true, '棚卸を保存中…');
-    const fields = [FC_INVENTORY_HISTORY, FC_PC_STATUS, FC_PC_NAME];
+    const fields = [FC_INVENTORY_HISTORY, FC_PC_STATUS, FC_PC_NAME, FC_SKYSEA_MANUAL_DONE];
     return Promise.all(
       ids.map(function (id) {
         return fetchRecord674ById674(id, fields);
@@ -1633,10 +1654,10 @@
         });
         puts.push({
           id: id,
-          record: {
+          record: withInventoryRequiredBackfill674(rec, {
             [FC_INVENTORY_HISTORY]: inventoryHistPutField674(row.hist),
             [FC_LATEST_INVENTORY_DATE]: { value: row.dateYmd },
-          },
+          }),
         });
       }
       if (!puts.length) {
