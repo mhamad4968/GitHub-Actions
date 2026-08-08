@@ -51,9 +51,13 @@ Skill: .cursor/skills/cio-request-compose/SKILL.md
   実装GO後 · コード修正したら同一セッション内 cio:preflight:688 → deploy:688 必須
 
 **正本**: docs/runbooks/cio-request-compose.md
+**Skill**: .cursor/skills/cio-request-compose/SKILL.md
 **spec v0.1**: docs/plans/2026-07-11-request-efficiency-tool-spec.md
 **計画 v0.2**: docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md
+
+**CEO全文**: 通常の依頼 compose では付けない。締め・GO仰ぎの依頼文だけ `--with-ceo-baseline`（report/constitution に hint）
 
 **例（AI が実行）**:
   npm run cio:request:compose -- --lane kintone --intent "736 PH1d" --app 736
   npm run cio:request:compose -- --lane kintone --intent "688 WBGT調査" --app 688 --phase investigate
+  npm run cio:request:compose -- --lane report --intent "締め報告" --with-ceo-baseline

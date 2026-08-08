@@ -37,6 +37,12 @@ export function validateRequestComposeTemplates(templates) {
     const lane = lanes[id];
     if (!lane.label) issues.push(`lane ${id}: missing label`);
     if (!lane.aiHint) issues.push(`lane ${id}: missing aiHint`);
+    if (typeof lane.ceoBaselineDefault !== 'boolean') {
+      issues.push(`lane ${id}: ceoBaselineDefault must be boolean`);
+    }
+    if (lane.ceoBaselineHint != null && typeof lane.ceoBaselineHint !== 'string') {
+      issues.push(`lane ${id}: ceoBaselineHint must be string|null`);
+    }
   }
   return { ok: issues.length === 0, issues };
 }
@@ -120,7 +126,13 @@ export function buildComposeBlock(root, opts) {
     throw err;
   }
   const lane = validation.lane;
-  const noTouch = [...new Set([...(templates.defaultNoTouch || []), ...(opts.noTouch || [])])];
+  const noTouch = [
+    ...new Set([
+      ...(templates.defaultNoTouch || []),
+      ...(lane.extraNoTouch || []),
+      ...(opts.noTouch || []),
+    ]),
+  ];
   const phaseMeta = templates.phases?.[phase];
   const goWait =
     opts.goWait?.trim() ||
@@ -143,13 +155,20 @@ export function buildComposeBlock(root, opts) {
     `【AIへ】${aiHint}`,
   ];
 
+  // V2-3: レーン既定 + 明示フラグ。全レーン default=false（締め軽量化維持）
+  const attachCeo =
+    opts.withCeoBaseline === true || lane.ceoBaselineDefault === true;
   let ceoBaseline = null;
-  if (opts.withCeoBaseline) {
+  if (attachCeo) {
     const ceoPath = path.join(root, CEO_BASELINE_REL);
     if (fs.existsSync(ceoPath)) {
       ceoBaseline = fs.readFileSync(ceoPath, 'utf8').trim();
     }
   }
+  const ceoBaselineHint =
+    !attachCeo && typeof lane.ceoBaselineHint === 'string' && lane.ceoBaselineHint.trim()
+      ? lane.ceoBaselineHint.trim()
+      : null;
 
   return {
     laneId: opts.laneId,
@@ -157,6 +176,8 @@ export function buildComposeBlock(root, opts) {
     block: lines.join('\n'),
     lines,
     ceoBaseline,
+    ceoBaselineAttached: Boolean(ceoBaseline),
+    ceoBaselineHint,
     pasteText: ceoBaseline ? `${lines.join('\n')}\n\n${ceoBaseline}` : lines.join('\n'),
   };
 }

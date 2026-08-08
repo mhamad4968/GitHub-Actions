@@ -84,6 +84,26 @@
       "verify": ["verify:checkpoint-handoff-template", "verify:checkpoint-freeze-zone"]
     },
     {
+      "id": "request-compose",
+      "category": "session",
+      "phase": ["WORK", "ORIENT"],
+      "keywords": [
+        "依頼文を作って",
+        "依頼文",
+        "request:compose",
+        "cio:request:compose",
+        "貼付ブロック",
+        "composeブロック"
+      ],
+      "priority": 12,
+      "mcp": [],
+      "npm": ["cio:request:compose"],
+      "skill": ".cursor/skills/cio-request-compose/SKILL.md",
+      "runbook": "docs/runbooks/cio-request-compose.md",
+      "secondReviewer": null,
+      "verify": ["verify:cio-request-compose"]
+    },
+    {
       "id": "governance-second-review",
       "category": "governance",
       "phase": ["WORK"],

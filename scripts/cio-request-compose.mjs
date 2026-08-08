@@ -124,6 +124,8 @@ function main() {
       }
       if (result.ceoBaseline) {
         console.log('\n（CEO最低基準全文を末尾に同梱済）');
+      } else if (result.ceoBaselineHint) {
+        console.log(`\n[hint] ${result.ceoBaselineHint}`);
       }
       if (logRel) {
         console.log(`\n[log] ${logRel}`);

@@ -49,6 +49,15 @@ npm run cio:request:compose -- --list
 
 ログは **既定ON**（`chat-sessions/request-compose-logs/`）。抑止は `--no-log`。確認Aの記録であり実装GOの証拠ではない。
 
+### V2-3 レーン別デフォルト（CEO最低基準）
+
+| レーン | `ceoBaselineDefault` | 方針 |
+|--------|----------------------|------|
+| kintone / doc-lane / ops | `false` | 通常依頼では全文同梱しない |
+| constitution / report | `false` + hint | 締め・GO仰ぎのときだけ `--with-ceo-baseline` |
+
+`ceoBaselineDefault: true` にするとフラグなしで同梱（現状どのレーンも false · 2026-07-25 軽量化維持）。
+
 ---
 
 ## 5. 確認 A と GO 段階（必須 · #R-GO-BOUNDARY-01 · Step0）

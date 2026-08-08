@@ -13,5 +13,6 @@
   { "intent": "constitution RAG aide query_documents", "expectId": "internal-rag-research" },
   { "intent": "PowerPoint 資料 フロー図 作成", "expectId": "doc-lane" },
   { "intent": "Mermaid 6役フロー図", "expectId": "visual-diagram" },
-  { "intent": "lint 修正ループ Grok", "expectId": "grok-verify-loop" }
+  { "intent": "lint 修正ループ Grok", "expectId": "grok-verify-loop" },
+  { "intent": "依頼文を作って composeブロック", "expectId": "request-compose" }
 ]

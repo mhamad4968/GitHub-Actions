@@ -44,10 +44,11 @@ npm run cio:request:compose -- --lane <kintone|doc-lane|constitution|ops|report>
 
 ## レーン早見
 
-| ID | --app |
-|----|-------|
-| `kintone` | **必須** |
-| `doc-lane` / `constitution` / `ops` / `report` | 不要 |
+| ID | --app | CEO全文 |
+|----|-------|---------|
+| `kintone` | **必須** | 通常なし |
+| `doc-lane` / `ops` | 不要 | 通常なし |
+| `constitution` / `report` | 不要 | 締め・GO仰ぎ時のみ `--with-ceo-baseline` |
 
 ## 正本
 

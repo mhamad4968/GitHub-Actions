@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import {
   buildComposeBlock,
   COMPOSE_LOG_DIR_REL,
+  listLaneIds,
   loadRequestComposeTemplates,
   TEMPLATES_REL,
   validateRequestComposeTemplates,
@@ -44,6 +45,7 @@ const needles = [
       'GO境界・3行',
       'request-compose-logs',
       'cio-request-compose/SKILL.md',
+      'ceoBaselineDefault',
     ],
   },
   {
@@ -122,6 +124,35 @@ function main() {
   if (investigate.block.includes('pre-implement-gate')) {
     console.error('[verify:cio-request-compose] NG investigate should not suggest pre-implement-gate in hint');
     bad = true;
+  }
+
+  const report = buildComposeBlock(root, {
+    laneId: 'report',
+    intent: 'verify report lane defaults',
+  });
+  if (!report.ceoBaselineHint || !report.ceoBaselineHint.includes('--with-ceo-baseline')) {
+    console.error('[verify:cio-request-compose] NG report lane missing ceoBaselineHint');
+    bad = true;
+  }
+  if (report.ceoBaselineAttached) {
+    console.error('[verify:cio-request-compose] NG report must not auto-attach CEO baseline');
+    bad = true;
+  }
+
+  const ops = buildComposeBlock(root, { laneId: 'ops', intent: 'verify ops goWait' });
+  if (ops.block.includes('【GO待ち】—') || !ops.block.includes('本題と混同しない')) {
+    console.error('[verify:cio-request-compose] NG ops defaultGoWait');
+    bad = true;
+  }
+
+  for (const laneId of listLaneIds(templates)) {
+    const app = templates.lanes[laneId].requiredApp ? '736' : undefined;
+    try {
+      buildComposeBlock(root, { laneId, intent: `smoke ${laneId}`, app });
+    } catch (e) {
+      console.error(`[verify:cio-request-compose] NG lane smoke ${laneId}:`, e.message);
+      bad = true;
+    }
   }
 
   try {
