@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-08-674-fix-uninv-click-event';
+  const BUILD = '2026-08-08-674-harden-env-map-click';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1069,7 +1069,10 @@
       const map = Object.create(null);
       for (const r of resp.records || []) {
         const k = (r.setting_key && r.setting_key.value) || '';
-        if (k) map[k] = (r.setting_value && r.setting_value.value) || '';
+        // desc 取得なので先勝ち＝新しいレコードを優先（後勝ちだと古い値で上書きされる）
+        if (k && !Object.prototype.hasOwnProperty.call(map, k)) {
+          map[k] = (r.setting_value && r.setting_value.value) || '';
+        }
       }
       return map;
     });
@@ -10984,7 +10987,9 @@ ${bodyInner}\
     btnList.setAttribute('aria-label', '条件を指定してリスト一覧を表示');
     btnList.style.cssText =
       'padding:6px 12px;border-radius:6px;border:none;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;';
-    btnList.addEventListener('click', openList674CreateModal674);
+    btnList.addEventListener('click', function () {
+      openList674CreateModal674();
+    });
 
     let btnSkyseaList = null;
     let btnSkyseaClientDelete = null;
@@ -10995,7 +11000,9 @@ ${bodyInner}\
       btnSkyseaList.setAttribute('aria-label', 'SKYSEA手動インストール対応一覧（admin専用）');
       btnSkyseaList.style.cssText =
         'padding:6px 12px;border-radius:6px;border:none;background:#b45309;color:#fff;font-weight:700;cursor:pointer;';
-      btnSkyseaList.addEventListener('click', openSkysea674ListPanel674);
+      btnSkyseaList.addEventListener('click', function () {
+        openSkysea674ListPanel674();
+      });
 
       btnSkyseaClientDelete = document.createElement('button');
       btnSkyseaClientDelete.type = 'button';
@@ -11003,7 +11010,9 @@ ${bodyInner}\
       btnSkyseaClientDelete.setAttribute('aria-label', 'SKYSEAクライアント削除未了一覧（admin専用）');
       btnSkyseaClientDelete.style.cssText =
         'padding:6px 12px;border-radius:6px;border:none;background:#b91c1c;color:#fff;font-weight:700;cursor:pointer;';
-      btnSkyseaClientDelete.addEventListener('click', openSkyseaClientDeleteListPanel674);
+      btnSkyseaClientDelete.addEventListener('click', function () {
+        openSkyseaClientDeleteListPanel674();
+      });
     }
 
     const btnInvBulk = document.createElement('button');
@@ -11012,7 +11021,9 @@ ${bodyInner}\
     btnInvBulk.textContent = '一括棚卸';
     btnInvBulk.style.cssText =
       'display:none;padding:6px 12px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
-    btnInvBulk.addEventListener('click', openInventoryBulkModal674);
+    btnInvBulk.addEventListener('click', function () {
+      openInventoryBulkModal674();
+    });
 
     const btnInvUninv = document.createElement('button');
     btnInvUninv.type = 'button';

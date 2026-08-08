@@ -1,20 +1,20 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 18:42 JST — V2-N 完了通知 実装GO配線済（chimes+ダイアログ）。
-**次の1手**: 浜田指示待ち（完了通知は `npm run cio:done-notify` 利用可）。
-**Git**: heal 後に stamp · 壁時計開始 2026-08-08 18:16
+**最終更新**: 2026-08-08 20:55 JST — 674 買替/棚卸/SKYSEA削除UX 浜田OK。GHA直近成功・軽微harden deploy済。
+**次の1手**: 浜田指示待ち。
+**Git**: push 後に本行を commit SHA へ更新
 **closeStatus**: open-night
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済**（`cio:done-notify`） / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
 **制約**: SKYSEA実配信・GPO・SGしない（xlsx完了登録時のみ）／閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ
-**本日状態**: 08-08 request-compose v0.2·MCP月次·DEL-3·薄い統合37 · Index OPEN=利用中+$id desc · Shared JBIS warn+note · SKYSEA xlsx147完了 · UI personal-only/exact hard-block · 対応一覧 dept+tbody+4dept exclude · 夕反省GO(08-07) · GHA EOD success
+**本日状態**: 08-08 674 Index UX + 買替/棚卸状況一覧/未棚卸クリック修正 OK · V2-N完了通知 · request-compose v0.2
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-07-674-skysea-exclude-4-depts` | **292** |
+| **674** | `2026-08-08-674-harden-env-map-click` | **306** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
-**674 live fileKey**: `15480b94-cee0-44ba-b0e0-f9c0b2acab78`
+**674 live fileKey**: `6a73253c-b6b2-42c2-9130-0f0803323f63`
 **継続メモ**: SKYSEA手動台帳 active（配信なし・xlsx依頼時のみ）／674 rev292 exclude-4-depts済／夕反省GO(S-UI-WHERE等)済／719·721は closed-v1 明示依頼で再開可
 **GO待ち**: 新アプリ＝相談・GO後のみ。**案内規律**: 完了済を GO待ち／次の1手／質問に出さない。
 **調査正本**: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` · **H9/△2**: eligible 2026-07-18 / review 2026-07-25 · early GREEN禁止
