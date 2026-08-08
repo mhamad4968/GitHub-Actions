@@ -10047,7 +10047,7 @@ ${bodyInner}\
     const presetWrap = document.createElement('div');
     presetWrap.style.cssText = 'display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;';
     const presetLbl = document.createElement('span');
-    presetLbl.textContent = 'すぐ絞る:';
+    presetLbl.textContent = 'よく使う機能:';
     presetLbl.style.cssText = 'font-size:11px;font-weight:700;color:#475569;';
     presetWrap.appendChild(presetLbl);
 
