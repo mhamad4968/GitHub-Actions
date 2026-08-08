@@ -68,4 +68,4 @@ npm run verify:cio-request-compose
 | V2-1 | compose ログ `chat-sessions/request-compose-logs/`（既定ON · `--no-log` 抑止） | 実装 |
 | V2-2 | Cursor Skill `.cursor/skills/cio-request-compose/SKILL.md` | 実装 |
 | V2-3 | レーン別デフォルト（CEO · ops GO待ち · tool-route 連動） | 実装 |
-| V2-N | 完了通知 | **最後** |
+| V2-N | 完了通知 | **仕様**（夜相談） · `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md` |

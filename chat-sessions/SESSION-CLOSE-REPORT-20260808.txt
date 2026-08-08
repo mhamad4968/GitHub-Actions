@@ -1,0 +1,30 @@
+SESSION-CLOSE-REPORT 2026-08-08（昼セッション・本日途中締め）
+========================================
+
+■ レーン
+- 8月提案（空月）: 依頼効率化 / MCP月次 / 憲法薄い統合
+- 完了通知（V2-N）: **仕様のみ**（実装は夜相談→合意後）
+
+■ 本日できたこと
+- 依頼効率化 v0.2（Step0 GO3行 · V2-1ログ · V2-2 Skill · V2-3レーン既定）
+- MCP月次パック + DEL-3（shadcn/figma/colors/a11y 削除・再追加禁止）
+- 憲法健全性 G0 + **薄い統合** Desktop `37-SPEC-IMPL-VERIFY-MAP`
+- score constraint vs work · periodic monthly OK · 今日の総確認・是正
+- 完了通知: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`（夜相談用・未実装）
+
+■ GO / 仕様正本
+- `docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md`
+- `docs/plans/2026-08-08-mcp-monthly-pack.md`
+- `docs/plans/2026-08-08-constitution-health-g0.md`
+- `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md` ← 夜の入口
+
+■ 触らない（維持）
+- 688 heat外 / 677–679 / SKYSEA 実配信・GPO・SG / 712 deploy / 736 / 経営会議〜8/13
+
+■ 次セッション（夜）
+1. Desktop `00-NEW-SESSION-STARTER_yyyymmdd.txt` 貼付 → bootstrap
+2. 完了通知仕様を Read → 方法相談 → **実装GOが出たら**配線
+3. 実装GOが無ければ仕様のまま保留でよい
+
+■ 備考
+- 本ファイルは昼の途中締め。夜に最終作業があれば最終版で上書き可（multi-session runbook）

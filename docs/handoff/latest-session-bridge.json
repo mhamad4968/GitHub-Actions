@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-07T23:41:40.561Z",
-  "gitHead": "d0439a23",
-  "gitStatus": "## main...origin/main [ahead 1]",
-  "nextTask": "SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。",
+  "exportedAt": "2026-08-08T00:47:35.083Z",
+  "gitHead": "9f7e0d06",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=d0439a23 | 次=SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=9f7e0d06 | 次=夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-08-08T00:47:35.615Z",
+  "crosscheckOk": true
 }

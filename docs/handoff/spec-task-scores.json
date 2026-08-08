@@ -1,16 +1,16 @@
 {
-  "scoredAt": "2026-08-08T00:42:07.565Z",
+  "scoredAt": "2026-08-08T00:47:34.644Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜セッションで完了通知配線を実施する。",
+  "topTask": "夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。",
   "topTaskKind": "work",
-  "topWorkTask": "夜セッションで完了通知配線を実施する。",
+  "topWorkTask": "夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。",
   "tasks": [
     {
-      "id": "checkpoint:夜セッションで完了通知配線を実施する。",
-      "text": "夜セッションで完了通知配線を実施する。",
+      "id": "checkpoint:夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様:_`d",
+      "text": "夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。",
       "source": "checkpoint",
       "kind": "work",
-      "difficulty": 2,
+      "difficulty": 3,
       "tokens": "中",
       "tokenScore": 2,
       "impact": 5,

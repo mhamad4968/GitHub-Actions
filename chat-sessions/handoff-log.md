@@ -5553,7 +5553,7 @@ npm run cio:morning:ready
 
 **要約**: (要約未指定)
 
-**次の1手**: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。
+**次の1手**: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
 
 **Git**: `2c8b373a` — 
 
