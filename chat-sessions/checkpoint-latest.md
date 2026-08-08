@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 18:30 JST — 夜セッション WAKE・Desktop00–36通読・preamble≤50是正。
+**最終更新**: 2026-08-08 18:35 JST — 夜WAKE・Desktop通読・preamble≤50＋憲法needle復元。
 **次の1手**: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
-**Git**: **`b36d82d0`** 基準（WAKE後 heal あり）／壁時計開始 2026-08-08 18:16
+**Git**: **`f03ca0d7`** 基準（needle 復元コミット後に heal）／壁時計開始 2026-08-08 18:16
 **closeStatus**: open-night（昼 closed-day から再開）
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / V2-N完了通知=仕様済·実装は夜相談→GO後 / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
 **制約**: SKYSEA実配信・GPO・SGしない（xlsx完了登録時のみ）／閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ
@@ -33,8 +33,8 @@
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **クローズ正本**: `data/cio-project-closures.json` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
-**項番 -1** Desktop `AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** | **-0** OKまで着手しない | **0** `npm run session:bootstrap`（`verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / sync-desktop / verify:desktop）| **日終わり** `cio:session:close-git` / clock:clear / §35-6·7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
-**L2** bootstrap NG → NEW-SESSION-STARTER 6部 | **CLOSE** export-handoff → sync → clock:clear → close-git | **3c** `verify:session-close-git-warn` | **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+**項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
+**L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-08-07
 
 ### 2026-08-07 夜（本日最終締め）
