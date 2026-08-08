@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-08-674-inv-hub-no-blank-uncat';
+  const BUILD = '2026-08-08-674-fix-uninv-click-event';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2607,6 +2607,23 @@
   }
 
   function openUninventoriedList674(orgDeptFilter) {
+    // addEventListener 直渡しだと MouseEvent が来る → 所属フィルタと誤認して0〜1件になる
+    if (
+      orgDeptFilter &&
+      typeof orgDeptFilter === 'object' &&
+      (typeof Event !== 'undefined' && orgDeptFilter instanceof Event)
+    ) {
+      orgDeptFilter = null;
+    } else if (
+      orgDeptFilter &&
+      typeof orgDeptFilter === 'object' &&
+      orgDeptFilter.group == null &&
+      orgDeptFilter.dept == null &&
+      !orgDeptFilter.groupOnly &&
+      orgDeptFilter.target != null
+    ) {
+      orgDeptFilter = null;
+    }
     ensureInventoryPeriodLoaded674()
       .then(function () {
         const q = buildUninventoriedQuery674(npl674InventoryEnvMap674);
@@ -11003,7 +11020,9 @@ ${bodyInner}\
     btnInvUninv.textContent = '未棚卸一覧';
     btnInvUninv.style.cssText =
       'display:none;padding:6px 12px;border-radius:6px;border:1px solid #047857;background:#ecfdf5;color:#047857;font-weight:700;cursor:pointer;';
-    btnInvUninv.addEventListener('click', openUninventoriedList674);
+    btnInvUninv.addEventListener('click', function () {
+      openUninventoriedList674(null);
+    });
 
     row.appendChild(inpKw);
     row.appendChild(dl);
