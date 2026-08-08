@@ -152,6 +152,7 @@
     { group: '本社', dept: '塗装技術部' },
     { group: '本社', dept: '品質管理部' },
     { group: '東北支店', dept: '東北支店' },
+    { group: '東北支店', dept: '仙台営業所' },
     { group: '東北支店', dept: '秋田営業所' },
     { group: '東北支店', dept: '盛岡営業所' },
     { group: '関越支店', dept: '関越支店' },
@@ -1147,6 +1148,11 @@
     return isInventoryTargetPcStatus674(record) && isInventoryTargetAccountType674(record);
   }
 
+  /** 台帳上の表記ゆれ → マスタ部署名 */
+  const INVENTORY674_DEPT_ALIASES = {
+    人事研修部付出向者: '人事研修部出向者',
+  };
+
   function normalizeInventoryOrgDeptLabel674(s) {
     return String(s || '')
       .normalize('NFKC')
@@ -1159,24 +1165,41 @@
     return normalizeInventoryOrgDeptLabel674(group) + '\t' + normalizeInventoryOrgDeptLabel674(dept);
   }
 
+  function canonicalInventoryDept674(deptName) {
+    const d = normalizeInventoryOrgDeptLabel674(deptName);
+    if (!d) return '';
+    if (INVENTORY674_DEPT_ALIASES[d]) return INVENTORY674_DEPT_ALIASES[d];
+    return d;
+  }
+
   /** レコードの所属グループ／所属名を、棚卸状況マスタ行へ寄せる（未一致は null） */
   function resolveInventoryOrgDeptRow674(record) {
     const group = normalizeInventoryOrgDeptLabel674(
       (record && record[FC_GROUP_NAME] && record[FC_GROUP_NAME].value) || '',
     );
-    const dept = normalizeInventoryOrgDeptLabel674(
+    const dept = canonicalInventoryDept674(
       (record && record[FC_DEPT_NAME] && record[FC_DEPT_NAME].value) || '',
     );
     if (!dept && !group) return null;
-    for (let i = 0; i < INVENTORY674_ORG_DEPT_ROWS.length; i++) {
-      const row = INVENTORY674_ORG_DEPT_ROWS[i];
-      const rg = normalizeInventoryOrgDeptLabel674(row.group);
-      const rd = normalizeInventoryOrgDeptLabel674(row.dept);
-      if (dept && dept === rd) {
-        if (!group || group === rg || group === rd) return row;
+
+    // 部署名がマスタ上ユニークなら部署だけで確定（group_name の表記ゆれで落とさない）
+    if (dept) {
+      const hits = [];
+      for (let i = 0; i < INVENTORY674_ORG_DEPT_ROWS.length; i++) {
+        const row = INVENTORY674_ORG_DEPT_ROWS[i];
+        if (normalizeInventoryOrgDeptLabel674(row.dept) === dept) hits.push(row);
+      }
+      if (hits.length === 1) return hits[0];
+      if (hits.length > 1) {
+        for (let h = 0; h < hits.length; h++) {
+          const rg = normalizeInventoryOrgDeptLabel674(hits[h].group);
+          if (group === rg || group === dept) return hits[h];
+        }
+        return hits[0];
       }
     }
-    // 支店本体: 部署空で所属グループだけ支店名、または所属＝部署＝支店名
+
+    // 支店本体: 部署空／ハイフンで所属グループ＝支店名
     for (let j = 0; j < INVENTORY674_ORG_DEPT_ROWS.length; j++) {
       const row2 = INVENTORY674_ORG_DEPT_ROWS[j];
       const rg2 = normalizeInventoryOrgDeptLabel674(row2.group);
@@ -2197,7 +2220,7 @@
       const g = normalizeInventoryOrgDeptLabel674(
         (rec[FC_GROUP_NAME] && rec[FC_GROUP_NAME].value) || '',
       );
-      const d = normalizeInventoryOrgDeptLabel674((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '');
+      const d = canonicalInventoryDept674((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '');
       const ukey = inventoryOrgDeptRowKey674(g || '（未分類）', d || '（未分類）');
       let urow = uncatMap[ukey];
       if (!urow) {
@@ -2238,7 +2261,7 @@
       let subDone = 0;
       let subPending = 0;
       let subTotal = 0;
-      details.forEach(function (dr, idx) {
+      details.forEach(function (dr) {
         subDone += dr.done;
         subPending += dr.pending;
         subTotal += dr.total;
@@ -2249,8 +2272,6 @@
           done: dr.done,
           pending: dr.pending,
           total: dr.total,
-          orgRowspan: idx === 0 ? details.length + 1 : 0,
-          orgGroupStart: idx === 0,
         });
       });
       out.push({
@@ -2260,7 +2281,6 @@
         done: subDone,
         pending: subPending,
         total: subTotal,
-        orgCoveredByRowspan: details.length > 0,
       });
     });
 
@@ -2271,7 +2291,7 @@
       let uDone = 0;
       let uPending = 0;
       let uTotal = 0;
-      uncatList.forEach(function (dr, idx) {
+      uncatList.forEach(function (dr) {
         uDone += dr.done;
         uPending += dr.pending;
         uTotal += dr.total;
@@ -2283,8 +2303,6 @@
           pending: dr.pending,
           total: dr.total,
           uncategorized: true,
-          orgRowspan: idx === 0 ? uncatList.length + 1 : 0,
-          orgGroupStart: idx === 0,
         });
       });
       out.push({
@@ -2295,7 +2313,6 @@
         pending: uPending,
         total: uTotal,
         uncategorized: true,
-        orgCoveredByRowspan: uncatList.length > 0,
       });
     }
 
@@ -2371,16 +2388,10 @@
         tr.appendChild(mkTd('全社', 'left'));
         tr.appendChild(mkTd('合計', 'left'));
       } else if (row.kind === 'subtotal') {
-        if (!row.orgCoveredByRowspan) {
-          tr.appendChild(mkTd(row.group, 'left', 'font-weight:800;'));
-        }
-        tr.appendChild(mkTd('小計', 'left', 'font-weight:800;'));
+        tr.appendChild(mkTd(row.group, 'left', 'font-weight:800;'));
+        tr.appendChild(mkTd('小計', 'left', 'font-weight:800;color:#3730a3;'));
       } else {
-        if (row.orgRowspan && row.orgRowspan > 0) {
-          const tdG = mkTd(row.group, 'left', 'font-weight:700;vertical-align:middle;');
-          tdG.rowSpan = row.orgRowspan;
-          tr.appendChild(tdG);
-        }
+        tr.appendChild(mkTd(row.group, 'left', 'font-weight:700;'));
         tr.appendChild(mkTd(row.dept, 'left', 'font-weight:600;'));
       }
 

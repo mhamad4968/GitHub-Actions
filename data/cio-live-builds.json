@@ -27,10 +27,10 @@
     },
     "674": {
       "build": "2026-08-08-674-replace-inventory-skysea-delete-ux",
-      "fileKey": "470af3fc-a4a9-4f40-843c-e8287312c665",
-      "revision": "301",
+      "fileKey": "73ad33bb-31c0-47b5-947a-3111e4e589ef",
+      "revision": "302",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-08T11:37:17.772Z",
+      "deployedAt": "2026-08-08T11:41:16.470Z",
       "note": null
     },
     "677": {
