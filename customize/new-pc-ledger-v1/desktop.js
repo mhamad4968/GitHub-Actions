@@ -2172,6 +2172,7 @@
     INVENTORY674_ORG_DEPT_ROWS.forEach(function (def) {
       const key = inventoryOrgDeptRowKey674(def.group, def.dept);
       rowMap[key] = {
+        kind: 'detail',
         group: def.group,
         dept: def.dept,
         key: key,
@@ -2180,7 +2181,7 @@
         pending: 0,
       };
     });
-    const uncatRows = [];
+    const uncatMap = Object.create(null);
     (records || []).forEach(function (rec) {
       if (!isInventoryTargetRecord674(rec)) return;
       const matched = resolveInventoryOrgDeptRow674(rec);
@@ -2198,9 +2199,10 @@
       );
       const d = normalizeInventoryOrgDeptLabel674((rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '');
       const ukey = inventoryOrgDeptRowKey674(g || '（未分類）', d || '（未分類）');
-      let urow = rowMap[ukey];
+      let urow = uncatMap[ukey];
       if (!urow) {
         urow = {
+          kind: 'detail',
           group: g || '（未分類）',
           dept: d || '（未分類）',
           key: ukey,
@@ -2209,21 +2211,112 @@
           pending: 0,
           uncategorized: true,
         };
-        rowMap[ukey] = urow;
-        uncatRows.push(urow);
+        uncatMap[ukey] = urow;
       }
       urow.total++;
       if (done) urow.done++;
       else urow.pending++;
     });
-    const rows = [];
+
+    const groupOrder = [];
+    const seenGroup = Object.create(null);
     INVENTORY674_ORG_DEPT_ROWS.forEach(function (def) {
-      rows.push(rowMap[inventoryOrgDeptRowKey674(def.group, def.dept)]);
+      const g = def.group;
+      if (!seenGroup[g]) {
+        seenGroup[g] = true;
+        groupOrder.push(g);
+      }
     });
-    uncatRows.forEach(function (r) {
-      rows.push(r);
+
+    const out = [];
+    groupOrder.forEach(function (groupName) {
+      const details = [];
+      INVENTORY674_ORG_DEPT_ROWS.forEach(function (def) {
+        if (def.group !== groupName) return;
+        details.push(rowMap[inventoryOrgDeptRowKey674(def.group, def.dept)]);
+      });
+      let subDone = 0;
+      let subPending = 0;
+      let subTotal = 0;
+      details.forEach(function (dr, idx) {
+        subDone += dr.done;
+        subPending += dr.pending;
+        subTotal += dr.total;
+        out.push({
+          kind: 'detail',
+          group: dr.group,
+          dept: dr.dept,
+          done: dr.done,
+          pending: dr.pending,
+          total: dr.total,
+          orgRowspan: idx === 0 ? details.length + 1 : 0,
+          orgGroupStart: idx === 0,
+        });
+      });
+      out.push({
+        kind: 'subtotal',
+        group: groupName,
+        dept: '小計',
+        done: subDone,
+        pending: subPending,
+        total: subTotal,
+        orgCoveredByRowspan: details.length > 0,
+      });
     });
-    return rows;
+
+    const uncatList = Object.keys(uncatMap).map(function (k) {
+      return uncatMap[k];
+    });
+    if (uncatList.length) {
+      let uDone = 0;
+      let uPending = 0;
+      let uTotal = 0;
+      uncatList.forEach(function (dr, idx) {
+        uDone += dr.done;
+        uPending += dr.pending;
+        uTotal += dr.total;
+        out.push({
+          kind: 'detail',
+          group: dr.group,
+          dept: dr.dept,
+          done: dr.done,
+          pending: dr.pending,
+          total: dr.total,
+          uncategorized: true,
+          orgRowspan: idx === 0 ? uncatList.length + 1 : 0,
+          orgGroupStart: idx === 0,
+        });
+      });
+      out.push({
+        kind: 'subtotal',
+        group: '（未分類）',
+        dept: '小計',
+        done: uDone,
+        pending: uPending,
+        total: uTotal,
+        uncategorized: true,
+        orgCoveredByRowspan: uncatList.length > 0,
+      });
+    }
+
+    let grandDone = 0;
+    let grandPending = 0;
+    let grandTotal = 0;
+    out.forEach(function (r) {
+      if (r.kind !== 'detail') return;
+      grandDone += r.done;
+      grandPending += r.pending;
+      grandTotal += r.total;
+    });
+    out.push({
+      kind: 'grand',
+      group: '全社',
+      dept: '合計',
+      done: grandDone,
+      pending: grandPending,
+      total: grandTotal,
+    });
+    return out;
   }
 
   function renderInventoryHubSummaryTable674(hostEl, rows, periodLabel) {
@@ -2234,10 +2327,11 @@
     meta.textContent =
       '期間: ' +
       (periodLabel || '—') +
-      ' ／ 棚卸済＝今期内 latest_inventory_date あり（747集計表イメージ・グループ×部署）';
+      ' ／ 棚卸済＝今期内 latest_inventory_date あり（747集計表イメージ・グループ小計あり）';
     hostEl.appendChild(meta);
     const scroll = document.createElement('div');
-    scroll.style.cssText = 'overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;max-height:420px;';
+    scroll.style.cssText =
+      'overflow:auto;border:1px solid #cbd5e1;border-radius:4px;background:#fff;max-height:480px;';
     const table = document.createElement('table');
     table.style.cssText = 'width:100%;border-collapse:collapse;font-size:12px;';
     const thead = document.createElement('thead');
@@ -2250,26 +2344,49 @@
       '</tr>';
     table.appendChild(thead);
     const tbody = document.createElement('tbody');
-    let sumDone = 0;
-    let sumPending = 0;
+
+    function mkTd(txt, align, extraStyle) {
+      const td = document.createElement('td');
+      td.style.cssText =
+        'padding:6px 8px;text-align:' + (align || 'left') + ';white-space:nowrap;' + (extraStyle || '');
+      td.textContent = txt;
+      return td;
+    }
+
     (rows || []).forEach(function (row) {
-      sumDone += row.done || 0;
-      sumPending += row.pending || 0;
       const tr = document.createElement('tr');
       tr.style.borderTop = '1px solid #e2e8f0';
-      if (row.uncategorized) tr.style.background = '#fff7ed';
-      function mkTd(txt, align, extraStyle) {
-        const td = document.createElement('td');
-        td.style.cssText =
-          'padding:6px 8px;text-align:' + (align || 'left') + ';white-space:nowrap;' + (extraStyle || '');
-        td.textContent = txt;
-        return td;
+      if (row.kind === 'subtotal') {
+        tr.style.background = '#eef2ff';
+        tr.style.fontWeight = '800';
+      } else if (row.kind === 'grand') {
+        tr.style.background = '#f8fafc';
+        tr.style.fontWeight = '800';
+        tr.style.borderTop = '2px solid #64748b';
+      } else if (row.uncategorized) {
+        tr.style.background = '#fff7ed';
       }
-      tr.appendChild(mkTd(row.group, 'left', 'font-weight:600;'));
-      tr.appendChild(mkTd(row.dept, 'left', 'font-weight:600;'));
+
+      if (row.kind === 'grand') {
+        tr.appendChild(mkTd('全社', 'left'));
+        tr.appendChild(mkTd('合計', 'left'));
+      } else if (row.kind === 'subtotal') {
+        if (!row.orgCoveredByRowspan) {
+          tr.appendChild(mkTd(row.group, 'left', 'font-weight:800;'));
+        }
+        tr.appendChild(mkTd('小計', 'left', 'font-weight:800;'));
+      } else {
+        if (row.orgRowspan && row.orgRowspan > 0) {
+          const tdG = mkTd(row.group, 'left', 'font-weight:700;vertical-align:middle;');
+          tdG.rowSpan = row.orgRowspan;
+          tr.appendChild(tdG);
+        }
+        tr.appendChild(mkTd(row.dept, 'left', 'font-weight:600;'));
+      }
+
       tr.appendChild(mkTd(String(row.done), 'right', 'color:#0d9488;font-weight:700;'));
       const tdPending = mkTd(String(row.pending), 'right', 'color:#b45309;font-weight:700;');
-      if (row.pending > 0) {
+      if (row.kind === 'detail' && row.pending > 0) {
         tdPending.style.cursor = 'pointer';
         tdPending.style.textDecoration = 'underline';
         tdPending.title = 'クリックで当該部署の未棚卸一覧を開く';
@@ -2277,23 +2394,18 @@
           ev.preventDefault();
           openUninventoriedList674({ group: row.group, dept: row.dept });
         });
+      } else if (row.kind === 'subtotal' && row.pending > 0) {
+        tdPending.style.cursor = 'pointer';
+        tdPending.style.textDecoration = 'underline';
+        tdPending.title = 'クリックで当該グループの未棚卸一覧を開く';
+        tdPending.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          openUninventoriedList674({ group: row.group, dept: '', groupOnly: true });
+        });
       }
       tr.appendChild(tdPending);
       tbody.appendChild(tr);
     });
-    const trSum = document.createElement('tr');
-    trSum.style.cssText = 'border-top:2px solid #64748b;background:#f8fafc;font-weight:800;';
-    function mkSumTd(txt, align) {
-      const td = document.createElement('td');
-      td.style.cssText = 'padding:6px 8px;text-align:' + (align || 'left') + ';';
-      td.textContent = txt;
-      return td;
-    }
-    trSum.appendChild(mkSumTd('全社', 'left'));
-    trSum.appendChild(mkSumTd('合計', 'left'));
-    trSum.appendChild(mkSumTd(String(sumDone), 'right'));
-    trSum.appendChild(mkSumTd(String(sumPending), 'right'));
-    tbody.appendChild(trSum);
     table.appendChild(tbody);
     scroll.appendChild(table);
     hostEl.appendChild(scroll);
@@ -2461,24 +2573,36 @@
           if (orgDeptFilter && typeof orgDeptFilter === 'object') {
             const fg = normalizeInventoryOrgDeptLabel674(orgDeptFilter.group);
             const fd = normalizeInventoryOrgDeptLabel674(orgDeptFilter.dept);
-            label = (fg ? fg + ' / ' : '') + (fd || '');
+            const groupOnly = !!orgDeptFilter.groupOnly;
+            label = groupOnly
+              ? fg + '（グループ）'
+              : (fg ? fg + ' / ' : '') + (fd || '');
             filtered = recs.filter(function (rec) {
               const matched = resolveInventoryOrgDeptRow674(rec);
+              if (groupOnly) {
+                if (matched) {
+                  return normalizeInventoryOrgDeptLabel674(matched.group) === fg;
+                }
+                const g = normalizeInventoryOrgDeptLabel674(
+                  (rec[FC_GROUP_NAME] && rec[FC_GROUP_NAME].value) || '',
+                );
+                return (g || '（未分類）') === (fg || '（未分類）');
+              }
               if (matched) {
                 return (
                   normalizeInventoryOrgDeptLabel674(matched.group) === fg &&
                   normalizeInventoryOrgDeptLabel674(matched.dept) === fd
                 );
               }
-              const g = normalizeInventoryOrgDeptLabel674(
+              const g2 = normalizeInventoryOrgDeptLabel674(
                 (rec[FC_GROUP_NAME] && rec[FC_GROUP_NAME].value) || '',
               );
-              const d = normalizeInventoryOrgDeptLabel674(
+              const d2 = normalizeInventoryOrgDeptLabel674(
                 (rec[FC_DEPT_NAME] && rec[FC_DEPT_NAME].value) || '',
               );
               return (
-                (g || '（未分類）') === (fg || '（未分類）') &&
-                (d || '（未分類）') === (fd || '（未分類）')
+                (g2 || '（未分類）') === (fg || '（未分類）') &&
+                (d2 || '（未分類）') === (fd || '（未分類）')
               );
             });
           } else if (typeof orgDeptFilter === 'string' && orgDeptFilter) {
