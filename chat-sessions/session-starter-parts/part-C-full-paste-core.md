@@ -73,8 +73,8 @@
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
 【今やってる主タスク（2026-08-08 反映・2026-08-08 WAKE同期）】
-- 本日レーン: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
-- checkpoint: 2026-08-08 18:35 JST — 夜WAKE・Desktop通読・preamble≤50＋憲法needle復元。
+- 本日レーン: 浜田指示待ち（完了通知は `npm run cio:done-notify` 利用可）。
+- checkpoint: 2026-08-08 18:42 JST — V2-N 完了通知 実装GO配線済（chimes+ダイアログ）。
 - 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
 - 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）

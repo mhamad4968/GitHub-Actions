@@ -695,6 +695,7 @@
     "session:split-check": "node scripts/session-clock.mjs check",
     "session:clock:watch": "node scripts/session-clock-watch.mjs",
     "session:notify-selftest": "node scripts/session-notify-selftest.mjs",
+    "cio:done-notify": "node scripts/cio-done-notify.mjs",
     "session:clock:install-cron": "node scripts/install-session-clock-cron.mjs",
     "session:clock:uninstall-cron": "node scripts/install-session-clock-cron.mjs --uninstall",
     "session:clock:health": "node scripts/session-clock-health.mjs",

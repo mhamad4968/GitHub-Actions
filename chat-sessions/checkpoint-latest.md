@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 18:35 JST — 夜WAKE・Desktop通読・preamble≤50＋憲法needle復元。
-**次の1手**: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
-**Git**: **`f03ca0d7`** 基準（needle 復元コミット後に heal）／壁時計開始 2026-08-08 18:16
-**closeStatus**: open-night（昼 closed-day から再開）
-**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / V2-N完了通知=仕様済·実装は夜相談→GO後 / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
+**最終更新**: 2026-08-08 18:42 JST — V2-N 完了通知 実装GO配線済（chimes+ダイアログ）。
+**次の1手**: 浜田指示待ち（完了通知は `npm run cio:done-notify` 利用可）。
+**Git**: heal 後に stamp · 壁時計開始 2026-08-08 18:16
+**closeStatus**: open-night
+**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済**（`cio:done-notify`） / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
 **制約**: SKYSEA実配信・GPO・SGしない（xlsx完了登録時のみ）／閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ
 **本日状態**: 08-08 request-compose v0.2·MCP月次·DEL-3·薄い統合37 · Index OPEN=利用中+$id desc · Shared JBIS warn+note · SKYSEA xlsx147完了 · UI personal-only/exact hard-block · 対応一覧 dept+tbody+4dept exclude · 夕反省GO(08-07) · GHA EOD success
 ### 本日アクティブ（BUILD/rev）

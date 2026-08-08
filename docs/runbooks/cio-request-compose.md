@@ -155,3 +155,20 @@ npm run cio:tool:route -- --app <APP>
 ```bash
 npm run verify:cio-request-compose
 ```
+
+---
+
+## 12. 完了通知（V2-N · 2026-08-08 夜合意）
+
+タスク完了を浜田が気づかず放置しないための **ローカル通知**（外部 Push / メールなし）。
+
+```bash
+npm run cio:done-notify
+npm run cio:done-notify -- --title "完了" --body "目視だけお願いします"
+npm run cio:done-notify -- --selftest
+```
+
+- 音: `chimes.wav` 約3秒おき · ダイアログ OK で停止 · 最大5分
+- 実装: `scripts/cio-done-notify.mjs` · 仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`
+- ログ: `logs/session-desktop-notify.log`（`kind=done-notify`）
+- **AI**: 完了報告の直前または直後に 1 回実行（浜田に npm を依頼しない）

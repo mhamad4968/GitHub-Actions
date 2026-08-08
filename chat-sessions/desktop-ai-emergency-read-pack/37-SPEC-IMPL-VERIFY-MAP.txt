@@ -23,6 +23,7 @@ GO 段階 G0–G3 … Desktop **33**-META-28
 【2026-08-08 までに薄い固定したもの】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 依頼効率化 v0.2 … 36 + docs/runbooks/cio-request-compose.md + Skill
+完了通知 V2-N … `npm run cio:done-notify` · docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md
 MCP 月次 / DEL-3 … docs/mcp-status.md · verify:mcp-deleted-refs（再追加禁止4件）
 憲法健全性 G0 … docs/plans/2026-08-08-constitution-health-g0.md（大統合はしない）
 
