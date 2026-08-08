@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-08 09:50 JST — 昼セッション締め（完了通知は夜相談用仕様のみ）。
 **次の1手**: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
-**Git**: **`5b3e7d1a`** = `origin/main` — push 済
+**Git**: **`b36d82d0`** = `origin/main` — push 済
 **closeStatus**: closed-day
 **8月提案レーン（空月）**:
 | # | 内容 | 状態 |

@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-07 反映・2026-08-08 WAKE同期）】
-- 本日レーン: SKYSEA配信はしない。完了登録は xlsx 依頼時のみ AI 対応。新アプリは相談・GO後のみ。
-- checkpoint: 2026-08-07 20:01 JST — 正式締め: 仕様差分確定・topic-index追記・Desktop同期済・clock:clear・close-git。
+【今やってる主タスク（2026-08-08 反映・2026-08-08 WAKE同期）】
+- 本日レーン: 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08-done-notify-v2n-night-consult-spec.md`）。
+- checkpoint: 2026-08-08 09:50 JST — 昼セッション締め（完了通知は夜相談用仕様のみ）。
 - 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
 - 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
