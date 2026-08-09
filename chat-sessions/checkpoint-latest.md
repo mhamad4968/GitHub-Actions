@@ -15,10 +15,10 @@
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 **674 live fileKey**: `d5a744a8-0559-494c-a5c2-a901ddb5abf6`
-**継続メモ**: 仕様 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。P1=一覧タブ。P2=編集ヘッダー未着手。
+**継続メモ**: 仕様 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。P1=一覧タブ（deploy済）。P2=編集ヘッダー未着手。
 **GO待ち**: 浜田目視（P1）／P2実装GO／新アプリ＝相談・GO後のみ。
 **調査正本**: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
-**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止
+**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · Git=`d063c37e`
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 ## 保留・その他の制約
