@@ -681,6 +681,7 @@
     "cio:report-verify-response": "node scripts/cio-chat-report-selfcheck.mjs --strict-head --require-v2 --require-a1 --check-medal-line",
     "cio:close-report-verify-response": "node scripts/cio-chat-report-selfcheck.mjs --require-ceo-block --strict-head --require-v2 --require-a1 --check-medal-line",
     "cio:report:draft": "node scripts/cio-report-draft.mjs",
+    "cio:report-draft": "node scripts/cio-report-draft.mjs",
     "verify:cio-report-draft": "node scripts/verify-cio-report-draft.mjs",
     "cio:selfcheck:test": "node scripts/cio-selfcheck-smoke.mjs",
     "cio:commit-msg-second-reviewer": "node scripts/cio-commit-msg-second-reviewer.mjs",

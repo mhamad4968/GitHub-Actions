@@ -38,7 +38,7 @@
 | **T2** | `cio-wake-handoff-commit` 契約テスト: **lock→re-export→handoff** の文字列順序を必須（本日配線済） | **反映済** |
 | **T3** | Composer 成果物の受入チェックに「**順序契約 1 行**（先／後／再export有無）」を必須 | **反映済** |
 | **T4** | `test:wake` を pre-push parity + cursor-env-gates に固定（本日反映済） | **反映済** |
-| **T5** | 報告下書きは先に `cio:report-draft` または medal／□A1 テンプレ固定から始める | **反映済** |
+| **T5** | 報告下書きは先に `cio:report:draft`（alias `cio:report-draft`）または medal／□A1 テンプレ固定から始める | **反映済** |
 
 ---
 

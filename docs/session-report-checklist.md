@@ -106,9 +106,9 @@ CHECKSHEET_OK: yes
 | **正** | `□ A1 ダブルチェック（誰と・結果）` |
 | **誤（verify NG）** | `□ A1 ダブルチェック` / `□A1: ダブルチェック DeepSeek=ok`（**「誰と」括弧なし**） |
 
-続けて着手前／検証締め／`ダブルチェック要約:` を書く。手書きより **`npm run cio:report-draft -- --out <path>` → 事実置換 → `npm run cio:report-verify-response -- --file <path>`** を優先（#M-REPORT-01）。
+続けて着手前／検証締め／`ダブルチェック要約:` を書く。手書きより **`npm run cio:report:draft -- --out <path>` → 事実置換 → `npm run cio:report-verify-response -- --file <path>`** を優先（#M-REPORT-01）。
 
-**T5（2026-08-09）**: 報告下書きは **先に** `cio:report-draft` または medal／□A1 テンプレ固定から始める（手書きラベルから始めない）。  
+**T5（2026-08-09）**: 報告下書きは **先に** `cio:report:draft`（alias `cio:report-draft`）または medal／□A1 テンプレ固定から始める（手書きラベルから始めない）。  
 **RULE-2（同）**: verify **初回 NG** は失敗に数え、**同一ターン**でテンプレ修正→再 verify までを完了定義に含める。
 
 - [ ] **着手前（§50-3-8 相当）**: **第2者を誰にしたか**（DeepSeek / Kimi / 両名 / OpenRouter / **無**）と、**短問の要旨**＋**回答の要旨**（**1 行以上**）。**コード変更・憲法改定級・deploy 級を含まない本報告**なら **`（着手前ダブルチェック: 非該当 — 理由1語以上）`** でよい。**スキップ**なら **`§50-3-8 スキップ理由:`** と同内容を **ここに再掲**するか、**§C へ誘導する 1 行**（いずれかで CEO が追えること）。

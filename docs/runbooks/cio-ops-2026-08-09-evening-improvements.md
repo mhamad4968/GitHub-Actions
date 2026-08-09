@@ -71,7 +71,7 @@ allowlist 外 tip（lock / credit 等）を足すとき、PR またはチャッ�
 
 ## T5 / RULE-2 — 報告
 
-1. 下書きは先に `npm run cio:report-draft -- --out <path>` または medal／□A1 テンプレ固定から始める。
+1. 下書きは先に `npm run cio:report:draft -- --out <path>`（互換 alias: `cio:report-draft`）または medal／□A1 テンプレ固定から始める。
 2. `cio:report-verify-response` **初回 NG** は失敗に数え、**同一ターン**で修正→再 verify までを完了定義に含める。
 
 ## MCP-1 / MCP-2

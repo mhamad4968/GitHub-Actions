@@ -6,7 +6,7 @@
 ■ 報告前自動判定（beforeSubmitPrompt）session-clock check + npm run report:pipeline-status。NG時は additional_context で (A) docs/session-report-checklist.md 通読 または (B) C:/Users/mhamada202408224/Desktop/AI緊急用 全ファイルRead（推奨両方）。SKIP_REPORT_PRECHECK=1 は浜田承認下のみ。logs/report-precheck.log
 ■ hooks 自動（厳格）報告ターンで応答末尾の機械可読フッタが必須（欠落・V1のみ・V2矛盾→stopで自動フォロー）
 ■ hooks 未経路対策: 報告・締め・GO は送信前に npm run cio:report-verify-response -- --file <下書き> で exit 0（CEO全文・§1四行・V2・□A1・禁止語）。軽量のみなら cio:chat-report-selfcheck。健康＝npm run health-check。「心身の健康」＋TSB-001 併記は禁止
-■ T5/RULE-2（2026-08-09）: 下書きは先に cio:report-draft または medal／□A1 テンプレから。verify 初回 NG は同一ターンで修正→再 verify まで完了定義
+■ T5/RULE-2（2026-08-09）: 下書きは先に cio:report:draft（alias cio:report-draft）または medal／□A1 テンプレから。verify 初回 NG は同一ターンで修正→再 verify まで完了定義
   ▽ V2（必須・2026-05-08 CEO命令）— SPEC_TOUCHED:yes＋SECOND_REVIEWER:none(reason空) 等の矛盾は warn 止まりにせず stop＋パイプライン FAILED
     【セッション報告チェックシート】
     CHECKSHEET_VERSION: 2
