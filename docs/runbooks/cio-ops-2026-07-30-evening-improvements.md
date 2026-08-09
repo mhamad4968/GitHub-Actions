@@ -12,7 +12,7 @@
 
 - GitHub の success だけ見て「検査十分」としない。
 - **push 前**（`cio:quality-gate --push`）に `npm run cio:pre-push-local-parity` を必須とする。
-- 中身: `verify:ci-rule-integrity` + `cio:selfcheck:test` + `test:evening-improvements-2026-07-26`  
+- 中身: `verify:ci-rule-integrity` + `cio:selfcheck:test` + `test:evening-improvements-2026-07-26` + `test:wake`  
   （**smoke 全量ではない**。smoke は別ゲート／障害時・大規模変更時。parity は「ローカルだけ赤／CI 緑」再発防止に足りると判断した最小束。）
 - 緊急脱出: `SKIP_CIO_LOCAL_PARITY=1`（浜田承認下のみ・理由をチャット 1 行）。
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * O-1: push 前ローカル parity（2026-07-30 浜田 GO）
- * smoke 全量ではない — integrity + selfcheck + evening-0726。
+ * smoke 全量ではない — integrity + selfcheck + evening-0726 + test:wake。
  * SKIP_CIO_LOCAL_PARITY=1 でスキップ（浜田承認下のみ）。
  */
 import { spawnSync } from "node:child_process";
@@ -23,6 +23,7 @@ const steps = [
   { type: "npm", script: "verify:ci-rule-integrity" },
   { type: "npm", script: "cio:selfcheck:test" },
   { type: "npm", script: "test:evening-improvements-2026-07-26" },
+  { type: "npm", script: "test:wake" },
 ];
 
 for (const step of steps) {

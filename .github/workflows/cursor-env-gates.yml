@@ -24,6 +24,9 @@ on:
       - 'scripts/rag-sync-business-improvement.mjs'
       - 'scripts/smoke-business-improvement-demo.mjs'
       - 'scripts/lib/cio-bridge-staleness.mjs'
+      - 'scripts/test-wake-*.mjs'
+      - 'scripts/lib/cio-wake-handoff-allowlist*.mjs'
+      - 'scripts/lib/desktop-ai-emergency-sync-precheck*.mjs'
       - '.github/workflows/cursor-env-gates.yml'
       - 'package.json'
 
@@ -55,3 +58,6 @@ jobs:
 
       - name: smoke-bi-demo scaffold（dry-run）
         run: npm run smoke:bi-demo -- --dry-run
+
+      - name: test:wake（cold-start / handoff fold 回帰）
+        run: npm run test:wake
