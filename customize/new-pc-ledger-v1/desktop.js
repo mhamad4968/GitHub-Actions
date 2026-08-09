@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1h';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1i';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11h-no-presets';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11i-chips-1row';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -11244,38 +11244,7 @@ ${bodyInner}\
     });
     chipRow.appendChild(btnTransferChip);
 
-    const statusChipRow = document.createElement('div');
-    statusChipRow.style.cssText =
-      'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;';
-    const statusLabel = document.createElement('span');
-    statusLabel.textContent = 'ステータス:';
-    statusLabel.style.cssText = 'font-size:11px;font-weight:700;color:#475569;margin-right:2px;';
-    statusChipRow.appendChild(statusLabel);
-
     const selectedStatuses = init674DefaultStatusSet674();
-
-    SEARCH674_STATUS_CHIPS.forEach(function (defSt) {
-      const bSt = document.createElement('button');
-      bSt.type = 'button';
-      bSt.textContent = defSt.label;
-      bSt.dataset.statusValue = defSt.value;
-      bSt.className = 'npl674-index-chip';
-      bSt.setAttribute('aria-pressed', 'false');
-      bSt.style.cssText =
-        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#dcfce7;' +
-        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
-      bSt.addEventListener('click', function () {
-        const valSt = bSt.dataset.statusValue || '';
-        if (selectedStatuses.has(valSt)) {
-          if (selectedStatuses.size <= 1) return;
-          selectedStatuses.delete(valSt);
-        } else {
-          selectedStatuses.add(valSt);
-        }
-        syncChips674();
-      });
-      statusChipRow.appendChild(bSt);
-    });
 
     const cbFilterBoxes = { m365: { v: null }, shisan: { v: null } };
 
@@ -11314,6 +11283,40 @@ ${bodyInner}\
         set674CbFilterMode674(defCb.key, 'unchecked');
       });
       chipRow.appendChild(btnNone);
+    });
+
+    const statusSep = document.createElement('span');
+    statusSep.setAttribute('aria-hidden', 'true');
+    statusSep.textContent = '|';
+    statusSep.style.cssText = 'color:#cbd5e1;font-weight:700;margin:0 2px;';
+    chipRow.appendChild(statusSep);
+
+    const statusLabel = document.createElement('span');
+    statusLabel.textContent = 'ステータス:';
+    statusLabel.style.cssText = 'font-size:11px;font-weight:700;color:#475569;margin-right:2px;';
+    chipRow.appendChild(statusLabel);
+
+    SEARCH674_STATUS_CHIPS.forEach(function (defSt) {
+      const bSt = document.createElement('button');
+      bSt.type = 'button';
+      bSt.textContent = defSt.label;
+      bSt.dataset.statusValue = defSt.value;
+      bSt.className = 'npl674-index-chip';
+      bSt.setAttribute('aria-pressed', 'false');
+      bSt.style.cssText =
+        'padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#dcfce7;' +
+        'font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+      bSt.addEventListener('click', function () {
+        const valSt = bSt.dataset.statusValue || '';
+        if (selectedStatuses.has(valSt)) {
+          if (selectedStatuses.size <= 1) return;
+          selectedStatuses.delete(valSt);
+        } else {
+          selectedStatuses.add(valSt);
+        }
+        syncChips674();
+      });
+      chipRow.appendChild(bSt);
     });
 
     const skyChipRow = document.createElement('div');
@@ -11385,7 +11388,7 @@ ${bodyInner}\
           b.style.borderColor = on ? '#475569' : '#94a3b8';
         }
       });
-      statusChipRow.querySelectorAll('button[data-status-value]').forEach(function (b) {
+      chipRow.querySelectorAll('button[data-status-value]').forEach(function (b) {
         const valSt = b.dataset.statusValue || '';
         const onSt = selectedStatuses.has(valSt);
         b.setAttribute('aria-pressed', onSt ? 'true' : 'false');
@@ -11407,7 +11410,6 @@ ${bodyInner}\
     ledgerPanel.appendChild(row);
     ledgerPanel.appendChild(summaryRow);
     ledgerPanel.appendChild(chipRow);
-    ledgerPanel.appendChild(statusChipRow);
 
     inventoryPanel.appendChild(invPeriodHint);
     inventoryPanel.appendChild(invButtonRow);
