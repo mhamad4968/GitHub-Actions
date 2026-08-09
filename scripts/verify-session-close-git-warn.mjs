@@ -4,6 +4,7 @@
  * デフォルト: 未コミットまたは origin より ahead なら exit 1（締め禁止）。
  * --warn-only … 警告のみ exit 0
  * --skip-push-check … push 未実施チェックをスキップ（通常は使わない）
+ * --wake-context … bootstrap/WAKE 専用（#D-CLOSE-02 前日締め日付の偽陽性を抑止）。締めでは付けない
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -17,6 +18,7 @@ import { checkCheckpointGitRegression, countCheckpointGitLines, checkCheckpointG
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const warnOnly = process.argv.includes('--warn-only');
 const skipPushCheck = process.argv.includes('--skip-push-check');
+const wakeContext = process.argv.includes('--wake-context');
 const CLOCK_REL = 'chat-sessions/SESSION-CLOCK.md';
 
 function git(args) {
@@ -239,6 +241,7 @@ function main() {
       [
         path.join(root, 'scripts/verify-session-close-handoff-freshness.mjs'),
         ...(warnOnly ? ['--warn-only'] : []),
+        ...(wakeContext ? ['--wake-context'] : []),
       ],
       { cwd: root, stdio: 'inherit' },
     );

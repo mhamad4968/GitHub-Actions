@@ -83,10 +83,15 @@ if (tmpReg.status !== 0) {
 }
 
 console.log('\n=== [bootstrap] Git 残件 (verify:session-close-git-warn 非ブロック) ===');
-const gitWarn = spawnSync(process.execPath, ['scripts/verify-session-close-git-warn.mjs'], {
-  cwd: root,
-  stdio: 'inherit',
-});
+// --wake-context: 前日 closed-day の最終更新日付は #D-CLOSE-02 偽陽性にしない（締め時は strict）
+const gitWarn = spawnSync(
+  process.execPath,
+  ['scripts/verify-session-close-git-warn.mjs', '--wake-context'],
+  {
+    cwd: root,
+    stdio: 'inherit',
+  },
+);
 if (gitWarn.status !== 0) {
   console.log('\n[bootstrap] ⚠️  Git 残件あり — フェーズ7 項目3c で必ず報告（未コミット / ahead / サブゲート NG）');
   console.log('  本題着手前に B1 整理または §41 で方針合意（SESSION-BOOTSTRAP-CHECKLIST.md 3c）');

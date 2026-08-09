@@ -2,7 +2,11 @@
 /**
  * #D-CLOSE-02 — 締め時: checkpoint 最終更新が当日(JST) かつ bridge.gitHead ∈ {HEAD, parent}
  *
- * Usage: node scripts/verify-session-close-handoff-freshness.mjs [--warn-only]
+ * Usage: node scripts/verify-session-close-handoff-freshness.mjs [--warn-only] [--wake-context]
+ *
+ * --wake-context … bootstrap/WAKE 専用。closeStatus が前日締め（closed-day 等）のとき
+ *   「最終更新≠当日」は NG にしない（翌日 WAKE の偽陽性根絶）。bridge.gitHead は常に検査。
+ *   締め（close-preflight / close-git）では付けない — 当日 stamp 必須を維持。
  */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -14,6 +18,7 @@ import { CHECKPOINT_REL } from "./lib/cio-checkpoint-read.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const warnOnly = process.argv.includes("--warn-only");
+const wakeContext = process.argv.includes("--wake-context");
 
 function git(args) {
   const r = spawnSync("git", args, { cwd: root, encoding: "utf8" });
@@ -39,12 +44,23 @@ function main() {
     const text = fs.readFileSync(cpPath, "utf8");
     const m = text.match(/\*\*最終更新\*\*\s*:\s*(\d{4}-\d{2}-\d{2})/);
     const today = jstTodayYmd();
+    const closeStatusM = text.match(/\*\*closeStatus\*\*\s*:\s*(\S+)/i);
+    const closeStatus = closeStatusM ? closeStatusM[1].trim().toLowerCase() : "";
+    const priorClose =
+      /^(closed-day|closed|full|closed-full)$/.test(closeStatus) ||
+      closeStatus.includes("closed");
     if (!m) {
       issues.push('checkpoint に「**最終更新**: YYYY-MM-DD」が無い');
     } else if (m[1] !== today) {
-      issues.push(
-        `checkpoint 最終更新 ${m[1]} ≠ 当日 JST ${today}（#D-CLOSE-02 — 締め前に本文を当日へ更新）`,
-      );
+      if (wakeContext && priorClose && m[1] < today) {
+        console.log(
+          `[verify-session-close-handoff-freshness] WAKE: 最終更新 ${m[1]}（closeStatus=${closeStatus || "?"}）— 前日締めとして日付検査スキップ`,
+        );
+      } else {
+        issues.push(
+          `checkpoint 最終更新 ${m[1]} ≠ 当日 JST ${today}（#D-CLOSE-02 — 締め前に本文を当日へ更新）`,
+        );
+      }
     }
   }
 

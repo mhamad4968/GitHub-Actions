@@ -6,6 +6,15 @@
 
 ---
 
+## [2026-08-09] #D-CLOSE-02 — 翌日 WAKE の日付偽陽性
+
+**前提**: 前日 `closeStatus=closed-day` のまま新日 cold-start/bootstrap すると、checkpoint「最終更新」が前日のため `verify:session-close-git-warn` が #D-CLOSE-02 NG になる（bridge は整合済でも）  
+**手順**: (1) bootstrap は `verify-session-close-git-warn.mjs --wake-context`（日付スキップ・bridge は検査）。(2) 締めは flag なし／`cio:session:close-preflight` で当日 stamp 必須を維持。  
+**禁止**: 締め経路に `--wake-context` を付けること／WAKE で closeStatus を勝手に open にすること。  
+**exit**: `node scripts/verify-session-close-handoff-freshness.mjs --wake-context` OK · 同 strict は NG のまま · bootstrap 3c 緑
+
+---
+
 ---
 
 ## [2026-07-25] DeepSeek MCP — deepseek-chat 廃止（v4 必須）
