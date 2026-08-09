@@ -1,24 +1,24 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-10 08:34 JST — **674 UI hub-tabs 仕様GO**（実装GO待ち・P1から）。
-**次の1手**: **674 UI P1**（一覧タブ＋色）実装GO待ち → その後 Security NEXT 月次レポート。
-**Git**: `96eccd08`（締め時に close-git で更新可）
+**最終更新**: 2026-08-10 08:40 JST — **674 UI P1 deploy** hub-tabs（台帳/棚卸/管理）rev308。
+**次の1手**: 浜田目視（674一覧タブ）→ OKなら P2（編集ヘッダー）または Security NEXT。
+**Git**: （commit後更新）
 **closeStatus**: open
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=Security NEXT月次レポート
-**制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**（浜田がkintone登録を依頼した時のみ）
-**本日状態**: 08-10 **進行中** — Plan&Usage 32%／SKYSEA案件外／**674 UI 仕様GO済・実装GO待ち**
+**制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
+**本日状態**: 08-10 **進行中** — 674 UI **仕様GO＋P1実装・deploy済**（目視待ち）
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-08-674-inv-period-dual-label` | **307** |
+| **674** | `2026-08-10-674-ui-hub-tabs-p1` | **308** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
-**674 live fileKey**: `71bd5bb4-3608-4f0e-9d1f-f7fad6ca2c60`
-**継続メモ**: 仕様正本 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。承認 `docs/approved-changes/2026-08-10-674-ui-hub-tabs-spec-go.md`。SKYSEA案件外。
-**GO待ち**: **674 UI P1 実装GO**／新アプリ＝相談・GO後のみ。**案内規律**: 完了済を GO待ち／次の1手／質問に出さない。
-**調査正本**: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md` · `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` · **H9/△2**: eligible 2026-07-18 / review 2026-07-25 · early GREEN禁止
-**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 表示面マトリクス · 688 heat外 · 674採番max+1済 · 736触らない · 756/757/758 rev318 · 712 deploy禁止
+**674 live fileKey**: `d5a744a8-0559-494c-a5c2-a901ddb5abf6`
+**継続メモ**: 仕様 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。P1=一覧タブ。P2=編集ヘッダー未着手。
+**GO待ち**: 浜田目視（P1）／P2実装GO／新アプリ＝相談・GO後のみ。
+**調査正本**: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
+**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 ## 保留・その他の制約
@@ -26,7 +26,7 @@
 |------|------|
 | **688** | WBGT 以外触らない |
 | **677–679** | 触らない |
-| **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ。コード・SPEC削除しない |
+| **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
 | **756/757/758** | LIVE rev318 · MANUAL_ONLY |
 | **712** | 削除済 — deploy 禁止 |

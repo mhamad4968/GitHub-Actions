@@ -5638,3 +5638,19 @@ npm run cio:morning:ready
 **触らない**: SKYSEA案件化／688／677-679／712／736
 
 ---
+
+### 2026-08-09 JST — **2026-08-10 JST — 674 UI P1 deploy**
+
+**要約**: hub-tabs P1 live. BUILD=2026-08-10-674-ui-hub-tabs-p1 rev=308 fileKey=d5a744a8. 台帳/棚卸/管理。棚卸状況通年表示。
+
+**次の1手**: 浜田目視（674一覧タブ）→ OK後 P2 or Security NEXT
+
+**Git**: `7b043a7b` — 
+
+**BUILD**: 674@308 hub-tabs-p1
+
+**GO待ち**: 浜田目視P1／P2実装GO
+
+**触らない**: SKYSEA案件化／688／677-679／712／736
+
+---

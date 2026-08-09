@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-08-674-inv-period-dual-label';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2522,14 +2522,12 @@
       if (acc.open) refreshInventoryHubSummaryAccordion674(acc);
     });
     const summaryRow = document.getElementById('npl674-index-summary-row');
-    if (summaryRow && summaryRow.parentNode) {
+    if (summaryRow && summaryRow.parentNode && wrap.contains(summaryRow)) {
       summaryRow.parentNode.insertBefore(acc, summaryRow.nextSibling);
     } else {
       wrap.appendChild(acc);
     }
-    ensureInventoryPeriodLoaded674().then(function (active) {
-      acc.style.display = active ? '' : 'none';
-    });
+    // 仕様 2026-08-10 §3.3: 棚卸状況一覧は通年閲覧可（期間外でも非表示にしない）
   }
 
   function renderUninventoriedPanel674(records, hubFilter) {
@@ -2709,10 +2707,9 @@
     ensureInventoryPeriodLoaded674().then(function (active) {
       const btnBulk = document.getElementById('npl674-btn-inventory-bulk');
       const btnUninv = document.getElementById('npl674-btn-inventory-uninv');
-      const acc = document.getElementById('npl674-inv-hub-acc');
+      // 一括・未棚卸のみ period-gate。棚卸状況一覧は通年表示（仕様 §3.3）
       if (btnBulk) btnBulk.style.display = active ? '' : 'none';
       if (btnUninv) btnUninv.style.display = active ? '' : 'none';
-      if (acc) acc.style.display = active ? '' : 'none';
     });
   }
 
@@ -9756,7 +9753,9 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-06-v10-skysea-manual';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11-hub-tabs';
+  const HUB674_STORAGE_KEY = 'npl674hub';
+  const HUB674_HASH_PARAM = 'npl674hub';
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
@@ -10806,6 +10805,56 @@ ${bodyInner}\
     }
   }
 
+  function parse674HubFromHash674() {
+    try {
+      const hash = String(window.location.hash || '').replace(/^#/, '');
+      if (!hash) return null;
+      const params = new URLSearchParams(hash);
+      const v = params.get(HUB674_HASH_PARAM);
+      if (v === 'ledger' || v === 'inventory' || v === 'admin') return v;
+    } catch (_e) {
+      /* ignore */
+    }
+    return null;
+  }
+
+  function resolve674InitialHub674(isAdmin) {
+    const fromHash = parse674HubFromHash674();
+    if (fromHash === 'admin' && !isAdmin) return 'ledger';
+    if (fromHash) return fromHash;
+    try {
+      const saved = sessionStorage.getItem(HUB674_STORAGE_KEY);
+      if (saved === 'admin' && !isAdmin) return 'ledger';
+      if (saved === 'ledger' || saved === 'inventory' || saved === 'admin') return saved;
+    } catch (_e2) {
+      /* ignore */
+    }
+    return 'ledger';
+  }
+
+  function persist674Hub674(hub) {
+    try {
+      sessionStorage.setItem(HUB674_STORAGE_KEY, hub);
+    } catch (_e) {
+      /* ignore */
+    }
+    try {
+      const hash = String(window.location.hash || '').replace(/^#/, '');
+      const params = new URLSearchParams(hash);
+      params.set(HUB674_HASH_PARAM, hub);
+      const newHash = params.toString();
+      if (hash !== newHash) {
+        window.history.replaceState(
+          null,
+          '',
+          window.location.pathname + window.location.search + '#' + newHash,
+        );
+      }
+    } catch (_e2) {
+      /* ignore */
+    }
+  }
+
   function render674IndexSearchBar() {
     const existing = document.getElementById(SEARCH674_WRAP_ID);
     if (existing && existing.getAttribute('data-npl-ver') === SEARCH674_WRAP_VER) {
@@ -10828,12 +10877,60 @@ ${bodyInner}\
     wrap.setAttribute('data-npl-ver', SEARCH674_WRAP_VER);
     wrap.style.cssText =
       'box-sizing:border-box;width:100%;max-width:min(100%,calc(100vw - 24px));' +
-      'margin:0 0 12px 0;padding:10px 12px 12px;background:#f1f5f9;border:1px solid #cbd5e1;' +
-      'border-radius:8px;font-family:system-ui,sans-serif;';
+      'margin:0 0 12px 0;padding:10px 12px 12px;background:var(--npl-bg,#f1f5f9);border:1px solid #cbd5e1;' +
+      'border-radius:8px;font-family:system-ui,sans-serif;' +
+      '--npl-bg:#f1f5f9;--npl-accent:#0f766e;--npl-muted:#64748b;--npl-ok:#059669;--npl-warn:#b45309;--npl-danger:#b91c1c;';
+
+    const isAdmin674 = isSkyseaAdmin674();
+    const hubTabBar = document.createElement('div');
+    hubTabBar.setAttribute('role', 'tablist');
+    hubTabBar.setAttribute('aria-label', '一覧ハブ');
+    hubTabBar.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:10px;';
+
+    const hubPanels = Object.create(null);
+    const hubTabButtons = [];
+
+    function make674HubPanel674(hubKey) {
+      const panel = document.createElement('div');
+      panel.id = 'npl674-hub-' + hubKey;
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', 'npl674-hub-tab-' + hubKey);
+      panel.style.cssText = 'display:none;';
+      hubPanels[hubKey] = panel;
+      return panel;
+    }
+
+    function make674HubTab674(label, hubKey) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = 'npl674-hub-tab-' + hubKey;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-controls', 'npl674-hub-' + hubKey);
+      btn.dataset.npl674Hub = hubKey;
+      btn.textContent = label;
+      btn.style.cssText =
+        'padding:8px 16px;border:none;background:transparent;font-size:13px;font-weight:700;' +
+        'color:var(--npl-muted,#64748b);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;';
+      hubTabButtons.push(btn);
+      hubTabBar.appendChild(btn);
+      return btn;
+    }
+
+    const ledgerPanel = make674HubPanel674('ledger');
+    const inventoryPanel = make674HubPanel674('inventory');
+    let adminPanel = null;
+    make674HubTab674('台帳', 'ledger');
+    make674HubTab674('棚卸', 'inventory');
+    if (isAdmin674) {
+      adminPanel = make674HubPanel674('admin');
+      make674HubTab674('管理', 'admin');
+    }
 
     const title = document.createElement('div');
     title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
-    title.textContent = 'キーワード・種別・ステータス・M365切替／資産台帳で絞り込み';
+    title.textContent =
+      '台帳：キーワード・種別・ステータス・M365切替／資産台帳で絞り込み（棚卸・管理は上のタブ）';
 
     const nextSerialBar = document.createElement('div');
     nextSerialBar.id = 'npl674-index-next-serial-bar';
@@ -10953,7 +11050,7 @@ ${bodyInner}\
     btnGo.type = 'button';
     btnGo.textContent = '絞り込み';
     btnGo.style.cssText =
-      'padding:6px 14px;border-radius:6px;border:none;background:#0d9488;color:#fff;font-weight:700;cursor:pointer;';
+      'padding:6px 14px;border-radius:6px;border:none;background:var(--npl-accent,#0f766e);color:#fff;font-weight:700;cursor:pointer;';
 
     const btnClr = document.createElement('button');
     btnClr.type = 'button';
@@ -10994,7 +11091,7 @@ ${bodyInner}\
     btnList.textContent = 'リスト一覧作成';
     btnList.setAttribute('aria-label', '条件を指定してリスト一覧を表示');
     btnList.style.cssText =
-      'padding:6px 12px;border-radius:6px;border:none;background:#4f46e5;color:#fff;font-weight:700;cursor:pointer;';
+      'padding:6px 12px;border-radius:6px;border:none;background:var(--npl-accent,#0f766e);color:#fff;font-weight:700;cursor:pointer;';
     btnList.addEventListener('click', function () {
       openList674CreateModal674();
     });
@@ -11007,7 +11104,7 @@ ${bodyInner}\
       btnSkyseaList.textContent = 'SKYSEA対応一覧';
       btnSkyseaList.setAttribute('aria-label', 'SKYSEA手動インストール対応一覧（admin専用）');
       btnSkyseaList.style.cssText =
-        'padding:6px 12px;border-radius:6px;border:none;background:#b45309;color:#fff;font-weight:700;cursor:pointer;';
+        'padding:6px 12px;border-radius:6px;border:none;background:var(--npl-warn,#b45309);color:#fff;font-weight:700;cursor:pointer;';
       btnSkyseaList.addEventListener('click', function () {
         openSkysea674ListPanel674();
       });
@@ -11017,7 +11114,7 @@ ${bodyInner}\
       btnSkyseaClientDelete.textContent = 'SKYSEAクライアント削除対応';
       btnSkyseaClientDelete.setAttribute('aria-label', 'SKYSEAクライアント削除未了一覧（admin専用）');
       btnSkyseaClientDelete.style.cssText =
-        'padding:6px 12px;border-radius:6px;border:none;background:#b91c1c;color:#fff;font-weight:700;cursor:pointer;';
+        'padding:6px 12px;border-radius:6px;border:none;background:var(--npl-danger,#b91c1c);color:#fff;font-weight:700;cursor:pointer;';
       btnSkyseaClientDelete.addEventListener('click', function () {
         openSkyseaClientDeleteListPanel674();
       });
@@ -11028,7 +11125,7 @@ ${bodyInner}\
     btnInvBulk.id = 'npl674-btn-inventory-bulk';
     btnInvBulk.textContent = '一括棚卸';
     btnInvBulk.style.cssText =
-      'display:none;padding:6px 12px;border-radius:6px;border:none;background:#059669;color:#fff;font-weight:700;cursor:pointer;';
+      'display:none;padding:6px 12px;border-radius:6px;border:none;background:var(--npl-ok,#059669);color:#fff;font-weight:700;cursor:pointer;';
     btnInvBulk.addEventListener('click', function () {
       openInventoryBulkModal674();
     });
@@ -11050,10 +11147,51 @@ ${bodyInner}\
     row.appendChild(btnGo);
     row.appendChild(btnClr);
     row.appendChild(btnList);
-    if (btnSkyseaList) row.appendChild(btnSkyseaList);
-    if (btnSkyseaClientDelete) row.appendChild(btnSkyseaClientDelete);
-    row.appendChild(btnInvBulk);
-    row.appendChild(btnInvUninv);
+
+    const invPeriodHint = document.createElement('div');
+    invPeriodHint.id = 'npl674-inv-period-hint';
+    invPeriodHint.style.cssText =
+      'font-size:12px;color:#475569;margin-bottom:8px;line-height:1.45;';
+    invPeriodHint.textContent = '棚卸期間を確認中…';
+    ensureInventoryPeriodLoaded674().then(function (active) {
+      const bounds = computeInventoryPeriodBounds674(npl674InventoryEnvMap674);
+      const fiscalLabel = formatFiscalInventoryPeriodLabel674();
+      const periodRange = bounds.start + ' 〜 ' + bounds.end;
+      if (active) {
+        invPeriodHint.textContent =
+          '棚卸期間中（670キャンペーン: ' +
+          periodRange +
+          ' ／ 年次参考: ' +
+          fiscalLabel +
+          '）。一括棚卸・未棚卸一覧が利用できます。';
+      } else {
+        invPeriodHint.textContent =
+          '現在は棚卸期間外です（670キャンペーン: ' +
+          periodRange +
+          ' ／ 年次参考: ' +
+          fiscalLabel +
+          '）。棚卸状況一覧は通年で確認できます。';
+      }
+    });
+
+    const invButtonRow = document.createElement('div');
+    invButtonRow.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
+    invButtonRow.appendChild(btnInvBulk);
+    invButtonRow.appendChild(btnInvUninv);
+
+    let adminHint = null;
+    let adminButtonRow = null;
+    if (isAdmin674) {
+      adminHint = document.createElement('div');
+      adminHint.style.cssText = 'font-size:12px;color:#475569;margin-bottom:8px;line-height:1.45;';
+      adminHint.textContent = 'SKYSEA 管理機能（admin 専用）';
+      adminButtonRow = document.createElement('div');
+      adminButtonRow.style.cssText =
+        'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
+      if (btnSkyseaList) adminButtonRow.appendChild(btnSkyseaList);
+      if (btnSkyseaClientDelete) adminButtonRow.appendChild(btnSkyseaClientDelete);
+    }
 
     const activeSummary = document.createElement('div');
     activeSummary.id = 'npl674-index-active-summary';
@@ -11280,13 +11418,50 @@ ${bodyInner}\
       updateActiveSummary674();
     }
 
-    wrap.appendChild(title);
-    wrap.appendChild(nextSerialBar);
-    wrap.appendChild(row);
-    wrap.appendChild(summaryRow);
-    ensureInventoryHubSummaryAccordion674(wrap);
-    wrap.appendChild(chipRow);
-    wrap.appendChild(statusChipRow);
+    ledgerPanel.appendChild(title);
+    ledgerPanel.appendChild(nextSerialBar);
+    ledgerPanel.appendChild(row);
+    ledgerPanel.appendChild(summaryRow);
+    ledgerPanel.appendChild(chipRow);
+    ledgerPanel.appendChild(statusChipRow);
+
+    inventoryPanel.appendChild(invPeriodHint);
+    inventoryPanel.appendChild(invButtonRow);
+    ensureInventoryHubSummaryAccordion674(inventoryPanel);
+
+    if (adminPanel && adminHint && adminButtonRow) {
+      adminPanel.appendChild(adminHint);
+      adminPanel.appendChild(adminButtonRow);
+    }
+
+    wrap.appendChild(hubTabBar);
+    wrap.appendChild(ledgerPanel);
+    wrap.appendChild(inventoryPanel);
+    if (adminPanel) wrap.appendChild(adminPanel);
+
+    let currentHub674 = resolve674InitialHub674(isAdmin674);
+    function apply674HubSwitch674(hub) {
+      if (hub === 'admin' && !isAdmin674) hub = 'ledger';
+      currentHub674 = hub;
+      Object.keys(hubPanels).forEach(function (key) {
+        const panel = hubPanels[key];
+        if (panel) panel.style.display = key === hub ? '' : 'none';
+      });
+      hubTabButtons.forEach(function (tabBtn) {
+        const key = tabBtn.dataset.npl674Hub || '';
+        const selected = key === hub;
+        tabBtn.setAttribute('aria-selected', selected ? 'true' : 'false');
+        tabBtn.style.color = selected ? 'var(--npl-accent,#0f766e)' : 'var(--npl-muted,#64748b)';
+        tabBtn.style.borderBottomColor = selected ? 'var(--npl-accent,#0f766e)' : 'transparent';
+      });
+      persist674Hub674(hub);
+    }
+    hubTabButtons.forEach(function (tabBtn) {
+      tabBtn.addEventListener('click', function () {
+        apply674HubSwitch674(tabBtn.dataset.npl674Hub || 'ledger');
+      });
+    });
+    apply674HubSwitch674(currentHub674);
 
     const apply674 = function () {
       updateActiveSummary674();
