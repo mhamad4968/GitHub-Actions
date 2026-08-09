@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-08-06 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-08-09 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -49,6 +49,9 @@
 | 毎ターン・四行 | [`cio-ops-2026-08-03-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-03-evening-improvements.mdc) | 2026-08-03夕反省GO — 表示面マトリクス・□A1・closed-v1微小UI・印刷二重フィルタ（憲法本文は触らない） |
 | 毎ターン・四行 | [`cio-ops-2026-08-05-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-05-evening-improvements.mdc) | 2026-08-05 夕反省 GO — 締め UTF-8 / ONEPASS / preflight（薄い規則） |
 | 毎ターン・四行 | [`cio-ops-2026-08-06-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-06-evening-improvements.mdc) | 2026-08-06 夕反省 GO — 空DD / print-root / 680所属 / SCOPE（薄い規則） |
+| 毎ターン・四行 | [`cio-ops-2026-08-07-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-07-evening-improvements.mdc) | 2026-08-07 夕反省 GO — UI配置先・DOMスコープ・曖昧語・SKYSEA手動のみ |
+| 毎ターン・四行 | [`cio-ops-2026-08-08-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-08-evening-improvements.mdc) | 2026-08-08 夕反省 GO — 集計DoD・Event直渡し禁止・期間二系統・§50-3-8定型 |
+| 毎ターン・四行 | [`cio-ops-2026-08-09-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-09-evening-improvements.mdc) | 2026-08-09 夕反省 GO — WAKE tip宣言・順序契約・Done二層・偽陽性辞書 |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
@@ -78,7 +81,7 @@
 | customize deploy | [`ui-acceptance-smoke.mdc`](.cursor/rules/ui-acceptance-smoke.mdc) | UI変更の受け入れ条件と最小スモークを先に固定する |
 | MCP・ツール | [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) | MCP §50 — 先出し義務・1行トリガー表（descriptor は mcp-tool-discipline） |
 | MCP・ツール | [`mcp-tool-discipline.mdc`](.cursor/rules/mcp-tool-discipline.mdc) | MCP descriptor 必読・認証順序・curl 優先度 + アイドル時間の有効活用（メンテ枠） |
-| MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | Shadcn UI MCP を必ず参照・Chrome DevTools MCP で事実確認・不明時は関連 MCP で先に調査（mcp.json 同期手順付き） |
+| MCP・ツール | [`mcp-frontend-shadcn-chrome.mdc`](.cursor/rules/mcp-frontend-shadcn-chrome.mdc) | FE は chrome-devtools で事実確認（DEL-3 後 · 旧 shadcn UI MCP 削除） |
 | MCP・ツール | [`ai-agent-tools-constitution.mdc`](.cursor/rules/ai-agent-tools-constitution.mdc) | AIエージェント活用憲法（Rules for Tools）— 多AI協議・DDG/context7·Playwright·docs正本・禁止事項（2026-07-11 rules-opt）6 施行） |
 | MCP・ツール | [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | Cursor 内蔵 GenerateImage と assets/images/（画像 MCP 見送り・2026-05-21） |
 | 4AI・DeepSeek | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | CIO×知恵袋の仕様確認分業（🎖️表の下位・予実など） |

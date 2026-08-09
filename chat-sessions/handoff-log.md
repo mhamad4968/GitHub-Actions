@@ -5578,3 +5578,21 @@ npm run cio:morning:ready
 **触らない**: 688 / 677-679 / 712 / 736 / SKYSEA実配信GPO-SG
 
 ---
+
+### 2026-08-09 JST — **2026-08-09 full CLOSE — WAKE + evening GO**
+
+**要約**: WAKE偽陽性根絶・test:wakeゲート・夕反省改善全GO反映・report-draft alias・Desktop同期。本日完了。
+
+**次の1手**: **674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート（経営会議資料用）。https://jbis-kintone.cybozu.com/k/674/
+
+**Git**: `232417ed` — （close-git で更新）
+
+**BUILD**: 674=2026-08-08-674-inv-period-dual-label rev307（本日UI未改修）
+
+**GO待ち**: なし（本日完了）。新アプリ＝相談・GO後のみ。
+
+**触らない**: 688 / 677-679 / 712 / 736 / SKYSEA実配信GPO-SG
+
+**次セッションへの 1 行**: continue from checkpoint; 674 UI/visual first, then Security NEXT monthly report lane.
+
+---

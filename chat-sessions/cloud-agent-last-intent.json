@@ -1,11 +1,11 @@
 {
-  "closedAt": "2026-07-11T00:21:00.000+09:00",
+  "closedAt": "2026-08-09T18:40:00.000+09:00",
   "closeStatus": "full",
-  "closeNote": "rules-opt GO-B done · next: constitution review evening · then efficiency tools",
+  "closeNote": "WAKE + evening GO applied · Desktop synced · full CLOSE",
   "nextSessionFocus": [
-    "憲法改善・統合・新憲法要否の重点検討",
-    "依頼効率化ツール開発要否の検討"
+    "674 UI layout / visual presentation (https://jbis-kintone.cybozu.com/k/674/)",
+    "Security NEXT monthly major-incident report feature for management meeting materials"
   ],
-  "gitHead": "026d43ed",
-  "specAckPending": "docs/plans/2026-07-11-rules-optimization-spec.md §18 浜田 ACK"
+  "gitHead": "232417ed",
+  "specAckPending": null
 }

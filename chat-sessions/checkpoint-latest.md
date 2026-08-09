@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-08 21:10 JST — **本日フル締め**（674対応完了・夕反省改善GO反映・Desktop同期）。
-**次の1手**: 新セッション項番 -0（浜田指示）。買替は実運用不具合時のみ再開。
-**Git**: `f5f4afd5`（締め時に close-git で更新可）
+**最終更新**: 2026-08-09 18:40 JST — **本日フル締め**（WAKEノイズ恒久・夕反省GO全反映・Desktop同期）。
+**次の1手**: **674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。
+**Git**: `232417ed`（締め時に close-git で更新可）
 **closeStatus**: closed-day
-**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議=8/13まで触らない
+**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=Security NEXT月次レポート（明日以降）
 **制約**: SKYSEA実配信・GPO・SGしない（xlsx完了登録時のみ）／閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ
-**本日状態**: 08-08 **完了** — 674 Index/買替棚卸SKYSEA UX・棚卸状況一覧・未棚卸バグ修正・夕反省改善GO・GHA緑
+**本日状態**: 08-09 **完了** — WAKE偽陽性根絶／test:wakeゲート配線／夕反省改善全GO反映／`cio:report-draft` alias／Desktop最新化
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
@@ -15,7 +15,7 @@
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
 **674 live fileKey**: `71bd5bb4-3608-4f0e-9d1f-f7fad6ca2c60`
-**継続メモ**: SKYSEA手動台帳 active（配信なし・xlsx依頼時のみ）／夕反省GO 08-07+08-08済／719·721は closed-v1 明示依頼で再開可
+**継続メモ**: 明日優先=674 UI／視覚 → Security NEXT 月次レポート。SKYSEA手動台帳 active（配信なし）。夕反省GO 08-07〜08-09済
 **GO待ち**: 新アプリ＝相談・GO後のみ。**案内規律**: 完了済を GO待ち／次の1手／質問に出さない。
 **調査正本**: `docs/plans/2026-07-31-756-cost-mgmt-excel-table-structure-spec.md` · **H9/△2**: eligible 2026-07-18 / review 2026-07-25 · early GREEN禁止
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 表示面マトリクス · 688 heat外 · 674採番max+1済 · 736触らない · 756/757/758 rev318 · 712 deploy禁止
@@ -35,6 +35,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-08-09
+
+### 2026-08-09 夜（本日最終締め）
+- WAKE: `--wake-context`／grandparent fold／lock→re-export→handoff／Self-Heal INFO／Desktop soft-tune／`test:wake` ゲート配線
+- 夕反省: `docs/reports/2026-08-09-evening-reflection.md` · approved-changes **浜田全GO反映**（CON-1見送り）
+- 付帯: `cio:report-draft` alias、Desktop AI緊急用最新化
+- 次セッション意図（浜田）: **674 UI／視覚** → **Security NEXT 月次レポート**（経営会議ネタ）
+- closeStatus: **closed-day**
+
 ## 2026-08-08
 
 ### 2026-08-08 夜（本日最終締め）
