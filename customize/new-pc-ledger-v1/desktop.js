@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1b';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,9 +9753,15 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11-hub-tabs';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11b-hub-tones';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
+  /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
+  const HUB674_TONES = {
+    ledger: { bg: '#faf6f1', accent: '#a16207', border: '#e8dcc8' },
+    inventory: { bg: '#f0fdf4', accent: '#059669', border: '#bbf7d0' },
+    admin: { bg: '#fffbeb', accent: '#b45309', border: '#fde68a' },
+  };
   const SEARCH674_DL_ID = 'new-pc-ledger-674-search-datalist';
   /** 一覧 URL: キーワード原文（空白区切り AND 用）を query と併せて復元する */
   const SEARCH674_URL_KW_PARAM = 'npl674kw';
@@ -10877,16 +10883,16 @@ ${bodyInner}\
     wrap.setAttribute('data-npl-ver', SEARCH674_WRAP_VER);
     wrap.style.cssText =
       'box-sizing:border-box;width:100%;max-width:min(100%,calc(100vw - 24px));' +
-      'margin:0 0 12px 0;padding:10px 12px 12px;background:var(--npl-bg,#f1f5f9);border:1px solid #cbd5e1;' +
+      'margin:0 0 12px 0;padding:10px 12px 12px;background:var(--npl-hub-bg,#faf6f1);border:1px solid var(--npl-hub-border,#e8dcc8);' +
       'border-radius:8px;font-family:system-ui,sans-serif;' +
-      '--npl-bg:#f1f5f9;--npl-accent:#0f766e;--npl-muted:#64748b;--npl-ok:#059669;--npl-warn:#b45309;--npl-danger:#b91c1c;';
+      '--npl-hub-bg:#faf6f1;--npl-hub-border:#e8dcc8;--npl-accent:#a16207;--npl-muted:#64748b;--npl-ok:#059669;--npl-warn:#b45309;--npl-danger:#b91c1c;';
 
     const isAdmin674 = isSkyseaAdmin674();
     const hubTabBar = document.createElement('div');
     hubTabBar.setAttribute('role', 'tablist');
     hubTabBar.setAttribute('aria-label', '一覧ハブ');
     hubTabBar.style.cssText =
-      'display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:10px;';
+      'display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid var(--npl-hub-border,#e8dcc8);margin-bottom:10px;';
 
     const hubPanels = Object.create(null);
     const hubTabButtons = [];
@@ -11440,9 +11446,19 @@ ${bodyInner}\
     if (adminPanel) wrap.appendChild(adminPanel);
 
     let currentHub674 = resolve674InitialHub674(isAdmin674);
+    function apply674HubTone674(hub) {
+      const tone = HUB674_TONES[hub] || HUB674_TONES.ledger;
+      wrap.style.setProperty('--npl-hub-bg', tone.bg);
+      wrap.style.setProperty('--npl-hub-border', tone.border);
+      wrap.style.setProperty('--npl-accent', tone.accent);
+      wrap.style.background = tone.bg;
+      wrap.style.borderColor = tone.border;
+      hubTabBar.style.borderBottomColor = tone.border;
+    }
     function apply674HubSwitch674(hub) {
       if (hub === 'admin' && !isAdmin674) hub = 'ledger';
       currentHub674 = hub;
+      apply674HubTone674(hub);
       Object.keys(hubPanels).forEach(function (key) {
         const panel = hubPanels[key];
         if (panel) panel.style.display = key === hub ? '' : 'none';
@@ -11451,8 +11467,8 @@ ${bodyInner}\
         const key = tabBtn.dataset.npl674Hub || '';
         const selected = key === hub;
         tabBtn.setAttribute('aria-selected', selected ? 'true' : 'false');
-        tabBtn.style.color = selected ? 'var(--npl-accent,#0f766e)' : 'var(--npl-muted,#64748b)';
-        tabBtn.style.borderBottomColor = selected ? 'var(--npl-accent,#0f766e)' : 'transparent';
+        tabBtn.style.color = selected ? 'var(--npl-accent,#a16207)' : 'var(--npl-muted,#64748b)';
+        tabBtn.style.borderBottomColor = selected ? 'var(--npl-accent,#a16207)' : 'transparent';
       });
       persist674Hub674(hub);
     }
