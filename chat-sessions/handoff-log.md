@@ -5596,3 +5596,17 @@ npm run cio:morning:ready
 **次セッションへの 1 行**: continue from checkpoint; 674 UI/visual first, then Security NEXT monthly report lane.
 
 ---
+
+### 2026-08-09 JST — **2026-08-10 JST — SKYSEA 案件削除**
+
+**要約**: 浜田指示: SKYSEAを案件から削除。手動インストール方針。kintoneアプリ登録が必要時のみ浜田が指示。コード・SPECは削除しない。holds skysea-installer active→on-hold。
+
+**次の1手**: **674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。
+
+**Git**: `eb07b658` — 
+
+**GO待ち**: 新アプリ=相談・GO後のみ。SKYSEA kintone登録=浜田指示時のみ。
+
+**触らない**: SKYSEA案件化／688 heat外／677–679／712deploy／736
+
+---

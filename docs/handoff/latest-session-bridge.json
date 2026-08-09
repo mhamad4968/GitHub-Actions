@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-09T23:11:04.813Z",
-  "gitHead": "cf710c0f",
+  "exportedAt": "2026-08-09T23:17:00.193Z",
+  "gitHead": "eb07b658",
   "gitStatus": "## main...origin/main",
   "nextTask": "**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=cf710c0f | 次=**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=eb07b658 | 次=**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }

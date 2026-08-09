@@ -37,13 +37,21 @@
       "id": "skysea-installer",
       "laneId": "skysea",
       "label": "SKYSEA 未導入 PC 自動インストール（674 連携）",
-      "status": "active",
+      "status": "on-hold",
       "holdSince": "2026-04-21",
-      "resumedAt": "2026-08-05",
-      "planReviewFrom": "2026-08",
-      "note": "2026-08-05 問い合わせ送信済（一次回答=翌営業日）。段B=docs/runbooks/skysea-2026-08-stage-b-prep.md。実PC配信・既存GPO変更・本番実装はSKY社回答＋浜田GO後のみ。",
+      "withdrawnAt": "2026-08-10",
+      "note": "2026-08-10 浜田: 案件から削除。手動インストール方針。kintoneアプリ登録が必要になった時だけ浜田が指示。コード・SPECは削除しない。実PC配信・GPO・SG追加はしない。AIから次の1手に出さない。",
       "spec": "docs/plans/2026-04-18-skysea-installer.md",
-      "forbiddenNextTaskPatterns": ["実PC配信", "本番配信", "gpupdate /force", "既存GPO変更"]
+      "forbiddenNextTaskPatterns": [
+        "SKYSEA",
+        "skysea",
+        "実PC配信",
+        "本番配信",
+        "gpupdate /force",
+        "既存GPO変更",
+        "SG追加",
+        "xlsx完了登録"
+      ]
     }
   ],
   "closures": [
