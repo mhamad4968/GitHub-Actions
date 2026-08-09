@@ -57,3 +57,5 @@ globs: "**/*"
 ## 運用メモ
 
 - **網羅版を常時に戻さない**（トークン圧迫 → 見落とし増のため）。憲法改定後は **再生成スクリプト**で `constitution.mdc` を更新し、**本カードのこの文面**は必要なら追記。
+- **偽陽性 ≠ 欠陥**（2026-08-09 CON-2）: cold-start の Self-Heal／`--wake-context` skip／fold の INFO は毎日人手是正対象ではない。辞書: `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md` **R3**。
+- **lock 後は re-export**（同）: handoff tip 前に bridge を再生成する。順序契約の正本は同 runbook **T3／R1**。

@@ -62,6 +62,7 @@ customize・kintone query・印刷を触るときの盲点に、次を **(a) 系
 ## 機械ゲート（2026-05-21・タスクB・方式B 4AI統制）
 
 - **着手前**: チャットに `[§50-3-8] 実施済: deepseek` または `§50-3-8 スキップ理由:` + **約3行突合メモ**（従来どおり・**削除しない**）。
+- **WAKE／scripts 変更時の短問定型（2026-08-09 MCP-1）**: 盲点3点に加え、**順序・再export・ゲート漏れ**を 1 語以上含める（正本: `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md`）。
 - **検証**: `npm run cio:guard:5038 -- --staged`（commit 前）／`npm run cio:guard:5038 -- --force-check`（`deploy:*` 前・`cio-deploy-preflight-guard` 内包）。
 - **スタンプ**: `npm run cio:guard:5038 -- --stamp --text "盲点要約"` または `--skip "具体理由"` → `logs/cio-four-ai-governance/5038-stamp.json`（45分有効）。
 - **遮断**: 証跡なしで **Composer 2.5** が仕様触れパスへ書込／`deploy:*`／`git commit` しようとすると **exit 1** + CIO へ割り込み（`.cursor/hooks/cio-four-ai-interlock.mjs`）。

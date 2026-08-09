@@ -85,6 +85,19 @@ powershell -ExecutionPolicy Bypass -File scripts/install-morning-task-windows.ps
 
 `.cio/session-clock-mode.json` で `trialPaused: true` のとき、bootstrap の cron strict は **意図的にスキップ**（`session-clock-health.mjs`）。**sessionEnd hook も clear しない**ため、締め時の `session:clock:clear`（R-SESS-03）に加え、**WAKE Phase WALL-CLOCK で clear → set を必ず実行**する（2026-06-28 追補）。
 
+## cold-start 完了報告（OPS-1・2026-08-09）
+
+見た目の赤行を欠陥と錯覚しない。報告に **3 行以内**で分類する:
+
+```
+[cold-start 見た目分類]
+INFO/healed: <Self-Heal / wake-context / fold 等。無なら「無」>
+WARN: <環境注意。無なら「無」>
+NG: <人手必須。無なら「無」>
+```
+
+辞書・lock 後 re-export: `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md`（CON-2 ポインタ）。
+
 ## 参照
 
 - **`docs/runbooks/session-lifecycle-v2.md`** — 5 Phase 正本

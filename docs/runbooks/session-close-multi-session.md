@@ -67,6 +67,15 @@ npm run verify:session-close-git-warn
 
 bridge が dirty なら続けて `git add docs/handoff/latest-session-bridge.json` → commit `chore(handoff): align bridge gitHead` → push → **もう一度** 上記 SKIP sync（最終 tip を chore(checkpoint) に）
 
+## OPS-2 — tip 追加後の締め前（2026-08-09）
+
+セッション中に credit／lock 等の tip を足したら、最終締め前に次のいずれか 1 つを実施しチャットに残す:
+
+- `npm run cio:session:export-handoff`
+- または `npm run cio:wake:handoff-commit`（re-export 契約込み）
+
+正本: `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md` **OPS-2**。
+
 ## 関連
 
 - B4: `verify:session-close-git-warn`（未 push も NG）

@@ -1,0 +1,43 @@
+---
+description: 2026-08-09 夕反省 GO — WAKE tip宣言・順序契約・Done二層・偽陽性辞書
+alwaysApply: false
+globs:
+  - scripts/cio-wake*.mjs
+  - scripts/lib/cio-wake*.mjs
+  - scripts/verify-session-close-handoff-freshness.mjs
+  - scripts/cio-session-cold-start.mjs
+  - scripts/cio-quick-health.mjs
+  - docs/runbooks/cio-ops-2026-08-09-evening-improvements.md
+  - docs/plans/2026-08-09-evening-improvements-spec.md
+  - docs/approved-changes/2026-08-09-evening-reflection-hamada-go.md
+  - docs/reports/2026-08-09-evening-reflection.md
+---
+
+# 夕反省改善（2026-08-09 浜田全承認）
+
+正本: `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md`
+
+## R1 — tip 変更宣言
+
+allowlist 外 tip を足すときチャット／PR に 1 行:
+
+- `再export: する` または `wake-fold: --wake-context`
+
+## R2 — Done 二層
+
+- **実装完了** ≠ **ゲート固定完了**
+- 後者未了は「ローカル済・CI未」
+
+## R3 — 偽陽性辞書
+
+- INFO/healed = 自動修復（人手毎日不要）
+- WARN = 環境注意
+- ❌/NG = 人手またはスクリプト失敗
+
+## T3 / ORG-1 — 受入
+
+差分要約 + **順序契約 1 行**（先／後／再export）+ 副作用。読まない受入禁止。
+
+## MCP-1 — §50-3-8
+
+WAKE／scripts 変更短問に **順序・再export・ゲート漏れ** を含める。
