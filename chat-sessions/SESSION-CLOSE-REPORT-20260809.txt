@@ -1,0 +1,35 @@
+SESSION-CLOSE-REPORT 2026-08-09（本日最終締め）
+========================================
+
+■ レーン
+- WAKE／セッション運用安定化
+- 夕反省 2026-08-09 改善パッケージ（浜田全GO）
+
+■ 本日できたこと
+- WAKE 偽陽性根絶（`--wake-context`／grandparent fold／lock→re-export→handoff／Self-Heal INFO／Desktop soft-tune）
+- `test:wake` を pre-push／cursor-env-gates に配線
+- 夕反省改善全GO反映（runbook／薄い mdc／brief-card／OPS／RULE／MCP定型。CON-1=AGENTS大改訂は見送り）
+- `cio:report-draft` → `cio:report:draft` alias
+- Desktop `AI緊急用` 最新同期（verify 全一致）
+- full CLOSE: export-handoff → Desktop → constitution-evening → clock:clear → close-git → push
+
+■ GO / 仕様正本
+- `docs/reports/2026-08-09-evening-reflection.md`
+- `docs/approved-changes/2026-08-09-evening-reflection-hamada-go.md`
+- `docs/plans/2026-08-09-evening-improvements-spec.md`
+- `docs/runbooks/cio-ops-2026-08-09-evening-improvements.md`
+
+■ 触らない（維持）
+- 688 heat外 / 677–679 / SKYSEA 実配信・GPO・SG / 712 deploy / 736 / 新アプリ=相談・GO後のみ
+
+■ 次セッション意図（浜田・本日指示）
+1. **674** UIレイアウト／視覚的見せ方（https://jbis-kintone.cybozu.com/k/674/）
+2. その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）
+
+■ Git
+- tip（close 後）: `6f87e240` 付近（checkpoint R44 off-by-one 許容）
+- `verify:session-close-git-warn` OK（未コミットなし・ahead 0）
+- CREDIT: 31%（2026-08-09）
+
+■ 備考
+- 本ファイルは本日最終版。multi-session 追記なし。
