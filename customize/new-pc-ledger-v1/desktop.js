@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1g';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1h';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11g-hub-guide-lg';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11h-no-presets';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -11067,32 +11067,6 @@ ${bodyInner}\
       'padding:7px 14px;border-radius:6px;border:2px solid #c2410c;background:#fff7ed;color:#9a3412;' +
       'font-weight:800;cursor:pointer;box-shadow:0 1px 0 rgba(194,65,12,.15);';
 
-    const presetWrap = document.createElement('div');
-    presetWrap.style.cssText = 'display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;';
-    const presetLbl = document.createElement('span');
-    presetLbl.textContent = 'よく使う機能:';
-    presetLbl.style.cssText = 'font-size:11px;font-weight:700;color:#475569;';
-    presetWrap.appendChild(presetLbl);
-
-    const btnPresetPersonal = document.createElement('button');
-    btnPresetPersonal.type = 'button';
-    btnPresetPersonal.textContent = '個人';
-    btnPresetPersonal.setAttribute('aria-label', '種別を個人だけに絞る');
-    btnPresetPersonal.style.cssText =
-      'padding:5px 10px;border-radius:6px;border:1px solid #0e7490;background:#ecfeff;color:#155e75;' +
-      'font-size:12px;font-weight:800;cursor:pointer;';
-
-    const btnPresetInUse = document.createElement('button');
-    btnPresetInUse.type = 'button';
-    btnPresetInUse.textContent = '利用中';
-    btnPresetInUse.setAttribute('aria-label', 'ステータスを利用中だけに絞る');
-    btnPresetInUse.style.cssText =
-      'padding:5px 10px;border-radius:6px;border:1px solid #15803d;background:#f0fdf4;color:#166534;' +
-      'font-size:12px;font-weight:800;cursor:pointer;';
-
-    presetWrap.appendChild(btnPresetPersonal);
-    presetWrap.appendChild(btnPresetInUse);
-
     const btnList = document.createElement('button');
     btnList.type = 'button';
     btnList.textContent = 'リスト一覧作成';
@@ -11218,11 +11192,7 @@ ${bodyInner}\
     summaryRow.id = 'npl674-index-summary-row';
     summaryRow.style.cssText =
       'display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 8px;';
-    presetWrap.style.cssText =
-      'display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;flex:0 0 auto;' +
-      'padding:4px 8px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;';
     summaryRow.appendChild(activeSummary);
-    summaryRow.appendChild(presetWrap);
 
     const chipRow = document.createElement('div');
     chipRow.style.cssText =
@@ -11534,18 +11504,6 @@ ${bodyInner}\
       } else {
         updateActiveSummary674();
       }
-    });
-    btnPresetPersonal.addEventListener('click', function () {
-      selectedTypes.clear();
-      selectedTypes.add(TYPE_PERSONAL);
-      syncChips674();
-      apply674();
-    });
-    btnPresetInUse.addEventListener('click', function () {
-      selectedStatuses.clear();
-      selectedStatuses.add(PC_STATUS_IN_USE_674);
-      syncChips674();
-      apply674();
     });
     btnClr.addEventListener('click', function () {
       inpKw.value = '';
