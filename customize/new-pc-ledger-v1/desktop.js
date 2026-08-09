@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1d';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1e';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11d-readable-labels';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11e-hub-tabs-lg';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -10916,8 +10916,9 @@ ${bodyInner}\
       btn.dataset.npl674Hub = hubKey;
       btn.textContent = label;
       btn.style.cssText =
-        'padding:8px 16px;border:none;background:transparent;font-size:13px;font-weight:700;' +
-        'color:var(--npl-muted,#64748b);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;';
+        'padding:10px 18px;border:none;background:transparent;font-size:15px;font-weight:800;' +
+        'color:var(--npl-muted,#64748b);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;' +
+        'letter-spacing:0.02em;';
       hubTabButtons.push(btn);
       hubTabBar.appendChild(btn);
       return btn;
