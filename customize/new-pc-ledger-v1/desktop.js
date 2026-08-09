@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1f';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1g';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11f-hub-guide';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11g-hub-guide-lg';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -10935,10 +10935,10 @@ ${bodyInner}\
     }
 
     const title = document.createElement('div');
-    title.style.cssText = 'font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;';
+    title.style.cssText =
+      'font-size:16px;font-weight:700;color:#0f172a;margin-bottom:10px;line-height:1.5;letter-spacing:0.01em;';
     title.textContent =
       '上のタブで台帳・棚卸・管理を切り替えて利用できます。ここではキーワード・種別・ステータス・M365切替／資産台帳などで絞り込みます。';
-
     const nextSerialBar = document.createElement('div');
     nextSerialBar.id = 'npl674-index-next-serial-bar';
     nextSerialBar.setAttribute('aria-live', 'polite');
