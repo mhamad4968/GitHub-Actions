@@ -4,7 +4,7 @@
  *
  *   npm run cio:wake:preflight-heal
  *
- * 1) tmp-close-report-*.md を削除（締め済残骸・文字化けゴミの再発防止）
+ * 1) tmp-close(-report)?-YYYY-MM-DD.md を削除（締め済残骸・命名揺れ再発防止）
  * 2) rag-mirror 不一致なら 1 回 Self-Heal + stage（quick-health と同趣旨）
  * 3) Part C「今やってる主タスク」を checkpoint に合わせて同期（D-PARTC-01）
  * 4) phantom git dirty（hash=HEAD なのに M）と空白のみ .gitkeep を解消（B1 偽陽性）
@@ -38,13 +38,19 @@ function git(args) {
   return { ok: r.status === 0, out: (r.stdout || '').trim(), err: (r.stderr || '').trim() };
 }
 
-/** 締め後に残る tmp-close-report を掃除 */
+/**
+ * 締め後に残る tmp-close 下書きを掃除。
+ * 許容名: tmp-close-YYYY-MM-DD.md / tmp-close-report-YYYY-MM-DD.md
+ * （SESSION-CLOSE-REPORT_*.txt 正本は対象外）
+ */
+const TMP_CLOSE_PURGE_RE = /^tmp-close(?:-report)?-\d{4}-\d{2}-\d{2}\.md$/i;
+
 function purgeTmpCloseReports() {
   const dir = path.join(root, 'chat-sessions');
   if (!fs.existsSync(dir)) return 0;
   let n = 0;
   for (const name of fs.readdirSync(dir)) {
-    if (!/^tmp-close-report-.*\.md$/i.test(name)) continue;
+    if (!TMP_CLOSE_PURGE_RE.test(name)) continue;
     fs.unlinkSync(path.join(dir, name));
     console.log(`[cio:wake:preflight-heal] purged chat-sessions/${name}`);
     n += 1;

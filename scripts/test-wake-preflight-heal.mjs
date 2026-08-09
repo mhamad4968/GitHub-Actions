@@ -52,6 +52,10 @@ assert.match(rag, /--heal/);
 assert.match(rag, /healStagedMirrors/);
 
 const temp = read('scripts/lib/cio-session-close-temp-paths.mjs');
-assert.match(temp, /tmp-close-report/);
+assert.match(temp, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
+
+const healSrc = read('scripts/cio-wake-preflight-heal.mjs');
+assert.match(healSrc, /TMP_CLOSE_PURGE_RE/);
+assert.match(healSrc, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
 
 console.log('[test:wake-preflight-heal] OK');
