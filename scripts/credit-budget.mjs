@@ -198,6 +198,9 @@ function cmdSet(pct) {
   saveState(state);
   const w = warningLevel(pct);
   console.log(`[credit-budget] ✅ ${today} (JST) の消費を ${pct}% で記録 ${w.icon} ${w.label}`);
+  console.log(
+    '  → git に載せるだけなら bridge 親ずれ可。締め前は `npm run cio:session:export-handoff`。WAKE/bootstrap 中は `npm run verify:session-close-handoff-freshness:wake`（credit grandparent fold）で可。締め strict に :wake を付けない',
+  );
   if (w.level !== 'ok') {
     console.log('  → 詳細状態は: npm run credit:status');
   }

@@ -68,6 +68,29 @@ console.log('[test:cio-wake-handoff-allowlist] start');
   const dir = initRepo();
   try {
     const h0 = short(dir);
+    fs.writeFileSync(
+      path.join(dir, 'docs', 'handoff', 'latest-session-bridge.json'),
+      JSON.stringify({ gitHead: h0 }, null, 2) + '\n',
+    );
+    fs.mkdirSync(path.join(dir, 'chat-sessions'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'chat-sessions', 'checkpoint-latest.md'), '# cp\n');
+    git(dir, ['add', 'docs/handoff/latest-session-bridge.json', 'chat-sessions/checkpoint-latest.md']);
+    git(dir, ['commit', '-m', 'chore(handoff): wake']);
+    fs.mkdirSync(path.join(dir, 'data'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'data', 'credit-usage.json'), '{"daily_records":[]}\n');
+    git(dir, ['add', 'data/credit-usage.json']);
+    git(dir, ['commit', '-m', 'chore(credit): set']);
+    assert.equal(isWakeAdjacentGrandparentFold(dir, h0), true);
+    console.log('  ✅ grandparent fold: credit tip + handoff parent');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+{
+  const dir = initRepo();
+  try {
+    const h0 = short(dir);
     fs.writeFileSync(path.join(dir, 'README.md'), 'x\n');
     git(dir, ['add', 'README.md']);
     git(dir, ['commit', '-m', 'unrelated']);

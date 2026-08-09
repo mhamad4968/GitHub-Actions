@@ -1,4 +1,10 @@
-﻿日時(JST): 2026-08-08（土）— **WAKE完了・認識同期（checkpoint 08-07 正）**
+﻿日時(JST): 2026-08-09（日）— **WAKE noise 恒久＋フォロー配線**
+いま何してた（1行）: cold-start 偽陽性根絶（lock→reexport→handoff / GHA rag / quiet heal / Desktop soft-tune）。test:wake 配線。
+次にやる1つ: 浜田指示待ち（事前にレーンを決めない）。
+GO待ち（なし／内容）: 新アプリ＝相談・GO後のみ。
+触らないで（なし／内容）: 実PC配信／GPO／SG追加／688 heat外／677–679／712deploy／736。
+
+日時(JST): 2026-08-08（土）— **WAKE完了・認識同期（checkpoint 08-07 正）**
 いま何してた（1行）: cold-start READY。674 SKYSEA manual rev292。Plan&Usage Cursor Models 29%。
 次にやる1つ: 浜田指示待ち（事前にレーンを決めない）。SKYSEA配信はしない。完了登録は xlsx 依頼時のみ。
 GO待ち（なし／内容）: 新アプリ＝相談・GO後のみ。
