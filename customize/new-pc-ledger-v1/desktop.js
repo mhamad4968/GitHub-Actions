@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1b';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1c';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11b-hub-tones';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11c-inv-label';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -11165,16 +11165,16 @@ ${bodyInner}\
       const periodRange = bounds.start + ' 〜 ' + bounds.end;
       if (active) {
         invPeriodHint.textContent =
-          '棚卸期間中（670キャンペーン: ' +
+          '棚卸期間：' +
           periodRange +
-          ' ／ 年次参考: ' +
+          ' （年次参考: ' +
           fiscalLabel +
           '）。一括棚卸・未棚卸一覧が利用できます。';
       } else {
         invPeriodHint.textContent =
-          '現在は棚卸期間外です（670キャンペーン: ' +
+          '現在は棚卸期間外です。棚卸期間：' +
           periodRange +
-          ' ／ 年次参考: ' +
+          ' （年次参考: ' +
           fiscalLabel +
           '）。棚卸状況一覧は通年で確認できます。';
       }
