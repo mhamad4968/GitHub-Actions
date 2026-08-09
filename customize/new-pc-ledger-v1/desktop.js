@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1c';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p1d';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9753,7 +9753,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11c-inv-label';
+  const SEARCH674_WRAP_VER = '2026-08-10-v11d-readable-labels';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -11157,13 +11157,17 @@ ${bodyInner}\
     const invPeriodHint = document.createElement('div');
     invPeriodHint.id = 'npl674-inv-period-hint';
     invPeriodHint.style.cssText =
-      'font-size:12px;color:#475569;margin-bottom:8px;line-height:1.45;';
+      'font-size:14px;font-weight:700;color:#14532d;margin-bottom:10px;line-height:1.5;' +
+      'padding:10px 12px;border-radius:6px;border:1px solid #86efac;background:#ecfdf5;';
     invPeriodHint.textContent = '棚卸期間を確認中…';
     ensureInventoryPeriodLoaded674().then(function (active) {
       const bounds = computeInventoryPeriodBounds674(npl674InventoryEnvMap674);
       const fiscalLabel = formatFiscalInventoryPeriodLabel674();
       const periodRange = bounds.start + ' 〜 ' + bounds.end;
       if (active) {
+        invPeriodHint.style.color = '#14532d';
+        invPeriodHint.style.borderColor = '#86efac';
+        invPeriodHint.style.background = '#ecfdf5';
         invPeriodHint.textContent =
           '棚卸期間：' +
           periodRange +
@@ -11171,6 +11175,9 @@ ${bodyInner}\
           fiscalLabel +
           '）。一括棚卸・未棚卸一覧が利用できます。';
       } else {
+        invPeriodHint.style.color = '#92400e';
+        invPeriodHint.style.borderColor = '#fcd34d';
+        invPeriodHint.style.background = '#fffbeb';
         invPeriodHint.textContent =
           '現在は棚卸期間外です。棚卸期間：' +
           periodRange +
@@ -11203,8 +11210,8 @@ ${bodyInner}\
     activeSummary.id = 'npl674-index-active-summary';
     activeSummary.setAttribute('aria-live', 'polite');
     activeSummary.style.cssText =
-      'flex:1;min-width:220px;margin:0;padding:6px 10px;border-radius:6px;border:1px solid #bae6fd;background:#f0f9ff;' +
-      'font-size:12px;font-weight:600;color:#0c4a6e;line-height:1.45;';
+      'flex:1;min-width:220px;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;' +
+      'font-size:14px;font-weight:700;color:#0f172a;line-height:1.5;';
 
     const summaryRow = document.createElement('div');
     summaryRow.id = 'npl674-index-summary-row';
