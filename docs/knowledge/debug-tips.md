@@ -6,12 +6,21 @@
 
 ---
 
-## [2026-08-09] #D-CLOSE-02 — 翌日 WAKE の日付偽陽性
+## [2026-08-09] §50-3-8 — WAKE bridge grandparent / lock-before-handoff / GHA rag mirror
 
-**前提**: 前日 `closeStatus=closed-day` のまま新日 cold-start/bootstrap すると、checkpoint「最終更新」が前日のため `verify:session-close-git-warn` が #D-CLOSE-02 NG になる（bridge は整合済でも）  
-**手順**: (1) bootstrap は `verify-session-close-git-warn.mjs --wake-context`（日付スキップ・bridge は検査）。(2) 締めは flag なし／`cio:session:close-preflight` で当日 stamp 必須を維持。  
-**禁止**: 締め経路に `--wake-context` を付けること／WAKE で closeStatus を勝手に open にすること。  
-**exit**: `node scripts/verify-session-close-handoff-freshness.mjs --wake-context` OK · 同 strict は NG のまま · bootstrap 3c 緑
+**前提**: cold-start 後に `bridge.gitHead` が HEAD/parent から外れ #D-CLOSE-02 が鳴る／`package-lock` が handoff 後 tip になり parent fold が効かない／GHA デプロイ記録だけ正本が進み `.rag` Self-Heal が毎回 INFO 化するとき  
+**手順**: (1) `cio:wake:handoff-commit` は **lock heal → allowlist handoff → tipsOnly → push**。(2) WAKE のみ `verify-session-close-handoff-freshness --wake-context` が lock/credit tip + handoff parent の **adjacent grandparent fold**（`isWakeAdjacentGrandparentFold`）を INFO スキップ。(3) GHA `kintone-customize-deploy` の記録 step は `rag:mirror:canonical-docs` 後に `.rag/extra-docs/kintone-apps.md` も stage。  
+**禁止**: close/strict 経路に grandparent fold を入れること／lock を handoff より後に戻すこと／Self-Heal 開始を ⚠ NG とログること。  
+**exit**: wake-context で fold INFO・close は grandparent NG のまま · handoff-commit 順序コメント一致 · GHA step に `rag:mirror:canonical-docs`
+
+---
+
+## [2026-08-09] WAKE noise 根絶 — lock→re-export→handoff / GHA rag / quiet heal
+
+**前提**: cold-start で (a) rag NG 表示 (b) bridge grandparent (c) Desktop RAM/Notepad WARN が毎回ノイズになる  
+**手順**: (1) `cio-wake-handoff-commit` は **lock heal → export-handoff 1回 → allowlist handoff**（tip=handoff・bridge=parent）。(2) GHA deploy 記録で `rag:mirror` + `.rag/extra-docs/kintone-apps.md` を同梱。(3) Self-Heal 成功は INFO。(4) `--wake-context` のみ lock/credit tip の grandparent fold（締めは strict）。(5) Desktop RAM 80–89 INFO・≥90 WARN、Notepad は 24/25 ロック時のみ WARN。  
+**禁止**: 締め経路に `--wake-context` / grandparent fold を付けること。handoff **後**の無限 re-export。  
+**exit**: `verify-session-close-handoff-freshness --wake-context` OK · 同 strict は日付/bridge で NG 可 · allowlist.test OK
 
 ---
 

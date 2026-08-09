@@ -103,3 +103,48 @@ export function isWakeHandoffParentGitHeadFold(root, bridgeGitHead) {
   if (!parentHead || bridgeGitHead !== parentHead) return false;
   return lastCommitTouchesOnlyWakeHandoff(root);
 }
+
+const LOCK_ONLY_FILES = Object.freeze(['package-lock.json', 'package.json']);
+const CREDIT_ONLY_FILES = Object.freeze(['data/credit-usage.json']);
+
+/**
+ * HEAD の変更ファイルが allowed の部分集合か（allowlist 例外なし・厳密）
+ * @param {string} root
+ * @param {string} ref
+ * @param {readonly string[]} allowedFiles
+ */
+function commitTouchesStrictSubset(root, ref, allowedFiles) {
+  try {
+    const names = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', ref], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+      .trim()
+      .split(/\r?\n/)
+      .filter(Boolean);
+    if (!names.length) return false;
+    const allowed = new Set(allowedFiles);
+    return names.every((n) => allowed.has(n));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * WAKE 専用: bridge.gitHead === HEAD~2 かつ
+ * HEAD が lock-only（package-lock / package.json）または credit-only、
+ * かつ HEAD~1 が WAKE handoff allowlist のみ → grandparent drift 許容。
+ * close / strict 経路では呼ばない（--wake-context のみ）。
+ * @returns {boolean}
+ */
+export function isWakeAdjacentGrandparentFold(root, bridgeGitHead) {
+  if (!bridgeGitHead || bridgeGitHead === 'unknown') return false;
+  const gp = gitAncestorHeadShort(root, 2);
+  if (!gp || bridgeGitHead !== gp) return false;
+  const headLockOrCredit =
+    commitTouchesStrictSubset(root, 'HEAD', LOCK_ONLY_FILES) ||
+    commitTouchesStrictSubset(root, 'HEAD', CREDIT_ONLY_FILES);
+  if (!headLockOrCredit) return false;
+  return commitTouchesOnly(root, 'HEAD~1', WAKE_HANDOFF_ALLOWLIST);
+}

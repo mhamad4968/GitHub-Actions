@@ -39,8 +39,9 @@ MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK → **MANDATORY
 ### 毎回エラーだった根因（2026-08-08 抜本）
 
 1. **順序**: rollup / rag Self-Heal / knowledge stamp が dirty を作ったあと、**bootstrap の `verify:session-close-git-warn` が先に走り**、その後でやっと wake-commit → **毎回「未コミット N 件」と見える**
-2. **rag**: 正本だけ commit されると `.rag` がズレる → WAKE で Self-Heal。pre-commit は **`--staged --heal`** で同一 commit にミラー補完（#S-RAG-PRECOMMIT-01）
+2. **rag**: 正本だけ commit されると `.rag` がズレる → WAKE で Self-Heal。pre-commit は **`--staged --heal`** で同一 commit にミラー補完（#S-RAG-PRECOMMIT-01）。**GHA デプロイ記録**も `rag:mirror:canonical-docs` して `.rag/extra-docs/kintone-apps.md` を同梱（§50-3-8）
 3. **Part C**: checkpoint より古い主タスクで誤ブリーフィング → WAKE で checkpoint 同期（D-PARTC-01）
+4. **lock tip（§50-3-8）**: `package-lock` heal → **export-handoff 1回** → allowlist handoff（tip=handoff・bridge=parent）。残件で lock/credit が tip のときだけ **`--wake-context` の adjacent grandparent fold**（close/strict では非許容）
 
 ### オプション
 

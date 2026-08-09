@@ -4,9 +4,11 @@
  *
  * Usage: node scripts/verify-session-close-handoff-freshness.mjs [--warn-only] [--wake-context]
  *
- * --wake-context … bootstrap/WAKE 専用。closeStatus が前日締め（closed-day 等）のとき
- *   「最終更新≠当日」は NG にしない（翌日 WAKE の偽陽性根絶）。bridge.gitHead は常に検査。
- *   締め（close-preflight / close-git）では付けない — 当日 stamp 必須を維持。
+ * --wake-context … bootstrap/WAKE 専用。
+ *   (1) closeStatus が前日締め（closed-day 等）のとき「最終更新≠当日」は NG にしない（日付スキップ）。
+ *   (2) bridge が HEAD/parent 不一致でも、lock/credit tip 直後の adjacent grandparent fold
+ *       （isWakeAdjacentGrandparentFold）なら INFO スキップ — close/strict では付けない。
+ *   締め（close-preflight / close-git）では付けない — 当日 stamp 必須・grandparent 非許容を維持。
  */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -15,6 +17,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { bridgePath } from "./lib/cio-session-bridge.mjs";
 import { CHECKPOINT_REL } from "./lib/cio-checkpoint-read.mjs";
+import { isWakeAdjacentGrandparentFold } from "./lib/cio-wake-handoff-allowlist.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const warnOnly = process.argv.includes("--warn-only");
@@ -82,9 +85,15 @@ function main() {
       if (!gh || gh === "unknown") {
         issues.push("bridge.gitHead が空/unknown");
       } else if (gh !== head && gh !== parent) {
-        issues.push(
-          `bridge.gitHead=${gh} ∉ {HEAD=${head}, parent=${parent}}（#D-CLOSE-02 — grandparent 許容なし）`,
-        );
+        if (wakeContext && isWakeAdjacentGrandparentFold(root, gh)) {
+          console.log(
+            `[verify-session-close-handoff-freshness] WAKE: bridge.gitHead=${gh} は HEAD~2（lock/credit tip + handoff parent）— grandparent fold スキップ`,
+          );
+        } else {
+          issues.push(
+            `bridge.gitHead=${gh} ∉ {HEAD=${head}, parent=${parent}}（#D-CLOSE-02 — grandparent 許容なし）`,
+          );
+        }
       }
     }
   }

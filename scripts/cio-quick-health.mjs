@@ -58,8 +58,8 @@ function main() {
   // #S-RAG-WAKE-03 — Self-Heal 成功後は git add まで行い、未 stage のまま次セッションへ持ち越さない
   let rag = runNpmScript(root, 'verify:rag-mirror-canonical');
   if (!rag.ok) {
-    console.warn(
-      '[cio:quick-health] ⚠ verify:rag-mirror-canonical NG → rag:mirror:canonical-docs を 1 回実行（正本→.rag 同期）',
+    console.log(
+      '[cio:quick-health] INFO rag-mirror drift → Self-Heal 1 回（正本→.rag 同期）',
     );
     const heal = runNpmScript(root, 'rag:mirror:canonical-docs');
     if (!heal.ok) {

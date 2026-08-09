@@ -5,6 +5,12 @@
  *   npm run cio:wake:handoff-commit
  *   npm run cio:wake:handoff-commit -- --push
  *
+ * 順序（§50-3-8 / #S-WAKE-LOCK-01）:
+ *   1) package-lock / package.json heal（allowlist 外・分離 commit）
+ *   2) allowlist handoff commit
+ *   3) tip 直後の debug-tips のみ残件があれば tipsOnly commit
+ *   4) 任意 --push
+ *
  * allowlist のみ stage（SESSION-CLOCK は意図的 dirty のため対象外）。
  * bootstrap sync / export-handoff が触る genre・META・debug-tips・checkpoint も同梱。
  * commit 後 tip が進むため bridge.gitHead は parent になる（D-CLOSE-02 許容）。
@@ -67,8 +73,49 @@ function commitAllowlist(paths, message) {
   console.log(`[cio:wake:handoff-commit] commit OK files=${paths.join(',')}`);
 }
 
+/** #S-WAKE-LOCK-01 — allowlist 外の package-lock / package.json 残件を別 commit（SESSION-CLOCK 除外）
+ * @returns {boolean} commit したか
+ */
+function healPackageLockBeforeHandoff() {
+  const lockHeal = [];
+  const stLock = git(['status', '--porcelain', '--', 'package-lock.json', 'package.json']);
+  if (stLock.ok && stLock.out) {
+    for (const line of stLock.out.split(/\r?\n/).filter(Boolean)) {
+      const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1').replace(/\\/g, '/');
+      if (rel === 'package-lock.json' || rel === 'package.json') lockHeal.push(rel);
+    }
+  }
+  if (lockHeal.length === 0) return false;
+  commitAllowlist(lockHeal, 'chore(deps): sync package-lock after WAKE (#S-WAKE-LOCK-01)');
+  return true;
+}
+
+/** lock tip 後に bridge を 1 回だけ合わせる（handoff 後の無限追従はしない） */
+function reexportBridgeAfterLock() {
+  const r = spawnSync(process.execPath, ['scripts/cio-session-export-handoff.mjs'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (r.status !== 0) {
+    console.warn(
+      '[cio:wake:handoff-commit] WARN export-handoff after lock failed — bridge は次の handoff で親ずれの可能性',
+      (r.stderr || r.stdout || '').trim(),
+    );
+    return false;
+  }
+  console.log('[cio:wake:handoff-commit] re-export bridge after lock heal');
+  return true;
+}
+
 function main() {
   const doPush = process.argv.includes('--push');
+
+  // DeepSeek §50-3-8: lock heal を allowlist handoff より先に。
+  // lock で tip が進むと旧 bridge が grandparent になるため、lock 直後に 1 回だけ re-export。
+  if (healPackageLockBeforeHandoff()) {
+    reexportBridgeAfterLock();
+  }
+
   const paths = dirtyAllowlist();
   if (paths.length === 0) {
     console.log('[cio:wake:handoff-commit] OK no-op（allowlist clean）');
@@ -80,20 +127,6 @@ function main() {
   const tipsOnly = dirtyAllowlist().filter((p) => p === 'docs/knowledge/debug-tips.md');
   if (tipsOnly.length > 0) {
     commitAllowlist(tipsOnly, 'chore(handoff): sync debug-tips after WAKE');
-  }
-
-  // #S-WAKE-LOCK-01 — allowlist 外の package-lock / package.json 残件を別 commit（SESSION-CLOCK 除外）
-  // DeepSeek §50-3-8: allowlist 混在禁止・再発時は本パスで分離 heal
-  const lockHeal = [];
-  const stLock = git(['status', '--porcelain', '--', 'package-lock.json', 'package.json']);
-  if (stLock.ok && stLock.out) {
-    for (const line of stLock.out.split(/\r?\n/).filter(Boolean)) {
-      const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1').replace(/\\/g, '/');
-      if (rel === 'package-lock.json' || rel === 'package.json') lockHeal.push(rel);
-    }
-  }
-  if (lockHeal.length > 0) {
-    commitAllowlist(lockHeal, 'chore(deps): sync package-lock after WAKE (#S-WAKE-LOCK-01)');
   }
 
   if (!doPush) {

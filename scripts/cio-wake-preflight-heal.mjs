@@ -59,9 +59,9 @@ function healRagMirrorOnce() {
     console.log('[cio:wake:preflight-heal] rag-mirror OK（heal 不要）');
     return false;
   }
-  console.warn('[cio:wake:preflight-heal] rag-mirror NG → Self-Heal 1 回');
-  if (check.err) console.warn(check.err);
-  if (check.out) console.warn(check.out);
+  console.log('[cio:wake:preflight-heal] INFO rag-mirror drift → Self-Heal 1 回');
+  if (check.err) console.log(check.err);
+  if (check.out) console.log(check.out);
   const heal = runNode('scripts/rag-mirror-canonical-docs.mjs');
   if (!heal.ok) {
     console.error('[cio:wake:preflight-heal] ❌ rag:mirror:canonical-docs 失敗');
