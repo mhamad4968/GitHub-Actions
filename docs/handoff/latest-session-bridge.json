@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-10T00:12:02.174Z",
-  "gitHead": "65629873",
-  "gitStatus": "## main...origin/main [ahead 1]",
-  "nextTask": "**Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。",
+  "exportedAt": "2026-08-10T00:15:11.936Z",
+  "gitHead": "05a596e1",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "**Security NEXT（月次重大インシデント報告）** — 夜セッションは **まずフリーディスカッション**（アイデア出し）。仕様起草・実装は合意後。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=65629873 | 次=**Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=05a596e1 | 次=**Security NEXT（月次重大インシデント報告）** — 夜セッションは **まずフリーディスカッション**（アイデア出し）。仕様起草・実装は合意後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-08-10T00:12:02.648Z",
+  "validatedAt": "2026-08-10T00:15:12.457Z",
   "crosscheckOk": true
 }

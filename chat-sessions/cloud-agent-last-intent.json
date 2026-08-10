@@ -3,7 +3,7 @@
   "closeStatus": "full",
   "closeNote": "Morning session closed: 674 UI hub-tabs P1+P2+polish done (rev317). Spec/approved-changes/checkpoint updated. Security NEXT deferred to night.",
   "nextSessionFocus": [
-    "Security NEXT monthly major-incident report for management meeting materials"
+    "Security NEXT monthly major-incident report — start with free discussion / idea brainstorming (no implement until agreed)"
   ],
   "gitHead": "3fdf8129",
   "specAckPending": null
