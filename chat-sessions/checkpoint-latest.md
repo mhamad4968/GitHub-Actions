@@ -1,24 +1,24 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-10 08:40 JST — **674 UI P1 deploy** hub-tabs（台帳/棚卸/管理）rev308。
-**次の1手**: 浜田目視（674一覧タブ）→ OKなら P2（編集ヘッダー）または Security NEXT。
-**Git**: （commit後更新）
-**closeStatus**: open
-**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=Security NEXT月次レポート
+**最終更新**: 2026-08-10 09:10 JST — **674 UI hub-tabs 完了**（P1+P2+磨き・浜田目視OK）。夜は Security NEXT。
+**次の1手**: **Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。
+**Git**: （close-git 後更新）
+**closeStatus**: closing
+**8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT（今夜）**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
-**本日状態**: 08-10 **進行中** — 674 UI **仕様GO＋P1実装・deploy済**（目視待ち）
+**本日状態**: 08-10 **朝セッション締め** — 674 UI **完了**（rev317 / BUILD p2a）
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-10-674-ui-hub-tabs-p1` | **308** |
+| **674** | `2026-08-10-674-ui-hub-tabs-p2a` | **317** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
-**674 live fileKey**: `d5a744a8-0559-494c-a5c2-a901ddb5abf6`
-**継続メモ**: 仕様 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。P1=一覧タブ（deploy済）。P2=編集ヘッダー未着手。
-**GO待ち**: 浜田目視（P1）／P2実装GO／新アプリ＝相談・GO後のみ。
-**調査正本**: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
-**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · Git=`d063c37e`
+**674 live fileKey**: `c29d5c22-e7eb-4993-9c81-55493bf31911`
+**継続メモ**: 仕様完了 `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`。承認 `docs/approved-changes/2026-08-10-674-ui-hub-tabs-implement-done.md`。
+**GO待ち**: Security NEXT（夜）／新アプリ＝相談・GO後のみ。
+**調査正本**: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`（完了）
+**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 ## 保留・その他の制約
@@ -37,12 +37,16 @@
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-08-10
 
+### 2026-08-10 朝（セッション締め・674 UI 完了）
+- **674 UI hub-tabs**: 仕様GO → P1 → 磨き → P2（編集ヘッダー／自動適用／件数／棚卸条件要約）→ **rev 317** BUILD=`2026-08-10-674-ui-hub-tabs-p2a` → **浜田目視 OK・案件完了**
+- SKYSEA: 案件外維持（holds on-hold）
+- **次（夜）**: Security NEXT 月次重大インシデント報告
+- closeStatus: **closing** → close-git で closed
+
 ### 2026-08-10 朝（認識同期）
 - 浜田: **SKYSEA を案件から削除**（手動インストール方針。kintoneアプリ登録が必要になった時だけ指示）
 - holds `skysea-installer`: active → **on-hold**（withdrawnAt=2026-08-10）。コード・SPECは削除しない
 - Plan&Usage: Cursor Models 32% 記録済
-- **674 UI hub-tabs**: 仕様起草 → **仕様 GO**（`docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`）。**P1 実装 GO 待ち**
-- 本日レーン: **674 UI P1** → Security NEXT 月次レポート
 
 ## 2026-08-09
 

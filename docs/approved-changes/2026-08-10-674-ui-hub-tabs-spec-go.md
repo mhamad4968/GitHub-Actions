@@ -11,6 +11,8 @@
 - 最終形＝案C、実装は C-phased（P1＝一覧タブ＋色 → P2＝編集ヘッダー）
 - **実装 GO は別途**（本記録は仕様 GO のみ）
 
-## 次
+## 続報（同日）
 
-P1 実装 GO 待ち。
+- P1 実装 GO → deploy → 目視 OK
+- P2＋磨き 実装 GO → live **rev 317** → 目視 OK
+- **完了記録**: `docs/approved-changes/2026-08-10-674-ui-hub-tabs-implement-done.md`

@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-09T23:04:14.246Z",
+  "scoredAt": "2026-08-10T00:09:50.184Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。",
+  "topTask": "**Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。",
   "topTaskKind": "work",
-  "topWorkTask": "**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。",
+  "topWorkTask": "**Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。",
   "tasks": [
     {
-      "id": "checkpoint:**674**_UIレイアウト／視覚的見せ方_→_その後_**Security_",
-      "text": "**674** UIレイアウト／視覚的見せ方 → その後 **Security NEXT** 月次重大事故ネタの月次レポート機能（経営会議資料用）。項番 -0 は浜田指示後。",
+      "id": "checkpoint:**Security_NEXT（月次重大インシデント報告）**_—_夜セッション",
+      "text": "**Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,
