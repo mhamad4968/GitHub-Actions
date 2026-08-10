@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-10 反映）】
-- 本日レーン: **674 UI hub-tabs** — **仕様GO済**／**P1実装GO待ち**（一覧タブ＋色）→ その後 **Security NEXT** 月次レポート。
-- 正本: `docs/plans/2026-08-10-674-ui-hub-tabs-spec.md` · 承認: `docs/approved-changes/2026-08-10-674-ui-hub-tabs-spec-go.md`
-- checkpoint: 2026-08-10 08:34 JST — 仕様GO記録。
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA案件外 / 712 / 736 等）
+【今やってる主タスク（2026-08-10 反映・2026-08-10 WAKE同期）】
+- 本日レーン: **Security NEXT（月次重大インシデント報告）** — 夜セッションは **まずフリーディスカッション**（アイデア出し）。仕様起草・実装は合意後。
+- checkpoint: 2026-08-10 09:10 JST — **674 UI hub-tabs 完了**（P1+P2+磨き・浜田目視OK）。夜は Security NEXT。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
