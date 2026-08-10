@@ -65,7 +65,7 @@
       "runbook": "docs/runbooks/keiei-kaigi-security-report.md",
       "npm": ["doc-lane:security-report", "verify:doc-lane-keiei-kaigi", "verify:doc-lane-word-phase2"],
       "ensureBeforeUse": true,
-      "note": "2026-06-14 削除済 — 月次作業開始時に再作成（builder が mkdir する）"
+      "note": "2026-06-14 削除済 — 月次作業開始時に再作成（builder が mkdir する）。注意喚起ネタは配下 ネタ保存用\\yyyymmdd — 正本 docs/runbooks/keiei-kaigi-neta-from-security-next.md（レポート本体と別レーン）"
     },
     {
       "id": "qualification-pptx",
