@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p1i';
+  const BUILD = '2026-08-10-674-ui-hub-tabs-p2a';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -7509,6 +7509,44 @@ ${bodyInner}\
     return btn;
   }
 
+  /**
+   * P2: ヘッダの副操作・危険操作を「その他の操作」に格納（初期閉じ）。
+   * @param {HTMLElement} wrapper
+   * @param {HTMLElement[]} overflowNodes
+   */
+  function append674HeaderOverflow674(wrapper, overflowNodes) {
+    if (!wrapper || !overflowNodes || !overflowNodes.length) return;
+    const det = document.createElement('details');
+    det.className = 'npl674-header-overflow';
+    det.style.cssText =
+      'margin:4px 8px 4px 0;padding:0;border:1px solid #cbd5e1;border-radius:6px;background:#fff;';
+    const sum = document.createElement('summary');
+    sum.textContent = 'その他の操作';
+    sum.style.cssText =
+      'padding:6px 12px;cursor:pointer;font-size:13px;font-weight:700;color:#334155;list-style:none;';
+    det.appendChild(sum);
+    const body = document.createElement('div');
+    body.style.cssText =
+      'display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px 8px 8px;' +
+      'border-top:1px solid #e2e8f0;';
+    for (let oi = 0; oi < overflowNodes.length; oi++) {
+      body.appendChild(overflowNodes[oi]);
+    }
+    det.appendChild(body);
+    wrapper.appendChild(det);
+  }
+
+  /**
+   * 主操作を最大3件に抑え、超過分はその他へ回す。
+   * @param {HTMLElement[]} primary
+   * @param {HTMLElement[]} overflow
+   */
+  function cap674HeaderPrimary674(primary, overflow) {
+    while (primary.length > 3) {
+      overflow.unshift(primary.pop());
+    }
+  }
+
   function injectButtons(event) {
     jb674PrintRecordSnapshot = event.record;
     const mount = resolveButtonMountSpace674();
@@ -7539,23 +7577,51 @@ ${bodyInner}\
     /** 保管中: 種別横断でヘッダは全フィールドリセットのみ（新規・編集）。閲覧×保管はバー非表示。 */
     const inStorage674 = isPcStatusStorage674(event.record);
 
+    const primaryBtns = [];
+    const overflowBtns = [];
+
+    const btnReset674 = createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
+      const ok = window.confirm(
+        'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄/取消）・作成日時（JST）は変えません。続行しますか？',
+      );
+      if (!ok) return;
+      runClearAccountFields();
+    });
+
+    const btnReplace674 = createGenerateButton('🔄 PC買替', '#6c757d', () => {
+      runPcReplacementFlow674().catch(function (e) {
+        console.error('[NEW-PC-LEDGER-V1] PC買替', e);
+        window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
+      });
+    });
+
+    const btnPrint674 = createGenerateButton('📄 印刷', '#0dcaf0', () => {
+      const rec = resolve674PrintRecord();
+      if (!rec) {
+        window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
+        return;
+      }
+      open674SystemInfoPrintWindow(rec);
+    });
+
     if (!isRecordDetail674) {
       /** 新規 create では event.record の種別が空のまま・DOM だけ先に 個人/共有 等のことがある */
       const type = readAccountTypeLive674(event.record);
 
       if (!inStorage674) {
-        // 利用中 等: セッション前に固めた条件（非保管のみ自動生成・595 等）
         if (isPersonal595AssistEnabled674(event.record)) {
-          wrapper.appendChild(createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
-            runPersonalAutoGen().catch(function (e) {
-              console.error(e);
-              window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
-            });
-          }));
+          overflowBtns.push(
+            createGenerateButton('🔵 個人用 自動生成', '#0d6efd', () => {
+              runPersonalAutoGen().catch(function (e) {
+                console.error(e);
+                window.alert('自動生成でエラー: ' + (e && e.message ? e.message : String(e)));
+              });
+            }),
+          );
         }
 
         if (type === TYPE_SHARED) {
-          wrapper.appendChild(
+          overflowBtns.push(
             createGenerateButton('🟢 共有用 自動生成', '#198754', () => {
               runSharedAutoGen().catch(function (e) {
                 console.error(e);
@@ -7566,11 +7632,11 @@ ${bodyInner}\
         }
 
         if (type === TYPE_SHARED || type === TYPE_JR) {
-          wrapper.appendChild(createM365InputHeaderButton674());
+          overflowBtns.push(createM365InputHeaderButton674());
         }
 
         if (isPersonal595AssistEnabled674(event.record)) {
-          wrapper.appendChild(
+          primaryBtns.push(
             createInputAssistHeaderButton674(
               '595 社員マスタ',
               NPL674_INPUT_ASSIST_MSG_PERSONAL,
@@ -7578,9 +7644,8 @@ ${bodyInner}\
             ),
           );
         }
-        /** 転用廃棄ボタン: `getFieldElement` ではなく **record に `npl_transfer_manual` があるか**で出す（レイアウトで DOM が遅延／グループ内でも帯に出す）。 */
         if (isPersonal595AssistEnabled674(event.record) && event.record && event.record[FC_NPL_TRANSFER_MANUAL]) {
-          wrapper.appendChild(createTransferDisposeHeaderButton674());
+          overflowBtns.push(createTransferDisposeHeaderButton674());
         }
         if (
           event.record &&
@@ -7588,10 +7653,10 @@ ${bodyInner}\
           event.record.$id.value &&
           !isPcStatusInactive674(readPcStatusLive674(event.record))
         ) {
-          wrapper.appendChild(createMisregistrationCancelHeaderButton674(event));
+          overflowBtns.push(createMisregistrationCancelHeaderButton674(event));
         }
         if (type === TYPE_SHARED || type === TYPE_JR) {
-          wrapper.appendChild(
+          primaryBtns.push(
             createInputAssistHeaderButton674(
               '680 所属候補',
               NPL674_INPUT_ASSIST_MSG_SHARED_JR,
@@ -7601,13 +7666,11 @@ ${bodyInner}\
         }
       }
 
-      wrapper.appendChild(createGenerateButton('🔴 全フィールドリセット', '#dc3545', () => {
-        const ok = window.confirm(
-          'PC名・シリアル・利用者名・所属・各種アカウント・SKYSEA・備考など、入力欄をまとめて空にします。種別・ステータス（利用中/保管/廃棄/取消）・作成日時（JST）は変えません。続行しますか？',
-        );
-        if (!ok) return;
-        runClearAccountFields();
-      }));
+      if (inStorage674) {
+        primaryBtns.push(btnReset674);
+      } else {
+        overflowBtns.push(btnReset674);
+      }
     }
 
     if (
@@ -7617,42 +7680,24 @@ ${bodyInner}\
       event.record &&
       event.record[FC_INVENTORY_HISTORY]
     ) {
-      wrapper.appendChild(createInventoryIndividualButton674(event.record));
+      primaryBtns.push(createInventoryIndividualButton674(event.record));
     }
 
     if (isRecordDetail674) {
       if (!inStorage674) {
-        wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
-          runPcReplacementFlow674().catch(function (e) {
-            console.error('[NEW-PC-LEDGER-V1] PC買替', e);
-            window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
-          });
-        }));
-        wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
-          const rec = resolve674PrintRecord();
-          if (!rec) {
-            window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
-            return;
-          }
-          open674SystemInfoPrintWindow(rec);
-        }));
+        primaryBtns.push(btnReplace674);
+        primaryBtns.push(btnPrint674);
       }
     } else if (!inStorage674) {
-      wrapper.appendChild(createGenerateButton('🔄 PC買替', '#6c757d', () => {
-        runPcReplacementFlow674().catch(function (e) {
-          console.error('[NEW-PC-LEDGER-V1] PC買替', e);
-          window.alert('PC買替でエラー: ' + (e && e.message ? e.message : String(e)));
-        });
-      }));
-      wrapper.appendChild(createGenerateButton('📄 印刷', '#0dcaf0', () => {
-        const rec = resolve674PrintRecord();
-        if (!rec) {
-          window.alert('レコードを取得できませんでした。画面を開き直すか、一覧から再度開いてください。');
-          return;
-        }
-        open674SystemInfoPrintWindow(rec);
-      }));
+      primaryBtns.push(btnReplace674);
+      primaryBtns.push(btnPrint674);
     }
+
+    cap674HeaderPrimary674(primaryBtns, overflowBtns);
+    for (let pi = 0; pi < primaryBtns.length; pi++) {
+      wrapper.appendChild(primaryBtns[pi]);
+    }
+    append674HeaderOverflow674(wrapper, overflowBtns);
 
     if (!wrapper.firstChild) return;
     if (mount.prepend) {
@@ -9753,7 +9798,7 @@ ${bodyInner}\
 
   // --- 一覧：§4.8a 検索（キーワード + 種別チップ + 転用PC + M365切替/資産台帳 済・未 + datalist。SKYSEA チップは当面非表示・query 互換は維持） ---
   const SEARCH674_WRAP_ID = 'new-pc-ledger-674-index-search';
-  const SEARCH674_WRAP_VER = '2026-08-10-v11i-chips-1row';
+  const SEARCH674_WRAP_VER = '2026-08-10-v12a-p2-auto-count';
   const HUB674_STORAGE_KEY = 'npl674hub';
   const HUB674_HASH_PARAM = 'npl674hub';
   /** 一覧ハブ別のやさしい基調色（wrap のみ塗る・パネル二重塗りしない） */
@@ -10343,6 +10388,12 @@ ${bodyInner}\
         .catch(function (e) {
           console.warn('[NEW-PC-LEDGER-V1] hydrate datalist', e);
         });
+    }
+    if (typeof ref.refreshMatchCount === 'function') {
+      ref.refreshMatchCount();
+    }
+    if (typeof ref.updateActiveSummary === 'function') {
+      ref.updateActiveSummary();
     }
   }
 
@@ -11188,11 +11239,20 @@ ${bodyInner}\
       'flex:1;min-width:220px;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;' +
       'font-size:14px;font-weight:700;color:#0f172a;line-height:1.5;';
 
+    const matchCountEl = document.createElement('div');
+    matchCountEl.id = 'npl674-index-match-count';
+    matchCountEl.setAttribute('aria-live', 'polite');
+    matchCountEl.style.cssText =
+      'flex:0 0 auto;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;' +
+      'font-size:14px;font-weight:800;color:#0f172a;line-height:1.5;white-space:nowrap;';
+    matchCountEl.textContent = '該当件数: …';
+
     const summaryRow = document.createElement('div');
     summaryRow.id = 'npl674-index-summary-row';
     summaryRow.style.cssText =
       'display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 8px;';
     summaryRow.appendChild(activeSummary);
+    summaryRow.appendChild(matchCountEl);
 
     const chipRow = document.createElement('div');
     chipRow.style.cssText =
@@ -11223,6 +11283,8 @@ ${bodyInner}\
           b.style.background = '#cffafe';
           b.style.borderColor = '#0e7490';
         }
+        updateActiveSummary674();
+        scheduleApply674();
       });
       chipRow.appendChild(b);
     });
@@ -11241,6 +11303,7 @@ ${bodyInner}\
     btnTransferChip.addEventListener('click', function () {
       transferBox.v = !transferBox.v;
       syncChips674();
+      scheduleApply674();
     });
     chipRow.appendChild(btnTransferChip);
 
@@ -11253,6 +11316,7 @@ ${bodyInner}\
       if (!box) return;
       box.v = box.v === mode ? null : mode;
       syncChips674();
+      scheduleApply674();
     }
 
     SEARCH674_DONE_CB_FILTERS.forEach(function (defCb) {
@@ -11315,6 +11379,7 @@ ${bodyInner}\
           selectedStatuses.add(valSt);
         }
         syncChips674();
+        scheduleApply674();
       });
       chipRow.appendChild(bSt);
     });
@@ -11322,7 +11387,40 @@ ${bodyInner}\
     const skyChipRow = document.createElement('div');
     skyChipRow.style.cssText = 'display:none;';
 
-    function updateActiveSummary674() {
+    let matchCountSeq674 = 0;
+    function refreshMatchCount674() {
+      const seq = ++matchCountSeq674;
+      matchCountEl.textContent = '該当件数: …';
+      let cond = '';
+      try {
+        if (kintone.app && typeof kintone.app.getQueryCondition === 'function') {
+          cond = String(kintone.app.getQueryCondition() || '').trim();
+        }
+      } catch (eCond) {
+        /* noop */
+      }
+      const appId = kintone.app.getId();
+      const q = (cond ? cond + ' ' : '') + 'limit 1';
+      kintone
+        .api(kintone.api.url('/k/v1/records', true), 'GET', {
+          app: appId,
+          query: q,
+          totalCount: true,
+          fields: ['$id'],
+        })
+        .then(function (res) {
+          if (seq !== matchCountSeq674) return;
+          const n = Number(res && res.totalCount != null ? res.totalCount : 0);
+          matchCountEl.textContent = '該当件数: ' + n + '件';
+        })
+        .catch(function (e) {
+          if (seq !== matchCountSeq674) return;
+          console.warn('[NEW-PC-LEDGER-V1] match count', e);
+          matchCountEl.textContent = '該当件数: —';
+        });
+    }
+
+    function buildActiveConditionParts674() {
       const parts = [];
       const kw = String(inpKw.value || '').trim();
       if (kw) parts.push('キーワード「' + kw + '」');
@@ -11356,7 +11454,32 @@ ${bodyInner}\
         }
       }
       parts.push('並び: ' + sortLabel);
-      activeSummary.textContent = 'いまの条件: ' + parts.join(' ／ ');
+      return parts;
+    }
+
+    const invLedgerCondWrap = document.createElement('div');
+    invLedgerCondWrap.id = 'npl674-inv-ledger-cond-wrap';
+    invLedgerCondWrap.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;' +
+      'padding:10px 12px;border-radius:6px;border:1px solid #bbf7d0;background:#fff;';
+    const invLedgerCondText = document.createElement('div');
+    invLedgerCondText.id = 'npl674-inv-ledger-cond';
+    invLedgerCondText.style.cssText =
+      'flex:1;min-width:200px;font-size:13px;font-weight:700;color:#14532d;line-height:1.45;';
+    const invLedgerGotoBtn = document.createElement('button');
+    invLedgerGotoBtn.type = 'button';
+    invLedgerGotoBtn.textContent = '台帳で条件変更';
+    invLedgerGotoBtn.style.cssText =
+      'padding:6px 12px;border-radius:6px;border:1px solid #047857;background:#ecfdf5;color:#047857;' +
+      'font-weight:800;cursor:pointer;font-size:12px;';
+    invLedgerCondWrap.appendChild(invLedgerCondText);
+    invLedgerCondWrap.appendChild(invLedgerGotoBtn);
+
+    function updateActiveSummary674() {
+      const parts = buildActiveConditionParts674();
+      const line = parts.join(' ／ ');
+      activeSummary.textContent = 'いまの条件: ' + line;
+      invLedgerCondText.textContent = '台帳側の条件: ' + line;
     }
 
     function syncChips674() {
@@ -11412,6 +11535,7 @@ ${bodyInner}\
     ledgerPanel.appendChild(chipRow);
 
     inventoryPanel.appendChild(invPeriodHint);
+    inventoryPanel.appendChild(invLedgerCondWrap);
     inventoryPanel.appendChild(invButtonRow);
     ensureInventoryHubSummaryAccordion674(inventoryPanel);
 
@@ -11458,7 +11582,12 @@ ${bodyInner}\
       });
     });
     apply674HubSwitch674(currentHub674);
+    invLedgerGotoBtn.addEventListener('click', function () {
+      apply674HubSwitch674('ledger');
+    });
 
+    let applyTimer674 = null;
+    let applySeq674 = 0;
     const apply674 = function () {
       updateActiveSummary674();
       ensure674SearchCache()
@@ -11489,11 +11618,24 @@ ${bodyInner}\
         });
     };
 
+    function scheduleApply674() {
+      updateActiveSummary674();
+      if (applyTimer674) clearTimeout(applyTimer674);
+      const seq = ++applySeq674;
+      applyTimer674 = setTimeout(function () {
+        applyTimer674 = null;
+        if (seq !== applySeq674) return;
+        apply674();
+      }, 300);
+    }
+
     selSort.addEventListener('change', function () {
-      apply674();
+      scheduleApply674();
     });
 
     btnGo.addEventListener('click', function () {
+      if (applyTimer674) clearTimeout(applyTimer674);
+      applySeq674 += 1;
       apply674();
     });
     noteSearchBox.addEventListener('change', function () {
@@ -11506,6 +11648,7 @@ ${bodyInner}\
       } else {
         updateActiveSummary674();
       }
+      scheduleApply674();
     });
     btnClr.addEventListener('click', function () {
       inpKw.value = '';
@@ -11535,6 +11678,8 @@ ${bodyInner}\
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
         ev.preventDefault();
+        if (applyTimer674) clearTimeout(applyTimer674);
+        applySeq674 += 1;
         apply674();
       }
     });
@@ -11557,6 +11702,7 @@ ${bodyInner}\
       cbFilterBoxes: cbFilterBoxes,
       syncChips: syncChips674,
       updateActiveSummary: updateActiveSummary674,
+      refreshMatchCount: refreshMatchCount674,
       ensure674SearchCache: ensure674SearchCache,
       refreshNextSerial: function () {
         fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
@@ -11565,6 +11711,7 @@ ${bodyInner}\
     wrap.setAttribute('data-npl-synced-query', '');
 
     syncChips674();
+    refreshMatchCount674();
     fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
 
     inpKw.addEventListener('input', function () {
