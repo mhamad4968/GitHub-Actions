@@ -83,7 +83,11 @@ powershell -ExecutionPolicy Bypass -File scripts/install-morning-task-windows.ps
 
 ## 壁時計 trialPaused
 
-`.cio/session-clock-mode.json` で `trialPaused: true` のとき、bootstrap の cron strict は **意図的にスキップ**（`session-clock-health.mjs`）。**sessionEnd hook も clear しない**ため、締め時の `session:clock:clear`（R-SESS-03）に加え、**WAKE Phase WALL-CLOCK で clear → set を必ず実行**する（2026-06-28 追補）。
+`.cio/session-clock-mode.json` で `trialPaused: true` のとき、bootstrap の cron strict は **意図的にスキップ**（`session-clock-health.mjs`）。**sessionEnd hook も clear しない**ため、締め時の `session:clock:clear`（R-SESS-03）に加え、**WAKE Phase WALL-CLOCK で clear → set を必ず実行**する（2026-06-28 追補）。**自動解除しない**（Desktop bat 試験運用の正）。
+
+## Phase 5e2 — early checkpoint Git stamp（2026-08-10）
+
+`Phase 5f` early wake-commit の **前**に `cio:checkpoint:git-heal`（worktree stamp のみ）を実行する。古い `**Git**` 行のまま 5f が commit すると bootstrap で **D-CHKPT-02（ancestor）** が出る。5e2 で stamp → 5f commit 後は R44 off-by-one まで落とす。Phase 6b の stamp→export→wake 1 commit は維持。
 
 ## cold-start 完了報告（OPS-1・2026-08-09）
 

@@ -16,13 +16,15 @@ function read(rel) {
 const cold = read('scripts/cio-session-cold-start.mjs');
 assert.match(cold, /Phase 5e WAKE-PREFLIGHT-HEAL/);
 assert.match(cold, /cio:wake:preflight-heal/);
+assert.match(cold, /Phase 5e2 CHECKPOINT-GIT-HEAL（pre-early-wake stamp）/);
 assert.match(cold, /Phase 5f EARLY-WAKE-HANDOFF-COMMIT/);
 assert.match(cold, /Phase 6b2 WAKE-HANDOFF-COMMIT（post-heal）/);
-// early commit は bootstrap より前
-const i5e = cold.indexOf('Phase 5e');
+// early stamp → early commit は bootstrap より前（D-CHKPT-02 ancestor 偽陽性防止）
+const i5e = cold.indexOf('Phase 5e WAKE-PREFLIGHT-HEAL');
+const i5e2 = cold.indexOf('Phase 5e2 CHECKPOINT-GIT-HEAL');
 const i6 = cold.indexOf('Phase 6 BOOTSTRAP');
-const i5f = cold.indexOf('Phase 5f');
-assert.ok(i5e > 0 && i5f > i5e && i6 > i5f, 'order: 5e → 5f → 6');
+const i5f = cold.indexOf('Phase 5f EARLY-WAKE-HANDOFF-COMMIT');
+assert.ok(i5e > 0 && i5e2 > i5e && i5f > i5e2 && i6 > i5f, 'order: 5e → 5e2 → 5f → 6');
 
 assert.ok(fs.existsSync(path.join(root, 'scripts/cio-wake-preflight-heal.mjs')));
 
