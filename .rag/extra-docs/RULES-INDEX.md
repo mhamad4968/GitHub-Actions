@@ -52,6 +52,7 @@
 | 毎ターン・四行 | [`cio-ops-2026-08-07-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-07-evening-improvements.mdc) | 2026-08-07 夕反省 GO — UI配置先・DOMスコープ・曖昧語・SKYSEA手動のみ |
 | 毎ターン・四行 | [`cio-ops-2026-08-08-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-08-evening-improvements.mdc) | 2026-08-08 夕反省 GO — 集計DoD・Event直渡し禁止・期間二系統・§50-3-8定型 |
 | 毎ターン・四行 | [`cio-ops-2026-08-09-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-09-evening-improvements.mdc) | 2026-08-09 夕反省 GO — WAKE tip宣言・順序契約・Done二層・偽陽性辞書 |
+| 毎ターン・四行 | [`cio-ops-2026-08-10-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-10-evening-improvements.mdc) | 2026-08-10 夕反省 GO — §41一問・ネタ≠レポート・省略禁止・□A1語彙 |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |

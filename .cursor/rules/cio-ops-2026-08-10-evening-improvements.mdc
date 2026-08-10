@@ -1,0 +1,37 @@
+---
+description: 2026-08-10 夕反省 GO — §41一問・ネタ≠レポート・省略禁止・□A1語彙
+alwaysApply: false
+globs:
+  - docs/runbooks/keiei-kaigi-neta-from-security-next.md
+  - docs/runbooks/keiei-kaigi-security-report.md
+  - docs/runbooks/cio-ops-2026-08-10-evening-improvements.md
+  - docs/plans/2026-08-10-evening-improvements-spec.md
+  - docs/approved-changes/2026-08-10-evening-reflection-hamada-go.md
+  - docs/reports/2026-08-10-evening-reflection.md
+  - scripts/cio-report-draft.mjs
+  - docs/session-report-checklist.md
+---
+
+# 夕反省改善（2026-08-10 浜田全対応）
+
+正本: `docs/runbooks/cio-ops-2026-08-10-evening-improvements.md`
+
+## T1 / R1 — §41
+
+意見交換は **1問→合意→次**。表2つ以上／一気の比較表は出さない。
+
+## T6 / ORG-3 — ネタ ≠ レポート
+
+「経営会議〇月の**ネタ**」はネタレーンのみ。R7 レポート本体へ勝手に進まない。
+
+## T3 / OPS-3 — 省略禁止
+
+DOCX／表の `…` 切り禁止。空欄は「未確定（調査中）」。
+
+## OPS-2 — データ経路
+
+UX=701、REST=631。開始時に1行明示。
+
+## T5 / R4 — 報告
+
+`cio:report:draft` から開始（□A1 許容語彙サンプル付き）。verify 初回 NG は同ターン再 verify。
