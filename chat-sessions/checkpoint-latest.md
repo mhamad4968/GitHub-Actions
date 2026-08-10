@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-10 09:10 JST — **674 UI hub-tabs 完了**（P1+P2+磨き・浜田目視OK）。夜は Security NEXT。
 **次の1手**: **Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。
-**Git**: **`e2800e22`** = `origin/main` — push 済（R44 parent）
+**Git**: **`65629873`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT（今夜）**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
