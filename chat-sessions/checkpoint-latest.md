@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-10 09:10 JST — **674 UI hub-tabs 完了**（P1+P2+磨き・浜田目視OK）。夜は Security NEXT。
 **次の1手**: **Security NEXT（月次重大インシデント報告）** — 夜セッション。674 hub-tabs 再着手不要。
 **Git**: **`e2800e22`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: closing
+**closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT（今夜）**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
 **本日状態**: 08-10 **朝セッション締め** — 674 UI **完了**（rev317 / BUILD p2a）
@@ -41,7 +41,7 @@
 - **674 UI hub-tabs**: 仕様GO → P1 → 磨き → P2（編集ヘッダー／自動適用／件数／棚卸条件要約）→ **rev 317** BUILD=`2026-08-10-674-ui-hub-tabs-p2a` → **浜田目視 OK・案件完了**
 - SKYSEA: 案件外維持（holds on-hold）
 - **次（夜）**: Security NEXT 月次重大インシデント報告
-- closeStatus: **closing** → close-git で closed
+- closeStatus: **closed**（朝セッション締め・夜は Security NEXT）
 
 ### 2026-08-10 朝（認識同期）
 - 浜田: **SKYSEA を案件から削除**（手動インストール方針。kintoneアプリ登録が必要になった時だけ指示）
