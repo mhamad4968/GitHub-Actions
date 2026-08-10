@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-10 19:35 JST — 夜: Security NEXT ネタレーン合意＋8月ネタ作成＋夕反省GO反映。
-**次の1手**: 項番 -0（浜田指示待ち）。経営会議レポート本体はネタ選定後の別依頼。
-**Git**: **`dccc628e`** = `origin/main` — push 済
-**closeStatus**: open（夜セッション）
+**最終更新**: 2026-08-10 19:40 JST — **本日最終締め（closed-day）**。Desktop AI緊急用最新化＋夕反省GO済。
+**次の1手**: 項番 -0（次回セッションで浜田指示）。
+**Git**: **`1ef48816`** = worktree tip（close-git 後に再 stamp）
+**closeStatus**: closed-day
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT ネタレーン運用確定**（`ネタ保存用`）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
-**本日状態**: 08-10 **夜** — ネタ運用合意・`20260810` ネタ作成・GitHub 682 再dispatch成功・夕反省全反映
+**本日状態**: 08-10 **夜最終締め** — ネタレーン確定・夕反省全反映・Desktop同期・close-git
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
@@ -36,6 +36,10 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-08-10
+
+### 2026-08-10 夜（最終締め）
+- Desktop AI緊急用: session-starter:sync-desktop + verify OK
+- 夕反省GO反映済／closeStatus=closed-day
 
 ### 2026-08-10 夜（Security NEXT ネタ＋夕反省）
 - ネタレーン合意（701 UX／631 REST／`C:\tmp\資料作成\ネタ保存用\yyyymmdd`）
