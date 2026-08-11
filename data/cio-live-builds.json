@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-11-674-replace-skip-record-id",
-      "fileKey": "29a75de1-b48b-4d8b-bf9c-efda86d087b0",
-      "revision": "319",
+      "build": "2026-08-11-674-replace-skip-record-number",
+      "fileKey": "f3674dfa-b3e6-4a20-8ba0-c9d5636285f9",
+      "revision": "320",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-11T10:37:53.461Z",
+      "deployedAt": "2026-08-11T10:42:12.981Z",
       "note": null
     },
     "677": {

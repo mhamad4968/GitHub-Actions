@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-skip-record-id';
+  const BUILD = '2026-08-11-674-replace-skip-record-number';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6779,11 +6779,16 @@
     return '';
   }
 
-  /** POST に載せると API が拒否するビルトイン／計算／添付（`レコード番号` は code が日本語で `$` 始まらない） */
+  /**
+   * POST に載せると API が拒否するビルトイン／計算／添付。
+   * 注意: GET レコード上の「レコード番号」は type=`RECORD_NUMBER`（エラー文言の RECORD_ID とは別名）。
+   * `$id` は `__ID__` で code が `$` 始まりのため別経路で除外。
+   */
   const SKIP_CLONE_FIELD_TYPES_674 = new Set([
     'CALC',
     'FILE',
     'RECORD_ID',
+    'RECORD_NUMBER',
     'CREATOR',
     'CREATED_TIME',
     'MODIFIER',
@@ -6791,6 +6796,16 @@
     'STATUS',
     'STATUS_ASSIGNEE',
     'CATEGORY',
+  ]);
+  const SKIP_CLONE_FIELD_CODES_674 = new Set([
+    'レコード番号',
+    '作成者',
+    '作成日時',
+    '更新者',
+    '更新日時',
+    'ステータス',
+    'カテゴリー',
+    '作業者',
   ]);
 
   /**
@@ -6819,6 +6834,7 @@
       const cell = srcRecord[code];
       if (!cell || typeof cell !== 'object') continue;
       if (code.startsWith('$')) continue;
+      if (SKIP_CLONE_FIELD_CODES_674.has(code)) continue;
       if (SKIP_CLONE_FIELD_TYPES_674.has(cell.type)) continue;
       if (cell.type === 'SUBTABLE') {
         out[code] = { type: 'SUBTABLE', value: [] };
