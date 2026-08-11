@@ -1,24 +1,25 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-10 19:40 JST — **本日最終締め（closed-day）**。Desktop AI緊急用最新化＋夕反省GO済。
+**最終更新**: 2026-08-11 20:32 JST — **本日最終締め（closed-day）**。674買替/棚卸/IME・夕反省GO・AI緊急用全入れ替え・GitHub tip 緑。
 **次の1手**: 項番 -0（次回セッションで浜田指示）。
-**Git**: **`b77a8874`** = `origin/main` — push 済
+**Git**: **`a323683e`** = `origin/main` — push 済（close-git 後に tip 更新）
 **closeStatus**: closed-day
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT ネタレーン運用確定**（`ネタ保存用`）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
-**本日状態**: 08-10 **夜最終締め** — ネタレーン確定・夕反省全反映・Desktop同期・close-git
+**本日状態**: 08-11 **夜最終締め** — 674買替修復＋棚卸正本化＋IME＋夕反省全GO＋Desktop wipe再構築＋as-built SPEC
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-10-674-ui-hub-tabs-p2a` | **317** |
+| **674** | `2026-08-11-674-search-ime-datalist` | **327** |
+| **694** | `2026-08-11-694-edit-kind-row-inline` | **24** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
-**674 live fileKey**: `c29d5c22-e7eb-4993-9c81-55493bf31911`
-**継続メモ**: ネタ正本 `docs/runbooks/keiei-kaigi-neta-from-security-next.md`。夕反省 `docs/reports/2026-08-10-evening-reflection.md`／GO `docs/approved-changes/2026-08-10-evening-reflection-hamada-go.md`。
-**GO待ち**: 経営会議レポート本体（8/13開催・ネタ選定後）／新アプリ＝相談・GO後のみ。
-**調査正本**: `docs/plans/2026-08-10-evening-improvements-spec.md`
-**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止
+**674 live fileKey**: `90f7f1da-4a59-4b00-872b-ec896c614a96`
+**継続メモ**: 夕反省 `docs/reports/2026-08-11-evening-reflection.md`／GO `docs/approved-changes/2026-08-11-evening-reflection-hamada-go.md`／674 as-built `docs/plans/2026-08-08-674-replace-inventory-skysea-delete-ux-spec.md`（§1.6〜1.9）。
+**GO待ち**: 経営会議レポート本体（ネタ選定後）／新アプリ＝相談・GO後のみ。
+**調査正本**: `docs/plans/2026-08-11-evening-improvements-spec.md`
+**運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`（pre-push/gates）
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
 ## 保留・その他の制約
@@ -35,6 +36,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-08-11
+
+### 2026-08-11 夜（本日最終締め）
+- **674**: 買替（596廃止→台帳次番／clone POST／edit+HW／SKYSEA削除条件）・棚卸（履歴正本・latest内部）・IME datalist → rev **327**
+- **694**: 印刷／編集 kind 行 → rev **24**
+- 夕反省全GO: `cio-ops-2026-08-11-evening-improvements`（clone/IME/retired/ahead）
+- AI緊急用: wipe→tip再構築・verify OK／as-built SPEC §1.6〜1.9
+- closeStatus: **closed-day**
+
 ## 2026-08-10
 
 ### 2026-08-10 夜（最終締め）

@@ -5714,3 +5714,21 @@ npm run cio:morning:ready
 **触らない**: 688 heat外 / 677-679 / 712 deploy / 736 / SKYSEA案件外
 
 ---
+
+### 2026-08-11 JST — **2026-08-11 夜最終締め**
+
+**要約**: 674買替修復（596→台帳次番・clone POST・edit+HW・SKYSEA条件）・棚卸正本化・IME・694印刷/編集・夕反省全GO・AI緊急用全入れ替え・GitHub tip緑・as-built SPEC
+
+**次の1手**: 項番 -0（次回セッションで浜田指示）。
+
+**Git**: `a323683e` — closed-day（close-git 後 tip 更新）
+
+**BUILD**: 674=`2026-08-11-674-search-ime-datalist` rev327 / 694=`2026-08-11-694-edit-kind-row-inline` rev24
+
+**GO待ち**: 経営会議レポート本体はネタ選定後の別依頼
+
+**触らない**: 688 heat外 / 677-679 / 712 deploy / 736 / SKYSEA案件外
+
+**次セッションへの 1 行**: continue from checkpoint; 項番 -0 待ち; 674/694 tip 緑。
+
+---
