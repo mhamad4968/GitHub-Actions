@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-06-08-694-device-exchange-date";
+  var BUILD = "2026-08-11-694-print-user-name";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -825,8 +825,14 @@
     return '<div class="' + tierClass + '">' + cellsHtml + "</div>";
   }
 
+  /** 印刷用: 姓+全角スペース+名（保存値 user_name を正規化表示） */
+  function formatUserNameForPrint(name) {
+    var names = splitUserName(name);
+    if (names.family && names.given) return names.family + "\u3000" + names.given;
+    return names.family || names.given || "";
+  }
+
   function buildAidPrintPageHtml(row) {
-    var names = splitUserName(row.user_name);
     var pw = row.password || FIXED_PASSWORD;
     var lock = row.lock_passcode || FIXED_LOCK;
     var devLower = deviceWordLower(row.device_type);
@@ -850,8 +856,7 @@
         [
           { label: "登録日", value: row.registered_date },
           { label: "端末交換日", value: row.device_exchange_date },
-          { label: "姓", value: names.family },
-          { label: "名", value: names.given },
+          { label: "利用者名", value: formatUserNameForPrint(row.user_name) },
         ],
         0,
       ) +

@@ -106,11 +106,11 @@
       "note": null
     },
     "694": {
-      "build": "2026-06-08-694-device-exchange-date",
-      "fileKey": "699da986-7b14-49d0-aafe-bfe3322300e5",
-      "revision": "18",
+      "build": "2026-08-11-694-print-user-name",
+      "fileKey": "32f9b309-6d0e-4aae-bec8-9d6d092e10c5",
+      "revision": "20",
       "relPath": "customize/apple-id-dash/desktop.js",
-      "deployedAt": "2026-06-08T09:18:04.393Z",
+      "deployedAt": "2026-08-11T10:07:09.894Z",
       "note": null
     },
     "695": {
