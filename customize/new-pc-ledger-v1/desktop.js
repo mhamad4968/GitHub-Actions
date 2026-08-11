@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-latest-inv-internal-group';
+  const BUILD = '2026-08-11-674-search-ime-datalist';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -11847,8 +11847,35 @@ ${bodyInner}\
       );
       navigate674ListWithQuery(q, '', '$id:desc', false);
     });
+    /**
+     * Chrome 等で `<datalist>` を IME 変換中に書き換えると、ローマ字が確定して
+     * 「ma」→「ま」が「mあ」になる（§4.8a）。変換中は list を外し候補更新しない。
+     */
+    let kwComposing674 = false;
+    function refresh674KwDatalist674() {
+      ensure674SearchCache()
+        .then(function (recs) {
+          if (kwComposing674) return;
+          update674SearchDatalist(recs, inpKw.value);
+        })
+        .catch(function (e) {
+          console.warn('[NEW-PC-LEDGER-V1] index search datalist', e);
+        });
+    }
+    inpKw.addEventListener('compositionstart', function () {
+      kwComposing674 = true;
+      inpKw.removeAttribute('list');
+    });
+    inpKw.addEventListener('compositionend', function () {
+      kwComposing674 = false;
+      inpKw.setAttribute('list', SEARCH674_DL_ID);
+      updateActiveSummary674();
+      refresh674KwDatalist674();
+    });
+
     inpKw.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter') {
+        if (ev.isComposing || kwComposing674 || ev.keyCode === 229) return;
         ev.preventDefault();
         if (applyTimer674) clearTimeout(applyTimer674);
         applySeq674 += 1;
@@ -11886,7 +11913,8 @@ ${bodyInner}\
     refreshMatchCount674();
     fetch674IndexNextSerialPreview674().then(render674NextSerialBar674);
 
-    inpKw.addEventListener('input', function () {
+    inpKw.addEventListener('input', function (ev) {
+      if (kwComposing674 || (ev && ev.isComposing)) return;
       updateActiveSummary674();
       if (split674IndexKeywords674(inpKw.value).length) {
         selectedStatuses.clear();
@@ -11895,13 +11923,7 @@ ${bodyInner}\
         });
         syncChips674();
       }
-      ensure674SearchCache()
-        .then(function (recs) {
-          update674SearchDatalist(recs, inpKw.value);
-        })
-        .catch(function (e) {
-          console.warn('[NEW-PC-LEDGER-V1] index search datalist', e);
-        });
+      refresh674KwDatalist674();
     });
 
     if (!attach674ListSearchPanel(wrap)) {
