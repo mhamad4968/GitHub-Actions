@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-skip-record-number';
+  const BUILD = '2026-08-11-674-replace-skysea-required';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6816,9 +6816,17 @@
     for (const code of Object.keys(typedRecord || {})) {
       const cell = typedRecord[code];
       if (!cell || typeof cell !== 'object') continue;
-      if (Object.prototype.hasOwnProperty.call(cell, 'value')) {
-        out[code] = { value: cell.value };
+      if (!Object.prototype.hasOwnProperty.call(cell, 'value')) continue;
+      const t = cell.type;
+      const v = cell.value;
+      // 空文字の DATE/DATETIME/NUMBER は CB_VA01 になり得るため送信しない（省略＝未設定）
+      if (
+        (t === 'DATE' || t === 'DATETIME' || t === 'TIME' || t === 'NUMBER') &&
+        (v === '' || v == null)
+      ) {
+        continue;
       }
+      out[code] = { value: v };
     }
     return out;
   }
@@ -6847,6 +6855,13 @@
       const code = REPLACEMENT_CLEAR_FIELD_CODES_674[i];
       if (!out[code]) continue;
       out[code].value = emptyValueForFieldType674(out[code].type);
+    }
+
+    // skysea_manual_done はフォーム必須。空にすると CB_VA01「入力内容が正しくありません」になる
+    if (out[FC_SKYSEA_MANUAL_DONE]) {
+      out[FC_SKYSEA_MANUAL_DONE].value = SKYSEA_MANUAL_DONE_PENDING;
+    } else {
+      out[FC_SKYSEA_MANUAL_DONE] = { type: 'DROP_DOWN', value: SKYSEA_MANUAL_DONE_PENDING };
     }
 
     if (out[FC_PC_NAME]) {
@@ -7134,7 +7149,7 @@
           );
           return;
         }
-        window.alert('PC買替に失敗しました。\n' + (e && e.message ? e.message : String(e)));
+        window.alert('PC買替に失敗しました。\n' + formatKintoneApiError674(e));
       });
   }
 
