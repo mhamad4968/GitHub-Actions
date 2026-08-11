@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-11-694-print-user-name";
+  var BUILD = "2026-08-11-694-print-no-mdm";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -848,9 +848,6 @@
       esc(devLower) +
       "のパスコードは管理しているので変更しないでください。</li>" +
       "</ul>";
-    var mdmLine = row.mdm_name
-      ? '<p class="aidpr-mdm">MDM: ' + esc(row.mdm_name) + "</p>"
-      : "";
     var bodyInner =
       buildAidPrintTierHtml(
         [
@@ -890,7 +887,6 @@
       '<aside class="aidpr-notice" role="note"><p>アカウント情報の管理は利用者の責任で行ってください。' +
       "印刷物の紛失・置き忘れ・第三者への提示がないよう、適切に保管してください。</p></aside>" +
       notices +
-      mdmLine +
       '<div class="aidpr-card">' +
       bodyInner +
       "</div>" +
@@ -920,7 +916,6 @@
       ".aidpr-notice p{margin:0;font-size:12px;font-weight:600;line-height:1.7;color:var(--notice-fg);}" +
       ".aidpr-bullets{margin:0;padding:14px 18px 10px 32px;background:#fff;border-left:1px solid var(--hero-border);border-right:1px solid var(--hero-border);font-size:12px;line-height:1.75;color:#334155;}" +
       ".aidpr-bullets li{margin:4px 0;}" +
-      ".aidpr-mdm{margin:0;padding:8px 18px 12px;background:#fff;border-left:1px solid var(--hero-border);border-right:1px solid var(--hero-border);font-size:12px;font-weight:700;color:#475569;}" +
       ".aidpr-card{background:#fff;border-radius:0 0 18px 18px;box-shadow:0 18px 40px rgba(15,23,42,.08);overflow:hidden;border:1px solid var(--card-border);border-top:none;}" +
       ".aidpr-tier{display:grid;gap:0;border-bottom:1px solid #e2e8f0;}" +
       ".aidpr-tier--cols3{grid-template-columns:1fr 1fr 1fr;}" +
@@ -943,7 +938,7 @@
       ".aidpr-hero h1{font-size:16pt;}" +
       ".aidpr-hero p{font-size:9.5pt;}" +
       ".aidpr-badge{font-size:9pt;}" +
-      ".aidpr-notice p,.aidpr-bullets,.aidpr-mdm{font-size:9.5pt;}" +
+      ".aidpr-notice p,.aidpr-bullets{font-size:9.5pt;}" +
       ".aidpr-card{box-shadow:none;border-radius:0;}" +
       ".aidpr-tier{break-inside:avoid;page-break-inside:avoid;}" +
       ".aidpr-cell{padding:12px 16px 14px;min-height:0;}" +
