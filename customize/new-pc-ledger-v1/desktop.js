@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-skysea-required';
+  const BUILD = '2026-08-11-674-replace-edit-hw-required';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -166,8 +166,6 @@
     { group: '鉄構支店', dept: '鉄構支店' },
     { group: '湾岸工事所', dept: '湾岸工事所' },
   ];
-  const STORAGE_KEY_674_REPLACE_HW_OK = 'npl674-replace-hw-ok:';
-
   /** 全フィールドリセット対象（種別・PCステータス・作成日時JST・システム項目は除外） */
   const FC_EXTRA_INFO_1 = 'extra_info_1';
   const FC_EXTRA_INFO_2 = 'extra_info_2';
@@ -177,6 +175,12 @@
   const FC_MANUFACTURING_NO = 'manufacturing_no';
   const FC_MODEL_NAME = 'model_name';
   const FC_NOTE = 'note';
+  /** 買替直後の保存で必須にする機種情報（§4.10.3） */
+  const REPLACE_HW_REQUIRED_FIELDS_674 = [
+    [FC_MANUFACTURER, 'メーカー'],
+    [FC_MODEL_NAME, 'モデル名'],
+    [FC_SERIAL, 'シリアル'],
+  ];
   /** 非個人×個人JBIS形式 PC 名保存時に備考へ追記する運用マーカー（重複防止・§4.3.1 浜田 GO 2026-08-07） */
   const NOTE_SHARED_JBIS_OPS_MARKER_674 =
     '[運用] 共有等だがPC名が個人JBIS形式（現場ラベル維持・採番は衝突回避）';
@@ -6917,7 +6921,7 @@
       el.style.cssText =
         'margin:8px 12px;padding:14px 18px;background:#fee2e2;border:2px solid #b91c1c;border-radius:6px;color:#991b1b;font-size:14px;font-weight:bold;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.12);position:relative;z-index:99999;';
       el.innerHTML =
-        '【PC買替の続き】PCを切り替えたので、<strong>シリアル・メーカー・モデル・購入日・在庫日・備考</strong>など端末情報の入力を忘れないでください。<br>' +
+        '【PC買替の続き】編集画面です。<strong>メーカー・モデル名・シリアル</strong>を入力してから保存してください（未入力では保存できません）。購入日・在庫日・備考も忘れずに。<br>' +
         '<span style="color:#b91c1c;font-weight:800;">旧PCの SKYSEA クライアント削除が必要です。室長へ手順を確認し必ず実施してください。</span><br>' +
         '旧PCは admin の「SKYSEAクライアント削除対応」リストで完了にしてください。';
       host.insertBefore(el, host.firstChild);
@@ -7091,14 +7095,15 @@
                 /* noop */
               }
               window.alert(
-                'PC買替が完了しました。続いてハード／SKYSEA 関連の項目を入力してください。\n\n新しいレコードの画面へ移ります。',
+                'PC買替の新規レコードを編集画面で開きます。\nメーカー・モデル名・シリアルを入力してから保存してください。',
               );
               location.href =
                 location.origin +
                 '/k/' +
                 encodeURIComponent(String(kintone.app.getId())) +
-                '/show?record=' +
-                encodeURIComponent(newId);
+                '/show#record=' +
+                encodeURIComponent(newId) +
+                '&mode=edit';
             });
           })
           .catch(function (ePost) {
@@ -11983,27 +11988,30 @@ ${bodyInner}\
     'app.record.edit.submit',
   ];
 
+  /**
+   * 買替由来レコード（import_source=PC_REPLACE_FROM_674…）は機種情報必須。
+   * 未入力なら保存不可（確認ダイアログでは抜けられない）。
+   * @returns {boolean} true=通過 / false=event.error 設定済
+   */
   function check674ReplaceFirstSaveHwGate674(event) {
     const importSrc = String((event.record[FC_IMPORT_SOURCE] && event.record[FC_IMPORT_SOURCE].value) || '').trim();
     if (importSrc.indexOf('PC_REPLACE_FROM_674') !== 0) return true;
-    const rid = String((event.record.$id && event.record.$id.value) || '').trim();
-    const gateKey = STORAGE_KEY_674_REPLACE_HW_OK + (rid || importSrc);
-    try {
-      if (sessionStorage.getItem(gateKey)) return true;
-    } catch (_e) {
-      return true;
+    const missing = [];
+    const fieldErrors = {};
+    for (let i = 0; i < REPLACE_HW_REQUIRED_FIELDS_674.length; i++) {
+      const code = REPLACE_HW_REQUIRED_FIELDS_674[i][0];
+      const label = REPLACE_HW_REQUIRED_FIELDS_674[i][1];
+      if (!trimmedScalarValue674(event.record, code)) {
+        const m = '買替後は「' + label + '」を入力してください。';
+        missing.push(label);
+        fieldErrors[code] = m;
+      }
     }
-    const ok = window.confirm('端末情報は入力しましたか？');
-    if (!ok) {
-      event.error = '必ず端末情報を入れてください。入力後に保存できます。';
-      return false;
-    }
-    try {
-      sessionStorage.setItem(gateKey, '1');
-    } catch (_e2) {
-      /* noop */
-    }
-    return true;
+    if (!missing.length) return true;
+    event.errors = Object.assign(event.errors || {}, fieldErrors);
+    event.error =
+      '買替後は機種情報（' + missing.join('・') + '）を入力しないと保存できません。';
+    return false;
   }
 
   function onBeforeSubmit674(event) {
