@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-no-596';
+  const BUILD = '2026-08-11-674-replace-skip-record-id';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -6779,7 +6779,34 @@
     return '';
   }
 
-  const SKIP_CLONE_FIELD_TYPES_674 = new Set(['CALC', 'FILE']);
+  /** POST に載せると API が拒否するビルトイン／計算／添付（`レコード番号` は code が日本語で `$` 始まらない） */
+  const SKIP_CLONE_FIELD_TYPES_674 = new Set([
+    'CALC',
+    'FILE',
+    'RECORD_ID',
+    'CREATOR',
+    'CREATED_TIME',
+    'MODIFIER',
+    'UPDATED_TIME',
+    'STATUS',
+    'STATUS_ASSIGNEE',
+    'CATEGORY',
+  ]);
+
+  /**
+   * REST POST/PUT 用に type を落として value のみにする（買替 POST 用）。
+   */
+  function toApiRecordValuesOnly674(typedRecord) {
+    const out = {};
+    for (const code of Object.keys(typedRecord || {})) {
+      const cell = typedRecord[code];
+      if (!cell || typeof cell !== 'object') continue;
+      if (Object.prototype.hasOwnProperty.call(cell, 'value')) {
+        out[code] = { value: cell.value };
+      }
+    }
+    return out;
+  }
 
   /**
    * API 取得レコードをベースに POST 用レコードを組み立てる（資産・SKYSEA 系はクリア、アカウントは継承）。
@@ -6972,7 +6999,7 @@
             }).then(function () {
               return kintoneApiPost('/k/v1/record.json', {
                 app: kintone.app.getId(),
-                record: postBody,
+                record: toApiRecordValuesOnly674(postBody),
               });
             });
           })
