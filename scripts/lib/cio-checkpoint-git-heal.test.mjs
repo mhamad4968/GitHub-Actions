@@ -175,4 +175,24 @@ runScenario('handoff-only then heal commit → off-by-one ok', (dir) => {
   assert.equal(r.offByOne, true);
 });
 
+// --- (6) force-stamp: off-by-one でも HEAD へ寄せる（Phase 5e2）---
+runScenario('force-stamp overrides off-by-one no-op', (dir) => {
+  fs.writeFileSync(path.join(dir, 'chat-sessions', 'handoff-log.md'), 'force\n', 'utf8');
+  git(dir, ['add', 'chat-sessions/handoff-log.md']);
+  git(dir, ['commit', '-m', 'chore(handoff): advance tip']);
+  git(dir, ['push', 'origin', 'HEAD:main']);
+  // Git は tip^1 のまま = off-by-one OK → 通常 heal は no-op
+  const parent = git(dir, ['rev-parse', '--short', 'HEAD^']);
+  updateCheckpointGitHead(dir, { hash: parent });
+  assert.equal(checkCheckpointGitRegression(dir).ok, true);
+  assert.equal(checkCheckpointGitRegression(dir).offByOne, true);
+  const skip = healCheckpointGitWorktree(dir, { target: 'head' });
+  assert.equal(skip.skipped, true);
+  // --force-stamp 相当: HEAD へ強制 stamp
+  const headNow = gitShortHead(dir);
+  assert.equal(updateCheckpointGitHead(dir, { hash: headNow }), true);
+  assert.equal(readCheckpointGitHead(dir), headNow);
+  assert.notEqual(headNow, parent);
+});
+
 console.log('[test:checkpoint-git-heal] OK all scenarios');

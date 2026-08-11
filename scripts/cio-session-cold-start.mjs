@@ -150,15 +150,19 @@ function main() {
     console.warn('[cold-start] wake:preflight-heal NG — 手動で npm run cio:wake:preflight-heal');
   }
 
-  // Phase 5e2 — early checkpoint Git stamp（worktree のみ）
+  // Phase 5e2 — early checkpoint Git stamp（worktree のみ · --force-stamp）
   // 2026-08-10: Phase 5f が古い **Git** 行のまま commit すると bootstrap で D-CHKPT-02
   // （ancestor ずれ）が出る。early commit 前に stamp し、bootstrap では R44 off-by-one まで落とす。
+  // 2026-08-11: 通常 heal は off-by-one で no-op → 5f 後 tip^2 で D-CHKPT-02 再発。
+  //   → **--force-stamp** で HEAD へ寄せてから 5f（commit 後は tip^1 = R44 許容）。
   // Phase 6b の stamp→export→wake 1 commit は維持（#D-CLOSE-02 / R44）。
   console.log('\n▶ Phase 5e2 CHECKPOINT-GIT-HEAL（pre-early-wake stamp）');
   try {
-    run('npm run cio:checkpoint:git-heal');
+    run('npm run cio:checkpoint:git-heal -- --force-stamp');
   } catch {
-    console.warn('[cold-start] pre-early checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal');
+    console.warn(
+      '[cold-start] pre-early checkpoint:git-heal --force-stamp NG — 手動で npm run cio:checkpoint:git-heal -- --force-stamp',
+    );
   }
 
   // Phase 5f — early wake-commit（rollup archive / rag / knowledge / Part C を bootstrap 前に確定）

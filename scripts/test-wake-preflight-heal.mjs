@@ -17,6 +17,7 @@ const cold = read('scripts/cio-session-cold-start.mjs');
 assert.match(cold, /Phase 5e WAKE-PREFLIGHT-HEAL/);
 assert.match(cold, /cio:wake:preflight-heal/);
 assert.match(cold, /Phase 5e2 CHECKPOINT-GIT-HEAL（pre-early-wake stamp）/);
+assert.match(cold, /cio:checkpoint:git-heal -- --force-stamp/);
 assert.match(cold, /Phase 5f EARLY-WAKE-HANDOFF-COMMIT/);
 assert.match(cold, /Phase 6b2 WAKE-HANDOFF-COMMIT（post-heal）/);
 // early stamp → early commit は bootstrap より前（D-CHKPT-02 ancestor 偽陽性防止）
