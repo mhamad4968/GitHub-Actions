@@ -12,7 +12,7 @@
  *   - §4.2.3a / SPEC 2026-08-06: SKYSEA は `skysea_system_meta`（表示名 SKYSEA処理用）に収容。**LoginID `admin` かつ種別=個人**のときのみ表示・編集（手動完了フィールドのみ）。admin でも共有/JR端末/サーバーNAS/その他は非 admin と同様に非表示。一覧に「SKYSEA対応一覧」（admin 専用・個人 SCOPE）。通常はグループを閉じた初期表示。旧自動配信メタ4項目は削除済。
  *   - 自動生成ボタン: 個人 / 共有（Windows+M365）/ JR（**M365 のみ**・**PC名は手入力のまま**）を §4.4 に沿ってフォームへ反映（空欄のみ上書き）。**個人**: §4.3.1 **`pc_name`/`pc_serial_no`**（次番＝**廃棄・取消以外・全種別の `pc_name` から JBIS 連番 max +1**（**S-JBIS は除外**）。**空き番は使わない**。**自動採番時は 670 `PC_SERIAL_MIN_PERSONAL_JBIS`（未設定時 67＝JBIS0067）未満にしない**。番兵 **JBIS9999** は max に含めない）。§4.2.2 **`windows_name`=`jbm####[mailの@前]`**（`logon_name` と `[` の間に **`+` は付けない**）・`mail_pw`（jb+乱数4桁+K#）・`gb_id`/`sb_id`=mail_acct・`gb_pw`/`sb_pw`=logon_name**（メール空時は ID 系は案内のみ）。**共有**: **`S-JBIS####-YYYYMM`**（廃棄以外・共有の **`pc_name` の S-JBIS 連番 max +1**・**空き番不使用**。番兵 **S-JBIS9999** 除外。個人の **JBIS は共有採番に含めない**）と Windows 採番。**JR**: PC 名・Windows は自動で触らない
  *   - 5 台ライセンス警告雛形 (赤バナーは仕組みのみ)
- *   - リセット／PC買替（§4.10.3・596 採番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
+ *   - リセット／PC買替（§4.10.3・674台帳 JBIS/S-JBIS 次番・671 整合・595 個人リンク）／印刷（627 レイアウト移植済）
  *   - **レコード閲覧（detail）**: **ステータス≠保管**のとき操作ボタンは **PC買替・印刷のみ**。**保管の閲覧**ではカスタムヘッダを付けない（余計なボタンなし）。**新規・編集かつ保管**（個人/共有/JR いずれも）: ヘッダは **全フィールドリセットのみ**。**利用中**等の非保管は従来の種別別ボタン＋PC買替・印刷。
  *
  * Day 5 残タスク（未完了のみ）:
@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-10-674-ui-hub-tabs-p2a';
+  const BUILD = '2026-08-11-674-replace-no-596';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -59,12 +59,6 @@
   const APP_EMPLOYEE = '595';       // 社員情報マスタ
   /** 674 用 所属名／所属グループ候補マスタ（Space 21。未作成・権限なし時は埋め込み一覧にフォールバック） */
   const APP_DEPT_MASTER_674 = '680';
-  /** PC 採番マスタ（594 買替と同一。596 の in_code に 〇 で占有） */
-  const APP_PC_NUMBER_596 = '596';
-  const FC_596_PREFIX = 'number_top';
-  const FC_596_IN_USE = 'in_code';
-  const USED_MARK_596 = '〇';
-
   /** §4.10.3 PC買替: 旧レコードのステータス・新規側の初期ステータス（アプリのドロップダウン文言と一致させる） */
   const STATUS_AFTER_REPLACE_OLD_674 = '廃棄';
   const STATUS_FOR_NEW_AFTER_REPLACE_674 = '利用中';
@@ -6067,7 +6061,8 @@
     }
   }
 
-  // ===== PC買替（§4.10.3・594 と同趣旨: 596 採番・旧=廃棄・新=アカウント継承・671 / 595 整合）=====
+  // ===== PC買替（§4.10.3: 674台帳 JBIS/S-JBIS 次番・旧=廃棄・新=アカウント継承・671 / 595 整合）=====
+  // 旧 PC採番マスタ 596 はテナント削除済（2026-08-11）。買替の PC 名は自動生成と同式の台帳 max+1。
 
   function yyyymmTokyo674(d) {
     const dt = d || new Date();
@@ -6738,52 +6733,40 @@
     });
   }
 
-  function peek596HasUnused674() {
-    const q = FC_596_IN_USE + ' not in ("' + USED_MARK_596 + '") order by $id asc limit 1';
-    return getOneRecordApp674(APP_PC_NUMBER_596, q, ['$id', FC_596_PREFIX, FC_596_IN_USE]).then(function (rec) {
-      return !!(rec && (rec[FC_596_PREFIX] && String(rec[FC_596_PREFIX].value || '').trim()));
-    });
-  }
-
   /**
-   * 買替用: 596 を占有し PC 名用文字列を返す。POST 失敗時のみ rollback596 を呼ぶ。
-   * @returns {Promise<{ newPcName: string, rollback596: () => Promise<void> } | null>}
+   * 買替用 PC 名: §4.3.1 と同式（台帳 max+1）。共有→S-JBIS、個人/JR→JBIS。
+   * マスタ占有なし（旧596削除済）。POST 失敗時の rollback は no-op。
+   * @returns {Promise<{ newPcName: string, pcSerialNo: string, rollbackClaim: () => Promise<void> }>}
    */
-  function claimPcNumberFrom596ForReplacementApi674() {
-    const q = FC_596_IN_USE + ' not in ("' + USED_MARK_596 + '") order by $id asc limit 1';
-    return getOneRecordApp674(APP_PC_NUMBER_596, q, ['$id', '$revision', FC_596_PREFIX, FC_596_IN_USE]).then(function (
-      rec,
-    ) {
-      if (!rec) return null;
-      const prefix = (rec[FC_596_PREFIX] && String(rec[FC_596_PREFIX].value || '').trim()) || '';
-      if (!prefix) throw new Error('596マスタに採番プレフィックス(number_top)がありません。');
-
-      return kintoneApiPut('/k/v1/record.json', {
-        app: APP_PC_NUMBER_596,
-        id: rec.$id.value,
-        revision: rec.$revision.value,
-        record: {
-          [FC_596_IN_USE]: { value: USED_MARK_596 },
-        },
-      }).then(function (putRes) {
-        const id596 = rec.$id.value;
-        const revAfter = putRes.revision;
-        const newPcName = prefix + '-' + yyyymmTokyo674();
-
-        const rollback596 = function () {
-          return kintoneApiPut('/k/v1/record.json', {
-            app: APP_PC_NUMBER_596,
-            id: id596,
-            revision: revAfter,
-            record: {
-              [FC_596_IN_USE]: { value: '' },
-            },
-          }).catch(function (e) {
-            console.error('[NEW-PC-LEDGER-V1] 596 rollback failed (replacement)', e);
-          });
+  function allocateNextPcNameForReplacement674(accountType) {
+    return loadEnv670Map().then(function (envMap) {
+      const shared = accountType === TYPE_SHARED;
+      const serialP = shared
+        ? fetchNextSharedSjbisSerial674()
+        : fetchNextPersonalJbisSerial674(envMap || {});
+      return serialP.then(function (next) {
+        const yyyymm = formatYYYYMMJst674() || yyyymmTokyo674();
+        if (!yyyymm) throw new Error('買替用の年月（YYYYMM）を取得できませんでした。');
+        let serialNum;
+        let prefix;
+        if (shared) {
+          prefix = String((envMap && envMap.PC_NAME_PREFIX_SHARED) || 'S-JBIS').trim() || 'S-JBIS';
+          serialNum = toPositiveInt674(next) || 1;
+        } else {
+          prefix = String((envMap && envMap.PC_NAME_PREFIX_PERSONAL) || 'JBIS').trim() || 'JBIS';
+          serialNum = Math.max(
+            toPositiveInt674(next) || 1,
+            parsePersonalJbisSerialFloor674(envMap || {}),
+          );
+        }
+        const newPcName = prefix + formatPcNameJbisSerialDigits674(serialNum) + '-' + yyyymm;
+        return {
+          newPcName: newPcName,
+          pcSerialNo: String(serialNum),
+          rollbackClaim: function () {
+            return Promise.resolve();
+          },
         };
-
-        return { newPcName: newPcName, rollback596: rollback596 };
       });
     });
   }
@@ -6801,8 +6784,9 @@
   /**
    * API 取得レコードをベースに POST 用レコードを組み立てる（資産・SKYSEA 系はクリア、アカウントは継承）。
    * @param {string} [old674RecordId] 買替元 674 の $id（import_source 追跡用）
+   * @param {string} [pcSerialNo] 台帳次番（pc_serial_no）。未指定なら空のまま
    */
-  function build674ReplacementPostRecord674(srcRecord, newPcName, old674RecordId) {
+  function build674ReplacementPostRecord674(srcRecord, newPcName, old674RecordId, pcSerialNo) {
     const out = {};
     for (const code of Object.keys(srcRecord || {})) {
       const cell = srcRecord[code];
@@ -6826,6 +6810,14 @@
       out[FC_PC_NAME].value = newPcName;
     } else {
       out[FC_PC_NAME] = { type: 'SINGLE_LINE_TEXT', value: newPcName };
+    }
+    const ser = String(pcSerialNo || '').trim();
+    if (ser) {
+      if (out[FC_PC_SERIAL_NO]) {
+        out[FC_PC_SERIAL_NO].value = ser;
+      } else {
+        out[FC_PC_SERIAL_NO] = { type: 'NUMBER', value: ser };
+      }
     }
     if (out[FC_PC_STATUS]) {
       out[FC_PC_STATUS].value = STATUS_FOR_NEW_AFTER_REPLACE_674;
@@ -6911,7 +6903,7 @@
     }
 
     let claim = null;
-    /** POST 成功後にセット。以降の 671/595 で失敗した場合は 596 ロールバックや旧ステータス復元はしない */
+    /** POST 成功後にセット。以降の 671/595 で失敗した場合は旧ステータス復元はしない */
     let createdNewId = '';
 
     return get674RecordPayloadById674(oldId)
@@ -6931,16 +6923,6 @@
       })
       .then(function (payloadPre) {
         if (!payloadPre) return null;
-        return peek596HasUnused674();
-      })
-      .then(function (has596) {
-        if (has596 === null) return null;
-        if (!has596) {
-          window.alert(
-            'PC採番マスタ(596)に未使用の番号がありません。処理を中止しました（596・674は未変更です）。',
-          );
-          return null;
-        }
         return get674RecordPayloadById674(oldId);
       })
       .then(function (payload0) {
@@ -6951,20 +6933,20 @@
           window.alert('このレコードはすでに廃棄・取消等の状態です。PC買替は実行できません。');
           return null;
         }
-        return claimPcNumberFrom596ForReplacementApi674().then(function (c) {
-          if (!c) {
-            window.alert(
-              'PC採番マスタ(596)に未使用の番号がありません。処理を中止しました（596・674は未変更です）。',
-            );
-            return null;
-          }
+        const acType0 = (src0[FC_ACCOUNT_TYPE] && src0[FC_ACCOUNT_TYPE].value) || '';
+        return allocateNextPcNameForReplacement674(acType0).then(function (c) {
           claim = c;
-          return { src0: src0, newPcName: c.newPcName };
+          return { src0: src0, newPcName: c.newPcName, pcSerialNo: c.pcSerialNo };
         });
       })
       .then(function (ctx) {
         if (!ctx || !claim) return null;
-        const postBody = build674ReplacementPostRecord674(ctx.src0, ctx.newPcName, oldId);
+        const postBody = build674ReplacementPostRecord674(
+          ctx.src0,
+          ctx.newPcName,
+          oldId,
+          ctx.pcSerialNo,
+        );
         const prevStatus = (ctx.src0[FC_PC_STATUS] && String(ctx.src0[FC_PC_STATUS].value || '').trim()) || '';
         const mid = String((ctx.src0[FC_M365_MASTER_RECORD_ID] && ctx.src0[FC_M365_MASTER_RECORD_ID].value) || '').trim();
         const acType = (ctx.src0[FC_ACCOUNT_TYPE] && ctx.src0[FC_ACCOUNT_TYPE].value) || '';
@@ -7062,13 +7044,13 @@
             });
           })
           .catch(function (ePost) {
-            const roll596 =
-              !createdNewId && claim
-                ? claim.rollback596().catch(function (_r) {
+            const rollClaim =
+              !createdNewId && claim && typeof claim.rollbackClaim === 'function'
+                ? claim.rollbackClaim().catch(function (_r) {
                     /* noop */
                   })
                 : Promise.resolve();
-            return roll596
+            return rollClaim
               .then(function () {
                 if (!createdNewId && prevStatus) {
                   return get674RecordPayloadById674(oldId).then(function (rBack) {

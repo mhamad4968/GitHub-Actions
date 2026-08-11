@@ -186,10 +186,7 @@
       "label": "新PC台帳",
       "customizeDirs": ["new-pc-ledger-v1"],
       "relatedAppFieldsFrom": ["670", "671", "672", "673", "595", "680"],
-      "relatedAppFieldCodes": {
-        "596": ["number_top", "in_code"]
-      },
-      "notes": "674 customize は 670/671/672/673/595/680/596 へ REST。596 は kintone 削除済みのため relatedAppFieldCodes で監査。live-schema は関連アプリ実機スキーマをマージ監査。"
+      "notes": "674 customize は 670/671/672/673/595/680 へ REST。旧 PC採番マスタ 596 は削除済（買替も 674 台帳 JBIS/S-JBIS 次番）。live-schema は関連アプリ実機スキーマをマージ監査。"
     },
     "756": {
       "label": "実行予算書作成支援ツールver02",
