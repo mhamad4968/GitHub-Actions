@@ -24,6 +24,8 @@ const steps = [
   { type: "npm", script: "cio:selfcheck:test" },
   { type: "npm", script: "test:evening-improvements-2026-07-26" },
   { type: "npm", script: "test:wake" },
+  // 2026-08-11 R2 — 退役アプリ参照（月次と独立。順序依存なし）
+  { type: "npm", script: "verify:retired-app-refs" },
 ];
 
 for (const step of steps) {

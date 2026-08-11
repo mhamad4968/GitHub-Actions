@@ -61,3 +61,4 @@ globs: "**/*"
 - **lock 後は re-export**（同）: handoff tip 前に bridge を再生成する。順序契約の正本は同 runbook **T3／R1**。
 - **§41 一気に書かない**（2026-08-10 CON-2）: 意見交換は1問→合意→次。比較表の一括提示禁止。正本: `docs/runbooks/cio-ops-2026-08-10-evening-improvements.md`。
 - **ネタ ≠ 経営会議レポート**（同）: 「〇月のネタ」は判断材料レーンのみ。R7 本体は別依頼。
+- **clone POST / 退役 / ahead**（2026-08-11 CON-2・CON-3）: `RECORD_NUMBER` 等を POST しない・退役 ID は同ターン登録・**ahead 放置＝検証ゼロ**。正本: `docs/runbooks/cio-ops-2026-08-11-evening-improvements.md`。

@@ -29,7 +29,7 @@
 
 ## Cursor ルール逆引き（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-mdc-index`（2026-08-09 JST）
+**更新**: `npm run rules:sync-mdc-index`（2026-08-11 JST）
 
 | トピック | ファイル | description（frontmatter） |
 |----------|----------|---------------------------|
@@ -53,6 +53,7 @@
 | 毎ターン・四行 | [`cio-ops-2026-08-08-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-08-evening-improvements.mdc) | 2026-08-08 夕反省 GO — 集計DoD・Event直渡し禁止・期間二系統・§50-3-8定型 |
 | 毎ターン・四行 | [`cio-ops-2026-08-09-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-09-evening-improvements.mdc) | 2026-08-09 夕反省 GO — WAKE tip宣言・順序契約・Done二層・偽陽性辞書 |
 | 毎ターン・四行 | [`cio-ops-2026-08-10-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-10-evening-improvements.mdc) | 2026-08-10 夕反省 GO — §41一問・ネタ≠レポート・省略禁止・□A1語彙 |
+| 毎ターン・四行 | [`cio-ops-2026-08-11-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-11-evening-improvements.mdc) | 2026-08-11 夕反省 GO — clone POST・IME・退役参照・ahead push |
 | セッション WAKE | [`autonomous-cold-start.mdc`](.cursor/rules/autonomous-cold-start.mdc) | Session Lifecycle v2 — L0 cold-start（正本 runbook へ集約） |
 | セッション WAKE | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §35-1 / §56-1a / TSB-024 / §1-2-3-1（TSB-024 ゲート・`globs` 全リポ注入。常時 YAML true は cio-constitution.mdc のみ。網羅条文は AGENTS.md / c |
 | セッション WAKE | [`session-read-ladder-two-phase.mdc`](.cursor/rules/session-read-ladder-two-phase.mdc) | セッション復元は二段階（事前準備A→本題確認B）＋ラダー正本を Read で取り込む（glob・常時想起は憲法カード等に委譲） |
@@ -119,7 +120,7 @@
 
 ## § ↔ .mdc 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-mdc`（2026-07-11 JST）
+**更新**: `npm run rules:sync-section-mdc`（2026-08-11 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/rules-index-section-mdc-map.json`
 
 ### § → .mdc（抜粋）
@@ -157,7 +158,7 @@
 | §36 | [`cio-constitution.mdc`](.cursor/rules/cio-constitution.mdc) · [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) |
 | §37-1 | [`every-turn-rules-confirm.mdc`](.cursor/rules/every-turn-rules-confirm.mdc) |
 | §38 | [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) |
-| §41 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) · [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
+| §41 | [`auto-read-by-topic.mdc`](.cursor/rules/auto-read-by-topic.mdc) · [`cio-ops-2026-08-10-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-10-evening-improvements.mdc) · [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) · [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §47-D | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §5 | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) |
 | §50 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) · [`mcp-server-use-triggers.mdc`](.cursor/rules/mcp-server-use-triggers.mdc) |
@@ -167,7 +168,7 @@
 | §50-3-2 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
 | §50-3-3 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §50-3-7 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
-| §50-3-8 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
+| §50-3-8 | [`cio-discipline-always.mdc`](.cursor/rules/cio-discipline-always.mdc) · [`cio-env-integrity-gate.mdc`](.cursor/rules/cio-env-integrity-gate.mdc) · [`cio-error-ticket-gate.mdc`](.cursor/rules/cio-error-ticket-gate.mdc) · [`cio-ops-2026-08-08-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-08-evening-improvements.mdc) · [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) · [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) · [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) · [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) · [`mode-b-canonical.mdc`](.cursor/rules/mode-b-canonical.mdc) |
 | §50-3-9 | [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) |
 | §51 | [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
 | §51-6 | [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) · [`session-handoff.mdc`](.cursor/rules/session-handoff.mdc) |
@@ -209,6 +210,18 @@
 | [`cio-kintone-fields-gate.mdc`](.cursor/rules/cio-kintone-fields-gate.mdc) | §(RULES-INDEX行) · §1-2-3-4-A · §50-3-11 |
 | [`cio-kintone-live-schema-gate.mdc`](.cursor/rules/cio-kintone-live-schema-gate.mdc) | §(RULES-INDEX行) · §50-3-11 |
 | [`cio-operating-loop.mdc`](.cursor/rules/cio-operating-loop.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-07-30-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-07-30-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-01-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-01-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-02-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-02-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-03-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-03-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-05-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-05-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-06-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-06-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-07-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-07-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-08-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-08-evening-improvements.mdc) | §50-3-8 |
+| [`cio-ops-2026-08-09-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-09-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-2026-08-10-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-10-evening-improvements.mdc) | §41 |
+| [`cio-ops-2026-08-11-evening-improvements.mdc`](.cursor/rules/cio-ops-2026-08-11-evening-improvements.mdc) | §(RULES-INDEX行) |
+| [`cio-ops-hard-request-clarity.mdc`](.cursor/rules/cio-ops-hard-request-clarity.mdc) | §(RULES-INDEX行) |
 | [`cio-project-closure-gate.mdc`](.cursor/rules/cio-project-closure-gate.mdc) | §(RULES-INDEX行) |
 | [`cio-report-min-format.mdc`](.cursor/rules/cio-report-min-format.mdc) | §1 |
 | [`cio-session-close-git-gate.mdc`](.cursor/rules/cio-session-close-git-gate.mdc) | §(RULES-INDEX行) |
@@ -216,18 +229,6 @@
 | [`cio-weekend-rollback-gate.mdc`](.cursor/rules/cio-weekend-rollback-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`composer-mcp-audit-gate.mdc`](.cursor/rules/composer-mcp-audit-gate.mdc) | §1-2-3-4-A · §50-3-11 |
 | [`constitution-brief-card.mdc`](.cursor/rules/constitution-brief-card.mdc) | §(RULES-INDEX行) · §0 · §3 · §50 |
-| [`constitution-enforcement-core.mdc`](.cursor/rules/constitution-enforcement-core.mdc) | §(RULES-INDEX行) · §35-1 · §38 · §41 · §56-1 · §56-1a |
-| [`constitution-handoff-gate.mdc`](.cursor/rules/constitution-handoff-gate.mdc) | §(RULES-INDEX行) · §1-2-3-1 · §10 · §11 · §35 · §35-1 · §35-6 · §35-7 · §41 · §5 · §50-3-2 · §50-3-8 · §51-6 · §51-6-2 · §56-1 |
-| [`constitution.mdc`](.cursor/rules/constitution.mdc) | §(RULES-INDEX行) |
-| [`constitutional-focus-github-workflows.mdc`](.cursor/rules/constitutional-focus-github-workflows.mdc) | §18 · §35-1 · §52-8 |
-| [`constitutional-focus-kintone-customize.mdc`](.cursor/rules/constitutional-focus-kintone-customize.mdc) | §35-7 · §50-3-8 · §52 |
-| [`constitutional-focus-yojitsu.mdc`](.cursor/rules/constitutional-focus-yojitsu.mdc) | §2 · §41 · §50-3-8 |
-| [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | §(RULES-INDEX行) · §41 |
-| [`cursor-generate-image-assets.mdc`](.cursor/rules/cursor-generate-image-assets.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-3-4-C · §1-2-4 · §41 · §50-3-11 |
-| [`deepseek-cursor-spec-division.mdc`](.cursor/rules/deepseek-cursor-spec-division.mdc) | §(RULES-INDEX行) · §0 · §1-2-2 · §1-2-3-4-A · §1-2-4 · §50-3 · §50-3-10 · §50-3-11 · §50-3-2 · §50-3-8 · §50-3-9 |
-| [`deepseek-pre-edit-gate.mdc`](.cursor/rules/deepseek-pre-edit-gate.mdc) | §(RULES-INDEX行) · §50-3-8 |
-| [`doc-lane-gate.mdc`](.cursor/rules/doc-lane-gate.mdc) | §(RULES-INDEX行) |
-| [`evening-reflection-scope.mdc`](.cursor/rules/evening-reflection-scope.mdc) | §(RULES-INDEX行) |
 
 <!-- RULES-INDEX:SECTION-MDC-AUTO:END -->
 
@@ -236,7 +237,7 @@
 
 ## § ↔ ジャンル読本 双方向索引（自動生成・編集禁止）
 
-**更新**: `npm run rules:sync-section-genre`（2026-07-11 JST）
+**更新**: `npm run rules:sync-section-genre`（2026-08-11 JST）
 **正本**: `AGENTS.md` § 解釈 / 機械: `data/constitution-section-genre-map.json`
 **カタログ**: `data/constitution-genre-catalog.json`
 

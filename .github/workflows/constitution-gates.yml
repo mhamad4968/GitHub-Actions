@@ -103,6 +103,12 @@ jobs:
       - name: test-evening-improvements-2026-07-30（O/C parity / CON-01 Excel）
         run: npm run test:evening-improvements-2026-07-30
 
+      - name: verify-retired-app-refs（2026-08-11 R2 — 退役アプリ稼働参照）
+        run: npm run verify:retired-app-refs
+
+      - name: test-evening-improvements-2026-08-11（clone POST / IME / ahead）
+        run: npm run test:evening-improvements-2026-08-11
+
       - name: verify-ci-rule-integrity（薄型憲法・alwaysApply 上限）
         run: node scripts/verify-ci-rule-integrity.mjs
 

@@ -42,6 +42,7 @@ globs: "**/*"
 - **user-kintone**（本番系）: 本番アプリの **フィールド／レコード／権限**が主題、または本番 CRUD の前段調査。
 - **user-kintone-dev**: **API仕様・フィールド型の開発ドキュメント**（**本番CRUDと混同禁止**。検証テナント操作ではない）。
 - **user-kintone-space**: **スペース／ポータル／スレッド**の設定・本文が主題のとき。
+- **買替・clone POST 障害（2026-08-11 MCP-1）**: コード修正前に **kintone / kintone-schema-mcp** で必須・型を先確認（正本: `docs/runbooks/cio-ops-2026-08-11-evening-improvements.md`）。
 - **kintone 4分割（1行・2026-08-02）**: 本番=`kintone` ／ API docs=`kintone-dev` ／ Space=`kintone-space` ／ ライブ form schema=`kintone-schema-mcp`。削減せず使い分けを固定（`MANDATORY-READ-CARD.md`）。
 - **user-fetch**: **単一 URL の生本文**（HTML/JSON）が正で、ブラウザ操作が不要なとき。
 - **user-duckduckgo-search**: **Web 検索**（横断調査・仕様確認・既知バグ調査）。**Tavily MCP は 2026-05-06 に mcp.json から削除済**（浜田合意）。要約付き検索が必要なら WebFetch＋モデル要約や別経路を検討。

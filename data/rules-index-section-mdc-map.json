@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T00:09:35.918Z",
+  "generatedAt": "2026-08-11T11:27:02.389Z",
   "sectionToMdc": {
     "§0": [
       "constitution-brief-card.mdc",
@@ -139,6 +139,7 @@
     ],
     "§41": [
       "auto-read-by-topic.mdc",
+      "cio-ops-2026-08-10-evening-improvements.mdc",
       "constitution-enforcement-core.mdc",
       "constitution-handoff-gate.mdc",
       "constitutional-focus-yojitsu.mdc",
@@ -201,6 +202,7 @@
       "cio-discipline-always.mdc",
       "cio-env-integrity-gate.mdc",
       "cio-error-ticket-gate.mdc",
+      "cio-ops-2026-08-08-evening-improvements.mdc",
       "constitution-handoff-gate.mdc",
       "constitutional-focus-kintone-customize.mdc",
       "constitutional-focus-yojitsu.mdc",
@@ -357,6 +359,42 @@
     "cio-operating-loop.mdc": [
       "§(RULES-INDEX行)"
     ],
+    "cio-ops-2026-07-30-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-01-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-02-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-03-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-05-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-06-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-07-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-08-evening-improvements.mdc": [
+      "§50-3-8"
+    ],
+    "cio-ops-2026-08-09-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-2026-08-10-evening-improvements.mdc": [
+      "§41"
+    ],
+    "cio-ops-2026-08-11-evening-improvements.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "cio-ops-hard-request-clarity.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "cio-project-closure-gate.mdc": [
       "§(RULES-INDEX行)"
     ],
@@ -476,6 +514,12 @@
     "file-copy-exact-path.mdc": [
       "§(RULES-INDEX行)"
     ],
+    "jikkou-yosan-v2-ops-budget.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "jikkou-yosan-v2-ui-chrome.mdc": [
+      "§(RULES-INDEX行)"
+    ],
     "kintone-destructive-rest-guard.mdc": [
       "§(RULES-INDEX行)",
       "§52-8"
@@ -577,6 +621,12 @@
       "§(RULES-INDEX行)"
     ],
     "snyk-security.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "spec-round-ai-agreement.mdc": [
+      "§(RULES-INDEX行)"
+    ],
+    "ui-acceptance-smoke.mdc": [
       "§(RULES-INDEX行)"
     ],
     "windows-cross-platform.mdc": [
