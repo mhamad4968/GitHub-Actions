@@ -230,9 +230,9 @@ PC レコード保存・廃棄時:
 | `group_name` | SINGLE_LINE_TEXT | 所属グループ（595 から自動引用）|
 | `shared_terminal_name` | SINGLE_LINE_TEXT | 共有端末名（共有/JR で必須・手入力）|
 | `purchase_date` | DATE | 購入日 |
-| `latest_inventory_date` | DATE | 最新棚卸日（**履歴の最大日を自動反映・手入力不可**・2026-08-11） |
+| `latest_inventory_date` | DATE | 最新棚卸日（**履歴の最大日を自動反映**・**内部処理用グループ収容**・2026-08-11） |
 | `note` | MULTI_LINE_TEXT | 備考 |
-| `internal_system_meta` | GROUP | **フィールドグループ**（表示名は **内部処理用**）。`openGroup=false` で **既定は閉じた状態**。レイアウト上に `pc_serial_no` / `import_source` / `created_at_jst` を収容する（§4.2.1a）。値を保持しないシェル |
+| `internal_system_meta` | GROUP | **フィールドグループ**（表示名は **内部処理用**）。`openGroup=false` で **既定は閉じた状態**。レイアウト上に `pc_serial_no` / `import_source` / `created_at_jst` / `latest_inventory_date` を収容する（§4.2.1a）。値を保持しないシェル |
 
 #### 4.2.0b 所属名・所属グループの UX（2026-04-28 浜田合意）
 
@@ -250,10 +250,11 @@ PC レコード保存・廃棄時:
 
 | フィールド code | 役割 | UI 方針 |
 |---|---|---|
-| internal_system_meta | kintone **標準のフィールドグループ**（ラベル **内部処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウト API で下記 3 フィールドを **このグループ内に配置**（リポ: `npm run pc-ledger:674:layout-internal-group`） |
+| internal_system_meta | kintone **標準のフィールドグループ**（ラベル **内部処理用**） | `properties` で `type: GROUP` / `openGroup: false`。レイアウト API で下記フィールドを **このグループ内に配置**（リポ: `npm run pc-ledger:674:layout-internal-group`） |
 | pc_serial_no | PC 名 4 桁の内部カウンタ（§4.3.1） | グループ内に配置。**新規・編集**では customize で **`disabled: true`**（グレーアウト）。値の付与はボタン・CSV・API 等 |
 | import_source | 入力ルート判別（§4.7.2） | 同上 |
 | created_at_jst | 作成日時 JST（検索用） | 同上 |
+| latest_inventory_date | 最新棚卸日（履歴最大日の自動反映） | 同上。画面上は内部処理用内のみ（登録者は触れない・2026-08-11 浜田） |
 
 **閉じた状態を維持**: レコードの新規・編集・詳細表示時に `kintone.app.record.setGroupFieldOpen('internal_system_meta', false)`（およびモバイル用 API）を実行し、**通常は畳んだまま**にする（ユーザーが開けば中身は閲覧可だが子は disabled で触れない）。
 

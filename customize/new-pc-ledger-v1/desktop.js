@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-inventory-latest-from-history';
+  const BUILD = '2026-08-11-674-latest-inv-internal-group';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -102,10 +102,12 @@
   const FC_INTERNAL_GROUP = 'internal_system_meta';
   const FC_IMPORT_SOURCE = 'import_source';
   const FC_CREATED_AT_JST = 'created_at_jst';
+  /** 注: latest_inventory_date は下で FC_LATEST_INVENTORY_DATE 定義後も同コード */
   const INTERNAL_CHILD_CODES = [
     FC_PC_SERIAL_NO,
     FC_IMPORT_SOURCE,
     FC_CREATED_AT_JST,
+    'latest_inventory_date', // FC_LATEST_INVENTORY_DATE（内部処理用・§4.2.1a）
   ];
 
   /** §4.2.3a SKYSEA グループ（表示名 SKYSEA処理用）・admin 限定 UI */
@@ -1473,12 +1475,6 @@
       }
     }
     syncLatestInventoryDateFromHistory674(rec);
-  }
-
-  function applyLatestInventoryDateReadonlyUi674(record) {
-    const cell = record && record[FC_LATEST_INVENTORY_DATE];
-    if (!cell || !Object.prototype.hasOwnProperty.call(cell, 'disabled')) return;
-    cell.disabled = true;
   }
 
   function ymdCalendarYear674(ymd) {
@@ -7971,7 +7967,6 @@ ${bodyInner}\
     applyVisibilityByType(event.record);
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
-    applyLatestInventoryDateReadonlyUi674(event.record);
     syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
     ensure674PcStatusBanner674(event.record);

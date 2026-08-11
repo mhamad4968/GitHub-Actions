@@ -1,5 +1,5 @@
 /**
- * App 674: 内部メタ 3 フィールドを kintone 標準フィールドグループ `internal_system_meta` 内へ移動する。
+ * App 674: 内部メタフィールドを kintone 標準フィールドグループ `internal_system_meta` 内へ移動する。
  *
  * 前提: `properties` に GROUP `internal_system_meta` が既に存在（add-form-fields 済み）。
  *
@@ -16,6 +16,7 @@ const CHILD_CODES = [
   'pc_serial_no',
   'import_source',
   'created_at_jst',
+  'latest_inventory_date',
 ];
 
 function requireEnv(key) {
@@ -175,7 +176,9 @@ async function main() {
   const existing = findOurGroupNode(layout);
 
   if (existing && groupLayoutIsComplete(existing)) {
-    console.log(`674: "${GROUP_CODE}" 内に内部メタ 3 件が既に配置済み。スキップ。`);
+    console.log(
+      `674: "${GROUP_CODE}" 内に内部メタ ${CHILD_CODES.length} 件が既に配置済み。スキップ。`,
+    );
     return;
   }
 
@@ -217,7 +220,9 @@ async function main() {
   const rev = await putPreviewLayout(lay.revision, newLayout);
   await deployPreview(rev);
   await waitDeploy();
-  console.log(`674: preview layout 更新 + deploy SUCCESS（GROUP "${GROUP_CODE}" 内に 3 フィールドを収容）revision=${rev}`);
+  console.log(
+    `674: preview layout 更新 + deploy SUCCESS（GROUP "${GROUP_CODE}" 内に ${CHILD_CODES.length} フィールドを収容）revision=${rev}`,
+  );
 }
 
 main().catch((e) => {
