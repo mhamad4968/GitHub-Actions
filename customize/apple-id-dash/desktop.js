@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-11-694-print-no-mdm";
+  var BUILD = "2026-08-11-694-print-device-date-label";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -832,6 +832,16 @@
     return names.family || names.given || "";
   }
 
+  /**
+   * 印刷用日付セル: 交換日あり→端末交換日 / なし→端末登録日（新規）
+   * SPEC §8.3: device_exchange_date は買い替え時のみ入力
+   */
+  function printDeviceDateCell(row) {
+    var exchange = String(row.device_exchange_date || "").trim();
+    if (exchange) return { label: "端末交換日", value: exchange };
+    return { label: "端末登録日", value: row.registered_date };
+  }
+
   function buildAidPrintPageHtml(row) {
     var pw = row.password || FIXED_PASSWORD;
     var lock = row.lock_passcode || FIXED_LOCK;
@@ -851,8 +861,7 @@
     var bodyInner =
       buildAidPrintTierHtml(
         [
-          { label: "登録日", value: row.registered_date },
-          { label: "端末交換日", value: row.device_exchange_date },
+          printDeviceDateCell(row),
           { label: "利用者名", value: formatUserNameForPrint(row.user_name) },
         ],
         0,
@@ -918,6 +927,7 @@
       ".aidpr-bullets li{margin:4px 0;}" +
       ".aidpr-card{background:#fff;border-radius:0 0 18px 18px;box-shadow:0 18px 40px rgba(15,23,42,.08);overflow:hidden;border:1px solid var(--card-border);border-top:none;}" +
       ".aidpr-tier{display:grid;gap:0;border-bottom:1px solid #e2e8f0;}" +
+      ".aidpr-tier--cols2{grid-template-columns:1fr 1fr;}" +
       ".aidpr-tier--cols3{grid-template-columns:1fr 1fr 1fr;}" +
       ".aidpr-tier:last-child{border-bottom:none;}" +
       ".aidpr-cell{padding:18px 20px 20px;background:#fff;border-right:1px solid #f1f5f9;min-height:92px;}" +
