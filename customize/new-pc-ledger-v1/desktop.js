@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-edit-hw-required';
+  const BUILD = '2026-08-11-674-replace-skysea-delete-if-installed';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1246,15 +1246,47 @@
     return latest >= periodStart && latest <= periodEnd;
   }
 
-  function markSkyseaClientDeletePending674(putRecord, accountType) {
+  /**
+   * 個人PCを廃棄／買替するとき、SKYSEA クライアント削除の「未了」を付ける。
+   * **SKYSEA 対応が「完了」（＝導入済）の端末のみ**対象。未導入（未了／空）は対象外（浜田 2026-08-11）。
+   * @param {object} putRecord PUT 用レコード断片
+   * @param {string} accountType
+   * @param {object} [srcRecord] 廃棄前レコード（skysea_manual_done 判定用）
+   */
+  function markSkyseaClientDeletePending674(putRecord, accountType, srcRecord) {
     const out = putRecord || {};
     if (accountType !== TYPE_PERSONAL) return out;
+    const manualDone = String(
+      (srcRecord && srcRecord[FC_SKYSEA_MANUAL_DONE] && srcRecord[FC_SKYSEA_MANUAL_DONE].value) ||
+        (out[FC_SKYSEA_MANUAL_DONE] && out[FC_SKYSEA_MANUAL_DONE].value) ||
+        '',
+    ).trim();
+    if (manualDone !== SKYSEA_MANUAL_DONE_COMPLETE) return out;
     const cur = String(
-      (out[FC_SKYSEA_CLIENT_DELETE_STATUS] && out[FC_SKYSEA_CLIENT_DELETE_STATUS].value) || '',
+      (out[FC_SKYSEA_CLIENT_DELETE_STATUS] && out[FC_SKYSEA_CLIENT_DELETE_STATUS].value) ||
+        (srcRecord &&
+          srcRecord[FC_SKYSEA_CLIENT_DELETE_STATUS] &&
+          srcRecord[FC_SKYSEA_CLIENT_DELETE_STATUS].value) ||
+        '',
     ).trim();
     if (cur === SKYSEA_CLIENT_DELETE_DONE) return out;
     out[FC_SKYSEA_CLIENT_DELETE_STATUS] = { value: SKYSEA_CLIENT_DELETE_PENDING };
     return out;
+  }
+
+  function needsSkyseaClientDeleteAfterDispose674(accountType, srcRecord) {
+    if (accountType !== TYPE_PERSONAL) return false;
+    const manualDone = String(
+      (srcRecord && srcRecord[FC_SKYSEA_MANUAL_DONE] && srcRecord[FC_SKYSEA_MANUAL_DONE].value) || '',
+    ).trim();
+    if (manualDone !== SKYSEA_MANUAL_DONE_COMPLETE) return false;
+    const cur = String(
+      (srcRecord &&
+        srcRecord[FC_SKYSEA_CLIENT_DELETE_STATUS] &&
+        srcRecord[FC_SKYSEA_CLIENT_DELETE_STATUS].value) ||
+        '',
+    ).trim();
+    return cur !== SKYSEA_CLIENT_DELETE_DONE;
   }
 
   function ensureInventoryPeriodLoaded674() {
@@ -6311,6 +6343,7 @@
             [FC_NOTE]: { value: nextNote },
           },
           acType,
+          tr,
         );
         return kintoneApiPut('/k/v1/record.json', {
           app: kintone.app.getId(),
@@ -6909,7 +6942,7 @@
     return out;
   }
 
-  function show674ReplacementFollowupBanner674() {
+  function show674ReplacementFollowupBanner674(needSkyseaClientDelete) {
     const inject = function () {
       if (document.getElementById('jbis674-replace-banner')) return true;
       const host = getHeaderSpace674() || document.querySelector('.gaia-argoui-app-toolbar') || document.body;
@@ -6920,10 +6953,14 @@
       el.setAttribute('tabindex', '0');
       el.style.cssText =
         'margin:8px 12px;padding:14px 18px;background:#fee2e2;border:2px solid #b91c1c;border-radius:6px;color:#991b1b;font-size:14px;font-weight:bold;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.12);position:relative;z-index:99999;';
-      el.innerHTML =
-        '【PC買替の続き】編集画面です。<strong>メーカー・モデル名・シリアル</strong>を入力してから保存してください（未入力では保存できません）。購入日・在庫日・備考も忘れずに。<br>' +
-        '<span style="color:#b91c1c;font-weight:800;">旧PCの SKYSEA クライアント削除が必要です。室長へ手順を確認し必ず実施してください。</span><br>' +
-        '旧PCは admin の「SKYSEAクライアント削除対応」リストで完了にしてください。';
+      let html =
+        '【PC買替の続き】編集画面です。<strong>メーカー・モデル名・シリアル</strong>を入力してから保存してください（未入力では保存できません）。購入日・在庫日・備考も忘れずに。';
+      if (needSkyseaClientDelete) {
+        html +=
+          '<br><span style="color:#b91c1c;font-weight:800;">旧PCは SKYSEA 導入済のため、クライアント削除が必要です。室長へ手順を確認し必ず実施してください。</span><br>' +
+          '旧PCは admin の「SKYSEAクライアント削除対応」リストで完了にしてください。';
+      }
+      el.innerHTML = html;
       host.insertBefore(el, host.firstChild);
       return true;
     };
@@ -6935,7 +6972,9 @@
     setTimeout(function () {
       try {
         window.alert(
-          'PC買替後は端末情報の入力と、旧PCの SKYSEA クライアント削除（室長確認・必須）を忘れないでください。',
+          needSkyseaClientDelete
+            ? 'PC買替後は端末情報の入力と、旧PCの SKYSEA クライアント削除（室長確認・必須）を忘れないでください。'
+            : 'PC買替後は端末情報（メーカー・モデル名・シリアル）の入力を忘れないでください。',
         );
       } catch (_a) {
         /* noop */
@@ -6945,10 +6984,10 @@
 
   function maybeShow674ReplacementNoticeFromStorage674() {
     try {
-      if (sessionStorage.getItem(STORAGE_KEY_674_REPLACE_NOTICE) === '1') {
-        sessionStorage.removeItem(STORAGE_KEY_674_REPLACE_NOTICE);
-        show674ReplacementFollowupBanner674();
-      }
+      const flag = sessionStorage.getItem(STORAGE_KEY_674_REPLACE_NOTICE);
+      if (!flag) return;
+      sessionStorage.removeItem(STORAGE_KEY_674_REPLACE_NOTICE);
+      show674ReplacementFollowupBanner674(flag === 'skysea');
     } catch (_e) {
       /* noop */
     }
@@ -7020,11 +7059,14 @@
             if (!freshOld.revision) {
               throw new Error('旧レコードのリビジョンを取得できませんでした。');
             }
+            const srcForSkysea = freshOld.record || ctx.src0;
+            const needSkyseaDel = needsSkyseaClientDeleteAfterDispose674(acType, srcForSkysea);
             const oldPut = markSkyseaClientDeletePending674(
               {
                 [FC_PC_STATUS]: { value: STATUS_AFTER_REPLACE_OLD_674 },
               },
               acType,
+              srcForSkysea,
             );
             return kintoneApiPut('/k/v1/record.json', {
               app: kintone.app.getId(),
@@ -7035,10 +7077,14 @@
               return kintoneApiPost('/k/v1/record.json', {
                 app: kintone.app.getId(),
                 record: toApiRecordValuesOnly674(postBody),
+              }).then(function (created) {
+                return { created: created, needSkyseaDel: needSkyseaDel };
               });
             });
           })
-          .then(function (created) {
+          .then(function (pack) {
+            const created = pack && pack.created;
+            const needSkyseaDel = !!(pack && pack.needSkyseaDel);
             const newId = created && created.id != null ? String(created.id) : '';
             if (!newId) throw new Error('新規レコードの id を取得できませんでした。');
             createdNewId = newId;
@@ -7090,12 +7136,18 @@
 
             return chain.then(function () {
               try {
-                sessionStorage.setItem(STORAGE_KEY_674_REPLACE_NOTICE, '1');
+                sessionStorage.setItem(
+                  STORAGE_KEY_674_REPLACE_NOTICE,
+                  needSkyseaDel ? 'skysea' : '1',
+                );
               } catch (_s) {
                 /* noop */
               }
               window.alert(
-                'PC買替の新規レコードを編集画面で開きます。\nメーカー・モデル名・シリアルを入力してから保存してください。',
+                'PC買替の新規レコードを編集画面で開きます。\nメーカー・モデル名・シリアルを入力してから保存してください。' +
+                  (needSkyseaDel
+                    ? '\n\n旧PCは SKYSEA 導入済のため、クライアント削除対応も必要です。'
+                    : ''),
               );
               location.href =
                 location.origin +
