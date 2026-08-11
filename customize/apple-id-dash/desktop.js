@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-11-694-print-device-date-label";
+  var BUILD = "2026-08-11-694-edit-kind-new-exchange";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -544,10 +544,55 @@
       });
   }
 
+  function isEditKindExchange() {
+    var el = document.querySelector('input[name="aid-edit-kind"][value="exchange"]');
+    return Boolean(el && el.checked);
+  }
+
+  /** 新規/交換ラジオに応じて交換日欄の表示・初期値を同期 */
+  function syncEditKindUI(opts) {
+    var preferToday = opts && opts.preferToday;
+    var isExchange = isEditKindExchange();
+    var wrap = document.getElementById("aid-edit-exchange-wrap");
+    var exchangeEl = document.getElementById("aid-edit-exchange");
+    if (wrap) wrap.style.display = isExchange ? "block" : "none";
+    if (!exchangeEl) return;
+    if (!isExchange) {
+      exchangeEl.value = "";
+      return;
+    }
+    if (preferToday && !String(exchangeEl.value || "").trim()) {
+      exchangeEl.value = todayJstYmd();
+    }
+  }
+
+  function wireEditKindRadios() {
+    var radios = document.querySelectorAll('input[name="aid-edit-kind"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].addEventListener("change", function () {
+        syncEditKindUI({ preferToday: true });
+      });
+    }
+    syncEditKindUI({ preferToday: false });
+  }
+
   function openEditModal(row) {
+    var hasExchange = Boolean(String(row.device_exchange_date || "").trim());
     var box = openModal(
       "編集 — No." + row.legacy_no,
-      '<label>Apple ID<input id="aid-edit-apple-id" value="' +
+      '<fieldset style="border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;margin:0 0 12px;">' +
+        '<legend style="font-size:12px;font-weight:700;color:#334155;padding:0 6px;">登録区分</legend>' +
+        '<label style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-weight:600;">' +
+        '<input type="radio" name="aid-edit-kind" value="new"' +
+        (hasExchange ? "" : " checked") +
+        "> 新規</label>" +
+        '<label style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
+        '<input type="radio" name="aid-edit-kind" value="exchange"' +
+        (hasExchange ? " checked" : "") +
+        "> 交換</label>" +
+        '<p style="font-size:11px;color:#64748b;margin:8px 0 0;">交換を選ぶと端末交換日の入力が必須になります。新規では交換日を保存しません。</p>' +
+        "</fieldset>" +
+        '<label>Apple ID<input id="aid-edit-apple-id" value="' +
         esc(row.apple_id) +
         '" autocomplete="off" spellcheck="false"></label>' +
         '<div id="aid-edit-apple-id-warn"></div>' +
@@ -555,10 +600,14 @@
         '<p style="font-size:12px;color:#475569;margin:8px 0 4px;">登録日: <span id="aid-edit-reg-val">' +
         esc(row.registered_date) +
         "</span>（MDM変更時に今日へ自動更新）</p>" +
+        '<div id="aid-edit-exchange-wrap" style="display:' +
+        (hasExchange ? "block" : "none") +
+        ';">' +
         '<label>端末交換日<input type="date" id="aid-edit-exchange" value="' +
         esc(row.device_exchange_date) +
         '"></label>' +
-        '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">端末買い替え時に入力（iPhone・iPad 共通）</p>' +
+        '<p style="font-size:11px;color:#64748b;margin:4px 0 8px;">端末買い替え時に入力（必須）</p>' +
+        "</div>" +
         '<label>MDM名<input id="aid-edit-mdm" value="' +
         esc(row.mdm_name) +
         '"></label>' +
@@ -622,30 +671,33 @@
             var oldMdm = normalizeMdm(row.mdm_name);
             var newMdm = normalizeMdm((document.getElementById("aid-edit-mdm") || {}).value);
             var exchangeEl = document.getElementById("aid-edit-exchange");
-            var exchangeDate = exchangeEl ? exchangeEl.value : "";
+            var exchangeRadio = document.querySelector('input[name="aid-edit-kind"][value="exchange"]');
             var registeredDate = row.registered_date;
             var mdmChanged = oldMdm !== newMdm;
             if (mdmChanged) {
               registeredDate = todayJstYmd();
-              window.alert(
-                "MDM名が変更されたため、登録日を " + registeredDate + " に更新します。",
-              );
-              if (!exchangeDate) {
-                if (
-                  window.confirm(
-                    "端末交換日が未入力です。今日（" +
-                      registeredDate +
-                      "）を端末交換日にセットして保存しますか？\n「キャンセル」で入力欄に戻ります。",
-                  )
-                ) {
-                  exchangeDate = registeredDate;
-                  if (exchangeEl) exchangeEl.value = exchangeDate;
-                } else {
-                  if (exchangeEl) exchangeEl.focus();
-                  return;
-                }
+              if (!isEditKindExchange() && exchangeRadio) {
+                exchangeRadio.checked = true;
+                syncEditKindUI({ preferToday: true });
+                window.alert(
+                  "MDM名が変更されたため、登録区分を「交換」にし、登録日を " +
+                    registeredDate +
+                    " に更新します。端末交換日を確認して保存してください。",
+                );
+              } else {
+                window.alert(
+                  "MDM名が変更されたため、登録日を " + registeredDate + " に更新します。",
+                );
               }
             }
+            var kindExchange = isEditKindExchange();
+            var exchangeDate = kindExchange && exchangeEl ? String(exchangeEl.value || "").trim() : "";
+            if (kindExchange && !exchangeDate) {
+              alert("交換の場合は端末交換日を入力してください。");
+              if (exchangeEl) exchangeEl.focus();
+              return;
+            }
+            if (!kindExchange) exchangeDate = "";
             var rec = toKintoneRecord(
               {
                 apple_id: appleId,
@@ -697,6 +749,7 @@
     );
     var dev = box.querySelector("#aid-edit-device");
     if (dev) dev.value = row.device_type || "";
+    wireEditKindRadios();
     var appleInput = box.querySelector("#aid-edit-apple-id");
     var appleWarn = box.querySelector("#aid-edit-apple-id-warn");
     if (appleInput && appleWarn) {
