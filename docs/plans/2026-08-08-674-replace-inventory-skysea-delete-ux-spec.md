@@ -1,8 +1,9 @@
 # 674 PC買替・棚卸・SKYSEA削除 UX 仕様（2026-08-08）
 
-**Status**: GO（浜田 2026-08-08）  
+**Status**: **as-built**（浜田 GO 2026-08-08／追補 2026-08-11 実装反映済）  
 **App**: 674（新PC台帳）  
-**制約**: SKYSEA 実配信・GPO・SG 追加なし（手動台帳のみ）。688／677–679／712／736 非接触。
+**制約**: SKYSEA 実配信・GPO・SG 追加なし（手動台帳のみ）。688／677–679／712／736 非接触。  
+**運用正本（買替 clone / IME）**: `docs/runbooks/pc-ledger-674-replace-clone-post.md` · `docs/runbooks/kintone-input-ime-datalist.md` · `scripts/lib/kintone-record-clone-post.mjs`
 
 ---
 
@@ -55,6 +56,31 @@
 ### 1.5 B3
 
 一覧からの買替対象探しやすさ改善は **見送り**。
+
+### 1.6 採番（2026-08-11 as-built）
+
+- **禁止**: 削除済 PC採番マスタ **596** への REST／claim／peek（並行運用なし・欠番は許容）
+- **正**: 674 台帳の **JBIS / S-JBIS** 最大＋1（`allocateNextPcNameForReplacement674`）
+- 退役登録は inventory と **同ターン**（`retiredAppIds` + `verify:retired-app-refs`）
+
+### 1.7 クローン POST（2026-08-11 as-built）
+
+新レコード POST 時:
+
+1. `RECORD_NUMBER` / `RECORD_ID` / CREATOR 等システム項目を載せない（純関数: `kintone-record-clone-post`）
+2. 必須 `skysea_manual_done` は **未了**（空禁止）
+3. 空の DATE / DATETIME / TIME / NUMBER はキーごと省略
+
+本節は **PC買替クローン経路のみ**。一括登録・他 API 連携には適用しない（衝突回避）。
+
+### 1.8 作成後遷移と HW 必須（2026-08-11 as-built）
+
+- 買替成功後は **edit** へ遷移（`#record=…&mode=edit`）。show にする場合は浜田1行
+- `import_source` が `PC_REPLACE_FROM_674` で始まるとき、メーカー／型番／シリアルを必須（買替経路限定）
+
+### 1.9 一覧キーワード検索と IME（2026-08-11 as-built）
+
+datalist 付きキーワード欄は **composition 中に list／option を更新しない**（`ma`→`mあ` 再発防止）。正本: `docs/runbooks/kintone-input-ime-datalist.md`。
 
 ---
 
@@ -133,6 +159,7 @@
 - **かつ** `skysea_manual_done`＝**完了**（SKYSEA 導入済）のときだけ  
   `skysea_client_delete_status` が空または完了以外 → **`未了` をセット**（既に完了なら触らない）
 - **SKYSEA 未導入**（`skysea_manual_done` が **未了**／空）は **付与しない**（削除対象バナーに載せない）。浜田確認 2026-08-11（買替端末が未導入でも削除対象1件になっていた件）
+- 削除作業の遅延・失敗時は status を **`未了` のまま維持**（完了は admin リスト操作が正。自動タイムアウト完了はしない）
 
 対象イベント:
 
@@ -192,6 +219,7 @@
 
 | 日付 | 内容 |
 |------|------|
+| 2026-08-11 | §1.6〜1.9: 採番596禁止・clone POST・edit+HW必須・IME datalist（as-built／DeepSeek盲点反映） |
 | 2026-08-11 | §2.2a: 最新棚卸日を **内部処理用グループ**へ収容。履歴最大日の自動反映・新規登録時履歴自動1行（浜田） |
 | 2026-08-11 | §3.2: SKYSEA **導入済（manual_done=完了）のみ**クライアント削除未了を付与。未導入は対象外（浜田） |
 | 2026-08-08 | 初版（浜田相談＋AIレビュー突合後 GO） |

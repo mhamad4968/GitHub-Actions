@@ -110,6 +110,8 @@
   □ runbook §0: SKYSEA/ネットワーク/社外事例確定 or プレースホルダ明示
   □ npm run doc-lane:security-report
 
+□ 2026-08-11（T5 / CON-3）: 機能区切りで ahead なら push→CI 緑まで（未 push＝検証ゼロ）。買替/clone 障害は form 必須を MCP 先確認。正本: docs/runbooks/cio-ops-2026-08-11-evening-improvements.md
+
 --- 貼付用ミニ骨格（CEO報告ゲート＋憲法4行＋hooksフッタ V2）---
 [§1-2-3 ティア判定: L?]（根拠: …）
 【適用憲法】…

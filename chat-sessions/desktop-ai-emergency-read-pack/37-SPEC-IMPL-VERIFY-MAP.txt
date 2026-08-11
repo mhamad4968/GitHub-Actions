@@ -27,6 +27,13 @@ GO 段階 G0–G3 … Desktop **33**-META-28
 MCP 月次 / DEL-3 … docs/mcp-status.md · verify:mcp-deleted-refs（再追加禁止4件）
 憲法健全性 G0 … docs/plans/2026-08-08-constitution-health-g0.md（大統合はしない）
 
+【2026-08-11 — 674 買替 as-built / 夕反省】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+674 買替・棚卸・SKYSEA削除 UX … docs/plans/2026-08-08-674-replace-inventory-skysea-delete-ux-spec.md（§1.6〜1.9）
+clone POST DoD … docs/runbooks/pc-ledger-674-replace-clone-post.md · scripts/lib/kintone-record-clone-post.mjs
+IME datalist … docs/runbooks/kintone-input-ime-datalist.md
+夕反省 GO … docs/plans/2026-08-11-evening-improvements-spec.md · verify:retired-app-refs（pre-push / gates）
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【検証ワンショット（この薄い統合の後）】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
