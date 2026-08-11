@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-11-694-edit-kind-new-exchange";
+  var BUILD = "2026-08-11-694-edit-kind-row-inline";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -292,6 +292,8 @@
       ".aid-modal{background:#fff;border-radius:8px;padding:16px 18px;max-width:520px;width:92%;box-shadow:0 8px 30px rgba(0,0,0,.2);}" +
       ".aid-modal h3{margin:0 0 12px;font-size:16px;}" +
       ".aid-modal label{display:block;margin:8px 0;font-size:13px;}" +
+      ".aid-edit-kind-row{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:18px;margin:2px 0 0;}" +
+      ".aid-modal label.aid-edit-kind-opt{display:inline-flex;align-items:center;gap:6px;margin:0;font-weight:600;white-space:nowrap;}" +
       ".aid-modal input,.aid-modal select,.aid-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
       ".aid-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}";
     document.head.appendChild(st);
@@ -582,14 +584,16 @@
       "編集 — No." + row.legacy_no,
       '<fieldset style="border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;margin:0 0 12px;">' +
         '<legend style="font-size:12px;font-weight:700;color:#334155;padding:0 6px;">登録区分</legend>' +
-        '<label style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-weight:600;">' +
+        '<div class="aid-edit-kind-row">' +
+        '<label class="aid-edit-kind-opt">' +
         '<input type="radio" name="aid-edit-kind" value="new"' +
         (hasExchange ? "" : " checked") +
         "> 新規</label>" +
-        '<label style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
+        '<label class="aid-edit-kind-opt">' +
         '<input type="radio" name="aid-edit-kind" value="exchange"' +
         (hasExchange ? " checked" : "") +
         "> 交換</label>" +
+        "</div>" +
         '<p style="font-size:11px;color:#64748b;margin:8px 0 0;">交換を選ぶと端末交換日の入力が必須になります。新規では交換日を保存しません。</p>' +
         "</fieldset>" +
         '<label>Apple ID<input id="aid-edit-apple-id" value="' +
