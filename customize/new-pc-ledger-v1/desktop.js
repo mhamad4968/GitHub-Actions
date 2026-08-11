@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-replace-skysea-delete-if-installed';
+  const BUILD = '2026-08-11-674-inventory-latest-from-history';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1400,6 +1400,85 @@
       },
     });
     subField.value = rows;
+  }
+
+  function inventoryHistHasDatedRow674(histField) {
+    const rows = (histField && histField.value) || [];
+    for (let i = 0; i < rows.length; i++) {
+      if (getHistRowDateYmd674(rows[i])) return true;
+    }
+    return false;
+  }
+
+  function maxInventoryHistDate674(histField) {
+    let max = '';
+    const rows = (histField && histField.value) || [];
+    for (let i = 0; i < rows.length; i++) {
+      const d = getHistRowDateYmd674(rows[i]);
+      if (d && d > max) max = d;
+    }
+    return max;
+  }
+
+  /** 最新棚卸日は履歴の最大日で自動維持（手入力させない） */
+  function syncLatestInventoryDateFromHistory674(record) {
+    if (!record) return;
+    const hist = record[FC_INVENTORY_HISTORY] || { type: 'SUBTABLE', value: [] };
+    const max = maxInventoryHistDate674(hist);
+    if (!record[FC_LATEST_INVENTORY_DATE]) {
+      record[FC_LATEST_INVENTORY_DATE] = { type: 'DATE', value: max || '' };
+    } else {
+      record[FC_LATEST_INVENTORY_DATE].value = max || '';
+    }
+  }
+
+  function isInventoryEligibleAccountType674(accountType) {
+    return (
+      accountType === TYPE_PERSONAL || accountType === TYPE_SHARED || accountType === TYPE_JR
+    );
+  }
+
+  /**
+   * 新規登録時: 棚卸対象種別なら履歴が空のとき登録日で1行自動追加。
+   * 編集時: 最新棚卸日だけ入っていて履歴が空なら、その日で1行補完（迷い入力の救済）。
+   */
+  function ensureInventoryHistoryOnSubmit674(event) {
+    const rec = event.record;
+    if (!rec) return;
+    const type = String((rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (!isInventoryEligibleAccountType674(type)) {
+      syncLatestInventoryDateFromHistory674(rec);
+      return;
+    }
+    if (!rec[FC_INVENTORY_HISTORY]) {
+      rec[FC_INVENTORY_HISTORY] = { type: 'SUBTABLE', value: [] };
+    }
+    const hist = rec[FC_INVENTORY_HISTORY];
+    const hasHist = inventoryHistHasDatedRow674(hist);
+    const isCreate =
+      event.type === 'app.record.create.submit' ||
+      event.type === 'mobile.app.record.create.submit';
+    if (!hasHist) {
+      const seedDate = isCreate
+        ? todayYmd674()
+        : parseYmd674(
+            (rec[FC_LATEST_INVENTORY_DATE] && rec[FC_LATEST_INVENTORY_DATE].value) || '',
+          );
+      if (seedDate) {
+        const person =
+          getLoginUserDisplayName674() ||
+          String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim() ||
+          '登録者';
+        appendInventoryHistoryRow674(hist, seedDate, person, '', INV_METHOD_INDIVIDUAL);
+      }
+    }
+    syncLatestInventoryDateFromHistory674(rec);
+  }
+
+  function applyLatestInventoryDateReadonlyUi674(record) {
+    const cell = record && record[FC_LATEST_INVENTORY_DATE];
+    if (!cell || !Object.prototype.hasOwnProperty.call(cell, 'disabled')) return;
+    cell.disabled = true;
   }
 
   function ymdCalendarYear674(ymd) {
@@ -7892,6 +7971,7 @@ ${bodyInner}\
     applyVisibilityByType(event.record);
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
+    applyLatestInventoryDateReadonlyUi674(event.record);
     syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
     ensure674PcStatusBanner674(event.record);
@@ -12068,6 +12148,12 @@ ${bodyInner}\
 
   function onBeforeSubmit674(event) {
     if (!check674ReplaceFirstSaveHwGate674(event)) {
+      return event;
+    }
+    try {
+      ensureInventoryHistoryOnSubmit674(event);
+    } catch (invErr) {
+      event.error = invErr && invErr.message ? invErr.message : String(invErr);
       return event;
     }
     return new kintone.Promise(function (resolve) {

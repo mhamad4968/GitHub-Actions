@@ -230,7 +230,7 @@ PC レコード保存・廃棄時:
 | `group_name` | SINGLE_LINE_TEXT | 所属グループ（595 から自動引用）|
 | `shared_terminal_name` | SINGLE_LINE_TEXT | 共有端末名（共有/JR で必須・手入力）|
 | `purchase_date` | DATE | 購入日 |
-| `latest_inventory_date` | DATE | 最新棚卸日 |
+| `latest_inventory_date` | DATE | 最新棚卸日（**履歴の最大日を自動反映・手入力不可**・2026-08-11） |
 | `note` | MULTI_LINE_TEXT | 備考 |
 | `internal_system_meta` | GROUP | **フィールドグループ**（表示名は **内部処理用**）。`openGroup=false` で **既定は閉じた状態**。レイアウト上に `pc_serial_no` / `import_source` / `created_at_jst` を収容する（§4.2.1a）。値を保持しないシェル |
 
