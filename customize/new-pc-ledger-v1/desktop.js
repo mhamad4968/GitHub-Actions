@@ -32,7 +32,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-11-674-search-ime-datalist';
+  const BUILD = '2026-08-13-674-inventory-hist-type';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1314,6 +1314,41 @@
     }
   }
 
+  const INV_HIST_CELL_TYPES_674 = {
+    [FC_INV_HIST_DATE]: 'DATE',
+    [FC_INV_HIST_PERSON]: 'SINGLE_LINE_TEXT',
+    [FC_INV_HIST_LOCATION]: 'SINGLE_LINE_TEXT',
+    [FC_INV_HIST_METHOD]: 'DROP_DOWN',
+  };
+
+  function invHistCell674(code, value) {
+    return { type: INV_HIST_CELL_TYPES_674[code], value: value };
+  }
+
+  /** submit 返却用: サブテーブル本体と各セルに kintone 期待の type を付与 */
+  function normalizeInventoryHistoryForEvent674(histField) {
+    if (!histField) return;
+    histField.type = 'SUBTABLE';
+    const rows = Array.isArray(histField.value) ? histField.value : [];
+    histField.value = rows.map(function (row) {
+      const v = (row && row.value) || {};
+      const nv = {};
+      Object.keys(INV_HIST_CELL_TYPES_674).forEach(function (code) {
+        const cell = v[code];
+        const val =
+          cell && typeof cell === 'object' && Object.prototype.hasOwnProperty.call(cell, 'value')
+            ? cell.value
+            : '';
+        nv[code] = invHistCell674(code, val == null ? '' : val);
+      });
+      const out = { value: nv };
+      if (row.id != null && String(row.id) !== '') {
+        out.id = String(row.id);
+      }
+      return out;
+    });
+  }
+
   function cloneSubtableRows674(subField) {
     const rows = (subField && subField.value) || [];
     return rows.map(function (row) {
@@ -1322,7 +1357,13 @@
       Object.keys(v).forEach(function (code) {
         const cell = v[code];
         if (cell && typeof cell === 'object' && Object.prototype.hasOwnProperty.call(cell, 'value')) {
-          nv[code] = { value: cell.value };
+          const nc = { value: cell.value };
+          if (cell.type) {
+            nc.type = cell.type;
+          } else if (INV_HIST_CELL_TYPES_674[code]) {
+            nc.type = INV_HIST_CELL_TYPES_674[code];
+          }
+          nv[code] = nc;
         }
       });
       const out = { value: nv };
@@ -1337,15 +1378,31 @@
   /** REST PUT 用: `{ type, value }` ではなく `{ value }` のみ（type 付きは CB_VA01 になり得る） */
   function inventoryHistPutField674(histField) {
     const rows = (histField && Array.isArray(histField.value) ? histField.value : []) || [];
-    const filtered = rows.filter(function (row) {
-      const v = (row && row.value) || {};
-      const date = parseYmd674(v[FC_INV_HIST_DATE] && v[FC_INV_HIST_DATE].value);
-      const person = String((v[FC_INV_HIST_PERSON] && v[FC_INV_HIST_PERSON].value) || '').trim();
-      const location = String((v[FC_INV_HIST_LOCATION] && v[FC_INV_HIST_LOCATION].value) || '').trim();
-      const method = String((v[FC_INV_HIST_METHOD] && v[FC_INV_HIST_METHOD].value) || '').trim();
-      if (!date && !person && !location && !method) return false;
-      return true;
-    });
+    const filtered = rows
+      .filter(function (row) {
+        const v = (row && row.value) || {};
+        const date = parseYmd674(v[FC_INV_HIST_DATE] && v[FC_INV_HIST_DATE].value);
+        const person = String((v[FC_INV_HIST_PERSON] && v[FC_INV_HIST_PERSON].value) || '').trim();
+        const location = String((v[FC_INV_HIST_LOCATION] && v[FC_INV_HIST_LOCATION].value) || '').trim();
+        const method = String((v[FC_INV_HIST_METHOD] && v[FC_INV_HIST_METHOD].value) || '').trim();
+        if (!date && !person && !location && !method) return false;
+        return true;
+      })
+      .map(function (row) {
+        const v = (row && row.value) || {};
+        const nv = {};
+        Object.keys(INV_HIST_CELL_TYPES_674).forEach(function (code) {
+          const cell = v[code];
+          if (cell && typeof cell === 'object' && Object.prototype.hasOwnProperty.call(cell, 'value')) {
+            nv[code] = { value: cell.value };
+          }
+        });
+        const out = { value: nv };
+        if (row.id != null && String(row.id) !== '') {
+          out.id = String(row.id);
+        }
+        return out;
+      });
     return { value: filtered };
   }
 
@@ -1395,10 +1452,13 @@
     const rows = cloneSubtableRows674(subField);
     rows.push({
       value: {
-        [FC_INV_HIST_DATE]: { value: date },
-        [FC_INV_HIST_PERSON]: { value: per },
-        [FC_INV_HIST_LOCATION]: { value: String(location || '').trim() },
-        [FC_INV_HIST_METHOD]: { value: method },
+        [FC_INV_HIST_DATE]: invHistCell674(FC_INV_HIST_DATE, date),
+        [FC_INV_HIST_PERSON]: invHistCell674(FC_INV_HIST_PERSON, per),
+        [FC_INV_HIST_LOCATION]: invHistCell674(
+          FC_INV_HIST_LOCATION,
+          String(location || '').trim(),
+        ),
+        [FC_INV_HIST_METHOD]: invHistCell674(FC_INV_HIST_METHOD, method),
       },
     });
     subField.value = rows;
@@ -1448,33 +1508,34 @@
     const rec = event.record;
     if (!rec) return;
     const type = String((rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '').trim();
-    if (!isInventoryEligibleAccountType674(type)) {
-      syncLatestInventoryDateFromHistory674(rec);
-      return;
-    }
-    if (!rec[FC_INVENTORY_HISTORY]) {
-      rec[FC_INVENTORY_HISTORY] = { type: 'SUBTABLE', value: [] };
-    }
-    const hist = rec[FC_INVENTORY_HISTORY];
-    const hasHist = inventoryHistHasDatedRow674(hist);
-    const isCreate =
-      event.type === 'app.record.create.submit' ||
-      event.type === 'mobile.app.record.create.submit';
-    if (!hasHist) {
-      const seedDate = isCreate
-        ? todayYmd674()
-        : parseYmd674(
-            (rec[FC_LATEST_INVENTORY_DATE] && rec[FC_LATEST_INVENTORY_DATE].value) || '',
-          );
-      if (seedDate) {
-        const person =
-          getLoginUserDisplayName674() ||
-          String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim() ||
-          '登録者';
-        appendInventoryHistoryRow674(hist, seedDate, person, '', INV_METHOD_INDIVIDUAL);
+    if (isInventoryEligibleAccountType674(type)) {
+      if (!rec[FC_INVENTORY_HISTORY]) {
+        rec[FC_INVENTORY_HISTORY] = { type: 'SUBTABLE', value: [] };
+      }
+      const hist = rec[FC_INVENTORY_HISTORY];
+      const hasHist = inventoryHistHasDatedRow674(hist);
+      const isCreate =
+        event.type === 'app.record.create.submit' ||
+        event.type === 'mobile.app.record.create.submit';
+      if (!hasHist) {
+        const seedDate = isCreate
+          ? todayYmd674()
+          : parseYmd674(
+              (rec[FC_LATEST_INVENTORY_DATE] && rec[FC_LATEST_INVENTORY_DATE].value) || '',
+            );
+        if (seedDate) {
+          const person =
+            getLoginUserDisplayName674() ||
+            String((rec[FC_USER_NAME] && rec[FC_USER_NAME].value) || '').trim() ||
+            '登録者';
+          appendInventoryHistoryRow674(hist, seedDate, person, '', INV_METHOD_INDIVIDUAL);
+        }
       }
     }
     syncLatestInventoryDateFromHistory674(rec);
+    if (rec[FC_INVENTORY_HISTORY]) {
+      normalizeInventoryHistoryForEvent674(rec[FC_INVENTORY_HISTORY]);
+    }
   }
 
   function ymdCalendarYear674(ymd) {

@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-11-674-search-ime-datalist",
-      "fileKey": "90f7f1da-4a59-4b00-872b-ec896c614a96",
-      "revision": "327",
+      "build": "2026-08-13-674-inventory-hist-type",
+      "fileKey": "7ad52ee4-9fc6-4717-a538-687b61b1a127",
+      "revision": "328",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-11T11:12:57.266Z",
+      "deployedAt": "2026-08-12T22:16:12.416Z",
       "note": null
     },
     "677": {

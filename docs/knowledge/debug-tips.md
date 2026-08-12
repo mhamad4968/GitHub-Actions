@@ -6,6 +6,15 @@
 
 ---
 
+## [2026-08-13] 674 inventory_history — event.record セル type 不正
+
+**前提**: カスタマイズ実行時エラーで `event.record['inventory_history'].value[N]['inventory_hist_*'].type が不正`（DATE/者/場所/方法）が出るとき  
+**手順**: (1) event 返却パスでは各セルに `DATE`/`SINGLE_LINE_TEXT`/`DROP_DOWN` を付与（`normalizeInventoryHistoryForEvent674`）。(2) REST PUT は `inventoryHistPutField674` で **value のみ**に剥がす（type 付き PUT は CB_VA01）。(3) `cloneSubtableRows674` は type を落とさない。  
+**禁止**: submit 用 clone と REST 用 payload を同一 shape のまま共有すること。  
+**exit**: BUILD `2026-08-13-674-inventory-hist-type` · live rev≥328 · 棚卸履歴ありレコードの保存で type 不正が消える
+
+---
+
 ## [2026-08-09] §50-3-8 — WAKE bridge grandparent / lock-before-handoff / GHA rag mirror
 
 **前提**: cold-start 後に `bridge.gitHead` が HEAD/parent から外れ #D-CLOSE-02 が鳴る／`package-lock` が handoff 後 tip になり parent fold が効かない／GHA デプロイ記録だけ正本が進み `.rag` Self-Heal が毎回 INFO 化するとき  
