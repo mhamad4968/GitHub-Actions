@@ -102,6 +102,13 @@ export function buildWindowsMcp(S) {
     ...(S.github?._meta ? { _meta: S.github._meta } : {}),
   };
 
+  // Office 系は Windows venv 専用。WSL source に _meta が無くても dormancy_exempt を落とさない
+  // （2026-08-13: office-word だけ _meta 欠落 → S12 死蔵 WARN 再発）。
+  const winOfficeDormancyMeta = {
+    dormancy_exempt: true,
+    exempt_reason: "Windows-side / WSL から疎通不可 (Cursor IDE 経由のみ)",
+  };
+
   out.mcpServers["office-powerpoint"] = {
     command:
       "C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-PowerPoint-MCP-Server\\\\.venv\\\\Scripts\\\\python.exe",
@@ -109,9 +116,10 @@ export function buildWindowsMcp(S) {
       "C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-PowerPoint-MCP-Server\\\\ppt_mcp_server.py",
     ],
     cwd: "C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-PowerPoint-MCP-Server",
-    ...(S["office-powerpoint"]?._meta
-      ? { _meta: S["office-powerpoint"]._meta }
-      : {}),
+    _meta: {
+      ...winOfficeDormancyMeta,
+      ...(S["office-powerpoint"]?._meta || {}),
+    },
   };
 
   out.mcpServers["office-word"] = {
@@ -126,7 +134,10 @@ export function buildWindowsMcp(S) {
         "C:\\\\Users\\\\mhamada202408224\\\\.cursor\\\\Office-Word-MCP-Server",
       MCP_TRANSPORT: "stdio",
     },
-    ...(S["office-word"]?._meta ? { _meta: S["office-word"]._meta } : {}),
+    _meta: {
+      ...winOfficeDormancyMeta,
+      ...(S["office-word"]?._meta || {}),
+    },
   };
 
   const fsSrv = S.filesystem;

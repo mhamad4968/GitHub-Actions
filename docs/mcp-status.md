@@ -200,10 +200,10 @@
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
 | 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **3 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
-| 6 | memory | ✅ **active 化済** | **86 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
+| 6 | memory | ✅ **active 化済** | **72 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
-| 8 | sequential-thinking | ✅ active | **98 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
-| 9 | **kintone (公式)** | ✅ active | **204 回** | kintone API CRUD | 5/13 後（本番運用後）|
+| 8 | sequential-thinking | ✅ active | **102 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
+| 9 | **kintone (公式)** | ✅ active | **211 回** | kintone API CRUD | 5/13 後（本番運用後）|
 | 10 | **kintone-dev (自作)** | ✅ active | **23 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
 | 11 | **kintone-space (自作)** | ✅ active | **5 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回（削除済） | （除去）Web 検索は **duckduckgo-search** | — |
