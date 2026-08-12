@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-index-pc-filter-id（PCあり=pc_674_record_id 数字あり。空サブテーブル行はPCなし）
    * BUILD: 2026-08-13-595-index-pc-filter-ui（一覧: PCあり/なし絞込・フィルタUI整理）
    * BUILD: 2026-08-13-595-drop-594-subtable-refs（削除済み594サブテーブル pc_ledger_list / pc_594_record_id 参照を除去）
    * BUILD: 2026-06-30-595-bulk-log-no-dup（一括反映ログは最終行のみ・ステータスは完了表示）
@@ -21,7 +22,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-08-13-595-index-pc-filter-ui";
+  var BUILD = "2026-08-13-595-index-pc-filter-id";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -135,13 +136,27 @@
     return g.indexOf(kwLower) !== -1 || d.indexOf(kwLower) !== -1 || n.indexOf(kwLower) !== -1;
   }
 
-  /** pc_ledger_v1_list（FC595_PC674_SUB）に1行以上あれば PCあり */
+  /**
+   * PCあり = pc_ledger_v1_list に有効な 674 レコードID（数字）がある。
+   * 空行だけのサブテーブルは PCなし（出向者などで空行が残ることがある）。
+   */
   function record595HasPcLink(r) {
     var f = r[FC595_PC674_SUB];
     if (!f || !Array.isArray(f.value)) {
       return false;
     }
-    return f.value.length > 0;
+    for (var i = 0; i < f.value.length; i++) {
+      var row = f.value[i];
+      var cell = row && row.value ? row.value[FC595_PC674_ID] : null;
+      if (!cell || cell.value === undefined || cell.value === null) {
+        continue;
+      }
+      var id = String(cell.value).trim();
+      if (/^\d+$/.test(id) && id !== "0") {
+        return true;
+      }
+    }
+    return false;
   }
 
   function fetchAll595RecordsForIndexSearch(appId, filterQuery) {
@@ -696,7 +711,7 @@
     rowPcWrap.appendChild(rowPc);
     var pcHint = document.createElement("div");
     pcHint.style.cssText = "color:#94a3b8;font-size:11px;padding:0 2px;";
-    pcHint.textContent = "紐づけ(pc_ledger_v1_list)の有無";
+    pcHint.textContent = "674レコードID（pc_674_record_id）の紐づけ有無。空行だけの行はPCなし";
     rowPcWrap.appendChild(pcHint);
     wrap.appendChild(rowPcWrap);
 
