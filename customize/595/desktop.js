@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-index-match-count（一覧: 該当件数表示・sessionStorage 復元）
    * BUILD: 2026-08-13-595-index-pc-filter-id（PCあり=pc_674_record_id 数字あり。空サブテーブル行はPCなし）
    * BUILD: 2026-08-13-595-index-pc-filter-ui（一覧: PCあり/なし絞込・フィルタUI整理）
    * BUILD: 2026-08-13-595-drop-594-subtable-refs（削除済み594サブテーブル pc_ledger_list / pc_594_record_id 参照を除去）
@@ -22,7 +23,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-08-13-595-index-pc-filter-id";
+  var BUILD = "2026-08-13-595-index-match-count";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -99,6 +100,7 @@
   var STORAGE_KEY_595_IDX_DEPT = "jbis595-index-search-dept";
   var STORAGE_KEY_595_IDX_GROUP = "jbis595-index-search-group";
   var STORAGE_KEY_595_IDX_PC = "jbis595-index-search-pc";
+  var STORAGE_KEY_595_IDX_COUNT = "jbis595-index-search-count";
   var INDEX_SEARCH_MAX_IDS = 800;
   /** 一覧クライアント検索で全件取得する上限（超えたら標準絞り込みへ誘導） */
   var INDEX_SEARCH_FULL_SCAN_MAX_RECORDS = 2000;
@@ -238,6 +240,30 @@
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_PC);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_DEPT);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_GROUP);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_COUNT);
+    } catch (eSs) {
+      /* noop */
+    }
+  }
+
+  /** nOrNull: number → 該当件数:N件＋session保存 / undefined → … / null → —＋session削除 */
+  function set595IndexMatchCount595(nOrNull) {
+    var el = document.getElementById("jbis-595-index-match-count");
+    if (el) {
+      if (typeof nOrNull === "number" && isFinite(nOrNull)) {
+        el.textContent = "該当件数: " + nOrNull + "件";
+      } else if (nOrNull === null) {
+        el.textContent = "該当件数: —";
+      } else {
+        el.textContent = "該当件数: …";
+      }
+    }
+    try {
+      if (typeof nOrNull === "number" && isFinite(nOrNull)) {
+        sessionStorage.setItem(STORAGE_KEY_595_IDX_COUNT, String(nOrNull));
+      } else if (nOrNull === null) {
+        sessionStorage.removeItem(STORAGE_KEY_595_IDX_COUNT);
+      }
     } catch (eSs) {
       /* noop */
     }
@@ -423,6 +449,7 @@
       selGroup.value = "";
     }
     update595IndexFilterSummary595();
+    set595IndexMatchCount595(null);
     clear595IndexFilterSession595();
     var u;
     try {
@@ -522,6 +549,7 @@
     }
 
     if (!hasServerFilter && !needsClient) {
+      set595IndexMatchCount595(null);
       clear595IndexFilterSession595();
       navigate595IndexList595("");
       return;
@@ -529,7 +557,21 @@
 
     if (!needsClient && hasServerFilter) {
       save595IndexFilterSession595(empFilter, dept, group, "", pcFilter);
-      navigate595IndexList595(filterQuery + " order by レコード番号 asc");
+      setBusy(true);
+      set595IndexMatchCount595(undefined);
+      fetch595RecordTotalCount(kintone.app.getId(), filterQuery)
+        .then(function (tc) {
+          set595IndexMatchCount595(tc);
+          setBusy(false);
+          navigate595IndexList595(filterQuery + " order by レコード番号 asc");
+        })
+        .catch(function (e) {
+          setBusy(false);
+          set595IndexMatchCount595(null);
+          window.alert(
+            "件数の取得に失敗しました。" + (e && e.message ? "\n" + e.message : "")
+          );
+        });
       return;
     }
 
@@ -573,6 +615,7 @@
             ids.push(rid);
           }
         }
+        var matchCount = ids.length;
         var truncated = false;
         if (ids.length > INDEX_SEARCH_MAX_IDS) {
           ids = ids.slice(0, INDEX_SEARCH_MAX_IDS);
@@ -580,6 +623,7 @@
         }
         var q = build595IdInQuery(ids);
         save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter);
+        set595IndexMatchCount595(matchCount);
         if (truncated) {
           window.alert(
             "該当が" +
@@ -618,7 +662,8 @@
       "background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;box-sizing:border-box;";
 
     var rowTitle = document.createElement("div");
-    rowTitle.style.cssText = "display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;width:100%;";
+    rowTitle.style.cssText =
+      "display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;width:100%;";
     var titleLabel = document.createElement("span");
     titleLabel.style.cssText = "font-weight:700;color:#0f172a;font-size:14px;white-space:nowrap;";
     titleLabel.textContent = "絞り込み";
@@ -627,6 +672,14 @@
     filterSummary.id = "jbis-595-index-filter-summary";
     filterSummary.style.cssText = "color:#475569;font-size:12px;flex:1;min-width:120px;";
     rowTitle.appendChild(filterSummary);
+    var matchCountEl = document.createElement("div");
+    matchCountEl.id = "jbis-595-index-match-count";
+    matchCountEl.setAttribute("aria-live", "polite");
+    matchCountEl.style.cssText =
+      "flex:0 0 auto;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" +
+      "font-size:14px;font-weight:800;color:#0f172a;line-height:1.5;white-space:nowrap;";
+    matchCountEl.textContent = "該当件数: …";
+    rowTitle.appendChild(matchCountEl);
     wrap.appendChild(rowTitle);
 
     var empFilterState = "active";
@@ -907,6 +960,7 @@
       fillGroupOptions595("");
       selGroup.value = "";
       update595IndexFilterSummary595();
+      set595IndexMatchCount595(null);
       navigate595IndexOrSearch(
         { keyword: "", empFilter: "active", dept: "", group: "", pcFilter: "all" },
         btnSearch,
@@ -962,6 +1016,18 @@
       space.insertBefore(wrap, space.firstChild);
     } else {
       space.appendChild(wrap);
+    }
+
+    try {
+      var scCount = sessionStorage.getItem(STORAGE_KEY_595_IDX_COUNT);
+      if (scCount !== null && scCount !== "") {
+        var nCount = Number(scCount);
+        if (isFinite(nCount)) {
+          set595IndexMatchCount595(nCount);
+        }
+      }
+    } catch (eCount) {
+      /* noop */
     }
 
     ensure595IndexSearchUrlListeners595();
