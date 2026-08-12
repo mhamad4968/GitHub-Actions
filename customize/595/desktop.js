@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-sort-insert-picker（新規/異動: 表示順挿入モーダル・sort 自動採番）
    * BUILD: 2026-08-13-595-index-match-count（一覧: 該当件数表示・sessionStorage 復元）
    * BUILD: 2026-08-13-595-index-pc-filter-id（PCあり=pc_674_record_id 数字あり。空サブテーブル行はPCなし）
    * BUILD: 2026-08-13-595-index-pc-filter-ui（一覧: PCあり/なし絞込・フィルタUI整理）
@@ -21,9 +22,10 @@
    * - 保存成功後: 退職時は 674 を保管＋アカウントクリア＋備考追記＋**595 側 PC台帳リンク解除**／それ以外は 674・714・716 所属ミラー
    * - 一覧: 「台帳へ一括反映」— CSV 取込後など 674／714／716 へ所属ミラー（退職者除外）
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
+   * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-13-595-index-match-count";
+  var BUILD = "2026-08-13-595-sort-insert-picker";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -43,6 +45,7 @@
   var FC595_EMP = "employment_status";
   var FC595_EMP_ID = "emp_id";
   var FC595_RETIRED = "retired_date";
+  var FC595_SORT = "sort";
   /** 業務改善 設定マスタ — 595 台帳一括反映ログ（共通設定行） */
   var APP_SETTINGS_697 = "697";
   var FC697_BULK_LOG = "bulk_downstream_595_log";
@@ -90,6 +93,7 @@
   var LINK_BOX_ID = "jbis-595-pc-ledger-link-box";
   var DEPT_PICKER_WRAP_ID = "jbis-595-dept-picker-wrap";
   var DEPT_MASTER_MODAL_ID_595 = "jbis-595-dept-master-modal";
+  var SORT_INSERT_MODAL_ID_595 = "jbis-595-sort-insert-modal";
   var INDEX_SEARCH_WRAP_ID = "jbis-595-index-search-wrap";
   var BULK_DOWNSTREAM_WRAP_ID = "jbis-595-bulk-downstream-wrap";
   var BULK_DOWNSTREAM_STATUS_ID = "jbis-595-bulk-downstream-status";
@@ -1740,6 +1744,14 @@
   kintone.events.on(formEditEvents595, function (event) {
     try {
       mountDeptPickerButton595();
+      var rec = event.record;
+      var rid =
+        rec && rec.$id && rec.$id.value != null ? String(rec.$id.value).trim() : "";
+      if (rid) {
+        window.__jbis595EditOrigDept = scalarFrom595(rec, FC595_DEPT).trim();
+      } else {
+        window.__jbis595EditOrigDept = null;
+      }
     } catch (e) {
       console.warn("[jbis 595 dept picker ui]", e);
     }
@@ -1850,6 +1862,444 @@
       rec[FC595_EMP_ID].value = nextId;
       return event;
     });
+  }
+
+  function isNumericSort595(raw) {
+    var s = String(raw || "").trim();
+    if (!s) {
+      return false;
+    }
+    var n = Number(s);
+    return isFinite(n);
+  }
+
+  function isCreateEvent595(event) {
+    return String(event.type || "").indexOf("create") !== -1;
+  }
+
+  function fetchSortPeers595(dept, excludeId) {
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var q =
+      'employment_status in ("' +
+      escapeForQuery(EMP_ACTIVE) +
+      '") and dept_name = "' +
+      escapeForQuery(dept) +
+      '" order by sort asc, $id asc limit 500';
+    return kintone
+      .api(url, "GET", {
+        app: kintone.app.getId(),
+        query: q,
+        fields: ["$id", FC595_NAME, FC595_SORT, FC595_DEPT, "$revision"],
+      })
+      .then(function (resp) {
+        var rows = resp.records || [];
+        if (!excludeId) {
+          return rows;
+        }
+        var ex = String(excludeId).trim();
+        return rows.filter(function (r) {
+          var id = r.$id && r.$id.value != null ? String(r.$id.value).trim() : "";
+          return id !== ex;
+        });
+      });
+  }
+
+  function fetchAllActive595ForSort595() {
+    var fields = ["$id", "$revision", FC595_SORT, FC595_DEPT, FC595_NAME, FC595_GROUP];
+    var all = [];
+    var limit = 500;
+    var url = kintone.api.url("/k/v1/records.json", true);
+    var base = 'employment_status in ("' + escapeForQuery(EMP_ACTIVE) + '")';
+
+    function page(offset) {
+      var query = base + " order by sort asc, $id asc limit " + limit + " offset " + offset;
+      return kintone
+        .api(url, "GET", { app: kintone.app.getId(), query: query, fields: fields })
+        .then(function (resp) {
+          var batch = resp.records || [];
+          for (var i = 0; i < batch.length; i++) {
+            all.push(batch[i]);
+          }
+          if (batch.length < limit) {
+            return all;
+          }
+          return page(offset + limit);
+        });
+    }
+
+    return page(0);
+  }
+
+  function buildOrderedActive595(allActive, selfId) {
+    var list = allActive.slice();
+    list.sort(function (a, b) {
+      var sa = Number(scalarFrom595(a, FC595_SORT));
+      var sb = Number(scalarFrom595(b, FC595_SORT));
+      var na = isFinite(sa) && sa > 0 ? sa : 999999;
+      var nb = isFinite(sb) && sb > 0 ? sb : 999999;
+      if (na !== nb) {
+        return na - nb;
+      }
+      var ia = a.$id && a.$id.value != null ? Number(a.$id.value) : 0;
+      var ib = b.$id && b.$id.value != null ? Number(b.$id.value) : 0;
+      return ia - ib;
+    });
+    if (selfId) {
+      var ex = String(selfId).trim();
+      list = list.filter(function (r) {
+        var id = r.$id && r.$id.value != null ? String(r.$id.value).trim() : "";
+        return id !== ex;
+      });
+    }
+    return list;
+  }
+
+  function getDeptSortNo595(deptMasterRows, dept) {
+    var d = String(dept || "").trim();
+    for (var i = 0; i < deptMasterRows.length; i++) {
+      if (String(deptMasterRows[i].dept_name || "").trim() === d) {
+        var sn = Number(deptMasterRows[i].sort_no);
+        return isFinite(sn) && sn > 0 ? sn : 99999;
+      }
+    }
+    return null;
+  }
+
+  function buildDeptSortNoMap595(deptMasterRows) {
+    var map = {};
+    for (var i = 0; i < deptMasterRows.length; i++) {
+      var dn = String(deptMasterRows[i].dept_name || "").trim();
+      if (!dn) {
+        continue;
+      }
+      var sn = Number(deptMasterRows[i].sort_no);
+      map[dn] = isFinite(sn) && sn > 0 ? sn : 99999;
+    }
+    return map;
+  }
+
+  function computeInsertAt595(ordered, choice, dept, peers, deptMasterRows) {
+    var peerIds = {};
+    for (var i = 0; i < peers.length; i++) {
+      var pid =
+        peers[i].$id && peers[i].$id.value != null ? String(peers[i].$id.value).trim() : "";
+      if (pid) {
+        peerIds[pid] = true;
+      }
+    }
+    var hasPeers = peers.length > 0;
+
+    if (hasPeers) {
+      if (choice.mode === "head") {
+        for (var h = 0; h < ordered.length; h++) {
+          var hid =
+            ordered[h].$id && ordered[h].$id.value != null
+              ? String(ordered[h].$id.value).trim()
+              : "";
+          if (peerIds[hid]) {
+            return h;
+          }
+        }
+        return 0;
+      }
+      if (choice.mode === "after" && choice.afterId) {
+        var afterId = String(choice.afterId).trim();
+        for (var a = 0; a < ordered.length; a++) {
+          var aid =
+            ordered[a].$id && ordered[a].$id.value != null
+              ? String(ordered[a].$id.value).trim()
+              : "";
+          if (aid === afterId) {
+            return a + 1;
+          }
+        }
+      }
+      if (choice.mode === "tail" || choice.mode === "after") {
+        var lastIdx = -1;
+        for (var l = 0; l < ordered.length; l++) {
+          var lid =
+            ordered[l].$id && ordered[l].$id.value != null
+              ? String(ordered[l].$id.value).trim()
+              : "";
+          if (peerIds[lid]) {
+            lastIdx = l;
+          }
+        }
+        return lastIdx >= 0 ? lastIdx + 1 : ordered.length;
+      }
+    }
+
+    var targetSortNo = getDeptSortNo595(deptMasterRows, dept);
+    if (targetSortNo === null) {
+      return ordered.length;
+    }
+    var deptSortMap = buildDeptSortNoMap595(deptMasterRows);
+    var insertAt = 0;
+    for (var o = 0; o < ordered.length; o++) {
+      var oDept = scalarFrom595(ordered[o], FC595_DEPT).trim();
+      var oSortNo = deptSortMap[oDept];
+      if (oSortNo != null && oSortNo < targetSortNo) {
+        insertAt = o + 1;
+      } else if (oSortNo != null && oSortNo >= targetSortNo) {
+        break;
+      }
+    }
+    return insertAt;
+  }
+
+  function batchPut595SortUpdates595(updates) {
+    if (!updates.length) {
+      return Promise.resolve();
+    }
+    var urlPut = kintone.api.url("/k/v1/records.json", true);
+    var parts = chunk(updates, 100);
+    return parts.reduce(function (chain, part) {
+      return chain.then(function () {
+        return kintone.api(urlPut, "PUT", { app: kintone.app.getId(), records: part });
+      });
+    }, Promise.resolve());
+  }
+
+  function closeSortInsertModal595() {
+    var m = document.getElementById(SORT_INSERT_MODAL_ID_595);
+    if (m) {
+      m.style.display = "none";
+    }
+  }
+
+  function ensureSortInsertModal595() {
+    var backdrop = document.getElementById(SORT_INSERT_MODAL_ID_595);
+    if (backdrop) {
+      return backdrop;
+    }
+
+    backdrop = document.createElement("div");
+    backdrop.id = SORT_INSERT_MODAL_ID_595;
+    backdrop.style.cssText =
+      "display:none;position:fixed;inset:0;z-index:100002;align-items:center;justify-content:center;" +
+      "padding:16px;box-sizing:border-box;background:rgba(33,37,41,.48);";
+    backdrop.setAttribute("role", "dialog");
+    backdrop.setAttribute("aria-modal", "true");
+
+    var panel = document.createElement("div");
+    panel.style.cssText =
+      "background:#fff;border-radius:8px;max-width:520px;width:100%;max-height:70vh;overflow:hidden;display:flex;" +
+      "flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);";
+    panel.addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+    var head = document.createElement("div");
+    head.style.cssText = "padding:14px 16px;border-bottom:1px solid #dee2e6;flex:0 0 auto;";
+    var h = document.createElement("div");
+    h.setAttribute("data-jbis595-sort-title", "1");
+    h.style.cssText = "font-weight:bold;font-size:16px;color:#052c65;";
+    h.textContent = "表示順：どこに入れますか？";
+    head.appendChild(h);
+    var sub = document.createElement("div");
+    sub.setAttribute("data-jbis595-sort-sub", "1");
+    sub.style.cssText = "font-size:12px;color:#495057;margin-top:6px;line-height:1.5;";
+    head.appendChild(sub);
+
+    var body = document.createElement("div");
+    body.style.cssText =
+      "padding:12px 16px;flex:1;min-height:0;overflow-y:auto;max-height:calc(70vh - 80px);";
+    var btnArea = document.createElement("div");
+    btnArea.setAttribute("data-jbis595-sort-buttons", "1");
+    body.appendChild(btnArea);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+    return backdrop;
+  }
+
+  function openSortInsertPicker595(dept, peers) {
+    dept = String(dept || "").trim();
+    if (!dept) {
+      window.alert("所属名を先に入力（または所属候補から選択）してください");
+      return Promise.resolve(false);
+    }
+
+    return new Promise(function (resolve, reject) {
+      var backdrop = ensureSortInsertModal595();
+      var subEl = backdrop.querySelector("[data-jbis595-sort-sub]");
+      var btnArea = backdrop.querySelector("[data-jbis595-sort-buttons]");
+      if (subEl) {
+        subEl.textContent = "所属「" + dept + "」の在籍一覧（上から表示順）";
+      }
+      if (!btnArea) {
+        reject({ cancelled: true });
+        return;
+      }
+      btnArea.textContent = "";
+
+      function finish(result) {
+        closeSortInsertModal595();
+        resolve(result);
+      }
+      function cancel() {
+        closeSortInsertModal595();
+        reject({ cancelled: true });
+      }
+
+      function mkBtn(label, sortLabel, onClick) {
+        var item = document.createElement("button");
+        item.type = "button";
+        item.style.cssText =
+          "display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;" +
+          "border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;";
+        var main = document.createElement("span");
+        main.textContent = label;
+        item.appendChild(main);
+        if (sortLabel) {
+          var sl = document.createElement("span");
+          sl.style.cssText = "margin-left:8px;color:#6c757d;font-size:12px;";
+          sl.textContent = sortLabel;
+          item.appendChild(sl);
+        }
+        item.addEventListener("click", onClick);
+        return item;
+      }
+
+      btnArea.appendChild(
+        mkBtn("この所属の先頭に入れる", null, function () {
+          finish({ mode: "head" });
+        })
+      );
+
+      for (var i = 0; i < peers.length; i++) {
+        (function (p) {
+          var pid = p.$id && p.$id.value != null ? String(p.$id.value).trim() : "";
+          var pname = scalarFrom595(p, FC595_NAME).trim() || "(名前なし)";
+          var psort = scalarFrom595(p, FC595_SORT).trim();
+          var sortLabel = psort ? "順:" + psort : "";
+          btnArea.appendChild(
+            mkBtn(pname + " の下に入れる", sortLabel, function () {
+              finish({ mode: "after", afterId: pid });
+            })
+          );
+        })(peers[i]);
+      }
+
+      btnArea.appendChild(
+        mkBtn("この所属の末尾に入れる", null, function () {
+          finish({ mode: "tail" });
+        })
+      );
+
+      var cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.textContent = "キャンセル";
+      cancelBtn.style.cssText =
+        "display:block;width:100%;padding:8px 16px;margin-top:4px;border:1px solid #6c757d;" +
+        "background:#fff;border-radius:4px;cursor:pointer;font-size:13px;text-align:center;";
+      cancelBtn.addEventListener("click", cancel);
+      btnArea.appendChild(cancelBtn);
+
+      backdrop.style.display = "flex";
+    });
+  }
+
+  function applySortRenumber595(event, choice, dept, peers, selfId) {
+    return Promise.all([fetchAllActive595ForSort595(), fetchDeptMasterRows595()])
+      .then(function (results) {
+        var allActive = results[0];
+        var deptMasterRows = results[1];
+        var ordered = buildOrderedActive595(allActive, selfId);
+        var insertAt = computeInsertAt595(ordered, choice, dept, peers, deptMasterRows);
+        var newOrder = ordered.slice(0, insertAt).concat([{ __self: true }]).concat(ordered.slice(insertAt));
+
+        var selfSort = null;
+        var updates = [];
+        for (var i = 0; i < newOrder.length; i++) {
+          var newSort = i + 1;
+          if (newOrder[i].__self) {
+            selfSort = newSort;
+            continue;
+          }
+          var r = newOrder[i];
+          var curSort = scalarFrom595(r, FC595_SORT).trim();
+          var curNum = Number(curSort);
+          if (!isFinite(curNum) || curNum !== newSort) {
+            var upd = {
+              id: r.$id.value,
+              record: {},
+            };
+            upd.record[FC595_SORT] = { value: String(newSort) };
+            if (r.$revision && r.$revision.value !== undefined && r.$revision.value !== null) {
+              upd.revision = r.$revision.value;
+            }
+            updates.push(upd);
+          }
+        }
+
+        if (!event.record[FC595_SORT]) {
+          event.record[FC595_SORT] = { value: "" };
+        }
+        event.record[FC595_SORT].value = String(selfSort);
+
+        if (!updates.length) {
+          return event;
+        }
+        return batchPut595SortUpdates595(updates)
+          .then(function () {
+            return event;
+          })
+          .catch(function (e) {
+            window.alert(
+              "表示順の更新に失敗しました。" + (e && e.message ? "\n" + e.message : "")
+            );
+            return false;
+          });
+      })
+      .catch(function (e) {
+        window.alert(
+          "表示順の取得に失敗しました。" + (e && e.message ? "\n" + e.message : "")
+        );
+        return false;
+      });
+  }
+
+  function applySortPositionOnSubmit595(event) {
+    var rec = event.record;
+    var emp = scalarFrom595(rec, FC595_EMP).trim();
+    if (emp === EMP_RETIRED) {
+      return event;
+    }
+
+    var isCreate = isCreateEvent595(event);
+    var dept = scalarFrom595(rec, FC595_DEPT).trim();
+    var origDept =
+      window.__jbis595EditOrigDept != null ? String(window.__jbis595EditOrigDept).trim() : null;
+    var sortVal = scalarFrom595(rec, FC595_SORT).trim();
+    var selfId = rec.$id && rec.$id.value != null ? String(rec.$id.value).trim() : "";
+
+    if (!isCreate && origDept !== null && dept === origDept && isNumericSort595(sortVal)) {
+      return event;
+    }
+
+    if (!dept) {
+      window.alert("所属名を先に入力（または所属候補から選択）してください");
+      return false;
+    }
+
+    return fetchSortPeers595(dept, selfId)
+      .then(function (peers) {
+        return openSortInsertPicker595(dept, peers).then(function (choice) {
+          if (choice === false) {
+            return false;
+          }
+          return applySortRenumber595(event, choice, dept, peers, selfId);
+        });
+      })
+      .catch(function (err) {
+        if (err && err.cancelled) {
+          return false;
+        }
+        throw err;
+      });
   }
 
   function scalar674FromRow(r, code) {
@@ -2726,7 +3176,14 @@
     "mobile.app.record.create.submit",
     "mobile.app.record.edit.submit",
   ];
-  kintone.events.on(submitBefore, applyEmpIdOnSubmit595);
+  kintone.events.on(submitBefore, function (event) {
+    return Promise.resolve(applyEmpIdOnSubmit595(event)).then(function (ev) {
+      if (ev === false) {
+        return false;
+      }
+      return applySortPositionOnSubmit595(ev);
+    });
+  });
 
   var ev = [
     "app.record.create.submit.success",
