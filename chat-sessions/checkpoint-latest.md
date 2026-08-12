@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-11 20:32 JST — **本日最終締め（closed-day）**。674買替/棚卸/IME・夕反省GO・AI緊急用全入れ替え・GitHub tip 緑。
 **次の1手**: 項番 -0（次回セッションで浜田指示）。
-**Git**: **`00dbd6b2`** = `origin/main` — push 済（R44 parent）
+**Git**: **`96aca657`** = `origin/main` — push 済
 **closeStatus**: closed-day
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタ=**Security NEXT ネタレーン運用確定**（`ネタ保存用`）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
@@ -45,6 +45,7 @@
 - AI緊急用: wipe→tip再構築・verify OK／as-built SPEC §1.6〜1.9
 - closeStatus: **closed-day**
 
+
 ## 2026-08-10
 
 ### 2026-08-10 夜（最終締め）
@@ -69,6 +70,7 @@
 - Plan&Usage: Cursor Models 32% 記録済
 
 
+
 ## 2026-08-09
 
 ### 2026-08-09 夜（本日最終締め）
@@ -79,14 +81,5 @@
 - closeStatus: **closed-day**
 
 
-## 2026-08-08
 
-### 2026-08-08 夜（本日最終締め）
-- 674: Index UX / 買替・棚卸／SKYSEA削除UX / 棚卸状況一覧 / 未棚卸click修正 / 夕反省改善GO
-- BUILD `2026-08-08-674-inv-period-dual-label` rev **307**
-- 夕反省: `docs/reports/2026-08-08-evening-reflection.md` · approved-changes 全GO
-- Desktop AI緊急用: sync で最新化（旧番号 prune）
-- closeStatus: **closed-day**
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-10.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-12.md -->
