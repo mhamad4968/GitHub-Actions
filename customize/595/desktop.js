@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-sort-insert-list-ui（表示順モーダル: 部署メンバーリスト選択）
    * BUILD: 2026-08-13-595-sort-insert-picker（新規/異動: 表示順挿入モーダル・sort 自動採番）
    * BUILD: 2026-08-13-595-index-match-count（一覧: 該当件数表示・sessionStorage 復元）
    * BUILD: 2026-08-13-595-index-pc-filter-id（PCあり=pc_674_record_id 数字あり。空サブテーブル行はPCなし）
@@ -25,7 +26,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-13-595-sort-insert-picker";
+  var BUILD = "2026-08-13-595-sort-insert-list-ui";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -2127,7 +2128,10 @@
       var subEl = backdrop.querySelector("[data-jbis595-sort-sub]");
       var btnArea = backdrop.querySelector("[data-jbis595-sort-buttons]");
       if (subEl) {
-        subEl.textContent = "所属「" + dept + "」の在籍一覧（上から表示順）";
+        subEl.textContent =
+          "所属「" +
+          dept +
+          "」の在籍メンバー（上＝表示が先）。入れたい位置の人の「この下に入れる」を押してください。";
       }
       if (!btnArea) {
         reject({ cancelled: true });
@@ -2144,57 +2148,102 @@
         reject({ cancelled: true });
       }
 
-      function mkBtn(label, sortLabel, onClick) {
-        var item = document.createElement("button");
-        item.type = "button";
-        item.style.cssText =
-          "display:block;width:100%;text-align:left;padding:10px 12px;margin:0 0 6px;border:1px solid #dee2e6;" +
-          "border-radius:4px;background:#fff;cursor:pointer;font-size:14px;line-height:1.4;";
-        var main = document.createElement("span");
-        main.textContent = label;
-        item.appendChild(main);
-        if (sortLabel) {
-          var sl = document.createElement("span");
-          sl.style.cssText = "margin-left:8px;color:#6c757d;font-size:12px;";
-          sl.textContent = sortLabel;
-          item.appendChild(sl);
-        }
-        item.addEventListener("click", onClick);
-        return item;
-      }
+      var listWrap = document.createElement("div");
+      listWrap.style.cssText =
+        "border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:#fff;margin:0 0 10px;";
 
-      btnArea.appendChild(
-        mkBtn("この所属の先頭に入れる", null, function () {
+      function mkTopRow() {
+        var row = document.createElement("div");
+        row.style.cssText =
+          "display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;" +
+          "background:#f1f5f9;border-bottom:1px solid #e2e8f0;";
+        var lab = document.createElement("div");
+        lab.style.cssText = "font-size:13px;color:#334155;font-weight:600;";
+        lab.textContent = "（所属の一番上）";
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = "一番上に入れる";
+        b.style.cssText =
+          "flex:0 0 auto;padding:6px 12px;font-size:12px;font-weight:700;border:1px solid #1d4ed8;" +
+          "border-radius:6px;background:#1d4ed8;color:#fff;cursor:pointer;white-space:nowrap;";
+        b.addEventListener("click", function () {
           finish({ mode: "head" });
-        })
-      );
-
-      for (var i = 0; i < peers.length; i++) {
-        (function (p) {
-          var pid = p.$id && p.$id.value != null ? String(p.$id.value).trim() : "";
-          var pname = scalarFrom595(p, FC595_NAME).trim() || "(名前なし)";
-          var psort = scalarFrom595(p, FC595_SORT).trim();
-          var sortLabel = psort ? "順:" + psort : "";
-          btnArea.appendChild(
-            mkBtn(pname + " の下に入れる", sortLabel, function () {
-              finish({ mode: "after", afterId: pid });
-            })
-          );
-        })(peers[i]);
+        });
+        row.appendChild(lab);
+        row.appendChild(b);
+        return row;
       }
 
-      btnArea.appendChild(
-        mkBtn("この所属の末尾に入れる", null, function () {
+      function mkPeerRow(p, isLast) {
+        var pid = p.$id && p.$id.value != null ? String(p.$id.value).trim() : "";
+        var pname = scalarFrom595(p, FC595_NAME).trim() || "(名前なし)";
+        var psort = scalarFrom595(p, FC595_SORT).trim();
+        var row = document.createElement("div");
+        row.style.cssText =
+          "display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;" +
+          (isLast ? "" : "border-bottom:1px solid #e2e8f0;");
+        var left = document.createElement("div");
+        left.style.cssText = "min-width:0;flex:1;";
+        var nameEl = document.createElement("div");
+        nameEl.style.cssText = "font-size:14px;font-weight:600;color:#0f172a;";
+        nameEl.textContent = pname;
+        left.appendChild(nameEl);
+        if (psort) {
+          var meta = document.createElement("div");
+          meta.style.cssText = "font-size:11px;color:#64748b;margin-top:2px;";
+          meta.textContent = "現在の表示順: " + psort;
+          left.appendChild(meta);
+        }
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = isLast ? "この下に入れる（末尾）" : "この下に入れる";
+        b.style.cssText =
+          "flex:0 0 auto;padding:6px 12px;font-size:12px;font-weight:700;border:1px solid #059669;" +
+          "border-radius:6px;background:#fff;color:#047857;cursor:pointer;white-space:nowrap;";
+        b.addEventListener("click", function () {
+          finish({ mode: "after", afterId: pid });
+        });
+        row.appendChild(left);
+        row.appendChild(b);
+        return row;
+      }
+
+      if (!peers.length) {
+        var empty = document.createElement("div");
+        empty.style.cssText =
+          "padding:14px 12px;font-size:13px;color:#475569;line-height:1.55;background:#fffbeb;border:1px solid #fde68a;" +
+          "border-radius:8px;margin:0 0 10px;";
+        empty.textContent =
+          "この所属に在籍メンバーはいません。所属マスタ（680）の並び位置へ挿入します。";
+        btnArea.appendChild(empty);
+        var okEmpty = document.createElement("button");
+        okEmpty.type = "button";
+        okEmpty.textContent = "この所属の位置に挿入する";
+        okEmpty.style.cssText =
+          "display:block;width:100%;padding:10px 14px;margin:0 0 8px;border:none;border-radius:6px;" +
+          "background:#1d4ed8;color:#fff;font-weight:700;cursor:pointer;font-size:14px;";
+        okEmpty.addEventListener("click", function () {
           finish({ mode: "tail" });
-        })
-      );
+        });
+        btnArea.appendChild(okEmpty);
+      } else {
+        listWrap.appendChild(mkTopRow());
+        for (var i = 0; i < peers.length; i++) {
+          listWrap.appendChild(mkPeerRow(peers[i], i === peers.length - 1));
+        }
+        btnArea.appendChild(listWrap);
+        var hint = document.createElement("div");
+        hint.style.cssText = "font-size:11px;color:#94a3b8;margin:0 0 8px;line-height:1.4;";
+        hint.textContent = "末尾にしたい場合は、一覧の一番下の人の「この下に入れる（末尾）」を選んでください。";
+        btnArea.appendChild(hint);
+      }
 
       var cancelBtn = document.createElement("button");
       cancelBtn.type = "button";
       cancelBtn.textContent = "キャンセル";
       cancelBtn.style.cssText =
-        "display:block;width:100%;padding:8px 16px;margin-top:4px;border:1px solid #6c757d;" +
-        "background:#fff;border-radius:4px;cursor:pointer;font-size:13px;text-align:center;";
+        "display:block;width:100%;padding:8px 16px;margin-top:4px;border:1px solid #94a3b8;" +
+        "background:#fff;border-radius:6px;cursor:pointer;font-size:13px;text-align:center;color:#334155;";
       cancelBtn.addEventListener("click", cancel);
       btnArea.appendChild(cancelBtn);
 
