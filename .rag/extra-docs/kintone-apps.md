@@ -31,7 +31,7 @@ npm run app:fields <アプリID>
 
 | app | BUILD（本番） | revision | fileKey | 更新 |
 |-----|---------------|----------|---------|------|
-| 595 | `2026-07-04-595-index-emp-dept-filters` | **116** | `e47d849c-7ac9-4c7f-824a-374e60dd897b` | 2026-07-01 退職674連携revision修正・一覧q=クリア |
+| 595 | `2026-08-13-595-drop-594-subtable-refs` | **119** | `b22abba5-fe18-41a9-b56b-f151388e40ec` | 2026-08-13 形骸594サブテーブル参照除去・孤児ログ欄削除 |
 | 674 | `2026-08-13-674-inventory-hist-type` | **328** | `7ad52ee4-9fc6-4717-a538-687b61b1a127` | 2026-07-09 リスト出力 列選択+Excel（bundle deploy） |
 | 687 | `2026-06-09-687-workdays-excel-v1` | **10** | `13bc24dc-a753-404a-9f03-8e7e92c43647` | 2026-06-09 工事稼働 Excel v1 |
 | 688 | `2026-07-29-688-boot-idle-no-auto-new` | **91** | `5d253754-9278-4538-8632-8059b4b5b530` | 2026-07-13 気象ヘルプ・猛暑日オプション折りたたみ |
@@ -114,7 +114,7 @@ npm run app:fields <アプリID>
 | **ユーザサポート682ダッシュ**（682 の REST 参照・閲覧／集約 UI・**入力は 682 のみ**） | **683** | `customize/683/desktop.js` | [https://jbis-kintone.cybozu.com/k/683/](https://jbis-kintone.cybozu.com/k/683/) **Space 48**（**2026-05-11** `kintone-add-app` → **`deploy:683` SUCCESS**・SPEC **§6.1.1**・Runbook **`docs/runbooks/user683-weekly-summary-and-print.md`**）。`npm run cio:preflight:683 -- --note "…"` → `npm run deploy:683`。**2026-08-02 deploy** / **BUILD=`2026-08-02-683-print-page2-break-v24` rev **112** / fileKey **`6a991120-c5a6-4afa-ac15-85d11662c5e8`**（**印刷報告用**・A4縦推奨・1枚目=ヒーロー+先月対比+月次要約+日次フル+週次|年次・2枚目=対応案件一覧全文・MediaBox/向きは Runbook・ナレッジWAKE `683-print-mediabox`）。検証: `npm run 683:audit-six-month-chart -- --view-year 2026 --view-month 7`。**月次 PDF HTTP serve は廃止**（印刷は **`window.print()`**・オフライン PDF は CLI `user683:monthly-pdf` 任意）。**Claude 中継**: `?user683_claude_relay=`・`text/plain` POST。**グラフ直下 月次→週次4**・要約キャッシュ PUT/POST／`USER683_SHOW_OLLAMA_GENERATE_BTN=false`）。 |
 | **PC台帳 ver.2（旧・テナント削除済／正は674）** | **594**（**削除済**） | `customize/594/desktop.js`（**リポ参照用・deploy 対象外**） | **2026-07-18** live 全件一覧・ID 指定照会で不在確認。SKYSEA を含む現行運用・新機能・REST は **674 のみ**。 |
 | **PC採番マスタ（旧・テナント削除済）** | **596**（**削除済**） | （customize なし・**REST 参照禁止**） | 旧 594/674 買替の採番元。**削除後も 674 が参照し買替エラー**→ **2026-08-11** に 674 を台帳 JBIS/S-JBIS 次番へ切替（`BUILD=2026-08-11-674-replace-no-596`）。**`retiredAppIds` に登録**・`verify:retired-app-refs` で再参照をブロック。 |
-| 社員マスタ（674/714/716 連携） | **595** | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-07-04）**: `npm run deploy:595` **SUCCESS** / fileKey **`e47d849c-7ac9-4c7f-824a-374e60dd897b`** / preview revision **`116`** / **BUILD=`2026-07-04-595-index-emp-dept-filters` rev **116** （退職時 674→保管 + 595 `pc_ledger_v1_list`/`pc_ledger_list` クリア・backfill 7件） |
+| 社員マスタ（674/714/716 連携） | **595** | `customize/595/desktop.js` | **本番 live 最終 deploy（2026-08-13）**: `npm run deploy:595` → **BUILD=`2026-08-13-595-drop-594-subtable-refs` rev **119** / fileKey **`b22abba5-fe18-41a9-b56b-f151388e40ec`** （削除済み594 `pc_ledger_list` 参照除去・退職時は `pc_ledger_v1_list` のみクリア）。一括反映ログは **697 `bulk_downstream_595_log`**（595 の形骸 `bulk_downstream_sync_log` は削除）。**前**: 2026-07-04 fileKey `e47d849c-…` rev **116** / `2026-07-04-595-index-emp-dept-filters` |
 | **業務改善 社員マスタ**（595 ミラー・閲覧専用） | **698** | `customize/business-improvement-employee/desktop.js` \| `npm run deploy:698` | [https://jbis-kintone.cybozu.com/k/698/](https://jbis-kintone.cybozu.com/k/698/) **Space 5**・595→698 日次同期・突合 **595.$id**・一覧 **source595_id 昇順（595 同一）**・**在籍/退職/すべて 切替（通常=在籍）**・697 バナー・手動同期・**BUILD=`2026-07-04-bi-employee-index-emp-filter` rev **19** / fileKey **`776e7d9f-75b6-49b1-95b6-9c5b3265443a`** |
 | **【業務改善提案システム】設定マスタ** | **697** | （customize なし・設定正本） | [https://jbis-kintone.cybozu.com/k/697/](https://jbis-kintone.cybozu.com/k/697/) **Space 5 / thread 7**・所属＋共通設定・仕様 `docs/plans/2026-05-23-business-improvement-proposal-spec.md` |
 | **【業務改善提案システム】ご利用ガイド** | **699** | `customize/business-improvement-guide/desktop.js` \| `npm run deploy:699` | [https://jbis-kintone.cybozu.com/k/699/](https://jbis-kintone.cybozu.com/k/699/) **Space 5 / thread 7**・700 の利用ガイド・**BUILD=`2026-07-17-manual-evaluation-email` rev **132** / fileKey **`608c158e-6451-4d6e-ba08-b0e33767aafd`** |
@@ -545,19 +545,16 @@ user_name	SINGLE_LINE_TEXT	利用者名
 
 ## 595（社員マスタ）
 
-`npm run app:fields 595`（本番 2026-04-18 時点）:
+`npm run app:fields 595`（本番 2026-08-13・`bulk_downstream_sync_log` 削除後）:
 
 ```
-App 595 fields (23)
+App 595 fields (20)
 dept_name	SINGLE_LINE_TEXT	所属名
 emp_id	SINGLE_LINE_TEXT	社員管理番号
 employment_status	DROP_DOWN	在籍ステータス
 group_name	SINGLE_LINE_TEXT	所属グループ
-ledger_created	CHECK_BOX	アカウント台帳作成済み
-ledger_link_list	SUBTABLE	アカウント台帳紐づけ
-ledger_record_id	NUMBER	アカウント台帳レコード番号
 mail	SINGLE_LINE_TEXT	メールアドレス
-pc_ledger_list	SUBTABLE	PC台帳紐づけ
+pc_ledger_v1_list	SUBTABLE	新PC台帳(674)紐づけ
 retired_date	DATE	退職日
 retired_note	MULTI_LINE_TEXT	退職メモ
 sort	NUMBER	表示順
@@ -573,6 +570,9 @@ user_name	SINGLE_LINE_TEXT	社員名
 作成者	CREATOR	作成者
 作成日時	CREATED_TIME	作成日時
 ```
+
+- **削除済（形骸）**: `pc_ledger_list` / `pc_594_record_id`（旧594）、`ledger_*`（旧627 系）、`bulk_downstream_sync_log`（正は 697 `bulk_downstream_595_log`・R-0630-01）
+- **674 連携**: サブテーブル `pc_ledger_v1_list`（子 `pc_674_record_id`）。`npm run pc-ledger:audit-595-674-gaps` で org diffs 監視
 
 ---
 
@@ -942,6 +942,7 @@ A・B・C のいずれも、**「方針とスコープの合意」が取れる�
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-08-13 | **595 形骸掃除**: customize から削除済594 `pc_ledger_list`/`pc_594_record_id` 参照除去（BUILD `2026-08-13-595-drop-594-subtable-refs`）。孤児フィールド `bulk_downstream_sync_log` 削除（正は697）。フィールド一覧をライブに同期。674 連携 audit org diffs 0 |
 | 2026-08-06 | **674 PC台帳 §4.3.1**: 個人/共有次番を **空き若番→max+1**（番兵9999除外・個人下限67・バナー≡自動生成）。仕様 `docs/plans/2026-04-21-new-pc-ledger-spec.md`・検証 runbook 更新。実装 BUILD `2026-08-06-674-jbis-max-plus-one` / live rev **266**（commit `a1f806b7`） |
 | 2026-08-06 | **674 SKYSEA 手動台帳 as-built**: `skysea_manual_*` 運用・旧自動配信メタ4項目削除・SCOPE=個人＋保管/廃棄/取消除外・680並び・print-root。SPEC `docs/plans/2026-08-06-skysea-manual-install-674-ledger-spec.md`。BUILD `2026-08-06-674-skysea-drop-legacy4` / rev **282** 系。夕反省全GO反映 |
 | 2026-07-18 | **JRE-C_Hub 746/747更新**: 746フォーム rev8（署名代行対象ST・湾岸工事所）、747 rev14（社員検索・利用再開・一覧/検索/出力・Edge「パスポート保存」誤認抑止）。既存48件は一括更新なし |

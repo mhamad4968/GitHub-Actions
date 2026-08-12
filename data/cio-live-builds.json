@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-07-04-595-index-emp-dept-filters",
-      "fileKey": "e47d849c-7ac9-4c7f-824a-374e60dd897b",
-      "revision": "116",
-      "relPath": ".kintone-deploy/upload-595.js",
-      "deployedAt": "2026-07-03T23:58:32.632Z",
+      "build": "2026-08-13-595-drop-594-subtable-refs",
+      "fileKey": "b22abba5-fe18-41a9-b56b-f151388e40ec",
+      "revision": "119",
+      "relPath": "customize/595/desktop.js",
+      "deployedAt": "2026-08-12T22:26:25.581Z",
       "note": null
     },
     "627": {

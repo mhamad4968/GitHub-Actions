@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-drop-594-subtable-refs（削除済み594サブテーブル pc_ledger_list / pc_594_record_id 参照を除去）
    * BUILD: 2026-06-30-595-bulk-log-no-dup（一括反映ログは最終行のみ・ステータスは完了表示）
    * BUILD: 2026-06-30-595-bulk-downstream-btn（一覧: 台帳へ一括反映ボタン・CSV取込後用）
    * BUILD: 2026-06-30-595-674-mirror-emp-subtable（674ミラー: mail＋emp_id＋サブテーブル紐づけ）
@@ -19,7 +20,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-07-04-595-index-emp-dept-filters";
+  var BUILD = "2026-08-13-595-drop-594-subtable-refs";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -79,9 +80,6 @@
   var EMP_RETIRED = "退職";
   var EMP_ACTIVE = "在籍";
 
-  /** 595 上の PC 台帳紐づけ（旧594由来の列。リンクは出さず674のみ） */
-  var FC595_PC594_SUB = "pc_ledger_list";
-  var FC595_PC594_ID = "pc_594_record_id";
   /** 595 上の 新・PC台帳（674） */
   var FC595_PC674_SUB = "pc_ledger_v1_list";
   var FC595_PC674_ID = "pc_674_record_id";
@@ -1899,8 +1897,7 @@
       return Promise.resolve();
     }
     var has674 = collectSubtableNumericIds(record, FC595_PC674_SUB, FC595_PC674_ID).length;
-    var has594 = collectSubtableNumericIds(record, FC595_PC594_SUB, FC595_PC594_ID).length;
-    if (!has674 && !has594) {
+    if (!has674) {
       return Promise.resolve();
     }
     var app595 = kintone.app.getId();
@@ -1917,9 +1914,6 @@
         var recPatch = {};
         if (collectSubtableNumericIds(full, FC595_PC674_SUB, FC595_PC674_ID).length) {
           recPatch[FC595_PC674_SUB] = { value: [] };
-        }
-        if (collectSubtableNumericIds(full, FC595_PC594_SUB, FC595_PC594_ID).length) {
-          recPatch[FC595_PC594_SUB] = { value: [] };
         }
         if (!Object.keys(recPatch).length) {
           return;

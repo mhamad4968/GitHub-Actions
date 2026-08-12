@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * 退職済み 595 社員の pc_ledger_v1_list / pc_ledger_list を一括クリア（674 保管後の名残リンク解消）
+ * 退職済み 595 社員の pc_ledger_v1_list を一括クリア（674 保管後の名残リンク解消）
+ * 注: 旧 `pc_ledger_list`（594）はフォームから削除済み（2026-08-13）。本スクリプトは 674 サブテーブルのみ。
  *
  *   npx dotenv -e .env -e .env.proxy -- node scripts/backfill-595-clear-retired-pc-links.mjs --dry-run
  *   npx dotenv -e .env -e .env.proxy -- node scripts/backfill-595-clear-retired-pc-links.mjs --apply
@@ -11,7 +12,6 @@ const APP_595 = 595;
 const FC_EMP = 'employment_status';
 const EMP_RETIRED = '退職';
 const FC595_PC674_SUB = 'pc_ledger_v1_list';
-const FC595_PC594_SUB = 'pc_ledger_list';
 
 function requireEnv(key) {
   const v = process.env[key];
@@ -64,7 +64,7 @@ function subtableRowCount(r, subCode) {
 }
 
 async function fetchAll595RetiredWithLinks() {
-  const fields = ['$id', '$revision', 'user_name', 'mail', FC_EMP, FC595_PC674_SUB, FC595_PC594_SUB];
+  const fields = ['$id', '$revision', 'user_name', 'mail', FC_EMP, FC595_PC674_SUB];
   const all = [];
   const limit = 500;
   let offset = 0;
@@ -78,7 +78,7 @@ async function fetchAll595RetiredWithLinks() {
     const json = await fetchJson(url);
     const batch = json.records || [];
     for (const r of batch) {
-      if (subtableRowCount(r, FC595_PC674_SUB) || subtableRowCount(r, FC595_PC594_SUB)) {
+      if (subtableRowCount(r, FC595_PC674_SUB)) {
         all.push(r);
       }
     }
@@ -93,7 +93,6 @@ async function clear595Subtables(r, dryRun) {
   const rev = String(r.$revision.value);
   const patch = {};
   if (subtableRowCount(r, FC595_PC674_SUB)) patch[FC595_PC674_SUB] = { value: [] };
-  if (subtableRowCount(r, FC595_PC594_SUB)) patch[FC595_PC594_SUB] = { value: [] };
   if (!Object.keys(patch).length) return { id, skipped: true };
   if (dryRun) return { id, dryRun: true, patchKeys: Object.keys(patch) };
   await fetchJson(`${baseUrl}/k/v1/record.json`, {
