@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-13-595-index-pc-filter-ui（一覧: PCあり/なし絞込・フィルタUI整理）
    * BUILD: 2026-08-13-595-drop-594-subtable-refs（削除済み594サブテーブル pc_ledger_list / pc_594_record_id 参照を除去）
    * BUILD: 2026-06-30-595-bulk-log-no-dup（一括反映ログは最終行のみ・ステータスは完了表示）
    * BUILD: 2026-06-30-595-bulk-downstream-btn（一覧: 台帳へ一括反映ボタン・CSV取込後用）
@@ -20,7 +21,7 @@
    * - 新規・編集: 680 所属候補マスタから所属名・所属グループを選ぶモーダル（手入力も可）
    */
 
-  var BUILD = "2026-08-13-595-drop-594-subtable-refs";
+  var BUILD = "2026-08-13-595-index-pc-filter-ui";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -96,6 +97,7 @@
   var STORAGE_KEY_595_IDX_EMP = "jbis595-index-search-emp";
   var STORAGE_KEY_595_IDX_DEPT = "jbis595-index-search-dept";
   var STORAGE_KEY_595_IDX_GROUP = "jbis595-index-search-group";
+  var STORAGE_KEY_595_IDX_PC = "jbis595-index-search-pc";
   var INDEX_SEARCH_MAX_IDS = 800;
   /** 一覧クライアント検索で全件取得する上限（超えたら標準絞り込みへ誘導） */
   var INDEX_SEARCH_FULL_SCAN_MAX_RECORDS = 2000;
@@ -133,8 +135,17 @@
     return g.indexOf(kwLower) !== -1 || d.indexOf(kwLower) !== -1 || n.indexOf(kwLower) !== -1;
   }
 
+  /** pc_ledger_v1_list（FC595_PC674_SUB）に1行以上あれば PCあり */
+  function record595HasPcLink(r) {
+    var f = r[FC595_PC674_SUB];
+    if (!f || !Array.isArray(f.value)) {
+      return false;
+    }
+    return f.value.length > 0;
+  }
+
   function fetchAll595RecordsForIndexSearch(appId, filterQuery) {
-    var fields = ["$id", FC595_GROUP, FC595_DEPT, FC595_NAME, FC595_EMP];
+    var fields = ["$id", FC595_GROUP, FC595_DEPT, FC595_NAME, FC595_EMP, FC595_PC674_SUB];
     var all = [];
     var limit = 500;
     var url = kintone.api.url("/k/v1/records.json", true);
@@ -189,9 +200,10 @@
     return parts.join(" and ");
   }
 
-  function save595IndexFilterSession595(empFilter, dept, group, kw) {
+  function save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter) {
     try {
       sessionStorage.setItem(STORAGE_KEY_595_IDX_EMP, String(empFilter || "all"));
+      sessionStorage.setItem(STORAGE_KEY_595_IDX_PC, String(pcFilter || "all"));
       sessionStorage.setItem(STORAGE_KEY_595_IDX_DEPT, String(dept || ""));
       sessionStorage.setItem(STORAGE_KEY_595_IDX_GROUP, String(group || ""));
       if (kw) {
@@ -208,11 +220,64 @@
     try {
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_EMP);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_PC);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_DEPT);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_GROUP);
     } catch (eSs) {
       /* noop */
     }
+  }
+
+  function emp595FilterLabel595(v) {
+    if (v === "active") {
+      return "在籍";
+    }
+    if (v === "retired") {
+      return "退職";
+    }
+    return "すべて";
+  }
+
+  function pc595FilterLabel595(v) {
+    if (v === "has") {
+      return "PCあり";
+    }
+    if (v === "none") {
+      return "PCなし";
+    }
+    return "PCすべて";
+  }
+
+  function update595IndexFilterSummary595() {
+    var el = document.getElementById("jbis-595-index-filter-summary");
+    var wrap = document.getElementById(INDEX_SEARCH_WRAP_ID);
+    if (!el || !wrap) {
+      return;
+    }
+    var empBtn = wrap.querySelector("[data-595-emp-filter].active");
+    var pcBtn = wrap.querySelector("[data-595-pc-filter].active");
+    var selDept = wrap.querySelector('select[data-595-dept="1"]');
+    var selGroup = wrap.querySelector('select[data-595-group="1"]');
+    var input = wrap.querySelector('input[type="search"]');
+    var emp = empBtn ? empBtn.getAttribute("data-595-emp-filter") || "active" : "active";
+    var pc = pcBtn ? pcBtn.getAttribute("data-595-pc-filter") || "all" : "all";
+    var dept = selDept ? String(selDept.value || "").trim() : "";
+    var group = selGroup ? String(selGroup.value || "").trim() : "";
+    var kw = input ? String(input.value || "").trim() : "";
+    var parts = [emp595FilterLabel595(emp)];
+    if (pc === "has" || pc === "none") {
+      parts.push(pc595FilterLabel595(pc));
+    }
+    if (dept) {
+      parts.push("所属:" + dept);
+    }
+    if (group) {
+      parts.push("所属G:" + group);
+    }
+    if (kw) {
+      parts.push("検索:" + kw);
+    }
+    el.textContent = parts.join(" × ");
   }
 
   function build595IdInQuery(ids) {
@@ -318,7 +383,21 @@
     }
     var empBtns = wrap.querySelectorAll("[data-595-emp-filter]");
     empBtns.forEach(function (b) {
-      b.classList.toggle("active", b.getAttribute("data-595-emp-filter") === "all");
+      var on = b.getAttribute("data-595-emp-filter") === "active";
+      b.classList.toggle("active", on);
+      b.style.background = on ? "#059669" : "#fff";
+      b.style.color = on ? "#fff" : "";
+      b.style.borderColor = on ? "#059669" : "#cbd5e1";
+      b.style.fontWeight = on ? "700" : "";
+    });
+    var pcBtns = wrap.querySelectorAll("[data-595-pc-filter]");
+    pcBtns.forEach(function (b) {
+      var on = b.getAttribute("data-595-pc-filter") === "all";
+      b.classList.toggle("active", on);
+      b.style.background = on ? "#1d4ed8" : "#fff";
+      b.style.color = on ? "#fff" : "";
+      b.style.borderColor = on ? "#1d4ed8" : "#cbd5e1";
+      b.style.fontWeight = on ? "700" : "";
     });
     var selDept = wrap.querySelector('select[data-595-dept="1"]');
     var selGroup = wrap.querySelector('select[data-595-group="1"]');
@@ -328,6 +407,7 @@
     if (selGroup) {
       selGroup.value = "";
     }
+    update595IndexFilterSummary595();
     clear595IndexFilterSession595();
     var u;
     try {
@@ -398,18 +478,19 @@
   }
 
   /**
-   * 一覧を在籍/退職・所属・所属グループ・キーワードで絞り込む。
-   * キーワードは部分一致（API like 不可のため取得後にブラウザ側で判定）。
+   * 一覧を在籍/退職・所属・所属グループ・PC紐づけ・キーワードで絞り込む。
+   * キーワード・PCあり/なしは部分一致/サブテーブル判定のため取得後にブラウザ側で判定。
    */
   function navigate595IndexOrSearch(opts, btnSearch, btnClear) {
     var o = opts || {};
     var kw = String(o.keyword || "").trim();
     var empFilter = String(o.empFilter || "all");
+    var pcFilter = String(o.pcFilter || "all");
     var dept = String(o.dept || "").trim();
     var group = String(o.group || "").trim();
     var filterQuery = build595IndexServerFilterQuery(empFilter, dept, group);
     var hasServerFilter = !!filterQuery;
-    var hasAny = !!(kw || hasServerFilter);
+    var needsClient = !!(kw || pcFilter === "has" || pcFilter === "none");
 
     function setBusy(b) {
       if (btnSearch) {
@@ -425,14 +506,14 @@
       }
     }
 
-    if (!hasAny) {
+    if (!hasServerFilter && !needsClient) {
       clear595IndexFilterSession595();
       navigate595IndexList595("");
       return;
     }
 
-    if (!kw && hasServerFilter) {
-      save595IndexFilterSession595(empFilter, dept, group, "");
+    if (!needsClient && hasServerFilter) {
+      save595IndexFilterSession595(empFilter, dept, group, "", pcFilter);
       navigate595IndexList595(filterQuery + " order by レコード番号 asc");
       return;
     }
@@ -461,12 +542,20 @@
         var lower = kw.toLowerCase();
         var ids = [];
         for (var i = 0; i < records.length; i++) {
-          if (!kw || record595MatchesSubstring(records[i], lower)) {
-            var idCell = records[i].$id;
-            var rid = idCell && idCell.value != null ? String(idCell.value).trim() : "";
-            if (rid) {
-              ids.push(rid);
-            }
+          var r = records[i];
+          if (kw && !record595MatchesSubstring(r, lower)) {
+            continue;
+          }
+          if (pcFilter === "has" && !record595HasPcLink(r)) {
+            continue;
+          }
+          if (pcFilter === "none" && record595HasPcLink(r)) {
+            continue;
+          }
+          var idCell = r.$id;
+          var rid = idCell && idCell.value != null ? String(idCell.value).trim() : "";
+          if (rid) {
+            ids.push(rid);
           }
         }
         var truncated = false;
@@ -475,7 +564,7 @@
           truncated = true;
         }
         var q = build595IdInQuery(ids);
-        save595IndexFilterSession595(empFilter, dept, group, kw);
+        save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter);
         if (truncated) {
           window.alert(
             "該当が" +
@@ -506,18 +595,57 @@
     var wrap = document.createElement("div");
     wrap.id = INDEX_SEARCH_WRAP_ID;
     wrap.style.cssText =
-      "display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0 0 12px;padding:8px 12px;" +
-      "background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;";
+      "display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:0 0 12px;padding:10px 14px;" +
+      "background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;";
 
-    var rowFilters = document.createElement("div");
-    rowFilters.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;";
+    var chipPanelStyle =
+      "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;" +
+      "background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;box-sizing:border-box;";
 
+    var rowTitle = document.createElement("div");
+    rowTitle.style.cssText = "display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;width:100%;";
+    var titleLabel = document.createElement("span");
+    titleLabel.style.cssText = "font-weight:700;color:#0f172a;font-size:14px;white-space:nowrap;";
+    titleLabel.textContent = "絞り込み";
+    rowTitle.appendChild(titleLabel);
+    var filterSummary = document.createElement("span");
+    filterSummary.id = "jbis-595-index-filter-summary";
+    filterSummary.style.cssText = "color:#475569;font-size:12px;flex:1;min-width:120px;";
+    rowTitle.appendChild(filterSummary);
+    wrap.appendChild(rowTitle);
+
+    var empFilterState = "active";
+    var pcFilterState = "all";
+
+    function applyEmpChipStyles595(container, value) {
+      container.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
+        var on = btn.getAttribute("data-595-emp-filter") === value;
+        btn.classList.toggle("active", on);
+        btn.style.background = on ? "#059669" : "#fff";
+        btn.style.color = on ? "#fff" : "";
+        btn.style.borderColor = on ? "#059669" : "#cbd5e1";
+        btn.style.fontWeight = on ? "700" : "";
+      });
+    }
+
+    function applyPcChipStyles595(container, value) {
+      container.querySelectorAll("[data-595-pc-filter]").forEach(function (btn) {
+        var on = btn.getAttribute("data-595-pc-filter") === value;
+        btn.classList.toggle("active", on);
+        btn.style.background = on ? "#1d4ed8" : "#fff";
+        btn.style.color = on ? "#fff" : "";
+        btn.style.borderColor = on ? "#1d4ed8" : "#cbd5e1";
+        btn.style.fontWeight = on ? "700" : "";
+      });
+    }
+
+    var rowEmp = document.createElement("div");
+    rowEmp.style.cssText = chipPanelStyle;
     var empLabel = document.createElement("span");
     empLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
     empLabel.textContent = "在籍:";
-    rowFilters.appendChild(empLabel);
+    rowEmp.appendChild(empLabel);
 
-    var empFilterState = "active";
     function mkEmpBtn(label, value) {
       var b = document.createElement("button");
       b.type = "button";
@@ -525,34 +653,62 @@
       b.setAttribute("data-595-emp-filter", value);
       b.style.cssText =
         "padding:6px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;";
-      if (value === empFilterState) {
-        b.classList.add("active");
-        b.style.background = "#059669";
-        b.style.color = "#fff";
-        b.style.borderColor = "#059669";
-        b.style.fontWeight = "700";
-      }
       b.addEventListener("click", function () {
         empFilterState = value;
-        rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
-          var on = btn.getAttribute("data-595-emp-filter") === value;
-          btn.classList.toggle("active", on);
-          btn.style.background = on ? "#059669" : "#fff";
-          btn.style.color = on ? "#fff" : "";
-          btn.style.borderColor = on ? "#059669" : "#cbd5e1";
-          btn.style.fontWeight = on ? "700" : "";
-        });
+        applyEmpChipStyles595(rowEmp, value);
+        update595IndexFilterSummary595();
       });
       return b;
     }
-    rowFilters.appendChild(mkEmpBtn("在籍", "active"));
-    rowFilters.appendChild(mkEmpBtn("退職", "retired"));
-    rowFilters.appendChild(mkEmpBtn("すべて", "all"));
+    rowEmp.appendChild(mkEmpBtn("在籍", "active"));
+    rowEmp.appendChild(mkEmpBtn("退職", "retired"));
+    rowEmp.appendChild(mkEmpBtn("すべて", "all"));
+    applyEmpChipStyles595(rowEmp, empFilterState);
+    wrap.appendChild(rowEmp);
+
+    var rowPcWrap = document.createElement("div");
+    rowPcWrap.style.cssText = "display:flex;flex-direction:column;gap:4px;width:100%;";
+    var rowPc = document.createElement("div");
+    rowPc.style.cssText = chipPanelStyle;
+    var pcLabel = document.createElement("span");
+    pcLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
+    pcLabel.textContent = "PC:";
+    rowPc.appendChild(pcLabel);
+
+    function mkPcBtn(label, value) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.setAttribute("data-595-pc-filter", value);
+      b.style.cssText =
+        "padding:6px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;";
+      b.addEventListener("click", function () {
+        pcFilterState = value;
+        applyPcChipStyles595(rowPc, value);
+        update595IndexFilterSummary595();
+      });
+      return b;
+    }
+    rowPc.appendChild(mkPcBtn("PCあり", "has"));
+    rowPc.appendChild(mkPcBtn("PCなし", "none"));
+    rowPc.appendChild(mkPcBtn("すべて", "all"));
+    applyPcChipStyles595(rowPc, pcFilterState);
+    rowPcWrap.appendChild(rowPc);
+    var pcHint = document.createElement("div");
+    pcHint.style.cssText = "color:#94a3b8;font-size:11px;padding:0 2px;";
+    pcHint.textContent = "紐づけ(pc_ledger_v1_list)の有無";
+    rowPcWrap.appendChild(pcHint);
+    wrap.appendChild(rowPcWrap);
+
+    var rowSelects = document.createElement("div");
+    rowSelects.style.cssText =
+      "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;" +
+      "background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;box-sizing:border-box;";
 
     var deptLabel = document.createElement("span");
-    deptLabel.style.cssText = "font-weight:600;color:#475569;margin-left:8px;white-space:nowrap;";
+    deptLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
     deptLabel.textContent = "所属:";
-    rowFilters.appendChild(deptLabel);
+    rowSelects.appendChild(deptLabel);
 
     var selDept = document.createElement("select");
     selDept.setAttribute("data-595-dept", "1");
@@ -562,12 +718,12 @@
     optDept0.value = "";
     optDept0.textContent = "（すべて）";
     selDept.appendChild(optDept0);
-    rowFilters.appendChild(selDept);
+    rowSelects.appendChild(selDept);
 
     var grpLabel = document.createElement("span");
     grpLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
     grpLabel.textContent = "所属グループ:";
-    rowFilters.appendChild(grpLabel);
+    rowSelects.appendChild(grpLabel);
 
     var selGroup = document.createElement("select");
     selGroup.setAttribute("data-595-group", "1");
@@ -577,9 +733,9 @@
     optGrp0.value = "";
     optGrp0.textContent = "（すべて）";
     selGroup.appendChild(optGrp0);
-    rowFilters.appendChild(selGroup);
+    rowSelects.appendChild(selGroup);
 
-    wrap.appendChild(rowFilters);
+    wrap.appendChild(rowSelects);
 
     var deptMasterIndex595 = { depts: [], groupsByDept: {}, allGroups: [] };
 
@@ -649,18 +805,25 @@
         } catch (eRestore) {
           /* noop */
         }
+        update595IndexFilterSummary595();
       });
     }
 
     selDept.addEventListener("change", function () {
       fillGroupOptions595(selDept.value);
       selGroup.value = "";
+      update595IndexFilterSummary595();
+    });
+    selGroup.addEventListener("change", function () {
+      update595IndexFilterSummary595();
     });
 
     populate595DeptMasterSelects595();
 
     var rowSearch = document.createElement("div");
-    rowSearch.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;";
+    rowSearch.style.cssText =
+      "display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;" +
+      "background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;box-sizing:border-box;";
 
     var label = document.createElement("span");
     label.style.cssText = "font-weight:600;color:#0f172a;white-space:nowrap;";
@@ -707,12 +870,14 @@
       return {
         keyword: input.value,
         empFilter: empFilterState,
+        pcFilter: pcFilterState,
         dept: selDept.value,
         group: selGroup.value
       };
     }
 
     function run() {
+      update595IndexFilterSummary595();
       navigate595IndexOrSearch(collectOpts595(), btnSearch, btnClear);
     }
 
@@ -720,22 +885,21 @@
     btnClear.addEventListener("click", function () {
       input.value = "";
       empFilterState = "active";
-      rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
-        var on = btn.getAttribute("data-595-emp-filter") === "active";
-        btn.classList.toggle("active", on);
-        btn.style.background = on ? "#059669" : "#fff";
-        btn.style.color = on ? "#fff" : "";
-        btn.style.borderColor = on ? "#059669" : "#cbd5e1";
-        btn.style.fontWeight = on ? "700" : "";
-      });
+      pcFilterState = "all";
+      applyEmpChipStyles595(rowEmp, "active");
+      applyPcChipStyles595(rowPc, "all");
       selDept.value = "";
       fillGroupOptions595("");
       selGroup.value = "";
+      update595IndexFilterSummary595();
       navigate595IndexOrSearch(
-        { keyword: "", empFilter: "all", dept: "", group: "" },
+        { keyword: "", empFilter: "active", dept: "", group: "", pcFilter: "all" },
         btnSearch,
         btnClear
       );
+    });
+    input.addEventListener("input", function () {
+      update595IndexFilterSummary595();
     });
     input.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter") {
@@ -752,21 +916,17 @@
       var se = sessionStorage.getItem(STORAGE_KEY_595_IDX_EMP);
       if (se === "retired" || se === "all" || se === "active") {
         empFilterState = se;
-        rowFilters.querySelectorAll("[data-595-emp-filter]").forEach(function (btn) {
-          var on = btn.getAttribute("data-595-emp-filter") === se;
-          btn.classList.toggle("active", on);
-          btn.style.background = on ? "#059669" : "#fff";
-          btn.style.color = on ? "#fff" : "#fff";
-          btn.style.borderColor = on ? "#059669" : "#cbd5e1";
-          btn.style.fontWeight = on ? "700" : "";
-          if (!on) {
-            btn.style.color = "";
-          }
-        });
+        applyEmpChipStyles595(rowEmp, se);
+      }
+      var sp = sessionStorage.getItem(STORAGE_KEY_595_IDX_PC);
+      if (sp === "has" || sp === "none" || sp === "all") {
+        pcFilterState = sp;
+        applyPcChipStyles595(rowPc, sp);
       }
     } catch (eS) {
       /* noop */
     }
+    update595IndexFilterSummary595();
     if (!input.value) {
       var qCond;
       try {
