@@ -31,7 +31,7 @@ checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → ex
 
 **R-SESS-01（2026-06-25 GO）**: `export-handoff` の **直後**・`close-git` の **直前**に `npm run session-starter:sync-desktop` → `npm run verify:desktop-ai-emergency-sync`。逆順禁止。
 
-**skip 禁止**: handoff-log ブロックを省略して checkpoint だけ更新しない。
+**skip 禁止**: handoff-log ブロックを省略して checkpoint だけ更新しない。**話したこと** を空・「なし」で逃がさない（次セッションが会話を復元できない）。
 
 ---
 
@@ -67,6 +67,7 @@ checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → ex
 ### YYYY-MM-DD JST — **{タイトル}**
 
 **要約**: …
+**話したこと**: …（必須。空・「なし」禁止 — 次セッションが会話を復元できること）
 **次の1手**: …（checkpoint と一致）
 **Git**: `{hash}` — …
 **GO待ち**: なし | …
@@ -82,8 +83,8 @@ checkpoint 凍結ゾーン更新 → handoff-log 末尾ブロック追記 → ex
 **追記コマンド**:
 
 ```bash
-npm run cio:handoff:append-block -- --title "タイトル" --summary "要約" --git-msg "commit msg"
-npm run cio:handoff:append-block -- --dry-run --title "テスト"
+npm run cio:handoff:append-block -- --title "タイトル" --summary "要約" --discussed "話した合意" --git-msg "commit msg"
+npm run cio:handoff:append-block -- --dry-run --title "テスト" --discussed "dry-run 用の話したこと一文"
 ```
 
 ---

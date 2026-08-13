@@ -23,7 +23,7 @@ const required = [
 const needles = [
   { rel: 'scripts/cio-session-export-handoff.mjs', needles: ['getDefaultBridgeNextFiles'] },
   { rel: 'scripts/cio-session-cold-start.mjs', needles: ['verify:checkpoint-handoff-template'] },
-  { rel: 'data/cio-handoff-template.json', needles: ['connectionRules', 'bridgeNextFiles', 'version'] },
+  { rel: 'data/cio-handoff-template.json', needles: ['connectionRules', 'bridgeNextFiles', 'version', '**話したこと**:'] },
 ];
 
 function main() {

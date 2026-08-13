@@ -241,7 +241,7 @@ npm run cio:checkpoint:rollup -- --keep 3
 | handoff 更新 | `npm run cio:session:export-handoff` |
 | 凍結ゾーン検証 | `npm run verify:checkpoint-freeze-zone` |
 | 引き継ぎテンプレ | `npm run verify:checkpoint-handoff-template` |
-| handoff 追記 | `npm run cio:handoff:append-block -- --title "…"` |
+| handoff 追記 | `npm run cio:handoff:append-block -- --title "…" --discussed "話した合意"` |
 | checkpoint 圧縮 | `npm run cio:checkpoint:rollup` |
 | セッション締め | `npm run cio:session:close-git -- --execute --auto-stage --message "…"` |
 | 引き継ぎ検証 | `npm run verify:session-handoff-integrity -- --strict-staleness` |

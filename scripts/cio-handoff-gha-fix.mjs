@@ -57,6 +57,7 @@ function main() {
   const block = formatHandoffBlock({
     title: 'GHA / gates 是正（#D-GHA-01）',
     summary: oneLiner,
+    discussed: `GHA是正の会話: ${cause} → ${fix}（workflow=${workflow}）`,
     nextTask: readCheckpointNextTask(root) || '(checkpoint 要更新)',
     gitHash: fix,
     gitMsg: oneLiner,

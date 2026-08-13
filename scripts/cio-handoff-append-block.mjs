@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import {
   appendHandoffBlock,
   formatHandoffBlock,
+  isDiscussedValueOk,
 } from './lib/cio-handoff-template.mjs';
 import { readCheckpointNextTask } from './lib/cio-checkpoint-read.mjs';
 
@@ -27,6 +28,7 @@ function printUsage() {
 Options:
   --title <text>          Block title
   --summary <text>        Block summary
+  --discussed <text>      What was talked (required — empty/なし NG)
   --next <text>           Next task (defaults to checkpoint)
   --git <hash>            Git hash (defaults to HEAD)
   --git-msg <text>        Git status/message
@@ -56,6 +58,13 @@ function main() {
   const dryRun = process.argv.includes('--dry-run');
   const title = arg('title') || 'セッション区切り';
   const summary = arg('summary') || '(要約未指定)';
+  const discussed = arg('discussed') || arg('talked') || '';
+  if (!isDiscussedValueOk(discussed)) {
+    console.error(
+      '[cio:handoff:append-block] NG --discussed が必要です（セッションで話した合意・候補・やらないこと。空・「なし」禁止）',
+    );
+    process.exit(2);
+  }
   const gitHash = arg('git') || gitHead();
   const gitMsg = arg('git-msg') || arg('message') || '';
   const nextTask = arg('next') || readCheckpointNextTask(root) || '(checkpoint 要更新)';
@@ -66,6 +75,7 @@ function main() {
   const block = formatHandoffBlock({
     title,
     summary,
+    discussed,
     nextTask,
     gitHash,
     gitMsg,

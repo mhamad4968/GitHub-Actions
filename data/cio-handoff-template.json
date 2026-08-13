@@ -1,5 +1,5 @@
 {
-  "version": "2026-07-04",
+  "version": "2026-08-13",
   "description": "checkpoint / handoff / bridge テンプレ正本 — Session Lifecycle v2 CLOSE 連動（R-SESS-01 sync-desktop / R-SESS-06 bootstrap auto-repair）",
   "connectionRules": {
     "order": ["checkpoint-freeze-zone", "handoff-log-block", "bridge-export"],
@@ -30,12 +30,13 @@
   "handoffBlock": {
     "headingPattern": "^### \\d{4}-\\d{2}-\\d{2} JST",
     "requiredKeys": [
+      "**要約**:",
+      "**話したこと**:",
       "**次の1手**:",
       "**Git**:",
       "**GO待ち**:"
     ],
     "optionalKeys": [
-      "**要約**:",
       "**BUILD**:",
       "**触らない**:",
       "**判定**:"

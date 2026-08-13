@@ -30,6 +30,20 @@ function readHandoffField(block, key) {
   return m ? m[1].trim() : null;
 }
 
+const DISCUSSED_BAN = /^(なし|無し|n\/a|na|なし。|要記入|\(要記入\)|\(要約未指定\)|未指定|-|ー|—)?$/i;
+
+/**
+ * セッションで話した内容。空・「なし」は引き継ぎ失敗とみなす（2026-08-13 浜田）。
+ * @param {string} value
+ */
+export function isDiscussedValueOk(value) {
+  const s = String(value || '').replace(/\*\*/g, '').trim();
+  if (s.length < 12) return false;
+  if (DISCUSSED_BAN.test(s)) return false;
+  if (/要記入|未指定|要約未指定/.test(s)) return false;
+  return true;
+}
+
 /** @returns {{ headings: RegExpMatchArray[], text: string, path: string }|null} */
 function loadHandoffLog(root) {
   const p = path.join(root, HANDOFF_LOG_REL);
@@ -117,6 +131,27 @@ export function repairHandoffLatestBlock(root, { dryRun = false } = {}) {
   }
   if (missing.includes('**GO待ち**:')) {
     insertLines.push(`**GO待ち**: ${isGoStamp ? 'なし' : prev['**GO待ち**:'] || 'なし'}`);
+  }
+  if (missing.includes('**要約**:')) {
+    insertLines.push(`**要約**: ${prev['**要約**:'] || '(要記入)'}`);
+  }
+  if (missing.includes('**話したこと**:')) {
+    const fromSummary = readHandoffField(tail, '**要約**:');
+    const fallback = isDiscussedValueOk(fromSummary)
+      ? fromSummary
+      : prev['**話したこと**:'] || '';
+    if (isDiscussedValueOk(fallback)) {
+      insertLines.push(`**話したこと**: ${fallback}`);
+    }
+  }
+
+  if (insertLines.length === 0) {
+    return {
+      ok: false,
+      repaired: false,
+      filled: [],
+      reason: 'handoff latest missing **話したこと**: — append-block --discussed で実会話を書く',
+    };
   }
 
   const insertText = `\n\n${insertLines.join('\n\n')}\n`;
@@ -337,6 +372,10 @@ export function validateHandoffLatestBlock(root) {
   for (const key of manifest.handoffBlock?.requiredKeys || []) {
     if (!tail.includes(key)) issues.push(`handoff latest block missing: ${key}`);
   }
+  const discussed = readHandoffField(tail, '**話したこと**:');
+  if (tail.includes('**話したこと**:') && !isDiscussedValueOk(discussed)) {
+    issues.push('handoff latest **話したこと**: が空または「なし」— セッションで話した合意を1文以上書く');
+  }
   const cpTask = readCheckpointNextTask(root);
   if (cpTask && tail.includes('**次の1手**:')) {
     const m = tail.match(/\*\*次の1手\*\*:\s*([^\n]+)/);
@@ -387,11 +426,14 @@ export function validateHandoffTemplate(root, { strict = false } = {}) {
  */
 export function formatHandoffBlock(opts) {
   const ymd = opts.date || new Date().toISOString().slice(0, 10);
+  const discussed = opts.discussed || opts.summary || '';
   const lines = [
     '',
     `### ${ymd} JST — **${opts.title || 'セッション区切り'}**`,
     '',
     `**要約**: ${opts.summary || '(要記入)'}`,
+    '',
+    `**話したこと**: ${discussed || '(要記入) セッションで話した合意・候補・やらないこと'}`,
     '',
     `**次の1手**: ${opts.nextTask || '(checkpoint と同期)'}`,
     '',
