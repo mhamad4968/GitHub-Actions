@@ -1,4 +1,10 @@
-﻿日時(JST): 2026-08-10（月）— **674 UI hub-tabs 仕様GO**
+﻿日時(JST): 2026-08-13（木）— **WAKE・ブリーフィング・認識同期**
+いま何してた（1行）: cold-start READY。Desktop 00〜36通読。health 100%。GHA success。正本=checkpoint 08-11 closed-day（本ファイル 08-10塊は旧・R19でcheckpoint優先）。
+次にやる1つ: 浜田指示待ち（項番 -0）。今日の本題は指示があるまで聞かない。
+GO待ち（なし／内容）: 経営会議レポート本体はネタ選定後。新アプリ＝相談・GO後のみ。
+触らないで（なし／内容）: 688 heat外／677–679／712 deploy／736／SKYSEA案件外。
+
+日時(JST): 2026-08-10（月）— **674 UI hub-tabs 仕様GO**
 いま何してた（1行）: 仕様GO記録。正本 docs/plans/2026-08-10-674-ui-hub-tabs-spec.md。
 次にやる1つ: P1実装GO待ち（一覧タブ＋色）。その後 Security NEXT。
 GO待ち（なし／内容）: **674 UI P1 実装GO**／新アプリ＝相談・GO後のみ。
