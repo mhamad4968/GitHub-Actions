@@ -1,7 +1,7 @@
 {
   "version": "2026-08-13",
   "note": "C:\\tmp\\資料作成 内 DOCX 正本のメタデータ（バイナリは Git 外）。浜田配置分を台帳化。",
-  "recommendedTemplate": "2026-08-meeting-202607-report-draft",
+  "recommendedTemplate": "2026-08-meeting-202607-report",
   "templates": [
     {
       "id": "2026-05-meeting-202604-report",
@@ -46,27 +46,28 @@
       "status": "completed"
     },
     {
-      "id": "2026-08-meeting-202607-report-draft",
+      "id": "2026-08-meeting-202607-report",
       "path": "C:\\\\tmp\\\\資料作成\\\\【2026年8月度経営会議資料】2026年07月情報セキュリティレポート.docx",
       "meetingMonth": "2026-08",
       "reportMonth": "2026-07",
-      "sizeBytes": 40740,
-      "style": "text-focused",
+      "sizeBytes": 2022824,
+      "style": "full-with-diagrams",
       "features": [
         "scs-eval-awareness",
+        "scs-check-status-table-5x3",
         "kumamoto-donation-scam-fsa",
-        "july-2026-detection-shell",
-        "july-2026-cases-shell-2rows",
-        "hamada-edit-pending"
+        "july-2026-detection-filled",
+        "july-2026-cases-hands-hd-nihon-u",
+        "hamada-finished-2026-08-13"
       ],
-      "images": 0,
-      "graphsInDoc": false,
+      "images": null,
+      "graphsInDoc": true,
       "ipaTable": false,
-      "hamadaConfirmed": null,
+      "hamadaConfirmed": "2026-08-13",
       "fileMtime": "2026-08-13",
       "recommendedAsBase": true,
-      "status": "draft-ai-section1-ready",
-      "notes": "§1 AI起稿済（SCS＋義援金詐欺）。§2・社外事例は（浜田入力）。浜田仕上げ後にAI確認→status更新。"
+      "status": "completed",
+      "notes": "浜田仕上げOK（AI確認済）。表紙日付は2026年8月19日。来月ベースはこのファイル。"
     }
   ],
   "namingPattern": {
