@@ -25,6 +25,13 @@
       "npm": ["cio:env:enhance"]
     },
     {
+      "id": "day-close",
+      "when": "last-session",
+      "label": "最終セッション締めは自発（①GHA→②反省→③改善案GO待ち。④以降はGO後）",
+      "npm": ["cio:day-close"],
+      "runbook": "docs/runbooks/cio-day-close-v1.md"
+    },
+    {
       "id": "monthly-draft-pack",
       "when": "monthly",
       "label": "月次は下書きパックまで。ネタは浜田渡し。出ないときだけ相談",

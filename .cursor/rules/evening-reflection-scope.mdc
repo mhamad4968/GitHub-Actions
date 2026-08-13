@@ -25,6 +25,8 @@ alwaysApply: false
 
 26 を書く前に **必ず Read**: `docs/runbooks/evening-reflection-scope.md`
 
+最終セッション締めは浜田が①〜⑦を言わなくても `npm run cio:day-close -- --until-pause` を自発開始（GO 前に改善実装しない）。
+
 ## 未来は分からない（2026-05-30）
 
 **前日に「明日やること」を決めない。** 不明点は **当日朝イチで浜田に聞く**。

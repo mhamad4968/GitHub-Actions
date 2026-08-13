@@ -60,6 +60,8 @@ App756 等の見た目レーンで依頼者／浜田レビューに出す前は�
 7. 仕上げ後: `npm run verify:evening-reflection-scope`
 8. 承認後 → runbook / rules / scripts へ反映（**実装タイミングは別途**）
 
+**最終セッション締め（2026-08-13）**: 浜田が毎回①〜⑦を指示しなくても CIO が `npm run cio:day-close -- --until-pause` を自発開始する。改善案の実装は GO 後。正本 `docs/runbooks/cio-day-close-v1.md`。
+
 **#D-CLOSE-01（2026-07-20）**: 依頼者メール送付後も dirty なら即 commit（`session-close-execute-first.mdc` 同旨）。
 
 ## 改善案の層（R-NAS-07 — 2026-06-28／**C-5 2026-07-30**）

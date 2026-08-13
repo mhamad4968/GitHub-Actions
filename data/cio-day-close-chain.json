@@ -1,0 +1,53 @@
+{
+  "version": "2026-08-13",
+  "note": "毎日最終セッション締め。浜田が①〜⑦を言わなくても CIO が自発開始。③の実装は GO 後のみ。partial では回さない。",
+  "pauseAfter": "GO",
+  "itemZeroWins": true,
+  "notAColdStartGate": true,
+  "steps": [
+    {
+      "id": "1-github",
+      "label": "GitHub 確認と不具合是正",
+      "npm": "cio:eod:github",
+      "wave": "until-pause"
+    },
+    {
+      "id": "2-reflect",
+      "label": "本日の反省点（夕反省雛形）",
+      "npm": "evening:reflect",
+      "wave": "until-pause",
+      "filledOk": true
+    },
+    {
+      "id": "3-proposals",
+      "label": "運用・体制・MCP・ルール・憲法の改善案 → 浜田承認",
+      "pause": true,
+      "wave": "until-pause"
+    },
+    {
+      "id": "4-apply-go",
+      "label": "承認案の対応（CIO。本 npm は実装しない）",
+      "wave": "after-go",
+      "cioOnly": true
+    },
+    {
+      "id": "5-commit-push",
+      "label": "SPEC・未コミットがあれば commit → push",
+      "npm": "cio:session:close-git",
+      "args": ["--execute", "--auto-stage"],
+      "wave": "after-go"
+    },
+    {
+      "id": "6-desktop",
+      "label": "Desktop AI緊急用を最新入替",
+      "note": "close-git 内 desktop sync。単独は session-starter:sync-desktop",
+      "wave": "after-go"
+    },
+    {
+      "id": "7-team-close",
+      "label": "AIチーム締め完了",
+      "npm": "verify:session-close-git-warn",
+      "wave": "after-go"
+    }
+  ]
+}

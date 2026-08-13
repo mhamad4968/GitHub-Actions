@@ -200,7 +200,7 @@ npm run cio:checkpoint:rollup -- --keep 3
 | 種別 | トリガー例 | 実行 |
 |------|------------|------|
 | **partial** | 一旦終わり / 一旦区切り / OK（区切り） / GO 待ち / 保留 | checkpoint 更新 → **`cio:handoff:append-block`** → `export-handoff` → 復元 1 行 |
-| **full** | 締め / 終わり / お疲れ / 今日はここまで / 反省 | checkpoint → handoff → export → **sync-desktop** → **verify:constitution-evening** → clock:clear → **close-git** |
+| **full / 日終わり** | 締め / 終わり / お疲れ / 今日はここまで / 反省 / **最終セッション** | **浜田が①〜⑦を言わなくても** `cio:day-close -- --until-pause` を自発開始 → 改善案 GO 後に `--after-go`（⑤⑥⑦）。正本 `docs/runbooks/cio-day-close-v1.md` |
 
 **R-SESS-01（2026-06-25 GO）**: full CLOSE では `export-handoff` 後 **`session-starter:sync-desktop` + `verify:desktop-ai-emergency-sync`** を **close-git より前**に必須。
 

@@ -13,13 +13,25 @@ alwaysApply: false
 
 ## 判定順（上から最初にマッチ）
 
+### 0. 毎日最終セッション締め（自発・2026-08-13）
+
+浜田が ①GitHub ②反省 ③改善案 ④承認対応 ⑤commit/push ⑥Desktop入替 ⑦チーム締め を **列挙しなくても** CIO が開始する。
+
+1. `npm run cio:day-close -- --until-pause`（①②。③はチャットで出して **GO 待ち**。close-git しない）
+2. 浜田 GO 後、④を実施してから `npm run cio:day-close -- --after-go`（⑤⑥⑦）
+
+正本: `docs/runbooks/cio-day-close-v1.md`  
+**partial では回さない。** ③の実装を GO 前にしない。
+
 ### 1. full CLOSE（締め儀式 — 返答より先に実行）
 
 **トリガー**（ユーザメッセージに部分一致）:
 
 ```
-締め | 終わり | お疲れ | 今日はここまで | 反省 | セッション終了 | 日終わり
+締め | 終わり | お疲れ | 今日はここまで | 反省 | セッション終了 | 日終わり | 最終セッション
 ```
+
+最終セッションでは **§0 自発 day-close を先に**（①〜③）。GO 後に下記 1〜8。
 
 **最初の tool call 順**（**R-SESS-01 / R-SESS-03** — `session-close-execute-first.mdc` · `data/cio-session-close-chain.json` と同一）:
 

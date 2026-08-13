@@ -780,6 +780,8 @@
     "verify:checkpoint-handoff-template": "node scripts/verify-checkpoint-handoff-template.mjs",
     "cio:handoff:append-block": "node scripts/cio-handoff-append-block.mjs",
     "cio:ops:frame": "node scripts/cio-ops-frame.mjs",
+    "cio:day-close": "node scripts/cio-day-close.mjs",
+    "verify:cio-day-close-infra": "node scripts/verify-cio-day-close-infra.mjs",
     "cio:ops:audit-sheet": "node scripts/cio-ops-audit-sheet.mjs",
     "cio:keiei:draft-pack": "node scripts/cio-keiei-draft-pack.mjs",
     "verify:cio-ops-frame-infra": "node scripts/verify-cio-ops-frame-infra.mjs",

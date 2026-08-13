@@ -24,5 +24,11 @@
       { "id": "APPEND", "npm": "cio:handoff:append-block" },
       { "id": "EXPORT", "npm": "cio:session:export-handoff" }
     ]
+  },
+  "dayClose": {
+    "untilPause": "cio:day-close -- --until-pause",
+    "afterGo": "cio:day-close -- --after-go",
+    "runbook": "docs/runbooks/cio-day-close-v1.md",
+    "note": "最終セッション。③実装は GO 後。partial では回さない。"
   }
 }
