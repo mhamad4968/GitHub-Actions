@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-13T09:46:44.641Z",
+  "scoredAt": "2026-08-13T11:52:55.443Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "項番 -0（次回セッションで浜田指示）。",
+  "topTask": "項番 -0（浜田指示）。",
   "topTaskKind": "work",
-  "topWorkTask": "項番 -0（次回セッションで浜田指示）。",
+  "topWorkTask": "項番 -0（浜田指示）。",
   "tasks": [
     {
-      "id": "checkpoint:項番_-0（次回セッションで浜田指示）。",
-      "text": "項番 -0（次回セッションで浜田指示）。",
+      "id": "checkpoint:項番_-0（浜田指示）。",
+      "text": "項番 -0（浜田指示）。",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,

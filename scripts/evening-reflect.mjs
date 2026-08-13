@@ -373,7 +373,7 @@ const out = `# 🌙 本日のまとめ・反省 — ${today.label}
 
 > 本ファイルは \`scripts/evening-reflect.mjs\` が生成した雛形です。
 > AI（私）はこの内容を読み、要因分析と改善提案（#R1/#S1/#D1...）を追記してユーザーへ提示します。
-> ユーザーが「#R1 承認」「#S1 却下」等で返答 → AI が \`docs/approved-changes/<明日>/\` に承認済み JSON を作成 → 翌朝 06:00 cron が自動実施。
+> ユーザーが承認したら \`docs/approved-changes/YYYY-MM-DD-evening-reflection-hamada-go.md\` を作り、CIO が同一セッションで実装する（cron 自動実施はしない）。
 
 ---
 

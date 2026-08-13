@@ -63,13 +63,14 @@ function afterGo() {
   }
   console.log('[cio:day-close] ④ は CIO が先に実施済みであること。ここから ⑤⑥⑦');
   const chain = [
+    ['cio:checkpoint:sync-live-674', []],
     ['cio:session:export-handoff', []],
     ['verify:session-handoff-integrity', ['--validate-export']],
     ['session-starter:sync-desktop', []],
     ['verify:desktop-ai-emergency-sync', []],
     ['verify:constitution-evening', []],
     ['session:clock:clear', []],
-    ['cio:session:close-git', ['--execute', '--auto-stage']],
+    ['cio:session:close-git', ['--execute', '--auto-stage', '--message', 'chore(close): day-close after evening GO']],
     ['verify:session-close-git-warn', []],
   ];
   for (const [script, args] of chain) {

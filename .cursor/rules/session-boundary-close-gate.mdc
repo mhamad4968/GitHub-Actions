@@ -21,7 +21,8 @@ alwaysApply: false
 2. 浜田 GO 後、④を実施してから `npm run cio:day-close -- --after-go`（⑤⑥⑦）
 
 正本: `docs/runbooks/cio-day-close-v1.md`  
-**partial では回さない。** ③の実装を GO 前にしない。
+**partial では回さない。** ③の実装を GO 前にしない。  
+承認は全GO／個別／見送りの1問。medal はレーン固定・本文で Subagent 未使用。
 
 ### 1. full CLOSE（締め儀式 — 返答より先に実行）
 

@@ -1,0 +1,23 @@
+---
+description: 2026-08-13 夕反省 GO — eod cancelled・day-close・674 live 同期
+alwaysApply: false
+globs:
+  - docs/runbooks/cio-ops-2026-08-13-evening-improvements.md
+  - docs/runbooks/cio-day-close-v1.md
+  - docs/approved-changes/2026-08-13-evening-reflection-hamada-go.md
+  - docs/reports/2026-08-13-evening-reflection.md
+  - scripts/cio-eod-github.mjs
+  - scripts/cio-day-close.mjs
+  - scripts/cio-checkpoint-sync-live-674.mjs
+  - scripts/evening-reflect.mjs
+---
+
+# 夕反省改善（2026-08-13）
+
+正本: `docs/runbooks/cio-ops-2026-08-13-evening-improvements.md`
+
+- cancelled は `classifyGhRuns`。superseded は障害に数えない。
+- day-close は WAKE 必須ゲートにしない。改善実装は GO 後。
+- 674 live 行の更新は `cio:checkpoint:sync-live-674` のみ（customize 非接触）。
+- 80行超 ops は Composer。薄い配線は CIO 可。
+- medal 行はレーン固定。本文で Subagent 未使用を書く。

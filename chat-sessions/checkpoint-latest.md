@@ -1,22 +1,22 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-13 20:00 JST — 最終セッション締めを自発化（day-close）。運用3点型は実装済。
-**次の1手**: 項番 -0（本日の本題は浜田指示）。最終締めは `cio:day-close` 自発。
+**最終更新**: 2026-08-13 20:50 JST — 最終締め GO 反映（day-close 自発）。
+**次の1手**: 項番 -0（浜田指示）。
 **Git**: **`15d52f3f`** = `origin/main` — push 済
 **closeStatus**: closed-day
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=今朝完了**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**
-**本日状態**: 08-13 夜 — AIチーム運用 優先3つ合意＋型実装（枠・監査1枚・9月パック）
+**本日状態**: 08-13 夜 — 最終締め。夕反省全GO（MCP-2/CON-1見送り）
 ### 本日アクティブ（BUILD/rev）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **674** | `2026-08-11-674-search-ime-datalist` | **327** |
+| **674** | `2026-08-13-674-inventory-hist-type` | **328** |
 | **694** | `2026-08-11-694-edit-kind-row-inline` | **24** |
 | **719** | `2026-08-03-wifi-ssid-dash-employee-only-print` | **14** |
 | **721** | `2026-08-03-jr-ipad-dash-print-filter-surf` | **15** |
 | **683** | `2026-08-02-683-print-page2-break-v24` | **112** |
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **318** |
-**674 live fileKey**: `90f7f1da-4a59-4b00-872b-ec896c614a96`
-**継続メモ**: 夕反省 `docs/reports/2026-08-11-evening-reflection.md`／GO `docs/approved-changes/2026-08-11-evening-reflection-hamada-go.md`／674 as-built `docs/plans/2026-08-08-674-replace-inventory-skysea-delete-ux-spec.md`（§1.6〜1.9）。
+**674 live fileKey**: `7ad52ee4-9fc6-4717-a538-687b61b1a127`
+**継続メモ**: 夕反省 `docs/reports/2026-08-13-evening-reflection.md`／GO `docs/approved-changes/2026-08-13-evening-reflection-hamada-go.md`／674 as-built `docs/plans/2026-08-08-674-replace-inventory-skysea-delete-ux-spec.md`（§1.6〜1.9）。
 **GO待ち**: 新アプリ＝相談・GO後のみ。経営会議8月度レポート本体は **完了**（再着手しない）。
 **調査正本**: `docs/plans/2026-08-11-evening-improvements-spec.md`
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`（pre-push/gates）
@@ -49,6 +49,11 @@
 - 合意: 枠は杓子定規にしない／監査は見る用1枚／月次は下書きパック・ネタは浜田渡し
 - 型実装: `cio:ops:frame` / `cio:ops:audit-sheet` / `cio:keiei:draft-pack`（WAKE 必須化しない）
 - 最終締め自発: `cio:day-close -- --until-pause`（①②③ GO待ち）→ GO後 `--after-go`
+
+### 2026-08-13 夜（本日最終締め）
+- 夕反省全GO: `cio-ops-2026-08-13-evening-improvements`（MCP-2/CON-1見送り）
+- #S1 eod cancelled 分類／#D2 674 live 同期／day-close 自発
+- closeStatus: **closed-day**
 
 ## 2026-08-11
 

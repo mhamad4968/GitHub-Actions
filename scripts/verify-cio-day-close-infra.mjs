@@ -28,6 +28,24 @@ function main() {
     console.error('[verify:cio-day-close-infra] NG until-pause wiring');
     process.exit(1);
   }
+  const eod = fs.readFileSync(path.join(root, 'scripts/cio-eod-github.mjs'), 'utf8');
+  if (!eod.includes('classifyGhRuns')) {
+    console.error('[verify:cio-day-close-infra] NG eod classifyGhRuns');
+    process.exit(1);
+  }
+  const evening = fs.readFileSync(path.join(root, 'scripts/evening-reflect.mjs'), 'utf8');
+  if (evening.includes('翌朝 06:00 cron')) {
+    console.error('[verify:cio-day-close-infra] NG evening cron auto');
+    process.exit(1);
+  }
+  if (!src.includes('cio:checkpoint:sync-live-674')) {
+    console.error('[verify:cio-day-close-infra] NG after-go live-674');
+    process.exit(1);
+  }
+  if (!src.includes('--message')) {
+    console.error('[verify:cio-day-close-infra] NG close-git message');
+    process.exit(1);
+  }
   const until = src.slice(src.indexOf('function untilPause'), src.indexOf('function afterGo'));
   if (until.includes('cio:session:close-git')) {
     console.error('[verify:cio-day-close-infra] NG until-pause must not close-git');
