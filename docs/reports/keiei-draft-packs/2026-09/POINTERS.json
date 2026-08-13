@@ -1,0 +1,8 @@
+{
+  "month": "2026-09",
+  "recommendedBaseId": "2026-08-meeting-202607-report",
+  "recommendedBasePath": "C:\\\\tmp\\\\資料作成\\\\【2026年8月度経営会議資料】2026年07月情報セキュリティレポート.docx",
+  "netaRunbook": "docs/runbooks/keiei-kaigi-neta-from-security-next.md",
+  "reportRunbook": "docs/runbooks/keiei-kaigi-security-report.md",
+  "note": "ネタ先出し禁止。8月度 completed は再着手しない。"
+}

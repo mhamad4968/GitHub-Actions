@@ -1,0 +1,35 @@
+{
+  "version": "2026-08-13",
+  "note": "枠のリマインダ。杓子定規にしない。項番 -0 が勝つ。skip しても失敗にしない。",
+  "itemZeroWins": true,
+  "skipAllowed": true,
+  "notAGate": true,
+  "items": [
+    {
+      "id": "session-shell",
+      "when": "every-session",
+      "label": "WAKE → 本題（項番 -0）→ CLOSE（話したこと）",
+      "npm": []
+    },
+    {
+      "id": "friday-usage",
+      "when": "friday",
+      "label": "金曜・反省直後 usage 更新",
+      "npm": ["mcp-status:refresh-usage"],
+      "runbook": "docs/runbooks/cio-friday-mcp-status-refresh-4ai.md"
+    },
+    {
+      "id": "weekly-env",
+      "when": "weekly",
+      "label": "週次 env:enhance（大変更時 --full）",
+      "npm": ["cio:env:enhance"]
+    },
+    {
+      "id": "monthly-draft-pack",
+      "when": "monthly",
+      "label": "月次は下書きパックまで。ネタは浜田渡し。出ないときだけ相談",
+      "npm": ["cio:keiei:draft-pack"],
+      "runbook": "docs/runbooks/keiei-kaigi-security-report.md"
+    }
+  ]
+}

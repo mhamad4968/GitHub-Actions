@@ -33,6 +33,8 @@
 `docs/runbooks/keiei-kaigi-neta-from-security-next.md`（保存先 `C:\tmp\資料作成\ネタ保存用\`）。  
 依頼例「経営会議〇月のネタを作って」。**ネタ作成と本レポート作成を混ぜない**。
 
+**下書きパック（2026-08-13）**: `npm run cio:keiei:draft-pack`。下書きはあってよい。周知ネタは **浜田が考えて渡す**（出ないときだけ相談）。仕上げは浜田。自動化率は見ない。完了済み月次本体は再着手しない。正本 `docs/runbooks/cio-ops-frame-audit-pack-v1.md`。
+
 **専用 ChatGPT MCP**: **見送り**（月次 doc-lane + ⑥ OpenRouter で足りる — `docs/plans/2026-07-04-ai-team-six-roles-spec.md`）。
 
 ---
