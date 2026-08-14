@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-list-toolbar-contrast";
+  var BUILD = "2026-08-15-715-list-org-multiselect";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -848,7 +848,10 @@
       ".swl-e595-err{color:#b91c1c;}" +
       ".swl-e595-foot{margin-top:12px;text-align:right;}" +
       ".swl-list-modal-bg{position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
-      ".swl-list-modal{background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px 22px;}" +
+      ".swl-list-modal{background:#fff;border-radius:10px;max-width:640px;width:100%;padding:20px 22px;}" +
+      ".swl-list-picks{display:flex;flex-wrap:wrap;gap:6px;max-height:140px;overflow:auto;margin:0 0 10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;}" +
+      ".swl-list-picks label{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:400;margin:0;cursor:pointer;}" +
+      ".swl-list-pick-bar{display:flex;gap:8px;margin:0 0 6px;}" +
       ".swl-list-loading{position:fixed;inset:0;z-index:10003;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;}" +
       ".swl-list-panel{position:fixed;inset:0;z-index:10004;background:#f8fafc;display:flex;flex-direction:column;}" +
       ".swl-list-toolbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;background:#f1f5f9;color:#0f172a;border-bottom:1px solid #cbd5e1;}" +
@@ -1533,6 +1536,18 @@
     parts.push("(" + field + ' like "' + escapeQueryValue(v) + '")');
   }
 
+  function appendListEqualsOr(parts, field, values) {
+    if (!values || !values.length) return;
+    if (values.length === 1) {
+      parts.push(field + ' = "' + escapeQueryValue(values[0]) + '"');
+      return;
+    }
+    var orParts = values.map(function (v) {
+      return field + ' = "' + escapeQueryValue(v) + '"';
+    });
+    parts.push("(" + orParts.join(" or ") + ")");
+  }
+
   function buildListQuery(opts) {
     var parts = [];
     if (opts.includeMain) {
@@ -1541,8 +1556,8 @@
       var q = state.search.trim();
       if (q) appendListLike(parts, FC.software_name, q);
     }
-    appendListLike(parts, FC.dept_name, opts.dept_name);
-    appendListLike(parts, FC.group_name, opts.group_name);
+    appendListEqualsOr(parts, FC.dept_name, opts.dept_names);
+    appendListEqualsOr(parts, FC.group_name, opts.group_names);
     if (opts.emp_id) parts.push(FC.emp_id + ' = "' + escapeQueryValue(opts.emp_id) + '"');
     else appendListLike(parts, FC.user_name, opts.user_name);
     appendListLike(parts, FC.software_name, opts.software_name);
@@ -1711,12 +1726,16 @@
   }
 
   function resetListForm() {
-    ["swl-list-dept", "swl-list-group", "swl-list-user", "swl-list-emp", "swl-list-sw"].forEach(
-      function (id) {
-        var el = document.getElementById(id);
-        if (el) el.value = "";
-      },
-    );
+    ["swl-list-user", "swl-list-emp", "swl-list-sw"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    document.querySelectorAll('input[name="swl-list-dept"]').forEach(function (cb) {
+      cb.checked = false;
+    });
+    document.querySelectorAll('input[name="swl-list-group"]').forEach(function (cb) {
+      cb.checked = false;
+    });
     var merge = document.getElementById("swl-list-merge");
     if (merge) merge.checked = false;
     document.querySelectorAll('input[name="swl-list-status"]').forEach(function (cb, i) {
@@ -1724,9 +1743,55 @@
     });
   }
 
+  function fillListOrgPicks() {
+    var deptBox = document.getElementById("swl-list-dept-picks");
+    var groupBox = document.getElementById("swl-list-group-picks");
+    if (!deptBox || !groupBox) return;
+    var depts = distinctValues(state.records, "dept_name");
+    var groups = distinctValues(state.records, "group_name");
+    if (!depts.length) {
+      deptBox.innerHTML =
+        '<span style="font-size:12px;color:#64748b;">台帳に値がありません</span>';
+    } else {
+      deptBox.innerHTML = depts
+        .map(function (d) {
+          return (
+            '<label><input type="checkbox" name="swl-list-dept" value="' +
+            esc(d) +
+            '"> ' +
+            esc(d) +
+            "</label>"
+          );
+        })
+        .join("");
+    }
+    if (!groups.length) {
+      groupBox.innerHTML =
+        '<span style="font-size:12px;color:#64748b;">台帳に値がありません</span>';
+    } else {
+      groupBox.innerHTML = groups
+        .map(function (g) {
+          return (
+            '<label><input type="checkbox" name="swl-list-group" value="' +
+            esc(g) +
+            '"> ' +
+            esc(g) +
+            "</label>"
+          );
+        })
+        .join("");
+    }
+  }
+
   function runListQueryFromModal() {
-    var dept = (document.getElementById("swl-list-dept") || {}).value || "";
-    var group = (document.getElementById("swl-list-group") || {}).value || "";
+    var deptNames = [];
+    document.querySelectorAll('input[name="swl-list-dept"]:checked').forEach(function (cb) {
+      deptNames.push(cb.value);
+    });
+    var groupNames = [];
+    document.querySelectorAll('input[name="swl-list-group"]:checked').forEach(function (cb) {
+      groupNames.push(cb.value);
+    });
     var user = (document.getElementById("swl-list-user") || {}).value || "";
     var emp = (document.getElementById("swl-list-emp") || {}).value || "";
     var sw = (document.getElementById("swl-list-sw") || {}).value || "";
@@ -1740,8 +1805,8 @@
       return;
     }
     var q = buildListQuery({
-      dept_name: dept,
-      group_name: group,
+      dept_names: deptNames,
+      group_names: groupNames,
       user_name: user,
       emp_id: emp,
       software_name: sw,
@@ -1751,9 +1816,9 @@
     var sortEmp = !!(String(emp).trim() || String(user).trim());
     var summary =
       "所属: " +
-      (dept.trim() || "（指定なし）") +
+      (deptNames.length ? deptNames.join("・") : "（指定なし）") +
       "　／　グループ: " +
-      (group.trim() || "（指定なし）") +
+      (groupNames.length ? groupNames.join("・") : "（指定なし）") +
       "　／　社員: " +
       (emp.trim() || user.trim() || "（指定なし）") +
       "　／　ステータス: " +
@@ -1782,10 +1847,18 @@
         '<div class="swl-list-modal">' +
         "<h2 style=\"margin:0 0 12px;font-size:17px;\">リスト一覧を作成</h2>" +
         '<p style="font-size:13px;color:#475569;margin:0 0 14px;">条件に合うレコードを表示し、印刷できます（横向き）。</p>' +
-        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属名（部分一致）</label>' +
-        '<input type="text" id="swl-list-dept" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
-        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属グループ（部分一致）</label>' +
-        '<input type="text" id="swl-list-group" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属名（複数選択可・未選択は指定なし）</label>' +
+        '<div class="swl-list-pick-bar">' +
+        '<button type="button" id="swl-list-dept-all" class="kintoneplugin-button-normal">すべて</button>' +
+        '<button type="button" id="swl-list-dept-none" class="kintoneplugin-button-normal">解除</button>' +
+        "</div>" +
+        '<div id="swl-list-dept-picks" class="swl-list-picks"></div>' +
+        '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属グループ（複数選択可・未選択は指定なし）</label>' +
+        '<div class="swl-list-pick-bar">' +
+        '<button type="button" id="swl-list-group-all" class="kintoneplugin-button-normal">すべて</button>' +
+        '<button type="button" id="swl-list-group-none" class="kintoneplugin-button-normal">解除</button>' +
+        "</div>" +
+        '<div id="swl-list-group-picks" class="swl-list-picks"></div>' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">利用者名（部分一致）</label>' +
         '<input type="text" id="swl-list-user" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:8px;">' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">社員番号（完全一致）</label>' +
@@ -1818,8 +1891,37 @@
           if (userEl) userEl.value = emp.user_name || "";
         });
       });
+      backdrop.querySelector("#swl-list-dept-all").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-dept-picks input[name="swl-list-dept"]')
+          .forEach(function (cb) {
+            cb.checked = true;
+          });
+      });
+      backdrop.querySelector("#swl-list-dept-none").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-dept-picks input[name="swl-list-dept"]')
+          .forEach(function (cb) {
+            cb.checked = false;
+          });
+      });
+      backdrop.querySelector("#swl-list-group-all").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-group-picks input[name="swl-list-group"]')
+          .forEach(function (cb) {
+            cb.checked = true;
+          });
+      });
+      backdrop.querySelector("#swl-list-group-none").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-group-picks input[name="swl-list-group"]')
+          .forEach(function (cb) {
+            cb.checked = false;
+          });
+      });
     }
     resetListForm();
+    fillListOrgPicks();
     if (prefill.emp_id) {
       var empEl = document.getElementById("swl-list-emp");
       if (empEl) empEl.value = prefill.emp_id;
