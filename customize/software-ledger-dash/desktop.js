@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-purchase-date-label";
+  var BUILD = "2026-08-15-715-filter-accordion";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -802,6 +802,21 @@
       ".swl-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
       ".swl-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
       ".swl-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:8px 12px;background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;}" +
+      ".swl-filter-acc{margin:0 0 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;}" +
+      ".swl-filter-sum{cursor:pointer;padding:8px 12px;font-weight:700;background:#f1f5f9;list-style:none;}" +
+      ".swl-filter-sum::-webkit-details-marker{display:none;}" +
+      ".swl-acc-hint{margin-left:10px;font-weight:400;font-size:12px;color:#475569;}" +
+      ".swl-filter-acc-body{padding:10px 12px;}" +
+      ".swl-chip-sec{margin:0 0 10px;padding:10px 12px;border-radius:8px;}" +
+      ".swl-chip-sec--dept{background:#eff6ff;border:1px solid #93c5fd;}" +
+      ".swl-chip-sec--dept .swl-chip-sec-title{color:#1d4ed8;font-size:12px;font-weight:700;margin:0 0 8px;}" +
+      ".swl-chip-sec--user{background:#f0fdf4;border:1px solid #86efac;}" +
+      ".swl-chip-sec--user .swl-chip-sec-title{color:#15803d;font-size:12px;font-weight:700;margin:0 0 8px;}" +
+      ".swl-chip-sec--dept .swl-chip--active{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}" +
+      ".swl-chip-sec--user .swl-chip--active{background:#15803d;color:#fff;border-color:#15803d;}" +
+      ".swl-chip-sec .swl-chips{margin-bottom:0;}" +
+      ".swl-filter-sum:after{content:\"\\25bc\";float:right;font-size:10px;color:#64748b;}" +
+      ".swl-filter-acc:not([open]) > .swl-filter-sum:after{content:\"\\25b6\";}" +
       ".swl-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}" +
       ".swl-chip{padding:4px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:12px;cursor:pointer;}" +
       ".swl-chip--active{background:#0369a1;color:#fff;border-color:#0369a1;}" +
@@ -1134,6 +1149,21 @@
     });
   }
 
+  function updateAccHint() {
+    var el = document.getElementById("swl-acc-hint");
+    if (!el) return;
+    var parts = [];
+    if (state.filter === "retired") {
+      parts.push("廃止");
+    } else if (state.deptFilter || state.userFilter || state.search.trim()) {
+      parts.push("利用中");
+    }
+    if (state.deptFilter) parts.push("所属:" + esc(state.deptFilter));
+    if (state.userFilter) parts.push("利用者:" + esc(state.userFilter));
+    if (state.search.trim()) parts.push("検索:" + esc(state.search.trim()));
+    el.innerHTML = parts.join("　");
+  }
+
   function renderChips() {
     var deptEl = document.getElementById("swl-dept-chips");
     var userEl = document.getElementById("swl-user-chips");
@@ -1141,30 +1171,27 @@
     var base = visibleRecords();
     var depts = distinctValues(base, "dept_name");
     var users = distinctValues(base, "user_name");
-    deptEl.innerHTML =
-      '<span class="swl-chip-label">所属:</span>' +
-      depts
-        .map(function (d) {
-          return (
-            '<button type="button" class="swl-chip' +
-            (state.deptFilter === d ? " swl-chip--active" : "") +
-            '" data-dept="' +
-            esc(d) +
-            '">' +
-            esc(d) +
-            "</button>"
-          );
-        })
-        .join("");
-    var userHtml = '<span class="swl-chip-label">利用者:</span>';
+    deptEl.innerHTML = depts
+      .map(function (d) {
+        return (
+          '<button type="button" class="swl-chip' +
+          (state.deptFilter === d ? " swl-chip--active" : "") +
+          '" data-dept="' +
+          esc(d) +
+          '">' +
+          esc(d) +
+          "</button>"
+        );
+      })
+      .join("");
+    var userHtml = "";
     if (state.userFilter) {
       userHtml +=
         '<button type="button" class="swl-chip swl-chip--active" data-user-clear="1" title="クリックで解除">' +
         esc(state.userFilter) +
         " ×</button>";
     } else {
-      userHtml +=
-        '<span class="swl-chip-hint">未選択（全員表示）</span>';
+      userHtml += '<span class="swl-chip-hint">未選択（全員表示）</span>';
     }
     userHtml +=
       '<button type="button" id="swl-user-pick-filter" class="kintoneplugin-button-normal swl-user-filter-btn">社員で絞る</button>';
@@ -1203,6 +1230,7 @@
         });
       });
     }
+    updateAccHint();
   }
 
   function updateSortHeaders() {
@@ -1468,11 +1496,14 @@
     if (!tbody) return;
     if (state.loading) {
       tbody.innerHTML = '<tr><td colspan="' + TABLE_VISUAL_COLS + '">読込中…</td></tr>';
+      updateAccHint();
       return;
     }
     var rows = filteredRecords();
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="' + TABLE_VISUAL_COLS + '">該当なし</td></tr>';
+      updateSortHeaders();
+      updateAccHint();
       return;
     }
     tbody.innerHTML = rows
@@ -1512,6 +1543,7 @@
       });
     });
     updateSortHeaders();
+    updateAccHint();
   }
 
   function clearFilters() {
@@ -1528,6 +1560,7 @@
     renderChips();
     updateSortHeaders();
     renderTable();
+    updateAccHint();
   }
 
   function appendListLike(parts, field, raw) {
@@ -1948,6 +1981,13 @@
       '<button type="button" id="swl-list-create" class="kintoneplugin-button-normal">リスト一覧作成</button>' +
       '<button type="button" id="swl-print-main" class="kintoneplugin-button-normal">一覧を印刷</button>' +
       "</div>" +
+      '<div id="swl-meta" class="swl-meta"></div>' +
+      '<details id="swl-filter-acc" class="swl-filter-acc" open>' +
+      '<summary class="swl-filter-sum">' +
+      "<span>絞り込み</span>" +
+      '<span id="swl-acc-hint" class="swl-acc-hint"></span>' +
+      "</summary>" +
+      '<div class="swl-filter-acc-body">' +
       '<div class="swl-toolbar">' +
       '<label><input type="radio" name="swl-filter" value="active"' +
       (state.filter === "active" ? " checked" : "") +
@@ -1956,9 +1996,16 @@
       '<input type="search" id="swl-search" placeholder="製品名・バージョン・ソフトウエアの情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
       '<button type="button" id="swl-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
-      '<div id="swl-meta" class="swl-meta"></div>' +
+      '<div class="swl-chip-sec swl-chip-sec--dept">' +
+      '<div class="swl-chip-sec-title">所属</div>' +
       '<div id="swl-dept-chips" class="swl-chips"></div>' +
+      "</div>" +
+      '<div class="swl-chip-sec swl-chip-sec--user">' +
+      '<div class="swl-chip-sec-title">利用者</div>' +
       '<div id="swl-user-chips" class="swl-chips"></div>' +
+      "</div>" +
+      "</div>" +
+      "</details>" +
       '<div class="swl-table-wrap"><table class="swl-table"><thead><tr>' +
       TABLE_COLUMNS.map(function (c) {
         if (!c.sort) return "<th>" + esc(c.label) + "</th>";
