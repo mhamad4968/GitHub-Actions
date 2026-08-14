@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-list-org-multiselect";
+  var BUILD = "2026-08-15-715-purchase-date-label";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -924,7 +924,7 @@
   function buildTableRowHtml(r, includeActions, linkUser) {
     var cls = r.status === STATUS_RETIRED ? "retired" : "";
     var dateCell =
-      esc(r.purchase_date) +
+      (r.purchase_date ? "購入日：" + esc(r.purchase_date) : "") +
       (r.registered_date
         ? '<span class="swl-cell-sub">登録 ' + esc(r.registered_date) + "</span>"
         : "");
