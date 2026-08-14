@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-06-17-software-ledger-user-filter-compact";
+  var BUILD = "2026-08-15-715-ui-readability-v11";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -68,17 +68,17 @@
   var TABLE_COLUMNS = [
     { key: "legacy_no", label: "管理番号", sort: true },
     { key: "status", label: "状態", sort: true },
-    { key: "registered_date", label: "登録日", sort: true },
-    { key: "purchase_date", label: "購入日", sort: true },
+    { key: "purchase_date", label: "日付", sort: true },
     { key: "license_type", label: "ライセンス", sort: true },
-    { key: "software_name", label: "製品名", sort: true },
-    { key: "model_number", label: "型番", sort: true },
+    { key: "software_name", label: "製品", sort: true },
     { key: "ident", label: "ソフトウエアの情報", sort: false },
-    { key: "emp_id", label: "社員番号", sort: false },
-    { key: "user_name", label: "氏名", sort: true },
-    { key: "dept_name", label: "所属名", sort: true },
-    { key: "group_name", label: "グループ", sort: true },
+    { key: "user_name", label: "利用者", sort: true },
+    { key: "dept_name", label: "所属", sort: true },
   ];
+
+  var MAIN_PRINT_ID = "swl-main-print";
+  var MAIN_PRINT_STYLE_ID = "swl-main-print-style";
+  var TABLE_VISUAL_COLS = 9;
 
   var LIST_TABLE_COLS = [
     { key: "legacy_no", label: "管理番号" },
@@ -801,7 +801,7 @@
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".swl-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
       ".swl-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".swl-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;}" +
+      ".swl-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:8px 12px;background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;}" +
       ".swl-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}" +
       ".swl-chip{padding:4px 10px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;font-size:12px;cursor:pointer;}" +
       ".swl-chip--active{background:#0369a1;color:#fff;border-color:#0369a1;}" +
@@ -809,9 +809,10 @@
       ".swl-chip-hint{font-size:12px;color:#64748b;margin-right:6px;}" +
       ".swl-user-filter-btn{margin-left:4px;padding:4px 10px;font-size:12px;}" +
       ".swl-table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".swl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1400px;}" +
-      ".swl-table th,.swl-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".swl-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".swl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;}" +
+      ".swl-table th,.swl-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;}" +
+      ".swl-table th{background:#f1f5f9;position:sticky;top:0;z-index:3;}" +
+      ".swl-table tbody tr:nth-child(even){background:#f8fafc;}" +
       ".swl-table th.swl-sort{cursor:pointer;user-select:none;white-space:nowrap;}" +
       ".swl-table th.swl-sort:hover{background:#e2e8f0;}" +
       ".swl-sort-ind{display:inline-block;margin-left:4px;font-size:10px;color:#94a3b8;}" +
@@ -819,9 +820,16 @@
       ".swl-table tr.retired{background:#f8fafc;color:#64748b;}" +
       ".swl-user-link{color:#0369a1;cursor:pointer;text-decoration:underline;}" +
       ".swl-ident{font-family:Consolas,Monaco,monospace;font-size:11px;word-break:break-all;}" +
-      ".swl-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
+      ".swl-cell-sub{display:block;font-size:11px;color:#64748b;margin-top:2px;}" +
+      ".swl-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;}" +
+      ".swl-pill--active{background:#dcfce7;color:#166534;}" +
+      ".swl-pill--retired{background:#e2e8f0;color:#475569;}" +
+      ".swl-actions{white-space:normal;min-width:168px;}" +
+      ".swl-actions button{margin:2px;padding:2px 6px;font-size:11px;}" +
       ".swl-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
-      ".swl-modal{background:#fff;border-radius:8px;padding:16px 18px;max-width:560px;width:92%;max-height:90vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2);}" +
+      ".swl-modal{background:#fff;border-radius:8px;padding:16px 18px;max-width:640px;width:92%;max-height:90vh;overflow:auto;}" +
+      ".swl-sec{margin:0 0 12px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;}" +
+      ".swl-sec-title{font-size:12px;font-weight:700;color:#0f172a;margin:0 0 8px;}" +
       ".swl-modal h3{margin:0 0 12px;font-size:16px;}" +
       ".swl-modal label{display:block;margin:8px 0;font-size:13px;}" +
       ".swl-modal input,.swl-modal select,.swl-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
@@ -877,6 +885,173 @@
       LIST_PANEL_ID +
       " .swl-list-print-head{display:block!important;}}";
     document.head.appendChild(st);
+  }
+
+  function ensureMainPrintStyles() {
+    if (document.getElementById(MAIN_PRINT_STYLE_ID)) return;
+    var st = document.createElement("style");
+    st.id = MAIN_PRINT_STYLE_ID;
+    st.textContent =
+      "#" +
+      MAIN_PRINT_ID +
+      "{display:none;}" +
+      "@media print{" +
+      "body.swl-printing-main *{visibility:hidden!important;}" +
+      "body.swl-printing-main #" +
+      MAIN_PRINT_ID +
+      ",body.swl-printing-main #" +
+      MAIN_PRINT_ID +
+      " *{visibility:visible!important;}" +
+      "body.swl-printing-main #" +
+      MAIN_PRINT_ID +
+      "{display:block!important;position:absolute!important;left:0;top:0;width:100%;background:#fff;}" +
+      "@page{size:landscape;margin:10mm;}" +
+      "}";
+    document.head.appendChild(st);
+  }
+
+  function statusPillHtml(status) {
+    if (status === STATUS_ACTIVE) {
+      return '<span class="swl-pill swl-pill--active">' + esc(STATUS_ACTIVE) + "</span>";
+    }
+    return '<span class="swl-pill swl-pill--retired">' + esc(STATUS_RETIRED) + "</span>";
+  }
+
+  function buildTableRowHtml(r, includeActions, linkUser) {
+    var cls = r.status === STATUS_RETIRED ? "retired" : "";
+    var dateCell =
+      esc(r.purchase_date) +
+      (r.registered_date
+        ? '<span class="swl-cell-sub">登録 ' + esc(r.registered_date) + "</span>"
+        : "");
+    var productCell =
+      "<strong>" +
+      esc(r.software_name) +
+      "</strong>" +
+      (r.model_number
+        ? '<span class="swl-cell-sub">型番 ' + esc(r.model_number) + "</span>"
+        : "");
+    var userCell;
+    if (linkUser) {
+      userCell =
+        '<span class="swl-user-link" data-user="' +
+        esc(r.user_name) +
+        '">' +
+        esc(r.user_name) +
+        "</span>";
+    } else {
+      userCell = esc(r.user_name);
+    }
+    if (r.emp_id) userCell += '<span class="swl-cell-sub">' + esc(r.emp_id) + "</span>";
+    var deptCell =
+      esc(r.dept_name) +
+      (r.group_name ? '<span class="swl-cell-sub">' + esc(r.group_name) + "</span>" : "");
+    var html =
+      '<tr class="' +
+      cls +
+      '" data-id="' +
+      esc(r.id) +
+      '">' +
+      "<td>" +
+      esc(r.legacy_no) +
+      "</td><td>" +
+      statusPillHtml(r.status) +
+      "</td><td>" +
+      dateCell +
+      "</td><td>" +
+      esc(r.license_type) +
+      "</td><td>" +
+      productCell +
+      '</td><td class="swl-ident">' +
+      esc(r.ident) +
+      "</td><td>" +
+      userCell +
+      "</td><td>" +
+      deptCell +
+      "</td>";
+    if (includeActions) {
+      html +=
+        '<td class="swl-actions">' +
+        '<button type="button" class="swl-btn-edit">編集</button>' +
+        (r.status === STATUS_ACTIVE
+          ? '<button type="button" class="swl-btn-retire">廃止</button>'
+          : "") +
+        '<button type="button" class="swl-btn-del">削除</button>' +
+        '<button type="button" class="swl-btn-user-list">この社員のリスト</button>' +
+        "</td>";
+    }
+    html += "</tr>";
+    return html;
+  }
+
+  function buildMainPrintFilterText() {
+    var parts = [];
+    parts.push(
+      "フィルタ: " + (state.filter === "active" ? "利用中" : state.filter === "retired" ? "廃止" : state.filter),
+    );
+    if (state.deptFilter) parts.push("所属: " + state.deptFilter);
+    if (state.userFilter) parts.push("利用者: " + state.userFilter);
+    if (state.search.trim()) parts.push("検索: " + state.search.trim());
+    return parts.join("　");
+  }
+
+  function printMainTable() {
+    ensureMainPrintStyles();
+    var listPanel = document.getElementById(LIST_PANEL_ID);
+    var listPrevDisplay = "";
+    var listWasHidden = false;
+    if (listPanel && listPanel.style.display !== "none") {
+      listPrevDisplay = listPanel.style.display;
+      listPanel.style.display = "none";
+      listWasHidden = true;
+    }
+    var existing = document.getElementById(MAIN_PRINT_ID);
+    if (existing) existing.remove();
+    var rows = filteredRecords();
+    var el = document.createElement("div");
+    el.id = MAIN_PRINT_ID;
+    var filterText = buildMainPrintFilterText();
+    el.innerHTML =
+      '<h1 style="margin:0 0 8px;font-size:18px;">ソフトウエア管理台帳ver.1</h1>' +
+      '<p style="margin:0;font-size:13px;">出力日: ' +
+      esc(todayJstYmd()) +
+      "　件数: " +
+      rows.length +
+      "件</p>" +
+      '<p style="margin:4px 0 12px;font-size:12px;color:#64748b;">' +
+      esc(filterText) +
+      "</p>" +
+      '<table class="swl-table" style="min-width:auto;"><thead><tr>' +
+      TABLE_COLUMNS.map(function (c) {
+        return "<th>" + esc(c.label) + "</th>";
+      }).join("") +
+      '</tr></thead><tbody>' +
+      (rows.length
+        ? rows
+            .map(function (r) {
+              return buildTableRowHtml(r, false, false);
+            })
+            .join("")
+        : '<tr><td colspan="' + TABLE_COLUMNS.length + '">該当なし</td></tr>') +
+      "</tbody></table>";
+    document.body.appendChild(el);
+    var cleaned = false;
+    function cleanup() {
+      if (cleaned) return;
+      cleaned = true;
+      document.body.classList.remove("swl-printing-main");
+      var printEl = document.getElementById(MAIN_PRINT_ID);
+      if (printEl) printEl.remove();
+      if (listPanel && listWasHidden) listPanel.style.display = listPrevDisplay || "flex";
+    }
+    function onAfterPrint() {
+      cleanup();
+      window.removeEventListener("afterprint", onAfterPrint);
+    }
+    window.addEventListener("afterprint", onAfterPrint);
+    document.body.classList.add("swl-printing-main");
+    window.print();
+    setTimeout(cleanup, 1000);
   }
 
   function resolveMountHost() {
@@ -1093,16 +1268,22 @@
     var today = todayJstYmd();
     var box = openModal(
       "新規登録",
-      '<label>ライセンス種別<select id="swl-license-type">' +
+      '<div class="swl-sec"><div class="swl-sec-title">製品</div>' +
+        '<label>ライセンス種別<select id="swl-license-type">' +
         licenseOptionsHtml("") +
         '</select></label><label>製品名<input id="swl-software-name"></label>' +
-        '<label>型番<input id="swl-model-number"></label>' +
+        '<label>型番<input id="swl-model-number"></label></div>' +
+        '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
         buildIdSlotsHtml(null, 1) +
+        "</div>" +
+        '<div class="swl-sec"><div class="swl-sec-title">利用者</div>' +
         employeeFieldsHtml(null) +
+        "</div>" +
+        '<div class="swl-sec"><div class="swl-sec-title">日付・備考</div>' +
         '<label>購入日<input type="date" id="swl-purchase-date" value="' +
         esc(today) +
         '"></label>' +
-        '<label>備考<textarea id="swl-note" rows="3"></textarea></label>',
+        '<label>備考<textarea id="swl-note" rows="3"></textarea></label></div>',
       [
         { label: "キャンセル" },
         {
@@ -1130,21 +1311,27 @@
       "</strong>（変更不可）</p>";
     var box = openModal(
       "編集 — No." + row.legacy_no,
-      statusHtml +
+      '<div class="swl-sec"><div class="swl-sec-title">製品</div>' +
         '<label>ライセンス種別<select id="swl-license-type">' +
         licenseOptionsHtml(row.license_type) +
         '</select></label><label>製品名<input id="swl-software-name" value="' +
         esc(row.software_name) +
         '"></label><label>型番<input id="swl-model-number" value="' +
         esc(row.model_number) +
-        '"></label>' +
+        '"></label></div>' +
+        '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
         buildIdSlotsHtml(row) +
+        "</div>" +
+        '<div class="swl-sec"><div class="swl-sec-title">利用者</div>' +
         employeeFieldsHtml(row) +
+        "</div>" +
+        '<div class="swl-sec"><div class="swl-sec-title">日付・備考</div>' +
+        statusHtml +
         '<label>購入日<input type="date" id="swl-purchase-date" value="' +
         esc(row.purchase_date) +
         '"></label><label>備考<textarea id="swl-note" rows="3">' +
         esc(row.note) +
-        "</textarea></label>",
+        "</textarea></label></div>",
       [
         { label: "キャンセル" },
         {
@@ -1277,58 +1464,17 @@
     var tbody = document.getElementById("swl-tbody");
     if (!tbody) return;
     if (state.loading) {
-      tbody.innerHTML = '<tr><td colspan="13">読込中…</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="' + TABLE_VISUAL_COLS + '">読込中…</td></tr>';
       return;
     }
     var rows = filteredRecords();
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="13">該当なし</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="' + TABLE_VISUAL_COLS + '">該当なし</td></tr>';
       return;
     }
     tbody.innerHTML = rows
       .map(function (r) {
-        var cls = r.status === STATUS_RETIRED ? "retired" : "";
-        return (
-          '<tr class="' +
-          cls +
-          '" data-id="' +
-          esc(r.id) +
-          '">' +
-          "<td>" +
-          esc(r.legacy_no) +
-          "</td><td>" +
-          esc(r.status) +
-          "</td><td>" +
-          esc(r.registered_date) +
-          "</td><td>" +
-          esc(r.purchase_date) +
-          "</td><td>" +
-          esc(r.license_type) +
-          "</td><td>" +
-          esc(r.software_name) +
-          "</td><td>" +
-          esc(r.model_number) +
-          '</td><td class="swl-ident">' +
-          esc(r.ident) +
-          "</td><td>" +
-          esc(r.emp_id) +
-          '</td><td><span class="swl-user-link" data-user="' +
-          esc(r.user_name) +
-          '">' +
-          esc(r.user_name) +
-          "</span></td><td>" +
-          esc(r.dept_name) +
-          "</td><td>" +
-          esc(r.group_name) +
-          '</td><td class="swl-actions">' +
-          '<button type="button" class="swl-btn-edit">編集</button>' +
-          (r.status === STATUS_ACTIVE
-            ? '<button type="button" class="swl-btn-retire">廃止</button>'
-            : "") +
-          '<button type="button" class="swl-btn-del">削除</button>' +
-          '<button type="button" class="swl-btn-user-list">この社員のリスト</button>' +
-          "</td></tr>"
-        );
+        return buildTableRowHtml(r, true, true);
       })
       .join("");
 
@@ -1698,6 +1844,7 @@
       '<button type="button" id="swl-reload" class="kintoneplugin-button-normal">再読込</button>' +
       '<button type="button" id="swl-new" class="kintoneplugin-button-dialog-ok">新規登録</button>' +
       '<button type="button" id="swl-list-create" class="kintoneplugin-button-normal">リスト一覧作成</button>' +
+      '<button type="button" id="swl-print-main" class="kintoneplugin-button-normal">一覧を印刷</button>' +
       "</div>" +
       '<div class="swl-toolbar">' +
       '<label><input type="radio" name="swl-filter" value="active"' +
@@ -1740,6 +1887,7 @@
     document.getElementById("swl-list-create").addEventListener("click", function () {
       openListCreateModal();
     });
+    document.getElementById("swl-print-main").addEventListener("click", printMainTable);
     document.querySelectorAll('input[name="swl-filter"]').forEach(function (rb) {
       rb.addEventListener("change", function () {
         if (rb.checked) {
