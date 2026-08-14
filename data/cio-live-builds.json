@@ -242,11 +242,11 @@
       "note": null
     },
     "715": {
-      "build": "2026-08-15-715-list-dept-680",
-      "fileKey": "568037c4-deca-424e-b304-a7b6d3b0dba9",
-      "revision": "21",
+      "build": "2026-08-15-715-filter-acc-closed",
+      "fileKey": "c039a67d-47c2-45c7-97c8-d9b758bfad39",
+      "revision": "22",
       "relPath": "customize/software-ledger-dash/desktop.js",
-      "deployedAt": "2026-08-14T23:55:08.281Z",
+      "deployedAt": "2026-08-14T23:58:05.824Z",
       "note": null
     },
     "716": {

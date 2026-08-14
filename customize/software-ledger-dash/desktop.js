@@ -5,7 +5,7 @@
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
   var APP_DEPT_MASTER = 680;
-  var BUILD = "2026-08-15-715-list-dept-680";
+  var BUILD = "2026-08-15-715-filter-acc-closed";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya" },
@@ -2157,9 +2157,9 @@
       '<button type="button" id="swl-print-main" class="kintoneplugin-button-normal">一覧を印刷</button>' +
       "</div>" +
       '<div id="swl-meta" class="swl-meta"></div>' +
-      '<details id="swl-filter-acc" class="swl-filter-acc" open>' +
+      '<details id="swl-filter-acc" class="swl-filter-acc">' +
       '<summary class="swl-filter-sum">' +
-      "<span>絞り込み</span>" +
+      "<span>絞り込み（利用時には開いてください）</span>" +
       '<span id="swl-acc-hint" class="swl-acc-hint"></span>' +
       "</summary>" +
       '<div class="swl-filter-acc-body">' +
