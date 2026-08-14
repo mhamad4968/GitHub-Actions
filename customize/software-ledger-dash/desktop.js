@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-ui-readability-v11";
+  var BUILD = "2026-08-15-715-ui-version-hide-empid";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -643,9 +643,9 @@
     return (
       '<div class="swl-emp-block">' +
       '<button type="button" id="swl-pick-595" class="kintoneplugin-button-normal">社員検索</button>' +
-      '<label>社員番号<input id="swl-emp-id" value="' +
+      '<input type="hidden" id="swl-emp-id" value="' +
       esc(row.emp_id) +
-      '" readonly></label>' +
+      '">' +
       '<label>氏名<input id="swl-user-name" value="' +
       esc(row.user_name) +
       '" readonly></label>' +
@@ -929,7 +929,7 @@
       esc(r.software_name) +
       "</strong>" +
       (r.model_number
-        ? '<span class="swl-cell-sub">型番 ' + esc(r.model_number) + "</span>"
+        ? '<span class="swl-cell-sub">バージョン ' + esc(r.model_number) + "</span>"
         : "");
     var userCell;
     if (linkUser) {
@@ -942,7 +942,6 @@
     } else {
       userCell = esc(r.user_name);
     }
-    if (r.emp_id) userCell += '<span class="swl-cell-sub">' + esc(r.emp_id) + "</span>";
     var deptCell =
       esc(r.dept_name) +
       (r.group_name ? '<span class="swl-cell-sub">' + esc(r.group_name) + "</span>" : "");
@@ -1272,7 +1271,7 @@
         '<label>ライセンス種別<select id="swl-license-type">' +
         licenseOptionsHtml("") +
         '</select></label><label>製品名<input id="swl-software-name"></label>' +
-        '<label>型番<input id="swl-model-number"></label></div>' +
+        '<label>バージョン<input id="swl-model-number"></label></div>' +
         '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
         buildIdSlotsHtml(null, 1) +
         "</div>" +
@@ -1316,7 +1315,7 @@
         licenseOptionsHtml(row.license_type) +
         '</select></label><label>製品名<input id="swl-software-name" value="' +
         esc(row.software_name) +
-        '"></label><label>型番<input id="swl-model-number" value="' +
+        '"></label><label>バージョン<input id="swl-model-number" value="' +
         esc(row.model_number) +
         '"></label></div>' +
         '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
@@ -1851,7 +1850,7 @@
       (state.filter === "active" ? " checked" : "") +
       "> 利用中</label>" +
       '<label><input type="radio" name="swl-filter" value="retired"> 廃止</label>' +
-      '<input type="search" id="swl-search" placeholder="製品名・型番・ソフトウエアの情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
+      '<input type="search" id="swl-search" placeholder="製品名・バージョン・ソフトウエアの情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
       '<button type="button" id="swl-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
       '<div id="swl-meta" class="swl-meta"></div>' +
