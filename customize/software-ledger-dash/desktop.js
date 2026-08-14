@@ -4,7 +4,7 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-ui-version-hide-empid";
+  var BUILD = "2026-08-15-715-list-toolbar-contrast";
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -851,7 +851,8 @@
       ".swl-list-modal{background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px 22px;}" +
       ".swl-list-loading{position:fixed;inset:0;z-index:10003;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;}" +
       ".swl-list-panel{position:fixed;inset:0;z-index:10004;background:#f8fafc;display:flex;flex-direction:column;}" +
-      ".swl-list-toolbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;background:#0f172a;color:#fff;}" +
+      ".swl-list-toolbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;background:#f1f5f9;color:#0f172a;border-bottom:1px solid #cbd5e1;}" +
+      ".swl-list-toolbar button{color:#0f172a;}" +
       ".swl-list-scroll{flex:1 1 auto;overflow:auto;padding:12px 16px 24px;}" +
       ".swl-list-print-head{display:none;margin-bottom:16px;}" +
       ".swl-list-table{width:100%;border-collapse:collapse;background:#fff;font-size:13px;}" +
