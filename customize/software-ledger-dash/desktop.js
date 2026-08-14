@@ -4,7 +4,54 @@
   /** ソフトウエア管理台帳ver.1 — REST CRUD（694 型） */
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
-  var BUILD = "2026-08-15-715-filter-accordion";
+  var APP_DEPT_MASTER = 680;
+  var BUILD = "2026-08-15-715-list-dept-680";
+
+  var DEPT_MASTER_FALLBACK = [
+    { dept_name: "役員室", group_name: "honsya" },
+    { dept_name: "顧問室", group_name: "honsya" },
+    { dept_name: "顧問", group_name: "honsya" },
+    { dept_name: "出向者", group_name: "honsya" },
+    { dept_name: "総務部", group_name: "honsya" },
+    { dept_name: "経理部", group_name: "honsya" },
+    { dept_name: "経営企画部", group_name: "honsya" },
+    { dept_name: "システム推進室", group_name: "honsya" },
+    { dept_name: "人事研修部", group_name: "honsya" },
+    { dept_name: "安全推進部", group_name: "honsya" },
+    { dept_name: "施工推進部", group_name: "honsya" },
+    { dept_name: "メンテナンス技術部", group_name: "honsya" },
+    { dept_name: "塗装技術部", group_name: "honsya" },
+    { dept_name: "品質管理部", group_name: "honsya" },
+    { dept_name: "東北支店", group_name: "tohoku" },
+    { dept_name: "秋田営業所", group_name: "tohoku" },
+    { dept_name: "盛岡営業所", group_name: "tohoku" },
+    { dept_name: "仙台営業所", group_name: "tohoku" },
+    { dept_name: "関越支店", group_name: "kan-etsu" },
+    { dept_name: "関越支店施工部", group_name: "kan-etsu" },
+    { dept_name: "新潟営業所", group_name: "kan-etsu" },
+    { dept_name: "長野営業所", group_name: "kan-etsu" },
+    { dept_name: "高崎営業所", group_name: "kan-etsu" },
+    { dept_name: "東京支店", group_name: "tokyo" },
+    { dept_name: "東京支店施工部", group_name: "tokyo" },
+    { dept_name: "東京支店橋りょうリペア部", group_name: "tokyo" },
+    { dept_name: "千葉営業所", group_name: "tokyo" },
+    { dept_name: "水戸営業所", group_name: "tokyo" },
+    { dept_name: "鎌ヶ谷事務所", group_name: "tokyo" },
+    { dept_name: "東海支店", group_name: "tokai" },
+    { dept_name: "東京営業所", group_name: "tokai" },
+    { dept_name: "静岡営業所", group_name: "tokai" },
+    { dept_name: "名古屋営業所", group_name: "tokai" },
+    { dept_name: "関西営業所", group_name: "tokai" },
+    { dept_name: "札幌支店", group_name: "tokyo" },
+    { dept_name: "首都圏支店", group_name: "tokyo" },
+    { dept_name: "リフォーム事業統括部", group_name: "reform" },
+    { dept_name: "札幌支店", group_name: "reform" },
+    { dept_name: "首都圏支店", group_name: "reform" },
+    { dept_name: "鉄構支店", group_name: "tekko" },
+    { dept_name: "湾岸工事所", group_name: "wangan" },
+  ];
+
+  var deptMasterCache = null;
 
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
@@ -863,8 +910,8 @@
       ".swl-e595-err{color:#b91c1c;}" +
       ".swl-e595-foot{margin-top:12px;text-align:right;}" +
       ".swl-list-modal-bg{position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
-      ".swl-list-modal{background:#fff;border-radius:10px;max-width:640px;width:100%;padding:20px 22px;}" +
-      ".swl-list-picks{display:flex;flex-wrap:wrap;gap:6px;max-height:140px;overflow:auto;margin:0 0 10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;}" +
+      ".swl-list-modal{background:#fff;border-radius:10px;max-width:720px;width:100%;padding:20px 22px;}" +
+      ".swl-list-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 10px;max-height:220px;overflow:auto;margin:0 0 10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;}" +
       ".swl-list-picks label{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:400;margin:0;cursor:pointer;}" +
       ".swl-list-pick-bar{display:flex;gap:8px;margin:0 0 6px;}" +
       ".swl-list-loading{position:fixed;inset:0;z-index:10003;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;}" +
@@ -1776,44 +1823,155 @@
     });
   }
 
+  function sortDeptMasterRows(rows) {
+    return rows.slice().sort(function (a, b) {
+      var sa = Number(a.sort_no);
+      var sb = Number(b.sort_no);
+      var na = Number.isFinite(sa) && sa > 0 ? sa : 99999;
+      var nb = Number.isFinite(sb) && sb > 0 ? sb : 99999;
+      if (na !== nb) return na - nb;
+      var dc = String(a.dept_name || "").localeCompare(String(b.dept_name || ""), "ja");
+      if (dc !== 0) return dc;
+      return String(a.group_name || "").localeCompare(String(b.group_name || ""), "ja");
+    });
+  }
+
+  function fetchDeptMasterRows() {
+    if (deptMasterCache && deptMasterCache.length) {
+      return Promise.resolve(deptMasterCache);
+    }
+    return apiGet("/k/v1/records.json", {
+      app: APP_DEPT_MASTER,
+      query: "order by sort_no asc, $id asc limit 500",
+      fields: ["dept_name", "group_name", "sort_no"],
+    })
+      .then(function (resp) {
+        var rows = [];
+        (resp.records || []).forEach(function (r) {
+          var d = val(r, "dept_name");
+          var g = val(r, "group_name");
+          var snRaw = val(r, "sort_no");
+          var sn = snRaw !== "" ? Number(snRaw) : NaN;
+          if (String(d).trim()) {
+            rows.push({
+              dept_name: String(d).trim(),
+              group_name: String(g).trim(),
+              sort_no: sn,
+            });
+          }
+        });
+        deptMasterCache = rows.length ? sortDeptMasterRows(rows) : DEPT_MASTER_FALLBACK.slice();
+        return deptMasterCache;
+      })
+      .catch(function (e) {
+        console.warn("[SWL-715] dept master fetch failed, using fallback", e);
+        deptMasterCache = DEPT_MASTER_FALLBACK.slice();
+        return deptMasterCache;
+      });
+  }
+
+  function countDeptInLedger(name) {
+    var n = 0;
+    state.records.forEach(function (r) {
+      if (String(r.dept_name || "").trim() === name) n++;
+    });
+    return n;
+  }
+
+  function countGroupInLedger(name) {
+    var n = 0;
+    state.records.forEach(function (r) {
+      if (String(r.group_name || "").trim() === name) n++;
+    });
+    return n;
+  }
+
+  function buildListDeptOptions(masterRows) {
+    var seen = {};
+    var names = [];
+    masterRows.forEach(function (row) {
+      var name = String(row.dept_name || "").trim();
+      if (!name || seen[name]) return;
+      seen[name] = true;
+      names.push(name);
+    });
+    var extras = [];
+    distinctValues(state.records, "dept_name").forEach(function (d) {
+      if (!seen[d]) {
+        seen[d] = true;
+        extras.push(d);
+      }
+    });
+    extras.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+    return names.concat(extras).map(function (name) {
+      return { name: name, count: countDeptInLedger(name) };
+    });
+  }
+
+  function buildListGroupOptions(masterRows) {
+    var seen = {};
+    var names = [];
+    masterRows.forEach(function (row) {
+      var name = String(row.group_name || "").trim();
+      if (!name || seen[name]) return;
+      seen[name] = true;
+      names.push(name);
+    });
+    var extras = [];
+    distinctValues(state.records, "group_name").forEach(function (g) {
+      if (!seen[g]) {
+        seen[g] = true;
+        extras.push(g);
+      }
+    });
+    extras.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
+    return names.concat(extras).map(function (name) {
+      return { name: name, count: countGroupInLedger(name) };
+    });
+  }
+
+  function renderListPickCheckboxes(container, options, inputName) {
+    if (!options.length) {
+      container.innerHTML =
+        '<span style="font-size:12px;color:#64748b;">候補がありません</span>';
+      return;
+    }
+    container.innerHTML = options
+      .map(function (opt) {
+        var muted = opt.count === 0 ? ' style="opacity:0.55;"' : "";
+        return (
+          "<label" +
+          muted +
+          '><input type="checkbox" name="' +
+          esc(inputName) +
+          '" value="' +
+          esc(opt.name) +
+          '" data-count="' +
+          opt.count +
+          '"> ' +
+          esc(opt.name) +
+          "（" +
+          opt.count +
+          "）</label>"
+        );
+      })
+      .join("");
+  }
+
   function fillListOrgPicks() {
     var deptBox = document.getElementById("swl-list-dept-picks");
     var groupBox = document.getElementById("swl-list-group-picks");
     if (!deptBox || !groupBox) return;
-    var depts = distinctValues(state.records, "dept_name");
-    var groups = distinctValues(state.records, "group_name");
-    if (!depts.length) {
-      deptBox.innerHTML =
-        '<span style="font-size:12px;color:#64748b;">台帳に値がありません</span>';
-    } else {
-      deptBox.innerHTML = depts
-        .map(function (d) {
-          return (
-            '<label><input type="checkbox" name="swl-list-dept" value="' +
-            esc(d) +
-            '"> ' +
-            esc(d) +
-            "</label>"
-          );
-        })
-        .join("");
-    }
-    if (!groups.length) {
-      groupBox.innerHTML =
-        '<span style="font-size:12px;color:#64748b;">台帳に値がありません</span>';
-    } else {
-      groupBox.innerHTML = groups
-        .map(function (g) {
-          return (
-            '<label><input type="checkbox" name="swl-list-group" value="' +
-            esc(g) +
-            '"> ' +
-            esc(g) +
-            "</label>"
-          );
-        })
-        .join("");
-    }
+    deptBox.innerHTML = '<span style="font-size:12px;color:#64748b;">読込中</span>';
+    groupBox.innerHTML = '<span style="font-size:12px;color:#64748b;">読込中</span>';
+    fetchDeptMasterRows().then(function (masterRows) {
+      renderListPickCheckboxes(deptBox, buildListDeptOptions(masterRows), "swl-list-dept");
+      renderListPickCheckboxes(groupBox, buildListGroupOptions(masterRows), "swl-list-group");
+    });
   }
 
   function runListQueryFromModal() {
@@ -1880,16 +2038,19 @@
         '<div class="swl-list-modal">' +
         "<h2 style=\"margin:0 0 12px;font-size:17px;\">リスト一覧を作成</h2>" +
         '<p style="font-size:13px;color:#475569;margin:0 0 14px;">条件に合うレコードを表示し、印刷できます（横向き）。</p>' +
+        '<p style="font-size:12px;color:#475569;margin:0 0 6px;">所属を選択（680全件・括弧内は台帳件数）</p>' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属名（複数選択可・未選択は指定なし）</label>' +
         '<div class="swl-list-pick-bar">' +
-        '<button type="button" id="swl-list-dept-all" class="kintoneplugin-button-normal">すべて</button>' +
-        '<button type="button" id="swl-list-dept-none" class="kintoneplugin-button-normal">解除</button>' +
+        '<button type="button" id="swl-list-dept-all" class="kintoneplugin-button-normal">全選択</button>' +
+        '<button type="button" id="swl-list-dept-none" class="kintoneplugin-button-normal">全解除</button>' +
+        '<button type="button" id="swl-list-dept-has" class="kintoneplugin-button-normal">件数ありのみ選択</button>' +
         "</div>" +
         '<div id="swl-list-dept-picks" class="swl-list-picks"></div>' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">所属グループ（複数選択可・未選択は指定なし）</label>' +
         '<div class="swl-list-pick-bar">' +
-        '<button type="button" id="swl-list-group-all" class="kintoneplugin-button-normal">すべて</button>' +
-        '<button type="button" id="swl-list-group-none" class="kintoneplugin-button-normal">解除</button>' +
+        '<button type="button" id="swl-list-group-all" class="kintoneplugin-button-normal">全選択</button>' +
+        '<button type="button" id="swl-list-group-none" class="kintoneplugin-button-normal">全解除</button>' +
+        '<button type="button" id="swl-list-group-has" class="kintoneplugin-button-normal">件数ありのみ選択</button>' +
         "</div>" +
         '<div id="swl-list-group-picks" class="swl-list-picks"></div>' +
         '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;">利用者名（部分一致）</label>' +
@@ -1938,6 +2099,13 @@
             cb.checked = false;
           });
       });
+      backdrop.querySelector("#swl-list-dept-has").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-dept-picks input[name="swl-list-dept"]')
+          .forEach(function (cb) {
+            cb.checked = Number(cb.getAttribute("data-count") || "0") > 0;
+          });
+      });
       backdrop.querySelector("#swl-list-group-all").addEventListener("click", function () {
         document
           .querySelectorAll('#swl-list-group-picks input[name="swl-list-group"]')
@@ -1950,6 +2118,13 @@
           .querySelectorAll('#swl-list-group-picks input[name="swl-list-group"]')
           .forEach(function (cb) {
             cb.checked = false;
+          });
+      });
+      backdrop.querySelector("#swl-list-group-has").addEventListener("click", function () {
+        document
+          .querySelectorAll('#swl-list-group-picks input[name="swl-list-group"]')
+          .forEach(function (cb) {
+            cb.checked = Number(cb.getAttribute("data-count") || "0") > 0;
           });
       });
     }
