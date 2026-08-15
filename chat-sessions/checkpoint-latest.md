@@ -15,6 +15,7 @@
 | **674** | `2026-08-13-674-inventory-hist-type` | **328** |
 | **694** | `2026-08-11-694-edit-kind-row-inline` | **24** |
 **715 live fileKey**: `c196e66a-51bb-4798-bde3-115cb6b13266`
+**674 live fileKey**: `7ad52ee4-9fc6-4717-a538-687b61b1a127`
 **継続メモ**: 715 目視OK完了。714は閲覧のみ。所属は680を今後活用（動いている他アプリは触らない）。
 **GO待ち**: 新アプリ＝相談・GO後のみ。夜の対象アプリは浜田指示。
 **調査正本**: `docs/plans/2026-06-13-software-ledger-kintone-spec.md`

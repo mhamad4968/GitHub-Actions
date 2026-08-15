@@ -27,9 +27,26 @@ function git(args) {
 }
 
 /** status --short は先頭行の leading space（XY の X）を trim で消さない */
-function gitStatusShort() {
-  const res = spawnSync('git', ['status', '--short'], { cwd: root, encoding: 'utf8' });
-  return (res.stdout || '').replace(/\s+$/, '');
+function parseStatusRel(line) {
+  const xy = line.slice(0, 2);
+  let rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
+  if (rel.includes(' -> ')) rel = rel.split(' -> ').pop().trim();
+  return { xy, rel: rel.replace(/\\/g, '/') };
+}
+
+/**
+ * RULE-3 / OPS-2 — 再起動後の stat dirty。working tree hash が HEAD と同一なら残件に数えない。
+ * untracked / 削除 / 改名は除外しない。
+ */
+function isPhantomStatDirty(line) {
+  const { xy, rel } = parseStatusRel(line);
+  if (!rel) return false;
+  if (xy.includes('?') || xy.includes('D') || xy.includes('R') || xy.includes('A')) return false;
+  const head = spawnSync('git', ['rev-parse', `HEAD:${rel}`], { cwd: root, encoding: 'utf8' });
+  if (head.status !== 0) return false;
+  const wt = spawnSync('git', ['hash-object', '--', rel], { cwd: root, encoding: 'utf8' });
+  if (wt.status !== 0) return false;
+  return String(head.stdout || '').trim() === String(wt.stdout || '').trim();
 }
 
 /**
@@ -86,9 +103,13 @@ function checkUncommitted() {
   const status = gitStatusShort();
   if (!status) return { ok: true };
   const lines = status.split(/\r?\n/).filter(Boolean).filter((line) => {
-    const rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
+    const { rel } = parseStatusRel(line);
     if (isSessionCloseTempPath(rel)) return false;
     if (isActiveSessionClockPath(rel)) return false;
+    if (isPhantomStatDirty(line)) {
+      console.log(`[verify:session-close-git-warn] skip phantom-stat-dirty ${rel} (RULE-3)`);
+      return false;
+    }
     return true;
   });
   if (lines.length === 0) return { ok: true };
@@ -110,8 +131,8 @@ function checkHoldLaneDirty() {
   const status = gitStatusShort();
   if (!status) return { ok: true };
   const relPaths = status.split(/\r?\n/).filter(Boolean).map((line) => {
-    const raw = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
-    return raw;
+    if (isPhantomStatDirty(line)) return '';
+    return parseStatusRel(line).rel;
   }).filter((rel) => rel && !isSessionCloseTempPath(rel) && !isActiveSessionClockPath(rel));
   const { ok, issues } = checkHoldLaneDirtyFiles(root, relPaths);
   if (ok) return { ok: true };

@@ -1,0 +1,21 @@
+---
+description: 2026-08-15 夕反省 GO — 課金日期間判定・③五観点・phantom dirty
+alwaysApply: false
+globs:
+  - docs/runbooks/cio-ops-2026-08-15-evening-improvements.md
+  - docs/runbooks/cio-day-close-v1.md
+  - docs/runbooks/cursor-plan-usage-watch.md
+  - docs/approved-changes/2026-08-15-evening-reflection-hamada-go.md
+  - docs/reports/2026-08-15-evening-reflection.md
+  - scripts/cio-day-close.mjs
+  - scripts/verify-session-close-git-warn.mjs
+---
+
+# 夕反省改善（2026-08-15）
+
+正本: `docs/runbooks/cio-ops-2026-08-15-evening-improvements.md`
+
+- ③は運用→体制→MCP→ルール→憲法。脚本を主表にしない。
+- Plan & Usage は Total% + Resets。期間判定は CIO が reset_day と突合。
+- close-git-warn は hash 同一の stat dirty を残件に数えない（untracked / 削除 / 改名は数える）。
+- 新 MCP と AGENTS 大改訂は見送り。

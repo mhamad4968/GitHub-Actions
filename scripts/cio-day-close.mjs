@@ -49,7 +49,7 @@ function untilPause() {
     console.log('[cio:day-close] ② evening:reflect 非0（記入済みなら続行）');
   }
   writeStatus({ phase: 'pause-go', date });
-  console.log(`[cio:day-close] PAUSE ③ 改善案をチャットへ。GO 後: ④実装 → npm run cio:day-close -- --after-go`);
+  console.log(`[cio:day-close] PAUSE ③ 改善案は運用→体制→MCP→ルール→憲法の順でチャットへ（脚本A/#Sを主表にしない）。GO 後: ④実装 → npm run cio:day-close -- --after-go`);
   console.log(`[cio:day-close] 夕反省: docs/reports/${date}-evening-reflection.md`);
   process.exit(0);
 }

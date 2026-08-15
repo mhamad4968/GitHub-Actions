@@ -20,6 +20,9 @@ Plan & Usage スクリーンショットを浜田が共有したとき、CIO が
 
 ## AI 手順
 
+0. **課金期間（CIO が `reset_day` 正本と突合。浜田に「内訳ですか」と聞き返さない）**
+   - 記録対象は **当期間の Total%**。Cursor Models / Other Models は内訳
+   - 急落＋ Resets 約 31 日 → `npm run credit:reset -- --now` のあと `credit:set`
 1. 浜田が Usage 画像を送ったターンで **上表と照合**
 2. 閾値超過時: **1 段落**で状況＋**ルール修正案 1〜3 行**（承認待ち ID 付き可）
 3. 閾値内: 「OK — 対応不要」と 1 行

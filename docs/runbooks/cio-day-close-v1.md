@@ -9,7 +9,7 @@
 |---|------|-----|
 | ① | GitHub 確認と不具合是正 | CIO（`cio:eod:github`） |
 | ② | 本日の反省点 | CIO（`evening:reflect` → 本文を埋める） |
-| ③ | 運用・体制・MCP・ルール・憲法の改善案 | CIO が出し、**浜田が承認** |
+| ③ | 運用・体制・MCP・ルール・憲法の改善案 | CIO が出し、**浜田が承認**。チャット順はこの5観点。脚本 A/#S は手段であり主表にしない |
 | ④ | 承認案の対応 | CIO（GO 後のみ） |
 | ⑤ | SPEC・未コミット → commit / push | close-git |
 | ⑥ | Desktop `AI緊急用` 最新入替 | sync-desktop |

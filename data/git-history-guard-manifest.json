@@ -3,7 +3,7 @@
   "note": "git-history-alignment が保護するコマンド・緩和禁止パターン。verify:git-history-alignment / git-history-mcp 連動。",
   "generations": [
     {
-      "hash": "43851a20",
+      "hash": "bf09b401",
       "label": "fix(credit): refuse reset-day usage drops into the previous billing period",
       "at": "2026-08-15"
     },
