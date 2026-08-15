@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-08-14T23:03:54.892Z",
+  "scoredAt": "2026-08-15T00:33:39.289Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "項番 -0（浜田指示）。",
-  "topTaskKind": "work",
-  "topWorkTask": "項番 -0（浜田指示）。",
+  "topTask": "項番 -0（夜は別アプリ改善。715は完了・再着手しない）。",
+  "topTaskKind": "constraint",
+  "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:項番_-0（浜田指示）。",
-      "text": "項番 -0（浜田指示）。",
+      "id": "checkpoint:項番_-0（夜は別アプリ改善。715は完了・再着手しない）。",
+      "text": "項番 -0（夜は別アプリ改善。715は完了・再着手しない）。",
       "source": "checkpoint",
-      "kind": "work",
+      "kind": "constraint",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,
