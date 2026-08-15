@@ -5,7 +5,7 @@
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
   var APP_DEPT_MASTER = 680;
-  var BUILD = "2026-08-15-715-filter-acc-closed";
+  var BUILD = "2026-08-15-715-list-dept-2col";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya" },
@@ -910,9 +910,10 @@
       ".swl-e595-err{color:#b91c1c;}" +
       ".swl-e595-foot{margin-top:12px;text-align:right;}" +
       ".swl-list-modal-bg{position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
-      ".swl-list-modal{background:#fff;border-radius:10px;max-width:720px;width:100%;padding:20px 22px;}" +
-      ".swl-list-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 10px;max-height:220px;overflow:auto;margin:0 0 10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;}" +
-      ".swl-list-picks label{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:400;margin:0;cursor:pointer;}" +
+      ".swl-list-modal{background:#fff;border-radius:10px;max-width:820px;width:100%;padding:20px 22px;}" +
+      ".swl-list-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;max-height:280px;overflow:auto;margin:0 0 10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;}" +
+      ".swl-list-picks label{display:flex;align-items:flex-start;gap:6px;min-width:0;font-size:12px;font-weight:400;margin:0;cursor:pointer;line-height:1.35;word-break:break-word;overflow-wrap:anywhere;}" +
+      ".swl-list-picks input{width:auto;flex:0 0 auto;margin:2px 0 0;}" +
       ".swl-list-pick-bar{display:flex;gap:8px;margin:0 0 6px;}" +
       ".swl-list-loading{position:fixed;inset:0;z-index:10003;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;}" +
       ".swl-list-panel{position:fixed;inset:0;z-index:10004;background:#f8fafc;display:flex;flex-direction:column;}" +
