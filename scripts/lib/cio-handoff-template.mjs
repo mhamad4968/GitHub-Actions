@@ -18,6 +18,16 @@ export const HANDOFF_LOG_REL = 'chat-sessions/handoff-log.md';
 
 const HANDOFF_HEADING_RE = /^###\s+(\d{4}-\d{2}-\d{2}.+)$/gm;
 
+/** CRLF→LF。mandatory-read の preamble.length と揃える（Windows `\r` を字数に足さない） */
+function toLf(s) {
+  return String(s || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
+
+function writeMdCrlf(abs, content) {
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, toLf(content).replace(/\n/g, '\r\n'), 'utf8');
+}
+
 function gitHeadShort(root) {
   const r = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' });
   return r.status === 0 ? String(r.stdout).trim() : 'unknown';
@@ -207,7 +217,8 @@ function ensureFreezeZoneMinChars(preamble, root) {
   const minChars = manifest.freezeZone?.minChars ?? 2800;
   const maxLines = manifest.freezeZone?.maxLines ?? 50;
   const filled = [];
-  let next = preamble;
+  // readCheckpointPreamble と同じ: LF + 末尾空行除去。CRLF の `\r` を足すと 2775<2800 なのに pad スキップする
+  let next = toLf(preamble).replace(/\n+$/g, '');
 
   if (next.length >= minChars) {
     return { preamble: next, filled };
@@ -260,7 +271,7 @@ export function repairCheckpointBootstrapBlock(root, { dryRun = false } = {}) {
   if (!fs.existsSync(cpPath)) {
     return { ok: false, repaired: false, filled: [], reason: `missing ${CHECKPOINT_REL}` };
   }
-  const full = fs.readFileSync(cpPath, 'utf8');
+  const full = toLf(fs.readFileSync(cpPath, 'utf8'));
   const rollSplit = full.split(/^## \d{4}-\d{2}-\d{2}/m);
   let preamble = rollSplit[0];
   const rollup = rollSplit.length > 1 ? full.slice(preamble.length) : '';
@@ -290,9 +301,11 @@ export function repairCheckpointBootstrapBlock(root, { dryRun = false } = {}) {
     return { ok: true, repaired: false, filled: [] };
   }
 
-  const newFull = preamble + rollup;
+  const newFull = rollup
+    ? `${preamble.replace(/\n+$/g, '')}\n${rollup.replace(/^\n+/, '')}`
+    : `${preamble.replace(/\n+$/g, '')}\n`;
   if (!dryRun) {
-    fs.writeFileSync(cpPath, newFull, 'utf8');
+    writeMdCrlf(cpPath, newFull);
   }
 
   return { ok: true, repaired: true, filled };

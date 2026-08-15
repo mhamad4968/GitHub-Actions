@@ -31,6 +31,10 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   'data/credit-usage.json',
   // #S-WAKE-ORDER-01 — Part C WAKE 同期を early wake-commit に同梱
   'chat-sessions/session-starter-parts/part-C-full-paste-core.md',
+  // #S-CHKPT-MINCHARS-01 — Phase 3 rollup の freeze-zone 修復 scripts が allowlist 漏れで残件化するのを防ぐ
+  'scripts/cio-checkpoint-rollup.mjs',
+  'scripts/lib/cio-handoff-template.mjs',
+  'scripts/lib/cio-checkpoint-mandatory-read.test.mjs',
 ]);
 
 /**

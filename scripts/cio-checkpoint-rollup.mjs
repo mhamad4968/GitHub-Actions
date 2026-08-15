@@ -11,6 +11,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { validateCheckpointMandatoryRead } from './lib/cio-checkpoint-mandatory-read.mjs';
+import { repairCheckpointBootstrapBlock } from './lib/cio-handoff-template.mjs';
 import {
   healCheckpointGitWorktree,
 } from './lib/cio-checkpoint-git-sync.mjs';
@@ -45,6 +46,20 @@ function compactPreambleBlankLines(preamble) {
   return toLf(preamble)
     .replace(/\n{3,}/g, '\n\n')
     .replace(/\n+$/g, '');
+}
+
+/** heal 後に minChars pad（CRLF 誤カウント再発防止）して mandatory-read を通す */
+function finalizeAfterHeal(dryRun) {
+  if (dryRun) return;
+  const bootRep = repairCheckpointBootstrapBlock(root);
+  if (bootRep.repaired) {
+    console.log(`[cio:checkpoint:rollup] freeze-zone repair: ${bootRep.filled.join(', ')}`);
+  }
+  const post = validateCheckpointMandatoryRead(root);
+  if (!post.ok) {
+    console.error('[cio:checkpoint:rollup] NG post-rollup mandatory-read:', post.issues.join('; '));
+    process.exit(1);
+  }
 }
 
 /**
@@ -150,6 +165,7 @@ function main() {
     } else {
       console.log(`[cio:checkpoint:rollup] OK no-op sections=${sections.length} keep=${keep}`);
     }
+    finalizeAfterHeal(dryRun);
     return;
   }
   const kept = sections.slice(0, keep);
@@ -197,11 +213,7 @@ function main() {
       `[cio:checkpoint:rollup] healed stale Git \`${heal.before}\` → \`${heal.hash}\` (D-CHKPT-02 / S-CLOSE-01)`,
     );
   }
-  const post = validateCheckpointMandatoryRead(root);
-  if (!post.ok) {
-    console.error('[cio:checkpoint:rollup] NG post-rollup mandatory-read:', post.issues.join('; '));
-    process.exit(1);
-  }
+  finalizeAfterHeal(false);
   console.log('[cio:checkpoint:rollup] OK');
   console.log(`  kept: ${keep} sections`);
   console.log(`  archived: ${archived.length} -> ${path.relative(root, archivePath)}`);

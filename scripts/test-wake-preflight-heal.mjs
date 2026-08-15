@@ -45,6 +45,7 @@ assert.equal(pkg.scripts['cio:wake:preflight-heal'], 'node scripts/cio-wake-pref
 const allow = read('scripts/lib/cio-wake-handoff-allowlist.mjs');
 assert.match(allow, /part-C-full-paste-core\.md/);
 assert.match(allow, /checkpoint-archive/);
+assert.match(allow, /cio-checkpoint-rollup\.mjs/);
 assert.match(allow, /isWakeAdjacentGrandparentFold/);
 
 const preCommit = read('git-hooks/pre-commit');
