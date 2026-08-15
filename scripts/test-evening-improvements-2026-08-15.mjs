@@ -36,6 +36,7 @@ for (const rel of [
 {
   const warn = read('scripts/verify-session-close-git-warn.mjs');
   assert.match(warn, /isPhantomStatDirty/);
+  assert.match(warn, /function gitStatusShort/);
   assert.match(warn, /xy\.includes\('\?'\)/);
   assert.match(warn, /xy\.includes\('D'\)/);
   assert.match(warn, /xy\.includes\('R'\)/);

@@ -27,6 +27,12 @@ function git(args) {
 }
 
 /** status --short は先頭行の leading space（XY の X）を trim で消さない */
+function gitStatusShort() {
+  const res = spawnSync('git', ['status', '--short'], { cwd: root, encoding: 'utf8' });
+  return String(res.stdout || '').replace(/\s+$/, '');
+}
+
+/** status --short は先頭行の leading space（XY の X）を trim で消さない */
 function parseStatusRel(line) {
   const xy = line.slice(0, 2);
   let rel = line.slice(3).trim().replace(/^"(.*)"$/, '$1');
