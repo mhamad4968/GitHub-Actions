@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-15 自動更新）】
-- 次の1手: 項番 -0（夜は別アプリ改善。715は完了・再着手しない）。
-- checkpoint: 2026-08-15 09:30 JST — 朝セッション締め（715 目視OK）。
-- 進行中 plan: docs/plans/2026-06-13-software-ledger-kintone-spec.md
-- 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after heal
-  - fix(credit): refuse reset-day usage drops into the previous billing period
-  - chore(checkpoint): sync Git line after commit
+【今やってる主タスク（2026-08-15 反映・2026-08-16 WAKE同期）】
+- 本日レーン: 項番 -0（夜は別アプリ改善。715は完了・再着手しない）。
+- checkpoint: 2026-08-15 20:25 JST — 本日最終締め（closed-day）。夕反省GO反映。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
