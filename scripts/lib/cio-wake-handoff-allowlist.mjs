@@ -29,6 +29,8 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   '.rag/extra-docs/WORKFLOW.md',
   // #S-CREDIT-WAKE-01 — Plan & Usage 記録（credit:set）を WAKE/残件 commit に同梱可
   'data/credit-usage.json',
+  // 月次 credit:reset --now の集計 append（#S-CREDIT-WAKE-01 連動）
+  'data/credit-usage-history.jsonl',
   // #S-WAKE-ORDER-01 — Part C WAKE 同期を early wake-commit に同梱
   'chat-sessions/session-starter-parts/part-C-full-paste-core.md',
   // #S-CHKPT-MINCHARS-01 — Phase 3 rollup の freeze-zone 修復 scripts が allowlist 漏れで残件化するのを防ぐ
@@ -109,7 +111,10 @@ export function isWakeHandoffParentGitHeadFold(root, bridgeGitHead) {
 }
 
 const LOCK_ONLY_FILES = Object.freeze(['package-lock.json', 'package.json']);
-const CREDIT_ONLY_FILES = Object.freeze(['data/credit-usage.json']);
+const CREDIT_ONLY_FILES = Object.freeze([
+  'data/credit-usage.json',
+  'data/credit-usage-history.jsonl',
+]);
 
 /**
  * HEAD の変更ファイルが allowed の部分集合か（allowlist 例外なし・厳密）
