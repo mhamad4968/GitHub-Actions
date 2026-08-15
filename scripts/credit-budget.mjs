@@ -8,6 +8,7 @@
  *
  * サブコマンド:
  *   set <pct>          — 今日の消費 % を記録 (例: npm run credit:set 65)
+ *                        課金日跨ぎの急落は拒否（先に reset --now）。Cursor Models 内訳と混同しない
  *   status             — 現在の状態を表示 (残日数 / 想定枯渇日 / 警告レベル)
  *   status --json      — JSON 出力 (daily-morning-prep.mjs で使用)
  *   reset --day=14     — 月次リセット日を設定 (浜田 Cursor 課金日)
@@ -27,8 +28,15 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const DATA_DIR = path.join(REPO_ROOT, 'data');
-const USAGE_FILE = path.join(DATA_DIR, 'credit-usage.json');
-const HISTORY_FILE = path.join(DATA_DIR, 'credit-usage-history.jsonl');
+const USAGE_FILE_DEFAULT = path.join(DATA_DIR, 'credit-usage.json');
+const HISTORY_FILE_DEFAULT = path.join(DATA_DIR, 'credit-usage-history.jsonl');
+/** テスト用: CREDIT_USAGE_FILE / CREDIT_HISTORY_FILE / CREDIT_TODAY_ISO */
+function usageFile() {
+  return process.env.CREDIT_USAGE_FILE || USAGE_FILE_DEFAULT;
+}
+function historyFile() {
+  return process.env.CREDIT_HISTORY_FILE || HISTORY_FILE_DEFAULT;
+}
 /** §1-2-4 — 最終記録からこの日数以上で CIO が浜田へ Plan & Usage 共有を催促（2026-06-15 CEO 合意） */
 const STALE_RECORD_DAYS = 3;
 
@@ -48,19 +56,23 @@ function ensureDataDir() {
 
 function loadState() {
   ensureDataDir();
-  if (!fs.existsSync(USAGE_FILE)) return { ...DEFAULT_STATE };
+  const file = usageFile();
+  if (!fs.existsSync(file)) return { ...DEFAULT_STATE };
   try {
-    const raw = JSON.parse(fs.readFileSync(USAGE_FILE, 'utf8'));
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
     return { ...DEFAULT_STATE, ...raw };
   } catch (e) {
-    console.error(`[credit-budget] WARN: ${USAGE_FILE} 読み込み失敗: ${e.message} / 初期化します`);
+    console.error(`[credit-budget] WARN: ${file} 読み込み失敗: ${e.message} / 初期化します`);
     return { ...DEFAULT_STATE };
   }
 }
 
 function saveState(state) {
   ensureDataDir();
-  fs.writeFileSync(USAGE_FILE, JSON.stringify(state, null, 2) + '\n', 'utf8');
+  const file = usageFile();
+  const dir = path.dirname(file);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(state, null, 2) + '\n', 'utf8');
 }
 
 /**
@@ -80,6 +92,9 @@ function dateToJstIsoDate(d) {
 
 /** 今日の JST 日付 (YYYY-MM-DD) */
 function todayJstIso() {
+  if (process.env.CREDIT_TODAY_ISO && /^\d{4}-\d{2}-\d{2}$/.test(process.env.CREDIT_TODAY_ISO)) {
+    return process.env.CREDIT_TODAY_ISO;
+  }
   return dateToJstIsoDate(new Date());
 }
 
@@ -138,6 +153,45 @@ function daysBetween(a, b) {
 }
 
 /**
+ * 課金日を跨いだが credit:reset --now 未実施。
+ * 2026-08-15: 33%→1% を「UI 内訳」と誤認し旧期間へ書いた再発防止。
+ */
+function isPeriodRollPending(state, todayIso = todayJstIso()) {
+  if (!state.reset_day || !state.current_period_start) return false;
+  const [y, m, d] = todayIso.split('-').map(Number);
+  const expected = computeCurrentPeriodStart(state.reset_day, { year: y, month: m - 1, day: d });
+  if (!expected) return false;
+  return state.current_period_start < dateToJstIsoDate(expected);
+}
+
+/**
+ * 新期間開始に見える急落（DeepSeek 2026-08-15: 15→1 も落とす）。
+ * 直近から 10pt 以上下落、または新値が 5% 以下へ下落。
+ */
+function isBillingResetDrop(lastPercent, newPercent) {
+  if (lastPercent == null || Number.isNaN(lastPercent) || Number.isNaN(newPercent)) return false;
+  if (!(newPercent < lastPercent)) return false;
+  return lastPercent - newPercent >= 10 || newPercent <= 5;
+}
+
+function billingResetSetBlockMessage(state, pct) {
+  if (!isPeriodRollPending(state)) return null;
+  const records = state.daily_records || [];
+  const last = records.length ? records[records.length - 1].percent : null;
+  if (!isBillingResetDrop(last, pct)) return null;
+  return [
+    `[credit-budget] ❌ 課金日を跨いだ急落（直近 ${last}% → ${pct}%）を旧期間へ記録できません。`,
+    '  これは Plan & Usage の Cursor Models / Other Models 内訳ではなく、月次リセット後の新期間開始値です。',
+    '  先に `npm run credit:reset -- --now` してから `npm run credit:set <pct>` してください（§1-2-4）。',
+  ].join('\n');
+}
+
+function billingResetNudge(state) {
+  if (!isPeriodRollPending(state)) return null;
+  return '今日は課金日を跨いで期間未ロール。スクショが急落（例 33%→1%）なら UI 内訳ではなく新期間。先に credit:reset --now → credit:set';
+}
+
+/**
  * 警告レベル (§1-2-4 閾値)
  */
 function warningLevel(pct) {
@@ -188,6 +242,14 @@ function cmdSet(pct) {
   if (state.reset_day && !state.current_period_start) {
     const start = computeCurrentPeriodStart(state.reset_day);
     if (start) state.current_period_start = dateToJstIsoDate(start);
+  }
+  const block = billingResetSetBlockMessage(state, pct);
+  if (block) {
+    console.error(block);
+    process.exit(1);
+  }
+  if (isPeriodRollPending(state)) {
+    console.warn(`[credit-budget] ⚠️ ${billingResetNudge(state)}`);
   }
   const today = todayJstIso();
   const idx = state.daily_records.findIndex((r) => r.date === today);
@@ -263,6 +325,8 @@ function buildCreditStatusResult() {
     stale_record: staleInfo.stale,
     stale_threshold_days: staleInfo.stale_threshold_days,
     stale_nudge: staleInfo.nudge,
+    period_roll_pending: isPeriodRollPending(state),
+    billing_reset_nudge: billingResetNudge(state),
     timezone: 'JST (UTC+9)',
   };
 }
@@ -298,6 +362,9 @@ function cmdStatus(asJson = false) {
   if (result.stale_record && result.stale_nudge) {
     console.log(`- 📣 記録催促 (§1-2-4): ${result.stale_nudge}`);
   }
+  if (result.period_roll_pending && result.billing_reset_nudge) {
+    console.log(`- 📣 月次リセット未実施: ${result.billing_reset_nudge}`);
+  }
   console.log(`- 履歴件数: ${result.records_count} 日分`);
 }
 
@@ -314,10 +381,14 @@ function cmdSessionStart() {
       `[credit:session-start] 直近 ${r.latest_percent}% (${r.latest_date}) ${r.warning_icon} | リセット ${r.next_reset_date || '—'} (残 ${r.remaining_days ?? '—'}日)`,
     );
   }
+  if (r.billing_reset_nudge) {
+    console.warn(`[credit:session-start] 📣 ${r.billing_reset_nudge}`);
+    console.warn('[credit:session-start] AI: 急落%を UI 内訳と書かない。credit:reset --now が先');
+  }
   if (r.stale_nudge) {
     console.warn(`[credit:session-start] 📣 ${r.stale_nudge}`);
     console.warn('[credit:session-start] AI: 上記催促を**依頼を聞く前**の第1文で述べる');
-  } else if (r.latest_percent !== null) {
+  } else if (r.latest_percent !== null && !r.billing_reset_nudge) {
     console.log('[credit:session-start] OK — stale なし（3日に1回報告で可）');
   }
 }
@@ -363,8 +434,11 @@ function cmdReset(args) {
         archived_at: nowJstIso(),
       };
       ensureDataDir();
-      fs.appendFileSync(HISTORY_FILE, JSON.stringify(summary) + '\n', 'utf8');
-      console.log(`[credit-budget] ✅ 月次集計を ${HISTORY_FILE} に append (${state.daily_records.length} 日分 / peak ${summary.peak_percent}%)`);
+      const hist = historyFile();
+      const histDir = path.dirname(hist);
+      if (!fs.existsSync(histDir)) fs.mkdirSync(histDir, { recursive: true });
+      fs.appendFileSync(hist, JSON.stringify(summary) + '\n', 'utf8');
+      console.log(`[credit-budget] ✅ 月次集計を ${hist} に append (${state.daily_records.length} 日分 / peak ${summary.peak_percent}%)`);
     }
     state.daily_records = [];
     state.current_period_start = todayJstIso();
@@ -381,6 +455,7 @@ function usage() {
 
 使い方:
   npm run credit:set <pct>           今日の消費 % を記録 (0-200)
+                                     課金日跨ぎの急落は拒否（先に reset --now）
   npm run credit:status              現在の状態を表示
   npm run credit:status -- --json    JSON 出力 (朝報統合用)
   npm run credit:session-start       セッション開始（依頼前・bootstrap 内）

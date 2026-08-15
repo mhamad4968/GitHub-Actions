@@ -208,6 +208,9 @@ if (rCredit.ok && rCredit.stdout) {
     if (c.stale_record && c.stale_nudge) {
       sections.push(`- 📣 **記録催促 (§1-2-4 / CEO 2026-06-15)**: ${c.stale_nudge}`);
     }
+    if (c.period_roll_pending && c.billing_reset_nudge) {
+      sections.push(`- 📣 **月次リセット未実施 (§1-2-4)**: ${c.billing_reset_nudge}`);
+    }
     if (c.warning_level === 'critical' || c.warning_level === 'warn') creditWarn = c;
   } catch (e) {
     sections.push(`- ⚠️ credit-budget JSON 解析エラー: ${e.message}`);

@@ -615,6 +615,7 @@
     "credit:status": "node scripts/credit-budget.mjs status",
     "credit:session-start": "node scripts/credit-budget.mjs session-start",
     "credit:reset": "node scripts/credit-budget.mjs reset",
+    "test:credit-budget-reset-guard": "node scripts/credit-budget-reset-guard.test.mjs",
     "field-spec:diff": "node scripts/field-spec-diff.mjs",
     "field-spec:generate": "node scripts/field-spec-diff.mjs --generate",
     "pc-ledger:apply-labels": "npx dotenv -e .env -e .env.proxy -- node scripts/kintone-pc-ledger-apply-labels.mjs --app=674",

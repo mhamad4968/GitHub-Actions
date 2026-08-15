@@ -456,6 +456,7 @@ flowchart LR
 
 - 浜田 Cursor 課金日（例: 毎月 14 日 → 浜田が初回設定時に `npm run credit:reset -- --day=14` で記録）
 - リセット日に AI が `data/credit-usage.json` の月次集計を `data/credit-usage-history.jsonl` に append → 当月分 reset
+- **月次リセットと UI 内訳の混同禁止（2026-08-15 教訓）**: Plan & Usage の Cursor Models / Other Models は内訳。課金日の急落（例 33%→1%）は新期間。先に `credit:reset -- --now` してから `credit:set`
 
 **タイムゾーン (P1 / 2026-04-26 / off-by-one バグ修正)**:
 

@@ -41,6 +41,18 @@ Plan & Usage スクリーンショットを浜田が共有したとき、CIO が
 
 機械ゲート: `npm run credit:session-start`（bootstrap 内）· `credit:status --json` · `verify:session-close-git-warn` 末尾 CREDIT 行（D-CREDIT-01）。
 
+## 月次リセット vs UI 内訳（2026-08-15 教訓）
+
+課金日は **毎月 15 日 (JST)**。スクショの **Cursor Models 1% / Other Models 0%** を「旧期間の内訳」と読まない。
+
+| 見え方 | 正 |
+|--------|----|
+| 課金日に Total が急落（例 33%→1%）+ Resets ~31 日 | **新期間開始**。`credit:reset -- --now` → `credit:set` |
+| Cursor Models / Other Models のバー | 内訳。記録対象は **当期間の Total%** |
+| 課金日でも % が前日並み | まだ旧期間。`credit:set` 可（スクリプトが warn） |
+
+`credit:set` は期間未ロール＋急落を **exit 1** で拒否する。
+
 ## 関連
 
 - `docs/constitution/20-cost-token-defense-kernel.md`
