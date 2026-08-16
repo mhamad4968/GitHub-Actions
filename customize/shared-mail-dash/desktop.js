@@ -2,7 +2,7 @@
   "use strict";
 
   /** メールアドレス管理台帳 — 695 REST CRUD */
-  var BUILD = "2026-06-21-696-dept-sort-master";
+  var BUILD = "2026-08-16-696-ui-print-polish";
 
   var APP_DB = 695;
   var MAIL_DOMAIN = "@j-bis.co.jp";
@@ -424,12 +424,8 @@
     var el = document.getElementById("smd-search-summary");
     if (!el) return;
     var shown = filteredRecords().length;
-    var total = state.records.length;
-    var active = state.records.filter(function (r) {
-      return r.status === STATUS_ACTIVE;
-    }).length;
     var bits = [];
-    bits.push("表示 " + shown + " 件 / 全 " + total + " 件（利用中 " + active + "）");
+    bits.push("表示 " + shown + " 件");
     if (state.search.trim()) bits.push('キーワード「' + state.search.trim() + "」");
     if (state.departmentFilter) bits.push("部署: " + state.departmentFilter);
     if (state.usageFilter.shared || state.usageFilter.personal) {
@@ -599,6 +595,69 @@
     return "";
   }
 
+  function copySpanHtml(value) {
+    var v = String(value == null ? "" : value);
+    return (
+      '<span class="smd-copy" data-copy="' +
+      esc(v) +
+      '" title="クリックでコピー">' +
+      esc(v) +
+      "</span>"
+    );
+  }
+
+  function computeRecordCounts() {
+    var active = 0;
+    var retired = 0;
+    var shared = 0;
+    var personal = 0;
+    state.records.forEach(function (r) {
+      if (r.status === STATUS_RETIRED) {
+        retired++;
+      } else if (r.status === STATUS_ACTIVE) {
+        active++;
+      }
+      var ut = r.usage_type || USAGE_DEFAULT;
+      if (ut === "個人メールアドレス") personal++;
+      else shared++;
+    });
+    return { active: active, retired: retired, shared: shared, personal: personal };
+  }
+
+  function rowClasses(r) {
+    if (r.status === STATUS_RETIRED) return "retired";
+    var ut = r.usage_type || USAGE_DEFAULT;
+    if (ut === "個人メールアドレス") return "usage-personal";
+    return "usage-shared";
+  }
+
+  function statusPillHtml(status) {
+    if (status === STATUS_RETIRED) {
+      return (
+        '<span class="smd-status-pill smd-status-pill--retired">' + esc(status) + "</span>"
+      );
+    }
+    return (
+      '<span class="smd-status-pill smd-status-pill--active">' + esc(status) + "</span>"
+    );
+  }
+
+  function metaStatChip(kind, label, count, zeroWhenEmpty) {
+    var zeroCls = zeroWhenEmpty && count === 0 ? " smd-meta-stat--zero" : "";
+    return (
+      '<span class="smd-meta-stat smd-meta-stat--' +
+      kind +
+      zeroCls +
+      '">' +
+      '<span class="smd-meta-stat-label">' +
+      label +
+      "</span>" +
+      '<span class="smd-meta-stat-val"><span class="smd-meta-stat-num">' +
+      esc(String(count)) +
+      '</span><span class="smd-meta-stat-unit">件</span></span></span>'
+    );
+  }
+
   function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       return navigator.clipboard.writeText(text).then(function () {
@@ -626,12 +685,21 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".smd-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".smd-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
+      ".smd-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:stretch;margin-bottom:10px;}" +
+      ".smd-toolbar-title{font-size:16px;font-weight:700;white-space:nowrap;align-self:center;}" +
+      ".smd-toolbar-group{display:flex;flex-direction:column;min-width:0;margin:0;padding:8px 10px;" +
+      "border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
+      ".smd-toolbar-group-inner{display:flex;flex:1;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".smd-toolbar-group legend{font-size:11px;color:#64748b;padding:0 4px;font-weight:600;}" +
+      ".smd-toolbar-group--a{background:#f8fafc;}" +
+      ".smd-toolbar-group--c{background:#faf5ff;}" +
+      ".smd-toolbar-group-inner > button{box-sizing:border-box;height:36px;min-height:36px;padding:0 16px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}" +
       ".smd-search-panel{margin-bottom:12px;padding:10px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;}" +
       ".smd-search-title{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px;}" +
       ".smd-search-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}" +
-      ".smd-search-row input[type=search]{min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;}" +
-      ".smd-search-row select{padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;max-width:220px;}" +
+      ".smd-search-row input[type=search]{box-sizing:border-box;height:36px;min-height:36px;min-width:220px;flex:1;max-width:420px;padding:0 10px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;line-height:1;}" +
+      ".smd-search-row select{box-sizing:border-box;height:36px;min-height:36px;padding:0 8px;border:1px solid #94a3b8;border-radius:6px;background:#fff;font-size:12px;max-width:220px;}" +
+      ".smd-search-row #smd-clear{box-sizing:border-box;height:36px;min-height:36px;padding:0 16px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}" +
       ".smd-search-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}" +
       ".smd-chip-label{font-size:11px;font-weight:700;color:#64748b;margin-right:2px;}" +
       ".smd-chip{padding:4px 10px;border-radius:999px;border:1px solid #94a3b8;background:#fff;font-size:12px;cursor:pointer;}" +
@@ -641,13 +709,38 @@
       ".smd-conn h4{margin:0 0 8px;font-size:14px;color:#1e40af;}" +
       ".smd-conn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 16px;font-size:12px;}" +
       ".smd-conn-item strong{color:#334155;}" +
-      ".smd-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;}" +
+      ".smd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
+      "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #059669;border-radius:12px;" +
+      "box-shadow:0 2px 8px rgba(5,150,105,.15);}" +
+      ".smd-meta-stat{display:inline-flex;flex-direction:column;align-items:center;padding:6px 12px;" +
+      "border-radius:10px;min-width:72px;white-space:nowrap;background:#fff;border:1px solid;" +
+      "box-shadow:0 1px 3px rgba(15,23,42,.06);}" +
+      ".smd-meta-stat-label{font-size:11px;font-weight:600;line-height:1.2;margin-bottom:2px;}" +
+      ".smd-meta-stat-val{display:flex;align-items:baseline;gap:2px;line-height:1;}" +
+      ".smd-meta-stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}" +
+      ".smd-meta-stat-unit{font-size:11px;font-weight:600;}" +
+      ".smd-meta-stat--all{background:#fff;border-color:#cbd5e1;color:#475569;}" +
+      ".smd-meta-stat--all .smd-meta-stat-label{color:#64748b;}" +
+      ".smd-meta-stat--active{background:#dcfce7;border-color:#86efac;color:#166534;}" +
+      ".smd-meta-stat--active .smd-meta-stat-label{color:#166534;}" +
+      ".smd-meta-stat--retired{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}" +
+      ".smd-meta-stat--retired .smd-meta-stat-label{color:#64748b;}" +
+      ".smd-meta-stat--shared{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;}" +
+      ".smd-meta-stat--shared .smd-meta-stat-label{color:#1d4ed8;}" +
+      ".smd-meta-stat--personal{background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9;}" +
+      ".smd-meta-stat--personal .smd-meta-stat-label{color:#6d28d9;}" +
+      ".smd-meta-stat--zero{opacity:.55;}" +
       ".smd-table-wrap{overflow:auto;max-height:calc(100vh - 320px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".smd-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;}" +
+      ".smd-table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;min-width:1100px;}" +
       ".smd-table th,.smd-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".smd-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".smd-table th{background:#f1f5f9;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 #e2e8f0;}" +
       ".smd-table th.smd-sort{cursor:pointer;user-select:none;}" +
-      ".smd-table tr.retired{background:#f8fafc;color:#64748b;}" +
+      ".smd-status-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}" +
+      ".smd-status-pill--active{background:#dcfce7;color:#166534;border:1px solid #86efac;}" +
+      ".smd-status-pill--retired{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;}" +
+      ".smd-table tr.retired{background:#e2e8f0;color:#64748b;}" +
+      ".smd-table tr.usage-shared:not(.retired){background:#eff6ff;}" +
+      ".smd-table tr.usage-personal:not(.retired){background:#f5f3ff;}" +
       ".smd-copy{cursor:pointer;font-family:Consolas,Monaco,monospace;font-size:12px;}" +
       ".smd-copy:hover{text-decoration:underline;color:#0369a1;}" +
       ".smd-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
@@ -742,14 +835,14 @@
       "<h4>接続設定（共通）</h4>" +
       '<div class="smd-conn-grid">' +
       '<div class="smd-conn-item"><strong>送信（SMTP）</strong> ' +
-      esc(CONN.smtpServer) +
+      copySpanHtml(CONN.smtpServer) +
       " : " +
-      esc(CONN.smtpPort) +
+      copySpanHtml(CONN.smtpPort) +
       "</div>" +
       '<div class="smd-conn-item"><strong>受信（POP）</strong> ' +
-      esc(CONN.popServer) +
+      copySpanHtml(CONN.popServer) +
       " : " +
-      esc(CONN.popPort) +
+      copySpanHtml(CONN.popPort) +
       "</div>" +
       '<div class="smd-conn-item"><strong>WEBメール</strong> メールアカウント + パスワード</div>' +
       '<div class="smd-conn-item"><strong>Outlook</strong> 上記 + 接続設定</div>' +
@@ -778,18 +871,13 @@
   function updateMeta() {
     var el = document.getElementById("smd-meta");
     if (!el) return;
-    var active = state.records.filter(function (r) {
-      return r.status === STATUS_ACTIVE;
-    }).length;
+    var counts = computeRecordCounts();
     el.innerHTML =
-      "<span>全 " +
-      esc(String(state.records.length)) +
-      " 件（利用中 " +
-      esc(String(active)) +
-      "）</span>" +
-      '<button type="button" id="smd-new" class="kintoneplugin-button-dialog-ok" style="margin-left:auto">新規登録</button>';
-    var btn = document.getElementById("smd-new");
-    if (btn) btn.addEventListener("click", openNewModal);
+      metaStatChip("all", "全件", state.records.length, false) +
+      metaStatChip("active", "利用中", counts.active, true) +
+      metaStatChip("retired", "廃止", counts.retired, true) +
+      metaStatChip("shared", "共有", counts.shared, true) +
+      metaStatChip("personal", "個人", counts.personal, true);
   }
 
   function openNewModal() {
@@ -1055,16 +1143,28 @@
 
   function smdPrintStylesheet() {
     return (
-      "body{margin:0;padding:20px;font-family:Meiryo,sans-serif;font-size:12px;}" +
+      "*{box-sizing:border-box;}" +
+      "body{margin:0;padding:20px;font-family:Meiryo,sans-serif;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}" +
       ".smdpr-page{max-width:800px;margin:0 auto 24px;page-break-after:always;}" +
       ".smdpr-hero{background:#dbeafe;padding:16px;border-radius:8px;margin-bottom:12px;}" +
       ".smdpr-hero h1{margin:0;font-size:18px;color:#1e3a8a;}" +
+      ".smdpr-notice{margin:10px 0 0;padding:0;background:transparent;border:none;}" +
+      ".smdpr-notice p{margin:0;font-size:12px;font-weight:600;line-height:1.65;color:#365f52;}" +
       ".smdpr-conn{background:#f0f9ff;border:1px solid #93c5fd;padding:10px 12px;margin-bottom:12px;border-radius:6px;}" +
       ".smdpr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}" +
       ".smdpr-cell{border:1px solid #e2e8f0;padding:10px;border-radius:4px;}" +
       ".smdpr-lab{font-size:10px;color:#64748b;font-weight:bold;margin-bottom:4px;}" +
       ".smdpr-val{font-size:14px;font-weight:600;word-break:break-all;}" +
-      "@media print{.smdpr-page{page-break-after:always;}}"
+      "@media print{@page{size:A4 portrait;margin:7mm;}" +
+      "body{padding:0;}" +
+      ".smdpr-page{max-width:100%;margin:0;page-break-after:always;}" +
+      ".smdpr-page:last-child{page-break-after:auto;}" +
+      ".smdpr-hero{padding:12px 16px 10px;border-radius:0;}" +
+      ".smdpr-hero h1{font-size:18pt;}" +
+      ".smdpr-notice p{font-size:12pt;}" +
+      ".smdpr-lab{font-size:11pt;}" +
+      ".smdpr-val{font-size:13.5pt;}" +
+      ".smdpr-conn{font-size:12pt;}}"
     );
   }
 
@@ -1074,6 +1174,7 @@
       '<div class="smdpr-hero"><h1>' +
       esc(printHeroTitle(row.usage_type)) +
       "</h1>" +
+      '<div class="smdpr-notice" role="note"><p>本紙は機密性の高い内容を含みます。</p></div>' +
       "<p>No." +
       esc(row.legacy_no) +
       " · " +
@@ -1159,10 +1260,9 @@
     }
     tbody.innerHTML = rows
       .map(function (r) {
-        var cls = r.status === STATUS_RETIRED ? "retired" : "";
         return (
           '<tr class="' +
-          cls +
+          rowClasses(r) +
           '" data-id="' +
           esc(r.id) +
           '">' +
@@ -1175,7 +1275,7 @@
           esc(r.legacy_no) +
           "</td>" +
           "<td>" +
-          esc(r.status) +
+          statusPillHtml(r.status) +
           "</td>" +
           "<td>" +
           esc(r.department) +
@@ -1184,16 +1284,14 @@
           esc(r.mailbox_display_name) +
           "</td>" +
           "<td>" +
-          esc(r.mail_address) +
+          copySpanHtml(r.mail_address) +
           "</td>" +
           "<td>" +
-          esc(r.mail_account) +
+          copySpanHtml(r.mail_account) +
           "</td>" +
-          '<td><span class="smd-copy" data-copy="' +
-          esc(r.password) +
-          '">' +
-          esc(r.password) +
-          "</span></td>" +
+          "<td>" +
+          copySpanHtml(r.password) +
+          "</td>" +
           "<td>" +
           esc(r.usage_type) +
           "</td>" +
@@ -1211,11 +1309,6 @@
     tbody.querySelectorAll(".smd-check").forEach(function (cb) {
       cb.addEventListener("change", function () {
         state.selected[cb.getAttribute("data-id")] = cb.checked;
-      });
-    });
-    tbody.querySelectorAll(".smd-copy").forEach(function (el) {
-      el.addEventListener("click", function () {
-        copyText(el.getAttribute("data-copy") || "");
       });
     });
     tbody.querySelectorAll("tr[data-id]").forEach(function (tr) {
@@ -1288,9 +1381,18 @@
     root.className = "smd-root";
     root.innerHTML =
       '<div class="smd-toolbar">' +
-      "<strong style=\"font-size:16px\">メールアドレス管理台帳</strong>" +
+      '<span class="smd-toolbar-title">メールアドレス管理台帳</span>' +
+      '<fieldset class="smd-toolbar-group smd-toolbar-group--a">' +
+      "<legend>再読込・登録</legend>" +
+      '<div class="smd-toolbar-group-inner">' +
       '<button type="button" id="smd-reload" class="kintoneplugin-button-normal">再読込</button>' +
+      '<button type="button" id="smd-new" class="kintoneplugin-button-dialog-ok">新規登録</button>' +
+      "</div></fieldset>" +
+      '<fieldset class="smd-toolbar-group smd-toolbar-group--c">' +
+      "<legend>印刷</legend>" +
+      '<div class="smd-toolbar-group-inner">' +
       '<button type="button" id="smd-print" class="kintoneplugin-button-normal">印刷</button>' +
+      "</div></fieldset>" +
       "</div>" +
       connectionPanelHtml() +
       '<div class="smd-search-panel" id="smd-search-panel">' +
@@ -1336,7 +1438,13 @@
     host.appendChild(root);
 
     document.getElementById("smd-reload").addEventListener("click", reloadRecords);
+    document.getElementById("smd-new").addEventListener("click", openNewModal);
     document.getElementById("smd-print").addEventListener("click", printSelected);
+    root.addEventListener("click", function (ev) {
+      var el = ev.target.closest(".smd-copy");
+      if (!el || !root.contains(el)) return;
+      copyText(el.getAttribute("data-copy") || "");
+    });
     wireSearchPanel();
 
     root.querySelector(".smd-table thead").addEventListener("click", function (ev) {

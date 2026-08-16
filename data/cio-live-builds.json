@@ -122,11 +122,11 @@
       "note": null
     },
     "696": {
-      "build": "2026-06-21-696-dept-sort-master",
-      "fileKey": "7e1e04c0-c0da-4e09-b5b7-e0f8e7d922b5",
-      "revision": "14",
+      "build": "2026-08-16-696-ui-print-polish",
+      "fileKey": "614cd05b-7e04-4fa3-bdc4-8ba5fa1a2515",
+      "revision": "15",
       "relPath": "customize/shared-mail-dash/desktop.js",
-      "deployedAt": "2026-06-21T11:49:58.511Z",
+      "deployedAt": "2026-08-16T01:01:13.207Z",
       "note": null
     },
     "698": {
