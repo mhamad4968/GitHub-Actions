@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
 **最終更新**: 2026-08-16 18:33 JST — 734 UX 1–6・8 本番反映。目視待ち。
-**次の1手**: 734 を Ctrl+F5 目視。並行してライセンス集計の改善案を検討（案のみ、追加実装GO待ち）。**751/694/696/715 再開しない**。
+**次の1手**: 734 を Ctrl+F5 目視。ライセンス集計は案提示済（P0=前回確定を当月未満へ）。**番号＋実装GOまでコード禁止**。**751/694/696/715 再開しない**。
 **レーン変更**: 734 UX G0 → G2 deploy済・目視待ち
 **Git**: `e9369705`（734 UX R63）
 **closeStatus**: open
@@ -24,7 +24,7 @@
 **694 live fileKey**: `7d69bcc4-2bf8-4db4-bc7b-5005d7cdcd62`
 **696 live fileKey**: `614cd05b-7e04-4fa3-bdc4-8ba5fa1a2515`
 **継続メモ**: **751 UX レーンクローズ**（再開しない）。**734 UX 目視待ち**（closed-v1・R61）。715/694/696 再開しない。手順: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
-**GO待ち**: 734 ライセンス集計は改善案提示まで（追加実装しない）。新アプリ＝相談・GO後のみ。
+**GO待ち**: 734 ライセンス集計 P0〜（追加実装しない）。新アプリ＝相談・GO後のみ。
 **調査正本**: `docs/plans/2026-06-16-vpn-account-kintone-spec.md`
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
