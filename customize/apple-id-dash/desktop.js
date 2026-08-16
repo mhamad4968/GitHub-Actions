@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-16-694-toolbar-btn-height";
+  var BUILD = "2026-08-16-694-meta-count-chips";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -278,9 +278,22 @@
       ".aid-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
       "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #059669;border-radius:12px;" +
       "box-shadow:0 2px 8px rgba(5,150,105,.15);}" +
-      ".aid-meta-count{font-size:13px;color:#475569;font-weight:500;white-space:nowrap;}" +
-      ".aid-meta-stat{font-size:13px;color:#334155;font-weight:600;white-space:nowrap;}" +
-      ".aid-meta-stat-label{color:#64748b;font-weight:500;margin-right:4px;}" +
+      ".aid-meta-stat{display:inline-flex;flex-direction:column;align-items:center;padding:6px 12px;" +
+      "border-radius:10px;min-width:72px;white-space:nowrap;background:#fff;border:1px solid;" +
+      "box-shadow:0 1px 3px rgba(15,23,42,.06);}" +
+      ".aid-meta-stat-label{font-size:11px;font-weight:600;line-height:1.2;margin-bottom:2px;}" +
+      ".aid-meta-stat-val{display:flex;align-items:baseline;gap:2px;line-height:1;}" +
+      ".aid-meta-stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}" +
+      ".aid-meta-stat-unit{font-size:11px;font-weight:600;}" +
+      ".aid-meta-stat--all{background:#fff;border-color:#cbd5e1;color:#475569;}" +
+      ".aid-meta-stat--all .aid-meta-stat-label{color:#64748b;}" +
+      ".aid-meta-stat--active{background:#dcfce7;border-color:#86efac;color:#166534;}" +
+      ".aid-meta-stat--active .aid-meta-stat-label{color:#166534;}" +
+      ".aid-meta-stat--unassigned{background:#fffbeb;border-color:#f59e0b;color:#b45309;}" +
+      ".aid-meta-stat--unassigned .aid-meta-stat-label{color:#b45309;}" +
+      ".aid-meta-stat--retired{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}" +
+      ".aid-meta-stat--retired .aid-meta-stat-label{color:#64748b;}" +
+      ".aid-meta-stat--zero{opacity:.55;}" +
       ".aid-next-slot{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;flex:1;min-width:280px;}" +
       ".aid-next-label{font-size:15px;font-weight:700;color:#047857;letter-spacing:.04em;}" +
       ".aid-next-id{font-size:1.65rem;font-weight:700;font-family:Consolas,Monaco,'Courier New',monospace;" +
@@ -555,24 +568,32 @@
     );
   }
 
+  function metaStatChip(kind, label, count, zeroWhenEmpty) {
+    var zeroCls = zeroWhenEmpty && count === 0 ? " aid-meta-stat--zero" : "";
+    return (
+      '<span class="aid-meta-stat aid-meta-stat--' +
+      kind +
+      zeroCls +
+      '">' +
+      '<span class="aid-meta-stat-label">' +
+      label +
+      "</span>" +
+      '<span class="aid-meta-stat-val"><span class="aid-meta-stat-num">' +
+      esc(String(count)) +
+      '</span><span class="aid-meta-stat-unit">件</span></span></span>'
+    );
+  }
+
   function updateMetaBar() {
     var meta = document.getElementById("aid-meta");
     if (!meta) return;
     var slot = nextJbisSlot(state.records);
     var counts = computeRecordCounts();
     meta.innerHTML =
-      '<span class="aid-meta-count">全 ' +
-      esc(String(state.records.length)) +
-      " 件</span>" +
-      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">利用中</span>' +
-      esc(String(counts.active)) +
-      "</span>" +
-      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">未割当</span>' +
-      esc(String(counts.unassigned)) +
-      "</span>" +
-      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">廃止</span>' +
-      esc(String(counts.retired)) +
-      "</span>" +
+      metaStatChip("all", "全件", state.records.length, false) +
+      metaStatChip("active", "利用中", counts.active, true) +
+      metaStatChip("unassigned", "未割当", counts.unassigned, true) +
+      metaStatChip("retired", "廃止", counts.retired, true) +
       '<div class="aid-next-slot">' +
       '<span class="aid-next-label">次採番</span>' +
       '<span class="aid-next-id">' +
