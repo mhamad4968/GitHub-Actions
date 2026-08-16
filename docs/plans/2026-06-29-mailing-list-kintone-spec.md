@@ -369,6 +369,7 @@ BUILD=`2026-08-16-751-ux-toolbar-meta-print` rev **7**
 
 | 日付 | 内容 |
 |------|------|
+| 2026-08-16 | **UX 改善レーンクローズ**（浜田目視 OK）。BUILD=`2026-08-16-751-members-copy-comma` rev **8**。CLOSED 維持。再開しない |
 | 2026-08-16 | メンバー: 一覧表示は `/`、クリックコピーはカンマ（`members_raw`）。BUILD=`2026-08-16-751-members-copy-comma` |
-| 2026-08-16 | §9.1b UX（IDs 1–6・8）・印刷機密1行は印刷面のみ。BUILD=`2026-08-16-751-ux-toolbar-meta-print` rev **7**。CLOSED 維持（R61）・目視待ち |
+| 2026-08-16 | §9.1b UX（IDs 1–6・8）・印刷機密1行は印刷面のみ。BUILD=`2026-08-16-751-ux-toolbar-meta-print` rev **7**。CLOSED 維持（R61） |
 | 2026-06-29 | **v1 完成 — CLOSED** — 条件クリア・浜田目視 OK・本番 Excel 削除済 |

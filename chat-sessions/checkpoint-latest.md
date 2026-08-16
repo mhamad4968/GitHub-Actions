@@ -1,15 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-16 18:19 JST — 751 メンバーコピー=カンマ（表示=/）rev8。
-**次の1手**: 751 Ctrl+F5 目視（コピーがカンマか確認）。OKならレーンクローズ。**694/696/715 再開しない**。
-**レーン変更**: 751 UX 改善（closed-v1 の v1.x）
-**Git**: tip は R63 commit 後に更新
+**最終更新**: 2026-08-16 18:24 JST — 751 UX 目視OK・レーンクローズ。734 G0。
+**次の1手**: 734 UX 改善 — 番号＋実装GO待ち。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**751/694/696/715 再開しない**。
+**レーン変更**: 751 UX クローズ → 734 UX G0
+**Git**: tip は commit 後に更新
 **closeStatus**: open
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
-**制約**: 閉済9件（751 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
-**本日状態**: 751 rev8 deploy 済・目視待ち。694/696 朝クローズ継続。
+**制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
+**本日状態**: **751 改善レーンクローズ**（rev8・CLOSED維持）。734 G0 案提示済。
 ### 本日アクティブ（BUILD/rev — 2026-08-16）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **734** | `2026-08-01-vpn-id-correct-history-pc-sync` | **31**（UX 改善 G0） |
 | **751** | `2026-08-16-751-members-copy-comma` | **8** |
 | **715** | `2026-08-15-715-list-dept-680-sync` | **24** |
 | **714** | `2026-06-14-software-ledger-db-block-ui-mutations` | **5** |
@@ -17,13 +18,14 @@
 | **694** | `2026-08-16-694-meta-count-chips` | **29** |
 | **696** | `2026-08-16-696-ui-print-polish` | **15** |
 **751 live fileKey**: `aed42a5a-b7fb-453d-9f25-d5a1d6ad52a1`
+**734 live fileKey**: `21caa91c-6d53-4b9a-811b-d4e1906e4cb3`
 **715 live fileKey**: `c196e66a-51bb-4798-bde3-115cb6b13266`
 **674 live fileKey**: `7ad52ee4-9fc6-4717-a538-687b61b1a127`
 **694 live fileKey**: `7d69bcc4-2bf8-4db4-bc7b-5005d7cdcd62`
 **696 live fileKey**: `614cd05b-7e04-4fa3-bdc4-8ba5fa1a2515`
-**継続メモ**: **751 UX 目視待ち**（CLOSED 維持）。694/696 改善レーンクローズ。715 再着手しない。手順: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
-**GO待ち**: 751 目視。新アプリ＝相談・GO後のみ。
-**調査正本**: `docs/plans/2026-06-29-mailing-list-kintone-spec.md`
+**継続メモ**: **751 UX レーンクローズ**（再開しない）。**734 UX G0**（closed-v1・R61）。715/694/696 再開しない。手順: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
+**GO待ち**: 734 番号＋実装GO。新アプリ＝相談・GO後のみ。
+**調査正本**: `docs/plans/2026-06-16-vpn-account-kintone-spec.md`
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
