@@ -4,8 +4,33 @@
     "noEmit": true,
     "module": "ESNext",
     "target": "ES2022",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 0
   },
-  "include": ["customize/**/*.js", "types/**/*.d.ts"],
-  "exclude": ["node_modules", "security-next-automation"]
+  "include": [
+    "customize/**/*.js",
+    "scripts/**/*.js",
+    "scripts/**/*.mjs",
+    "scripts/**/*.cjs",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "security-next-automation",
+    "ict-tech-digest-automation",
+    "vite-kintone-list-button",
+    ".rag",
+    "dist",
+    "logs",
+    "tmp",
+    "temp",
+    "backups",
+    "artifacts",
+    "data/snapshots",
+    "scripts/mcp-deepseek-v4/node_modules",
+    "customize/**/*.bundle.js",
+    "**/*.min.js"
+  ]
 }
