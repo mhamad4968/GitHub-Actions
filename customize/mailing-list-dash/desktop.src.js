@@ -3,7 +3,7 @@
   /* global ML_DEPT_MASTER */
 
   /** メーリングリスト台帳 — 742/696 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
-  var BUILD = "2026-06-29-mailing-list-dash-clear-btn-v2";
+  var BUILD = "2026-08-16-751-ux-toolbar-meta-print";
   var LIST_DOMAIN = "@j-bis.co.jp";
   var STATUS_ACTIVE = "有効";
   var STATUS_DELETED = "削除";
@@ -382,6 +382,93 @@
     return rows;
   }
 
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () {
+        alert("コピーしました");
+      });
+    }
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      alert("コピーしました");
+    } catch (e) {
+      alert("コピーに失敗しました");
+    }
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function computeRecordCounts() {
+    var active = 0;
+    var deleted = 0;
+    state.records.forEach(function (r) {
+      if (r.status === STATUS_DELETED) deleted++;
+      else if (r.status === STATUS_ACTIVE) active++;
+    });
+    return { active: active, deleted: deleted };
+  }
+
+  function metaStatChip(kind, label, count, zeroWhenEmpty) {
+    var zeroCls = zeroWhenEmpty && count === 0 ? " mll-meta-stat--zero" : "";
+    return (
+      '<span class="mll-meta-stat mll-meta-stat--' +
+      kind +
+      zeroCls +
+      '">' +
+      '<span class="mll-meta-stat-label">' +
+      label +
+      "</span>" +
+      '<span class="mll-meta-stat-val"><span class="mll-meta-stat-num">' +
+      esc(String(count)) +
+      '</span><span class="mll-meta-stat-unit">件</span></span></span>'
+    );
+  }
+
+  function statusPillHtml(status) {
+    if (status === STATUS_DELETED) {
+      return (
+        '<span class="mll-status-pill mll-status-pill--deleted">' + esc(status) + "</span>"
+      );
+    }
+    return (
+      '<span class="mll-status-pill mll-status-pill--active">' +
+      esc(status || STATUS_ACTIVE) +
+      "</span>"
+    );
+  }
+
+  function updateMetaBar(filteredCount) {
+    var meta = document.getElementById("mll-meta");
+    if (!meta) return;
+    var counts = computeRecordCounts();
+    meta.innerHTML =
+      metaStatChip("all", "全件", state.records.length, false) +
+      metaStatChip("active", "有効", counts.active, true) +
+      metaStatChip("deleted", "削除", counts.deleted, true) +
+      '<span class="mll-filtered-count">表示 ' +
+      esc(String(filteredCount)) +
+      "</span>" +
+      '<span class="mll-build">BUILD ' +
+      esc(BUILD) +
+      "</span>";
+  }
+
+  function copyCell(text, display) {
+    var t = String(text || "").trim();
+    if (!t) return '<span class="mll-none">—</span>';
+    return (
+      '<span class="mll-copy" data-copy="' +
+      esc(t) +
+      '" title="クリックでコピー">' +
+      esc(display != null ? display : t) +
+      "</span>"
+    );
+  }
+
   function injectCss() {
     if (document.getElementById("mll-dash-css")) return;
     var st = document.createElement("style");
@@ -389,25 +476,57 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".mll-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".mll-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".mll-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;}" +
+      ".mll-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:stretch;margin-bottom:10px;}" +
+      ".mll-toolbar-group{display:flex;flex-direction:column;min-width:0;margin:0;padding:8px 10px;" +
+      "border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
+      ".mll-toolbar-group-inner{display:flex;flex:1;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".mll-toolbar-group legend{font-size:11px;color:#64748b;padding:0 4px;font-weight:600;}" +
+      ".mll-toolbar-group--a{background:#f8fafc;}" +
+      ".mll-toolbar-group--b{background:#f1f5f9;}" +
+      ".mll-toolbar-group--c{background:#faf5ff;}" +
+      ".mll-toolbar-group-inner > button{box-sizing:border-box;height:36px;min-height:36px;padding:0 16px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}" +
+      ".mll-toolbar-group-inner input[type=search],.mll-toolbar-group-inner select{box-sizing:border-box;height:36px;min-height:36px;padding:0 10px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;line-height:1;background:#fff;}" +
+      ".mll-toolbar-group-inner input[type=search]{min-width:220px;max-width:360px;}" +
+      ".mll-toolbar-group-inner select{max-width:220px;}" +
+      ".mll-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
+      "background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:2px solid #3b82f6;border-radius:12px;" +
+      "box-shadow:0 2px 8px rgba(59,130,246,.15);}" +
+      ".mll-meta-stat{display:inline-flex;flex-direction:column;align-items:center;padding:6px 12px;" +
+      "border-radius:10px;min-width:72px;white-space:nowrap;background:#fff;border:1px solid;" +
+      "box-shadow:0 1px 3px rgba(15,23,42,.06);}" +
+      ".mll-meta-stat-label{font-size:11px;font-weight:600;line-height:1.2;margin-bottom:2px;}" +
+      ".mll-meta-stat-val{display:flex;align-items:baseline;gap:2px;line-height:1;}" +
+      ".mll-meta-stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}" +
+      ".mll-meta-stat-unit{font-size:11px;font-weight:600;}" +
+      ".mll-meta-stat--all{background:#fff;border-color:#cbd5e1;color:#475569;}" +
+      ".mll-meta-stat--all .mll-meta-stat-label{color:#64748b;}" +
+      ".mll-meta-stat--active{background:#dcfce7;border-color:#86efac;color:#166534;}" +
+      ".mll-meta-stat--active .mll-meta-stat-label{color:#166534;}" +
+      ".mll-meta-stat--deleted{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}" +
+      ".mll-meta-stat--deleted .mll-meta-stat-label{color:#64748b;}" +
+      ".mll-meta-stat--zero{opacity:.55;}" +
+      ".mll-filtered-count{font-size:12px;color:#475569;font-weight:600;}" +
+      ".mll-build{font-size:11px;color:#64748b;margin-left:auto;}" +
       ".mll-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;}" +
       ".mll-filter-label{font-size:12px;color:#475569;min-width:48px;}" +
       ".mll-chip{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;}" +
       ".mll-chip-active{background:#1e40af;color:#fff;border-color:#1e40af;}" +
-      ".mll-search-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}" +
-      ".mll-search-row input[type=search],.mll-search-row select{padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;font-size:12px;}" +
-      ".mll-search-row input[type=search]{min-width:220px;flex:1;max-width:360px;}" +
-      ".mll-search-row select{max-width:220px;background:#fff;}" +
       ".mll-table-wrap{overflow:auto;max-height:calc(100vh - 380px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".mll-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1100px;}" +
+      ".mll-table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;min-width:1100px;}" +
       ".mll-table th,.mll-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".mll-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".mll-table th{background:#f1f5f9;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 #e2e8f0;}" +
+      ".mll-col-status{width:4.5em;min-width:4.5em;text-align:center;}" +
       ".mll-col-dept{width:12em;max-width:12em;min-width:12em;white-space:normal;line-height:1.35;}" +
       ".mll-col-addr{font-family:Consolas,Monaco,monospace;font-size:11px;}" +
       ".mll-col-members{max-width:280px;white-space:normal;line-height:1.35;font-size:11px;}" +
       ".mll-col-memo{max-width:220px;white-space:normal;line-height:1.35;font-size:11px;}" +
-      ".mll-table tr.deleted{background:#f8fafc;color:#64748b;}" +
+      ".mll-status-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}" +
+      ".mll-status-pill--active{background:#dcfce7;color:#166534;border:1px solid #86efac;}" +
+      ".mll-status-pill--deleted{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;}" +
+      ".mll-table tr.deleted{background:#e2e8f0;color:#64748b;}" +
+      ".mll-table tr.deleted td{color:#64748b;}" +
+      ".mll-copy{cursor:pointer;font-family:Consolas,Monaco,monospace;font-size:11px;}" +
+      ".mll-copy:hover{text-decoration:underline;color:#0369a1;}" +
       ".mll-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
       ".mll-none{color:#64748b;font-style:italic;}" +
       ".mll-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
@@ -767,6 +886,7 @@
     var rows = filteredRecords();
     var thead =
       "<tr><th>操作</th>" +
+      '<th class="mll-col-status">状態</th>' +
       "<th class=\"mll-col-dept\">利用部署</th>" +
       "<th class=\"mll-col-addr\">メールアドレス</th>" +
       "<th>利用用途</th>" +
@@ -779,6 +899,7 @@
       .map(function (row) {
         var preview = membersPreview(row.members_raw);
         var cls = row.status === STATUS_DELETED ? "deleted" : "";
+        var membersCopyText = membersSlash(row.members_raw);
         return (
           '<tr class="' +
           cls +
@@ -791,17 +912,20 @@
             : "") +
           '<button type="button" class="mll-btn-hard-del">物理削除</button>' +
           "</td>" +
+          '<td class="mll-col-status">' +
+          statusPillHtml(row.status) +
+          "</td>" +
           '<td class="mll-col-dept">' +
           displayCell(row.department) +
           "</td>" +
           '<td class="mll-col-addr">' +
-          displayCell(row.list_address) +
+          copyCell(row.list_address) +
           "</td>" +
           "<td>" +
           displayCell(row.purpose) +
           "</td>" +
           '<td class="mll-col-members">' +
-          displayCell(preview.text) +
+          copyCell(membersCopyText, preview.text === "—" ? "" : preview.text) +
           "</td>" +
           "<td>" +
           esc(String(preview.count)) +
@@ -819,7 +943,7 @@
       '<table class="mll-table"><thead>' +
       thead +
       "</thead><tbody>" +
-      (tbody || '<tr><td colspan="8">該当なし</td></tr>') +
+      (tbody || '<tr><td colspan="9">該当なし</td></tr>') +
       "</tbody></table>";
     wrap.querySelectorAll(".mll-btn-edit").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -848,15 +972,13 @@
         if (row) openHardDeleteModal(row);
       });
     });
+    wrap.querySelectorAll(".mll-copy").forEach(function (el) {
+      el.addEventListener("click", function () {
+        copyText(el.getAttribute("data-copy") || "");
+      });
+    });
     renderFilterChips();
-    var meta = document.getElementById("mll-count");
-    if (meta) {
-      var active = state.records.filter(function (r) {
-        return r.status === STATUS_ACTIVE;
-      }).length;
-      meta.textContent =
-        "表示 " + rows.length + " / 全 " + state.records.length + " 件（有効 " + active + "）";
-    }
+    updateMetaBar(rows.length);
   }
 
   function reloadRecords() {
@@ -904,6 +1026,7 @@
       "<h1>" +
       esc(title) +
       "</h1>" +
+      '<div class="mllpr-notice" role="note"><p>本紙は機密性の高い内容を含みます。</p></div>' +
       '<p class="mllpr-meta">出力日: ' +
       esc(todayJstYmd()) +
       deptNote +
@@ -922,11 +1045,13 @@
     return (
       ".mllpr-page{font-family:Meiryo,Segoe UI,sans-serif;padding:12px;}" +
       ".mllpr-page h1{font-size:16pt;margin:0 0 8px;}" +
+      ".mllpr-notice{margin:6px 0 0;padding:0;}" +
+      ".mllpr-notice p{margin:0;font-size:11px;font-weight:600;color:#64748b;line-height:1.5;}" +
       ".mllpr-meta{font-size:10pt;color:#475569;margin:0 0 12px;}" +
       ".mllpr-table{border-collapse:collapse;width:100%;font-size:9pt;}" +
       ".mllpr-table th,.mllpr-table td{border:1px solid #334155;padding:4px 5px;vertical-align:top;word-break:break-all;}" +
       ".mllpr-table th{background:#e2e8f0;}" +
-      "@media print{@page{size:A4 landscape;margin:8mm;}}"
+      "@media print{@page{size:A4 landscape;margin:8mm;}.mllpr-notice p{font-size:11pt;}}"
     );
   }
 
@@ -1005,21 +1130,28 @@
   function buildUi(host) {
     host.innerHTML =
       '<div class="mll-root">' +
-      '<div class="mll-meta">' +
-      '<span id="mll-count">—</span>' +
-      '<button type="button" id="mll-new" class="kintoneplugin-button-dialog-ok" style="margin-left:auto">新規登録</button>' +
-      "</div>" +
       '<div class="mll-toolbar">' +
-      '<input type="search" id="mll-search" placeholder="キーワード検索（メール・メンバー・用途・部署・備考）空白AND" style="min-width:280px;padding:6px;">' +
-      '<input type="search" id="mll-member-search" placeholder="メンバー検索（部分一致）" style="min-width:180px;padding:6px;">' +
+      '<fieldset class="mll-toolbar-group mll-toolbar-group--a">' +
+      "<legend>登録</legend>" +
+      '<div class="mll-toolbar-group-inner">' +
+      '<button type="button" id="mll-new" class="kintoneplugin-button-dialog-ok">新規登録</button>' +
+      "</div></fieldset>" +
+      '<fieldset class="mll-toolbar-group mll-toolbar-group--b">' +
+      "<legend>検索・絞込</legend>" +
+      '<div class="mll-toolbar-group-inner">' +
+      '<input type="search" id="mll-search" placeholder="キーワード検索（メール・メンバー・用途・部署・備考）空白AND">' +
+      '<input type="search" id="mll-member-search" placeholder="メンバー検索（部分一致）">' +
       '<select id="mll-dept-filter" aria-label="利用部署で絞り込み"><option value="">すべての部署</option></select>' +
       '<button type="button" id="mll-clear" class="kintoneplugin-button-normal">条件クリア</button>' +
+      "</div></fieldset>" +
+      '<fieldset class="mll-toolbar-group mll-toolbar-group--c">' +
+      "<legend>出力</legend>" +
+      '<div class="mll-toolbar-group-inner">' +
       '<button type="button" id="mll-print-list" class="kintoneplugin-button-normal">一覧印刷</button>' +
       '<button type="button" id="mll-xlsx" class="kintoneplugin-button-normal">Excel出力</button>' +
-      '<span style="font-size:11px;color:#64748b;margin-left:8px">BUILD ' +
-      esc(BUILD) +
-      "</span>" +
+      "</div></fieldset>" +
       "</div>" +
+      '<div id="mll-meta" class="mll-meta-bar"></div>' +
       '<div id="mll-filters-status" class="mll-filters"></div>' +
       '<div id="mll-table-wrap" class="mll-table-wrap"></div>' +
       "</div>";

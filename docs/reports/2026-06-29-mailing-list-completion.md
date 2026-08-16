@@ -2,7 +2,20 @@
 
 > **日付**: 2026-06-29 (日) JST  
 > **案件**: メーリングリスト台帳（750/751）— **Space 21**（2026-07-02 移設）  
-> **正本仕様**: `docs/plans/2026-06-29-mailing-list-kintone-spec.md`
+> **正本仕様**: `docs/plans/2026-06-29-mailing-list-kintone-spec.md`  
+> **v1.x 追記あり**（下記 § addendum — **CLOSED 維持** / R61）
+
+---
+
+## § addendum — v1.x UX（2026-08-16）
+
+| 項目 | 内容 |
+|------|------|
+| 範囲 | 751 dash のみ（IDs 1–6・8）。750 DB 非変更 |
+| BUILD / rev | `2026-08-16-751-ux-toolbar-meta-print` / rev **7** |
+| fileKey | `a968e694-3171-4c62-8218-912bc1a23bb2` |
+| 内容 | ツールバー枠・メタ件数チップ・sticky・コピー・状態ピル・印刷機密1行（印刷面のみ） |
+| 状態 | **closed-v1 維持**。浜田 **Ctrl+F5 目視待ち** |
 
 ---
 
