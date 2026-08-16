@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-16 10:39 JST — Cursor JS/TS 除外後、朝セッション再締め。
 **次の1手**: 夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
 **レーン変更**: Cursor言語サーバ除外 → セッション close
-**Git**: **`9e8dca01`** = `origin/main` — push 済（R44 parent）
+**Git**: **`2e481956`** = `origin/main` — push 済
 **closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
@@ -56,6 +56,7 @@
 - 694/696/715 再開しない。夜は浜田指示
 - closeStatus: **closed**（再締め。day-close は今夜）
 
+
 ## 2026-08-15
 
 ### 2026-08-15 朝（715 完了・セッション締め）
@@ -69,6 +70,7 @@
 - 夕反省全GO: `cio-ops-2026-08-15-evening-improvements`（MCP-2/CON-1見送り）
 - OPS-1／ORG-2／RULE-2 課金日期間判定／ORG-1 ③五観点／RULE-3 phantom dirty
 - closeStatus: **closed-day**
+
 
 
 
@@ -94,16 +96,5 @@
 
 
 
-## 2026-08-11
 
-### 2026-08-11 夜（本日最終締め）
-- **674**: 買替（596廃止→台帳次番／clone POST／edit+HW／SKYSEA削除条件）・棚卸（履歴正本・latest内部）・IME datalist → rev **327**
-- **694**: 印刷／編集 kind 行 → rev **24**
-- 夕反省全GO: `cio-ops-2026-08-11-evening-improvements`（clone/IME/retired/ahead）
-- AI緊急用: wipe→tip再構築・verify OK／as-built SPEC §1.6〜1.9
-- closeStatus: **closed-day**
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-15.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-16.md -->
