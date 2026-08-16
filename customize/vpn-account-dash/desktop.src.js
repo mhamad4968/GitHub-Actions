@@ -2,7 +2,7 @@
   "use strict";
 
   /** VPNアカウント台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 + PC台帳連携 */
-  var BUILD = "2026-08-01-vpn-id-correct-history-pc-sync";
+  var BUILD = "2026-08-16-dashboard-ux-polish";
   var APP_DB = 733;
   var APP_EMP_MASTER = 595;
   var APP_PC_LEDGER = 674;
@@ -1102,6 +1102,22 @@
       "</span>";
   }
 
+  function updateRecordCountMeta() {
+    var el = document.getElementById("vpn-record-counts");
+    if (!el) return;
+    var filteredCount = filteredRecords().length;
+    var active = !!(state.domainFilter || state.search.trim());
+    el.innerHTML =
+      '<span class="vpn-meta-chip" aria-label="全件数">全件 ' +
+      esc(String(state.records.length)) +
+      "件</span>" +
+      (active
+        ? '<span class="vpn-meta-chip" aria-label="表示件数">表示 ' +
+          esc(String(filteredCount)) +
+          "件</span>"
+        : "");
+  }
+
   function filteredRecords() {
     var q = state.search.trim().toLowerCase();
     var df = state.domainFilter;
@@ -1701,12 +1717,14 @@
       ".vpnl-header{margin-bottom:10px;text-align:center;}" +
       ".vpnl-header h1{margin:0 0 6px;font-size:16pt;font-weight:700;color:#1e3a8a;}" +
       ".vpnl-meta{margin:0;font-size:10pt;color:#475569;}" +
+      ".vpnl-confidential{display:none;margin:6px 0 0;font-size:10pt;font-weight:700;color:#991b1b;}" +
       ".vpnl-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10.5pt;}" +
       ".vpnl-table th,.vpnl-table td{border:1px solid #64748b;padding:6px 5px;vertical-align:top;line-height:1.45;word-break:break-word;overflow-wrap:anywhere;}" +
       ".vpnl-table th{background:#dbeafe;font-size:10pt;font-weight:700;}" +
       ".vpnl-table tr:nth-child(even) td{background:#f8fafc;}" +
       "@media print{@page{size:A4 landscape;margin:8mm;}" +
       "body{padding:0;}" +
+      ".vpnl-confidential{display:block;}" +
       ".vpnl-table{font-size:10pt;}" +
       "thead{display:table-header-group;}" +
       "tr{page-break-inside:avoid;}}"
@@ -1741,7 +1759,7 @@
       esc(todayJstYmd()) +
       " / " +
       esc(summary) +
-      "</p></header>" +
+      '</p><p class="vpnl-confidential">本紙は機密性の高い内容を含みます。</p></header>' +
       '<table class="vpnl-table">' +
       head +
       body +
@@ -1893,6 +1911,7 @@
   function renderTable() {
     var tbody = document.getElementById("vpn-tbody");
     if (!tbody) return;
+    updateRecordCountMeta();
     if (state.loading) {
       tbody.innerHTML = '<tr><td colspan="8">読込中…</td></tr>';
       return;
@@ -1904,28 +1923,35 @@
     }
     tbody.innerHTML = rows
       .map(function (r) {
+        var accountLabelHtml = String(r.account_label || "").trim()
+          ? '<span class="vpn-copy" data-copy="' +
+            esc(r.account_label) +
+            '" title="アカウント名をコピー" aria-label="アカウント名をコピー">' +
+            esc(r.account_label) +
+            "</span>"
+          : "";
         return (
           "<tr>" +
           "<td>" +
           esc(r.registered_date) +
           "</td>" +
           "<td>" +
-          esc(r.account_label) +
+          accountLabelHtml +
           "</td>" +
           "<td>" +
           esc(r.dept) +
           "</td>" +
-          "<td>" +
+          '<td><span class="vpn-domain-pill">' +
           esc(r.vpn_domain) +
-          "</td>" +
-          "<td><span class=\"vpn-copy\" data-copy=\"" +
+          "</span></td>" +
+          '<td><span class="vpn-copy" data-copy="' +
           esc(r.vpn_id) +
-          '">' +
+          '" title="VPN IDをコピー" aria-label="VPN IDをコピー">' +
           esc(r.vpn_id) +
           "</span></td>" +
-          "<td><span class=\"vpn-copy\" data-copy=\"" +
+          '<td><span class="vpn-copy" data-copy="' +
           esc(r.password) +
-          '">' +
+          '" title="パスワードをコピー" aria-label="パスワードをコピー">' +
           esc(r.password) +
           "</span></td>" +
           "<td class=\"vpn-note\">" +
@@ -2116,10 +2142,18 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".vpn-root{font-family:Segoe UI,Meiryo,sans-serif;font-size:15px;padding:8px 12px 24px;}" +
-      ".vpn-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
-      ".vpn-toolbar input[type=search]{min-width:280px;padding:8px 10px;font-size:15px;}" +
+      ".vpn-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin-bottom:12px;}" +
+      ".vpn-toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;padding:6px 10px 8px;border:1px solid #cbd5e1;border-radius:7px;min-width:0;}" +
+      ".vpn-toolbar-group legend{padding:0 5px;font-size:12px;font-weight:700;color:#475569;}" +
+      ".vpn-toolbar-group label{display:flex;align-items:center;gap:6px;white-space:nowrap;}" +
+      ".vpn-toolbar button,.vpn-toolbar input,.vpn-toolbar select{height:36px;box-sizing:border-box;}" +
+      ".vpn-toolbar input[type=search]{min-width:280px;padding:7px 10px;font-size:15px;}" +
+      ".vpn-toolbar select{padding:6px 8px;font-size:15px;}" +
       ".vpn-search-clear{white-space:nowrap;}" +
       ".vpn-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:12px;padding:14px 18px;background:#ecfdf5;border:1px solid #86efac;border-radius:8px;}" +
+      ".vpn-next-id{display:flex;flex:1 1 620px;flex-wrap:wrap;gap:10px 18px;align-items:center;}" +
+      ".vpn-record-counts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}" +
+      ".vpn-meta-chip{display:inline-flex;align-items:center;min-height:28px;padding:3px 10px;border:1px solid #86efac;border-radius:999px;background:#fff;color:#166534;font-size:13px;font-weight:700;cursor:default;user-select:text;}" +
       ".vpn-next-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;}" +
       ".vpn-next-label{font-size:15px;color:#166534;font-weight:700;}" +
       ".vpn-next-val{font-size:1.65rem;font-weight:700;font-family:Consolas,Monaco,monospace;color:#14532d;margin-left:8px;}" +
@@ -2159,13 +2193,16 @@
       ".vpn-diff-none{color:#94a3b8;}" +
       ".vpn-num{text-align:right;font-variant-numeric:tabular-nums;}" +
       ".vpn-table-wrap{overflow:auto;max-height:calc(100vh - 360px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".vpn-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1180px;}" +
-      ".vpn-table th,.vpn-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
-      ".vpn-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;font-size:14px;}" +
+      ".vpn-table{border-collapse:separate;border-spacing:0;width:100%;font-size:15px;min-width:1180px;}" +
+      ".vpn-table th,.vpn-table td{border:0;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
+      ".vpn-table th:last-child,.vpn-table td:last-child{border-right:0;}" +
+      ".vpn-table tbody tr:last-child td{border-bottom:0;}" +
+      ".vpn-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;font-size:14px;box-shadow:0 2px 4px rgba(15,23,42,.16);}" +
       ".vpn-copy{cursor:pointer;font-family:Consolas,Monaco,monospace;font-size:14px;}" +
       ".vpn-copy:hover{text-decoration:underline;color:#0369a1;}" +
+      ".vpn-domain-pill{display:inline-block;padding:2px 8px;border:1px solid #bfdbfe;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:13px;white-space:nowrap;}" +
       ".vpn-note{max-width:220px;white-space:pre-wrap;font-size:13px;color:#475569;}" +
-      ".vpn-actions button{margin:0 3px;padding:4px 10px;font-size:14px;}" +
+      ".vpn-actions button{height:36px;box-sizing:border-box;margin:0 3px;padding:4px 10px;font-size:14px;}" +
       ".vpn-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
       ".vpn-modal{background:#fff;border-radius:8px;padding:18px 20px;max-width:560px;width:92%;max-height:90vh;overflow:auto;font-size:15px;}" +
       ".vpn-modal h3{margin:0 0 14px;font-size:18px;}" +
@@ -2213,9 +2250,11 @@
     root.className = "vpn-root";
     root.innerHTML =
       '<div class="vpn-toolbar">' +
+      '<fieldset class="vpn-toolbar-group"><legend>登録</legend>' +
       '<button type="button" id="vpn-reload" class="kintoneplugin-button-normal">再読み込み</button>' +
       '<button type="button" id="vpn-create" class="kintoneplugin-button-dialog-ok">新規作成</button>' +
-      '<button type="button" id="vpn-list-export" class="kintoneplugin-button-normal">リスト出力</button>' +
+      "</fieldset>" +
+      '<fieldset class="vpn-toolbar-group"><legend>検索・絞込</legend>' +
       '<label class="vpn-filter-label">ドメイン<select id="vpn-domain-filter">' +
       '<option value="">すべて</option>' +
       '<option value="' +
@@ -2230,8 +2269,12 @@
       "</select></label>" +
       '<input type="search" id="vpn-search" placeholder="アカウント名 / VPN ID / 所属 / 備考">' +
       '<button type="button" id="vpn-search-clear" class="kintoneplugin-button-normal vpn-search-clear">クリア</button>' +
+      "</fieldset>" +
+      '<fieldset class="vpn-toolbar-group"><legend>出力</legend>' +
+      '<button type="button" id="vpn-list-export" class="kintoneplugin-button-normal">リスト出力</button>' +
+      "</fieldset>" +
       "</div>" +
-      '<div class="vpn-meta" id="vpn-next-id"></div>' +
+      '<div class="vpn-meta"><div class="vpn-next-id" id="vpn-next-id"></div><div class="vpn-record-counts" id="vpn-record-counts" aria-live="polite"></div></div>' +
       connInfoAccordionHtml() +
       '<details class="vpn-license-acc" id="vpn-license-acc">' +
       '<summary><span id="vpn-license-summary-text">拠点単位ライセンス集計</span></summary>' +

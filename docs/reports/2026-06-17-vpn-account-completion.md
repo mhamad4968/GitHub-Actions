@@ -89,3 +89,15 @@
 | **bundle** | SheetJS 同梱 — `scripts/vpn-account-bundle-dash.mjs` |
 | **734 BUILD** | `2026-06-21-vpn-conn-pw-updated-date` rev **28** / fileKey `8d2a21e0-d570-43c9-b908-1c2bab1d8c1b` |
 | **判定** | 浜田目視 OK — **v1.3 完成**（CLOSED 維持） |
+
+---
+
+## 8. UX 改善 addendum（2026-08-16）
+
+| 項目 | 内容 |
+|------|------|
+| **状態** | **closed-v1 維持**。UX 改善 IDs 1–6・8 を本番反映、浜田目視待ち |
+| **画面** | ツールバー3区分、sticky安定化、全件/表示件数、コピー明示＋アカウント名、ドメインピル、36px操作 |
+| **印刷** | 管理者一覧だけに機密注意1行。利用者単票の既存【ご注意】は変更なし |
+| **非変更** | DB 733、フィールド、CRUD、採番、ライセンス集計計算、Excel |
+| **Live** | BUILD=`2026-08-16-dashboard-ux-polish` / rev **32** / fileKey `47bbc59a-9dbd-4e02-8a04-4e46c4e2deeb` |

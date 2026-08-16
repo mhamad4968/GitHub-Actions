@@ -306,11 +306,11 @@
       "note": null
     },
     "734": {
-      "build": "2026-08-01-vpn-id-correct-history-pc-sync",
-      "fileKey": "21caa91c-6d53-4b9a-811b-d4e1906e4cb3",
-      "revision": "31",
+      "build": "2026-08-16-dashboard-ux-polish",
+      "fileKey": "47bbc59a-9dbd-4e02-8a04-4e46c4e2deeb",
+      "revision": "32",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-07-31T22:22:32.090Z",
+      "deployedAt": "2026-08-16T09:30:32.594Z",
       "note": null
     },
     "736": {
