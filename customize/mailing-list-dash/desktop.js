@@ -75,7 +75,7 @@ var ML_DEPT_MASTER = {
   /* global ML_DEPT_MASTER */
 
   /** メーリングリスト台帳 — 742/696 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
-  var BUILD = "2026-08-16-751-ux-toolbar-meta-print";
+  var BUILD = "2026-08-16-751-members-copy-comma";
   var LIST_DOMAIN = "@j-bis.co.jp";
   var STATUS_ACTIVE = "有効";
   var STATUS_DELETED = "削除";
@@ -529,13 +529,15 @@ var ML_DEPT_MASTER = {
       "</span>";
   }
 
-  function copyCell(text, display) {
+  function copyCell(text, display, title) {
     var t = String(text || "").trim();
     if (!t) return '<span class="mll-none">—</span>';
     return (
       '<span class="mll-copy" data-copy="' +
       esc(t) +
-      '" title="クリックでコピー">' +
+      '" title="' +
+      esc(title || "クリックでコピー") +
+      '">' +
       esc(display != null ? display : t) +
       "</span>"
     );
@@ -971,7 +973,8 @@ var ML_DEPT_MASTER = {
       .map(function (row) {
         var preview = membersPreview(row.members_raw);
         var cls = row.status === STATUS_DELETED ? "deleted" : "";
-        var membersCopyText = membersSlash(row.members_raw);
+        // 表示は / 、コピーはカンマ（メール台帳・BIZ貼付互換 = members_raw 正本）
+        var membersCopyComma = normalizeMembersRaw(row.members_raw);
         return (
           '<tr class="' +
           cls +
@@ -997,7 +1000,11 @@ var ML_DEPT_MASTER = {
           displayCell(row.purpose) +
           "</td>" +
           '<td class="mll-col-members">' +
-          copyCell(membersCopyText, preview.text === "—" ? "" : preview.text) +
+          copyCell(
+            membersCopyComma,
+            preview.text === "—" ? "" : preview.text,
+            "クリックでカンマ区切りコピー（表示は / ）",
+          ) +
           "</td>" +
           "<td>" +
           esc(String(preview.count)) +
