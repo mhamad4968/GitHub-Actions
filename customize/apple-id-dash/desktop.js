@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-16-694-toolbar-group-frames";
+  var BUILD = "2026-08-16-694-toolbar-height-device-col";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -46,6 +46,7 @@
   var SORT_COLUMNS = [
     { key: "legacy_no", label: "No." },
     { key: "status", label: "状態" },
+    { key: "device_type", label: "端末" },
     { key: "registered_date", label: "登録日" },
     { key: "device_exchange_date", label: "端末交換日" },
     { key: "mdm_name", label: "MDM名" },
@@ -54,7 +55,6 @@
     { key: "apple_id", label: "Apple ID" },
     { key: "password", label: "PW" },
     { key: "lock_passcode", label: "ロック" },
-    { key: "device_type", label: "端末" },
   ];
 
   var state = {
@@ -263,11 +263,11 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".aid-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;margin-bottom:10px;}" +
-      ".aid-toolbar-title{font-size:16px;font-weight:700;white-space:nowrap;}" +
-      ".aid-toolbar-group{display:block;min-width:0;margin:0;padding:8px 10px;" +
+      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:stretch;margin-bottom:10px;}" +
+      ".aid-toolbar-title{font-size:16px;font-weight:700;white-space:nowrap;align-self:center;}" +
+      ".aid-toolbar-group{display:flex;flex-direction:column;min-width:0;margin:0;padding:8px 10px;" +
       "border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
-      ".aid-toolbar-group-inner{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".aid-toolbar-group-inner{display:flex;flex:1;flex-wrap:wrap;align-items:center;gap:8px;}" +
       ".aid-toolbar-group legend{font-size:11px;color:#64748b;padding:0 4px;font-weight:600;}" +
       ".aid-toolbar-group--a{background:#f8fafc;}" +
       ".aid-toolbar-group--b{background:#f1f5f9;}" +
@@ -1141,6 +1141,9 @@
           statusPillHtml(r.status) +
           "</td>" +
           "<td>" +
+          esc(r.device_type) +
+          "</td>" +
+          "<td>" +
           esc(r.registered_date) +
           "</td>" +
           "<td>" +
@@ -1170,9 +1173,6 @@
           '" title="クリックでコピー">' +
           esc(displayLockPass(r)) +
           "</span></td>" +
-          "<td>" +
-          esc(r.device_type) +
-          "</td>" +
           '<td class="aid-actions">' +
           '<button type="button" class="aid-btn-edit">編集</button>' +
           (r.status === STATUS_ACTIVE

@@ -106,11 +106,11 @@
       "note": null
     },
     "694": {
-      "build": "2026-08-16-694-toolbar-group-frames",
-      "fileKey": "3a3ee2cd-6735-484e-b039-7581b1ac80e2",
-      "revision": "26",
+      "build": "2026-08-16-694-toolbar-height-device-col",
+      "fileKey": "83db5b1b-623b-4e53-86ee-89cc348442b7",
+      "revision": "27",
       "relPath": "customize/apple-id-dash/desktop.js",
-      "deployedAt": "2026-08-16T00:25:08.835Z",
+      "deployedAt": "2026-08-16T00:29:25.257Z",
       "note": null
     },
     "695": {
