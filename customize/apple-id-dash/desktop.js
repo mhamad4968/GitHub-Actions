@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-16-694-ui-print-confidential";
+  var BUILD = "2026-08-16-694-toolbar-group-frames";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -263,10 +263,15 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".aid-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-bottom:10px;}" +
-      ".aid-toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}" +
-      ".aid-toolbar-group--b{flex:1;min-width:280px;}" +
-      ".aid-toolbar-title{font-size:16px;font-weight:700;}" +
+      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;margin-bottom:10px;}" +
+      ".aid-toolbar-title{font-size:16px;font-weight:700;white-space:nowrap;}" +
+      ".aid-toolbar-group{display:block;min-width:0;margin:0;padding:8px 10px;" +
+      "border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
+      ".aid-toolbar-group-inner{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".aid-toolbar-group legend{font-size:11px;color:#64748b;padding:0 4px;font-weight:600;}" +
+      ".aid-toolbar-group--a{background:#f8fafc;}" +
+      ".aid-toolbar-group--b{background:#f1f5f9;}" +
+      ".aid-toolbar-group--c{background:#faf5ff;}" +
       ".aid-next-action{white-space:nowrap;font-size:14px;padding:8px 18px;}" +
       ".aid-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
       "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #059669;border-radius:12px;" +
@@ -1234,12 +1239,16 @@
     root.className = "aid-root";
     root.innerHTML =
       '<div class="aid-toolbar">' +
-      '<div class="aid-toolbar-group aid-toolbar-group--a">' +
       '<span class="aid-toolbar-title">Apple ID管理台帳</span>' +
+      '<fieldset class="aid-toolbar-group aid-toolbar-group--a">' +
+      "<legend>再読込・採番</legend>" +
+      '<div class="aid-toolbar-group-inner">' +
       '<button type="button" id="aid-reload" class="kintoneplugin-button-normal">再読込</button>' +
       '<button type="button" id="aid-number" class="aid-next-action kintoneplugin-button-dialog-ok">採番</button>' +
-      "</div>" +
-      '<div class="aid-toolbar-group aid-toolbar-group--b">' +
+      "</div></fieldset>" +
+      '<fieldset class="aid-toolbar-group aid-toolbar-group--b">' +
+      "<legend>絞込・検索</legend>" +
+      '<div class="aid-toolbar-group-inner">' +
       '<label><input type="radio" name="aid-filter" value="active"' +
       (state.filter === "active" ? " checked" : "") +
       "> 利用中</label>" +
@@ -1254,10 +1263,12 @@
       "> 未割当</label>" +
       '<input type="search" id="aid-search" placeholder="Apple ID・氏名・MDM・回線" style="min-width:220px;padding:6px;margin-left:8px">' +
       '<button type="button" id="aid-clear" class="kintoneplugin-button-normal">クリア</button>' +
-      "</div>" +
-      '<div class="aid-toolbar-group aid-toolbar-group--c">' +
+      "</div></fieldset>" +
+      '<fieldset class="aid-toolbar-group aid-toolbar-group--c">' +
+      "<legend>印刷</legend>" +
+      '<div class="aid-toolbar-group-inner">' +
       '<button type="button" id="aid-print" class="kintoneplugin-button-normal">印刷</button>' +
-      "</div>" +
+      "</div></fieldset>" +
       "</div>" +
       '<div id="aid-meta" class="aid-meta-bar"></div>' +
       '<div class="aid-table-wrap"><table class="aid-table"><thead><tr>' +
