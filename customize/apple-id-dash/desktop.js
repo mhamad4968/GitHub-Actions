@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-16-694-toolbar-height-device-col";
+  var BUILD = "2026-08-16-694-toolbar-btn-height";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -272,7 +272,9 @@
       ".aid-toolbar-group--a{background:#f8fafc;}" +
       ".aid-toolbar-group--b{background:#f1f5f9;}" +
       ".aid-toolbar-group--c{background:#faf5ff;}" +
-      ".aid-next-action{white-space:nowrap;font-size:14px;padding:8px 18px;}" +
+      ".aid-next-action{white-space:nowrap;}" +
+      ".aid-toolbar-group-inner > button{box-sizing:border-box;height:36px;min-height:36px;padding:0 16px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}" +
+      "#aid-search{box-sizing:border-box;height:36px;min-height:36px;min-width:220px;padding:0 10px;margin-left:8px;font-size:13px;line-height:1;}" +
       ".aid-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
       "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #059669;border-radius:12px;" +
       "box-shadow:0 2px 8px rgba(5,150,105,.15);}" +
@@ -1261,7 +1263,7 @@
       '<label><input type="radio" name="aid-filter" value="unassigned"' +
       (state.filter === "unassigned" ? " checked" : "") +
       "> 未割当</label>" +
-      '<input type="search" id="aid-search" placeholder="Apple ID・氏名・MDM・回線" style="min-width:220px;padding:6px;margin-left:8px">' +
+      '<input type="search" id="aid-search" placeholder="Apple ID・氏名・MDM・回線">' +
       '<button type="button" id="aid-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div></fieldset>" +
       '<fieldset class="aid-toolbar-group aid-toolbar-group--c">' +

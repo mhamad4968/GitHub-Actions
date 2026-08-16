@@ -106,11 +106,11 @@
       "note": null
     },
     "694": {
-      "build": "2026-08-16-694-toolbar-height-device-col",
-      "fileKey": "83db5b1b-623b-4e53-86ee-89cc348442b7",
-      "revision": "27",
+      "build": "2026-08-16-694-toolbar-btn-height",
+      "fileKey": "5d83bd8a-9a1b-4b41-a7d7-6207f6384370",
+      "revision": "28",
       "relPath": "customize/apple-id-dash/desktop.js",
-      "deployedAt": "2026-08-16T00:29:25.257Z",
+      "deployedAt": "2026-08-16T00:34:04.447Z",
       "note": null
     },
     "695": {
