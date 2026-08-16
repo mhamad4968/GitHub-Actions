@@ -2,7 +2,7 @@
   "use strict";
 
   /** VPNアカウント台帳 — DB REST CRUD + ライセンス集計 + 利用者印刷 + 月次前回比 + PC台帳連携 */
-  var BUILD = "2026-08-16-license-compare-ux";
+  var BUILD = "2026-08-16-license-count-list";
   var APP_DB = 733;
   var APP_EMP_MASTER = 595;
   var APP_PC_LEDGER = 674;
@@ -1070,8 +1070,8 @@
           " <span class=\"vpn-domain-tag\">(" +
           esc(r.label) +
           ')</span></td><td class="vpn-num">' +
-          esc(String(r.count)) +
-          ' 口</td><td class="vpn-num">' +
+          licenseCountLinkHtml("domain", r.domain, r.count) +
+          '</td><td class="vpn-num">' +
           esc(r.yen.toLocaleString("ja-JP")) +
           " 円</td></tr>"
         );
@@ -1089,8 +1089,8 @@
           "<tr><td>" +
           esc(r.dept) +
           '</td><td class="vpn-num">' +
-          esc(String(r.count)) +
-          ' 口</td><td class="vpn-num">' +
+          licenseCountLinkHtml("dept", r.dept, r.count) +
+          '</td><td class="vpn-num">' +
           (r.prev == null ? "—" : esc(String(r.prev)) + " 口") +
           '</td><td class="vpn-num ' +
           diffClass(r.diff) +
@@ -1157,8 +1157,8 @@
       '<table class="vpn-license-table vpn-license-domain-table"><thead><tr><th>ドメイン</th><th>口数</th><th>金額</th></tr></thead><tbody>' +
       domainLines +
       '<tr class="vpn-license-total"><td><strong>合計</strong></td><td class="vpn-num"><strong>' +
-      esc(String(domainB.total)) +
-      ' 口</strong></td><td class="vpn-num"><strong>' +
+      licenseCountLinkHtml("all", "", domainB.total) +
+      '</strong></td><td class="vpn-num"><strong>' +
       esc(domainB.totalYen.toLocaleString("ja-JP")) +
       ' 円</strong></td></tr></tbody></table>' +
       '<p class="vpn-license-subhead">所属別内訳</p>' +
@@ -1166,8 +1166,8 @@
       '<table class="vpn-license-table"><thead><tr><th>所属</th><th>現在</th><th>前回確定</th><th>差分</th><th>現在金額</th><th>確定比</th></tr></thead><tbody>' +
       lines +
       '<tr class="vpn-license-total"><td><strong>合計</strong></td><td class="vpn-num"><strong>' +
-      esc(String(b.total)) +
-      ' 口</strong></td><td class="vpn-num"><strong>' +
+      licenseCountLinkHtml("all", "", b.total) +
+      '</strong></td><td class="vpn-num"><strong>' +
       (cmp.prevTotal == null ? "—" : esc(String(cmp.prevTotal)) + " 口") +
       '</strong></td><td class="vpn-num ' +
       diffClass(cmp.totalDiff) +
@@ -1187,6 +1187,13 @@
     var btn = document.getElementById("vpn-license-confirm");
     if (btn) btn.onclick = confirmLicenseSnapshot;
     Array.prototype.slice
+      .call(body.querySelectorAll(".vpn-license-count-link"))
+      .forEach(function (el) {
+        el.onclick = function () {
+          openLicenseCountModal(el.getAttribute("data-license-filter"), el.getAttribute("data-license-key") || "");
+        };
+      });
+    Array.prototype.slice
       .call(body.querySelectorAll('input[name="vpn-license-dept-view"]'))
       .forEach(function (el) {
         el.onchange = function () {
@@ -1195,6 +1202,81 @@
           renderLicensePanel();
         };
       });
+  }
+
+  function licenseCountLinkHtml(filter, key, count) {
+    return (
+      '<button type="button" class="vpn-license-count-link" data-license-filter="' +
+      esc(filter) +
+      '" data-license-key="' +
+      esc(key) +
+      '">' +
+      esc(String(count)) +
+      " 口</button>"
+    );
+  }
+
+  function openLicenseCountModal(filter, key) {
+    var rows = state.records.filter(function (r) {
+      if (filter === "dept") return String(r.dept || "").trim() === key;
+      if (filter === "domain") return r.vpn_domain === key;
+      return filter === "all";
+    });
+    rows = sortListRows(rows);
+
+    var title =
+      filter === "dept"
+        ? "所属: " + key + "（" + rows.length + "口）"
+        : filter === "domain"
+          ? "ドメイン: " + key + "（" + rows.length + "口）"
+          : "全アカウント（" + rows.length + "口）";
+    var rowsHtml = rows
+      .map(function (r) {
+        return (
+          "<tr><td>" +
+          esc(r.account_label) +
+          "</td><td>" +
+          esc(r.dept) +
+          "</td><td>" +
+          esc(r.vpn_domain) +
+          "</td><td>" +
+          esc(r.vpn_id) +
+          "</td><td>" +
+          esc(r.password) +
+          "</td></tr>"
+        );
+      })
+      .join("");
+    var bodyHtml = rows.length
+      ? '<div class="vpn-license-list-wrap"><table class="vpn-license-list-table"><thead><tr><th>アカウント名</th><th>所属</th><th>ドメイン</th><th>VPN ID</th><th>パスワード</th></tr></thead><tbody>' +
+        rowsHtml +
+        "</tbody></table></div>"
+      : '<p class="vpn-license-list-empty">該当するアカウントがありません</p>';
+
+    closeModal();
+    var bg = document.createElement("div");
+    bg.id = "vpn-modal-root";
+    bg.className = "vpn-modal-bg";
+    bg.innerHTML =
+      '<div class="vpn-modal vpn-license-list-modal" role="dialog" aria-modal="true" aria-label="' +
+      esc(title) +
+      '"><h3>' +
+      esc(title) +
+      "</h3>" +
+      bodyHtml +
+      '<div class="vpn-modal-actions"><button type="button" class="vpn-btn-cancel">閉じる</button></div></div>';
+    document.body.appendChild(bg);
+
+    var closeBtn = bg.querySelector(".vpn-btn-cancel");
+    closeBtn.onclick = closeModal;
+    bg.addEventListener("click", function (e) {
+      if (e.target === bg) closeModal();
+    });
+    bg._vpnKeydownHandler = function (e) {
+      if (e.key === "Escape") closeModal();
+    };
+    document.addEventListener("keydown", bg._vpnKeydownHandler);
+    closeBtn.focus();
   }
 
   function updateNextIdBanner() {
@@ -1275,7 +1357,11 @@
 
   function closeModal() {
     var el = document.getElementById("vpn-modal-root");
-    if (el) el.remove();
+    if (!el) return;
+    if (el._vpnKeydownHandler) {
+      document.removeEventListener("keydown", el._vpnKeydownHandler);
+    }
+    el.remove();
   }
 
   function openModal(title, bodyHtml, onSave) {
@@ -2302,6 +2388,8 @@
       ".vpn-license-view-mode label{white-space:nowrap;cursor:pointer;}" +
       ".vpn-license-domain-table{max-width:640px;margin-bottom:4px;}" +
       ".vpn-domain-tag{font-size:12px;color:#64748b;font-weight:400;}" +
+      ".vpn-license-count-link{appearance:none;border:0;background:none;padding:0;color:#0369a1;font:inherit;font-weight:700;cursor:pointer;}" +
+      ".vpn-license-count-link:hover,.vpn-license-count-link:focus{text-decoration:underline;}" +
       ".vpn-license-actions{margin-top:12px;}" +
       ".vpn-license-actions button{height:auto;min-height:0;padding:8px 14px;}" +
       ".vpn-conn-body{font-size:17px;line-height:1.65;}" +
@@ -2340,6 +2428,14 @@
       ".vpn-modal label{display:block;margin:10px 0;font-size:15px;}" +
       ".vpn-modal input,.vpn-modal select,.vpn-modal textarea{width:100%;box-sizing:border-box;padding:8px;font-size:15px;margin-top:4px;}" +
       ".vpn-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}" +
+      ".vpn-license-list-modal{max-width:1100px;}" +
+      ".vpn-license-list-wrap{overflow:auto;max-height:65vh;border:1px solid #cbd5e1;border-radius:6px;}" +
+      ".vpn-license-list-table{border-collapse:collapse;width:100%;min-width:860px;font-size:14px;}" +
+      ".vpn-license-list-table th,.vpn-license-list-table td{border-bottom:1px solid #e2e8f0;padding:7px 10px;text-align:left;white-space:nowrap;}" +
+      ".vpn-license-list-table th{position:sticky;top:0;background:#f1f5f9;z-index:1;}" +
+      ".vpn-license-list-table tbody tr:last-child td{border-bottom:0;}" +
+      ".vpn-license-list-table td:nth-child(4),.vpn-license-list-table td:nth-child(5){font-family:Consolas,Monaco,monospace;}" +
+      ".vpn-license-list-empty{margin:18px 0;color:#64748b;}" +
       ".vpn-hint{font-size:13px;color:#64748b;margin:4px 0;}" +
       ".vpn-label-row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;}" +
       ".vpn-label-row label{flex:1;min-width:220px;}" +

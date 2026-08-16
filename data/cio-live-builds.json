@@ -306,11 +306,11 @@
       "note": null
     },
     "734": {
-      "build": "2026-08-16-license-compare-ux",
-      "fileKey": "80a07af4-3f35-4dbd-b513-802e03e1d5fe",
-      "revision": "33",
+      "build": "2026-08-16-license-count-list",
+      "fileKey": "56d0215d-8a47-4a89-a767-49ce522a77b9",
+      "revision": "34",
       "relPath": "customize/vpn-account-dash/desktop.js",
-      "deployedAt": "2026-08-16T09:47:06.259Z",
+      "deployedAt": "2026-08-16T09:55:17.620Z",
       "note": null
     },
     "736": {
