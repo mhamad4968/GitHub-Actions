@@ -2,7 +2,7 @@
   "use strict";
 
   /** Apple ID管理台帳 — 693 REST CRUD（678 型） */
-  var BUILD = "2026-08-11-694-edit-kind-row-inline";
+  var BUILD = "2026-08-16-694-ui-print-confidential";
 
   var APP_DB = 693;
   var FIXED_PASSWORD = "Honten00";
@@ -263,28 +263,39 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".aid-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
+      ".aid-toolbar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-bottom:10px;}" +
+      ".aid-toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".aid-toolbar-group--b{flex:1;min-width:280px;}" +
+      ".aid-toolbar-title{font-size:16px;font-weight:700;}" +
+      ".aid-next-action{white-space:nowrap;font-size:14px;padding:8px 18px;}" +
       ".aid-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
       "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #059669;border-radius:12px;" +
       "box-shadow:0 2px 8px rgba(5,150,105,.15);}" +
       ".aid-meta-count{font-size:13px;color:#475569;font-weight:500;white-space:nowrap;}" +
+      ".aid-meta-stat{font-size:13px;color:#334155;font-weight:600;white-space:nowrap;}" +
+      ".aid-meta-stat-label{color:#64748b;font-weight:500;margin-right:4px;}" +
       ".aid-next-slot{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;flex:1;min-width:280px;}" +
       ".aid-next-label{font-size:15px;font-weight:700;color:#047857;letter-spacing:.04em;}" +
       ".aid-next-id{font-size:1.65rem;font-weight:700;font-family:Consolas,Monaco,'Courier New',monospace;" +
       "color:#064e3b;letter-spacing:.03em;line-height:1.2;}" +
       ".aid-next-note{font-size:14px;font-weight:700;color:#0f766e;background:#fff;padding:4px 10px;border-radius:999px;" +
       "border:1px solid #5eead4;}" +
-      ".aid-next-action{margin-left:auto;white-space:nowrap;font-size:14px;padding:8px 18px;}" +
       ".aid-table-wrap{overflow:auto;max-height:calc(100vh - 220px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".aid-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1200px;}" +
+      ".aid-table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;min-width:1200px;}" +
       ".aid-table th,.aid-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".aid-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".aid-table th{background:#f1f5f9;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 #e2e8f0;}" +
       ".aid-table th.aid-sort{cursor:pointer;user-select:none;white-space:nowrap;}" +
       ".aid-table th.aid-sort:hover{background:#e2e8f0;}" +
       ".aid-sort-ind{display:inline-block;margin-left:4px;font-size:10px;color:#94a3b8;}" +
       ".aid-table th.aid-sort--active .aid-sort-ind{color:#0369a1;font-weight:700;}" +
-      ".aid-table tr.retired{background:#f8fafc;color:#64748b;}" +
-      ".aid-table tr.unassigned td.user-name{color:#b45309;}" +
+      ".aid-status-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}" +
+      ".aid-status-pill--active{background:#dcfce7;color:#166534;border:1px solid #86efac;}" +
+      ".aid-status-pill--retired{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;}" +
+      ".aid-table tr.retired{background:#e2e8f0;color:#64748b;}" +
+      ".aid-table tr.unassigned:not(.retired){background:#fffbeb;border-left:4px solid #f59e0b;}" +
+      ".aid-table tr.unassigned:not(.retired) td.user-name{color:#b45309;font-weight:600;}" +
+      ".aid-table tr.dev-iphone:not(.retired):not(.unassigned){background:#eff6ff;}" +
+      ".aid-table tr.dev-ipad:not(.retired):not(.unassigned){background:#f5f3ff;}" +
       ".aid-copy{cursor:pointer;font-family:Consolas,Monaco,monospace;font-size:12px;}" +
       ".aid-copy:hover{text-decoration:underline;color:#0369a1;}" +
       ".aid-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
@@ -497,15 +508,64 @@
     });
   }
 
+  function computeRecordCounts() {
+    var active = 0;
+    var unassigned = 0;
+    var retired = 0;
+    state.records.forEach(function (r) {
+      if (r.status === STATUS_RETIRED) {
+        retired++;
+        return;
+      }
+      if (r.status === STATUS_ACTIVE) {
+        active++;
+        if (!String(r.user_name || "").trim()) unassigned++;
+      }
+    });
+    return { active: active, unassigned: unassigned, retired: retired };
+  }
+
+  function rowClasses(r) {
+    var cls = [];
+    if (r.status === STATUS_RETIRED) {
+      cls.push("retired");
+      return cls.join(" ");
+    }
+    if (!String(r.user_name || "").trim()) cls.push("unassigned");
+    if (r.device_type === "iPhone") cls.push("dev-iphone");
+    else if (r.device_type === "iPad") cls.push("dev-ipad");
+    return cls.join(" ");
+  }
+
+  function statusPillHtml(status) {
+    if (status === STATUS_RETIRED) {
+      return (
+        '<span class="aid-status-pill aid-status-pill--retired">' + esc(status) + "</span>"
+      );
+    }
+    return (
+      '<span class="aid-status-pill aid-status-pill--active">' + esc(status) + "</span>"
+    );
+  }
+
   function updateMetaBar() {
     var meta = document.getElementById("aid-meta");
     if (!meta) return;
     var slot = nextJbisSlot(state.records);
-    var actionLabel = slot.isNew ? "新規作成" : "このIDを割当";
+    var counts = computeRecordCounts();
     meta.innerHTML =
       '<span class="aid-meta-count">全 ' +
       esc(String(state.records.length)) +
       " 件</span>" +
+      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">利用中</span>' +
+      esc(String(counts.active)) +
+      "</span>" +
+      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">未割当</span>' +
+      esc(String(counts.unassigned)) +
+      "</span>" +
+      '<span class="aid-meta-stat"><span class="aid-meta-stat-label">廃止</span>' +
+      esc(String(counts.retired)) +
+      "</span>" +
       '<div class="aid-next-slot">' +
       '<span class="aid-next-label">次採番</span>' +
       '<span class="aid-next-id">' +
@@ -513,9 +573,9 @@
       "</span>" +
       '<span class="aid-next-note">' +
       esc(slot.isNew ? "未登録" : "既存行") +
-      '</span></div><button type="button" class="aid-next-action kintoneplugin-button-dialog-ok">' +
-      esc(actionLabel) +
-      "</button>";
+      "</span></div>";
+    var btn = document.getElementById("aid-number");
+    if (btn) btn.textContent = slot.isNew ? "新規作成" : "このIDを割当";
   }
 
   function onNextSlotAction() {
@@ -855,11 +915,6 @@
     return "端末";
   }
 
-  function deviceWordLower(deviceType) {
-    var w = deviceWord(deviceType);
-    return w === "iPhone" ? "iphone" : w;
-  }
-
   function printVal(raw) {
     var s = String(raw == null ? "" : raw).trim();
     return s || "---";
@@ -902,19 +957,7 @@
   function buildAidPrintPageHtml(row) {
     var pw = row.password || FIXED_PASSWORD;
     var lock = row.lock_passcode || FIXED_LOCK;
-    var devLower = deviceWordLower(row.device_type);
     var devLabel = deviceWord(row.device_type);
-    var notices =
-      '<ul class="aidpr-bullets">' +
-      "<li>■" +
-      esc(devLower) +
-      "のロック解除パスワード、Apple ID、iCloudメールアドレスです。</li>" +
-      "<li>★重要な情報ですのでご自身で保管管理してください。</li>" +
-      "<li>【重要】会社の貸与品ですので指紋認証設定など許可なく行うことは禁止です。</li>" +
-      "<li>" +
-      esc(devLower) +
-      "のパスコードは管理しているので変更しないでください。</li>" +
-      "</ul>";
     var bodyInner =
       buildAidPrintTierHtml(
         [
@@ -945,14 +988,11 @@
     return (
       '<div class="aidpr-page">' +
       '<header class="aidpr-hero">' +
-      "<h1>Apple ID 利用者情報</h1>" +
-      "<p>業務携帯アカウント（印刷用）。本紙は機密性の高い内容を含みます。</p>" +
+      "<h1>業務携帯アカウント（印刷用）</h1>" +
+      '<div class="aidpr-notice" role="note"><p>本紙は機密性の高い内容を含みます。</p></div>' +
       '<span class="aidpr-badge">' +
       esc(devLabel) +
       "</span></header>" +
-      '<aside class="aidpr-notice" role="note"><p>アカウント情報の管理は利用者の責任で行ってください。' +
-      "印刷物の紛失・置き忘れ・第三者への提示がないよう、適切に保管してください。</p></aside>" +
-      notices +
       '<div class="aidpr-card">' +
       bodyInner +
       "</div>" +
@@ -976,12 +1016,9 @@
       ".aidpr-page{max-width:880px;margin:0 auto 32px;}" +
       ".aidpr-hero{background:var(--hero-bg);color:var(--hero-fg);padding:26px 28px 22px;border-radius:18px 18px 0 0;border:1px solid var(--hero-border);border-bottom:none;box-shadow:0 10px 28px var(--shadow-color);}" +
       ".aidpr-hero h1{margin:0;font-size:1.35rem;font-weight:700;}" +
-      ".aidpr-hero p{margin:10px 0 0;font-size:12px;line-height:1.65;color:var(--hero-sub);}" +
+      ".aidpr-notice{margin:10px 0 0;padding:0;background:transparent;border:none;}" +
+      ".aidpr-notice p{margin:0;font-size:12px;font-weight:600;line-height:1.65;color:var(--hero-sub);}" +
       ".aidpr-badge{display:inline-block;margin-top:12px;padding:4px 12px;border-radius:999px;background:var(--badge-bg);border:1px solid var(--badge-border);color:var(--badge-fg);font-size:11px;font-weight:700;}" +
-      ".aidpr-notice{margin:0;padding:14px 18px 16px;border-left:4px solid var(--notice-border);background:var(--notice-bg);border-bottom:1px solid var(--hero-border);}" +
-      ".aidpr-notice p{margin:0;font-size:12px;font-weight:600;line-height:1.7;color:var(--notice-fg);}" +
-      ".aidpr-bullets{margin:0;padding:14px 18px 10px 32px;background:#fff;border-left:1px solid var(--hero-border);border-right:1px solid var(--hero-border);font-size:12px;line-height:1.75;color:#334155;}" +
-      ".aidpr-bullets li{margin:4px 0;}" +
       ".aidpr-card{background:#fff;border-radius:0 0 18px 18px;box-shadow:0 18px 40px rgba(15,23,42,.08);overflow:hidden;border:1px solid var(--card-border);border-top:none;}" +
       ".aidpr-tier{display:grid;gap:0;border-bottom:1px solid #e2e8f0;}" +
       ".aidpr-tier--cols2{grid-template-columns:1fr 1fr;}" +
@@ -993,7 +1030,7 @@
       ".aidpr-tier--lead .aidpr-cell{background:var(--tier-lead-bg);padding:22px;border-right:1px solid var(--tier-lead-border);min-height:108px;}" +
       ".aidpr-tier--lead .aidpr-lab{font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;}" +
       ".aidpr-tier--lead .aidpr-val{font-size:1.35rem;font-weight:700;line-height:1.45;}" +
-      ".aidpr-lab{font-size:10px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:8px;}" +
+      ".aidpr-lab{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:8px;}" +
       ".aidpr-val{font-size:14px;font-weight:600;line-height:1.55;word-break:break-word;font-feature-settings:'tnum';}" +
       ".aidpr-foot{margin-top:22px;text-align:center;font-size:11px;color:#64748b;}" +
       ".aidpr-page-break{page-break-after:always;height:0;}" +
@@ -1002,17 +1039,16 @@
       ".aidpr-page{max-width:100%;margin:0;page-break-after:always;}" +
       ".aidpr-page:last-child{page-break-after:auto;}" +
       ".aidpr-hero{padding:12px 16px 10px;border-radius:0;box-shadow:none;}" +
-      ".aidpr-hero h1{font-size:16pt;}" +
-      ".aidpr-hero p{font-size:9.5pt;}" +
+      ".aidpr-hero h1{font-size:18pt;}" +
+      ".aidpr-notice p{font-size:12pt;}" +
       ".aidpr-badge{font-size:9pt;}" +
-      ".aidpr-notice p,.aidpr-bullets{font-size:9.5pt;}" +
       ".aidpr-card{box-shadow:none;border-radius:0;}" +
       ".aidpr-tier{break-inside:avoid;page-break-inside:avoid;}" +
       ".aidpr-cell{padding:12px 16px 14px;min-height:0;}" +
       ".aidpr-tier--lead .aidpr-cell{padding:14px 18px 16px;}" +
-      ".aidpr-tier--lead .aidpr-val{font-size:15pt;}" +
-      ".aidpr-lab{font-size:10pt;}" +
-      ".aidpr-val{font-size:12.5pt;}" +
+      ".aidpr-tier--lead .aidpr-val{font-size:16pt;}" +
+      ".aidpr-lab{font-size:11pt;}" +
+      ".aidpr-val{font-size:13.5pt;}" +
       ".aidpr-foot{font-size:9.5pt;margin-top:12px;}}"
     );
   }
@@ -1032,7 +1068,7 @@
     var docHtml =
       '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-      "<title>Apple ID 利用者情報</title><style>" +
+      "<title>業務携帯アカウント（印刷用）</title><style>" +
       aidPrintStylesheet() +
       "</style></head><body>" +
       pages +
@@ -1082,11 +1118,9 @@
     }
     tbody.innerHTML = rows
       .map(function (r) {
-        var cls = r.status === STATUS_RETIRED ? "retired" : "";
-        if (!r.user_name && r.status === STATUS_ACTIVE) cls += " unassigned";
         return (
           '<tr class="' +
-          cls +
+          rowClasses(r) +
           '" data-id="' +
           esc(r.id) +
           '">' +
@@ -1099,7 +1133,7 @@
           esc(r.legacy_no) +
           "</td>" +
           "<td>" +
-          esc(r.status) +
+          statusPillHtml(r.status) +
           "</td>" +
           "<td>" +
           esc(r.registered_date) +
@@ -1116,9 +1150,11 @@
           "<td>" +
           esc(r.phone_number) +
           "</td>" +
-          "<td>" +
+          '<td><span class="aid-copy" data-copy="' +
           esc(r.apple_id) +
-          "</td>" +
+          '" title="クリックでコピー">' +
+          esc(r.apple_id) +
+          "</span></td>" +
           '<td><span class="aid-copy" data-copy="' +
           esc(displayPassword(r)) +
           '" title="クリックでコピー">' +
@@ -1198,11 +1234,12 @@
     root.className = "aid-root";
     root.innerHTML =
       '<div class="aid-toolbar">' +
-      "<strong style=\"font-size:16px\">Apple ID管理台帳</strong>" +
+      '<div class="aid-toolbar-group aid-toolbar-group--a">' +
+      '<span class="aid-toolbar-title">Apple ID管理台帳</span>' +
       '<button type="button" id="aid-reload" class="kintoneplugin-button-normal">再読込</button>' +
-      '<button type="button" id="aid-print" class="kintoneplugin-button-normal">印刷</button>' +
+      '<button type="button" id="aid-number" class="aid-next-action kintoneplugin-button-dialog-ok">採番</button>' +
       "</div>" +
-      '<div class="aid-toolbar">' +
+      '<div class="aid-toolbar-group aid-toolbar-group--b">' +
       '<label><input type="radio" name="aid-filter" value="active"' +
       (state.filter === "active" ? " checked" : "") +
       "> 利用中</label>" +
@@ -1217,6 +1254,10 @@
       "> 未割当</label>" +
       '<input type="search" id="aid-search" placeholder="Apple ID・氏名・MDM・回線" style="min-width:220px;padding:6px;margin-left:8px">' +
       '<button type="button" id="aid-clear" class="kintoneplugin-button-normal">クリア</button>' +
+      "</div>" +
+      '<div class="aid-toolbar-group aid-toolbar-group--c">' +
+      '<button type="button" id="aid-print" class="kintoneplugin-button-normal">印刷</button>' +
+      "</div>" +
       "</div>" +
       '<div id="aid-meta" class="aid-meta-bar"></div>' +
       '<div class="aid-table-wrap"><table class="aid-table"><thead><tr>' +
@@ -1234,12 +1275,8 @@
       '</tr></thead><tbody id="aid-tbody"></tbody></table></div>';
     host.appendChild(root);
 
-    var metaBar = document.getElementById("aid-meta");
-    if (metaBar) {
-      metaBar.addEventListener("click", function (ev) {
-        if (ev.target.closest(".aid-next-action")) onNextSlotAction();
-      });
-    }
+    var numberBtn = document.getElementById("aid-number");
+    if (numberBtn) numberBtn.addEventListener("click", onNextSlotAction);
 
     var table = root.querySelector(".aid-table");
     if (table) {
