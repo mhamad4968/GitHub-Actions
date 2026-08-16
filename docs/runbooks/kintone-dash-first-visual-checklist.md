@@ -1,7 +1,8 @@
 # kintone 台帳 dash — 初回目視チェックリスト（R-SESS-06）
 
 **制定**: 2026-06-26（浜田 GO — 夕反省 R-SESS-06）  
-**用途**: 734 型 dash（744 REST）の **初回 deploy 後**・UX 調整ループ後
+**用途**: 734 型 dash（744 REST）の **初回 deploy 後**・UX 調整ループ後。  
+**既存台帳の改善レーン**（G0 案 → 番号 GO → 4AI → deploy → レーンクローズ）は `docs/runbooks/kintone-existing-app-ux-improve-v1.md`（2026-08-16・694/696 実地）。
 
 ## 手順
 

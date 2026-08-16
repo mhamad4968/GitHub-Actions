@@ -1,12 +1,12 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-16 10:01 JST — 696 G2 deploy 済。目視待ち。
-**次の1手**: **696** 目視（Ctrl+F5）。NG は同一セッションで直す。**694再開しない / 715再開しない**。
-**レーン変更**: 696 G0 → **696 G2 live**
-**Git**: **`49ae2262`** = `origin/main` — push 済
-**closeStatus**: open
+**最終更新**: 2026-08-16 10:15 JST — 694/696 改善レーン **クローズ**。セッション締め。
+**次の1手**: 次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
+**レーン変更**: 696 目視OKクローズ → セッション close
+**Git**: **`ecb70b52`** = `origin/main` — docs commit 後に更新
+**closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
-**本日状態**: 694 クローズ（rev29）。696 BUILD=`2026-08-16-696-ui-print-polish` rev **15** 目視待ち。
+**本日状態**: 694 rev29・696 rev15 目視OKクローズ（運用継続）。
 ### 本日アクティブ（BUILD/rev — 2026-08-16）
 | App | BUILD | rev |
 |-----|-------|-----|
@@ -19,8 +19,8 @@
 **674 live fileKey**: `7ad52ee4-9fc6-4717-a538-687b61b1a127`
 **694 live fileKey**: `7d69bcc4-2bf8-4db4-bc7b-5005d7cdcd62`
 **696 live fileKey**: `614cd05b-7e04-4fa3-bdc4-8ba5fa1a2515`
-**継続メモ**: **694 改善レーンクローズ**。696 IDs 1–8 deploy 済・目視待ち。715 再着手しない。714は閲覧のみ。680はPC所属用・696利用部署には入れない。
-**GO待ち**: 696 目視。見出し／注意1行は 694 と同文「本紙は機密性の高い内容を含みます。」を印刷面のみ使用。
+**継続メモ**: **694/696 改善レーンクローズ**（アプリは運用継続）。715 再着手しない。714は閲覧のみ。680はPC所属用・696利用部署には入れない。手順: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
+**GO待ち**: 次アプリ＝浜田指示。新アプリ＝相談・GO後のみ。
 **調査正本**: `docs/plans/2026-06-13-software-ledger-kintone-spec.md`
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
@@ -41,6 +41,15 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-08-16
+
+### 2026-08-16 朝（694/696 UX・セッション締め）
+- **694** Apple ID管理台帳: ツールバー3群・件数チップ・sticky・印刷機密1行 → BUILD=`2026-08-16-694-meta-count-chips` rev **29** → 目視 OK → **改善レーンクローズ**（運用継続）
+- **696** メールアドレス管理台帳: IDs 1–8 → BUILD=`2026-08-16-696-ui-print-polish` rev **15** → 目視 OK → **改善レーンクローズ**（運用継続・closures JSON に入れない）
+- 手順正本: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
+- 715 再開しない。次アプリは浜田指示
+- closeStatus: **closed**（朝セッション締め。day-close は今夜最終ならそのとき）
+
 ## 2026-08-15
 
 ### 2026-08-15 朝（715 完了・セッション締め）
