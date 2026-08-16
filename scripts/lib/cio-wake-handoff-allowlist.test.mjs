@@ -104,4 +104,27 @@ console.log('[test:cio-wake-handoff-allowlist] start');
   }
 }
 
+{
+  // 2026-08-16: early-wake → checkpoint Git stamp で bridge=HEAD~2 の偽陽性
+  const dir = initRepo();
+  try {
+    const h0 = short(dir);
+    fs.writeFileSync(
+      path.join(dir, 'docs', 'handoff', 'latest-session-bridge.json'),
+      JSON.stringify({ gitHead: h0 }, null, 2) + '\n',
+    );
+    fs.mkdirSync(path.join(dir, 'chat-sessions'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'chat-sessions', 'checkpoint-latest.md'), '# cp1\n');
+    git(dir, ['add', 'docs/handoff/latest-session-bridge.json', 'chat-sessions/checkpoint-latest.md']);
+    git(dir, ['commit', '-m', 'chore(handoff): early wake']);
+    fs.writeFileSync(path.join(dir, 'chat-sessions', 'checkpoint-latest.md'), '# cp2 Git stamp\n');
+    git(dir, ['add', 'chat-sessions/checkpoint-latest.md']);
+    git(dir, ['commit', '-m', 'chore(checkpoint): sync Git line']);
+    assert.equal(isWakeAdjacentGrandparentFold(dir, h0), true);
+    console.log('  ✅ grandparent fold: double wake-allowlist (checkpoint stamp tip)');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 console.log('[test:cio-wake-handoff-allowlist] OK');

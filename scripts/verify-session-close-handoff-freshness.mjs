@@ -87,7 +87,7 @@ function main() {
       } else if (gh !== head && gh !== parent) {
         if (wakeContext && isWakeAdjacentGrandparentFold(root, gh)) {
           console.log(
-            `[verify-session-close-handoff-freshness] WAKE: bridge.gitHead=${gh} は HEAD~2（lock/credit tip + handoff parent）— grandparent fold スキップ`,
+            `[verify-session-close-handoff-freshness] WAKE: bridge.gitHead=${gh} は HEAD~2（lock/credit tip または二重 wake-allowlist）— grandparent fold スキップ`,
           );
         } else {
           issues.push(

@@ -141,9 +141,10 @@ function commitTouchesStrictSubset(root, ref, allowedFiles) {
 }
 
 /**
- * WAKE 専用: bridge.gitHead === HEAD~2 かつ
- * HEAD が lock-only（package-lock / package.json）または credit-only、
- * かつ HEAD~1 が WAKE handoff allowlist のみ → grandparent drift 許容。
+ * WAKE 専用: bridge.gitHead === HEAD~2 かつ、次のいずれか:
+ *   (A) HEAD が lock-only / credit-only かつ HEAD~1 が WAKE handoff allowlist のみ
+ *   (B) HEAD と HEAD~1 がともに WAKE handoff allowlist のみ
+ *       （early-wake → checkpoint Git stamp / 二重 handoff で tip が2段進む偽陽性・2026-08-16）
  * close / strict 経路では呼ばない（--wake-context のみ）。
  * @returns {boolean}
  */
@@ -151,9 +152,12 @@ export function isWakeAdjacentGrandparentFold(root, bridgeGitHead) {
   if (!bridgeGitHead || bridgeGitHead === 'unknown') return false;
   const gp = gitAncestorHeadShort(root, 2);
   if (!gp || bridgeGitHead !== gp) return false;
+  const parentIsWake = commitTouchesOnly(root, 'HEAD~1', WAKE_HANDOFF_ALLOWLIST);
+  if (!parentIsWake) return false;
   const headLockOrCredit =
     commitTouchesStrictSubset(root, 'HEAD', LOCK_ONLY_FILES) ||
     commitTouchesStrictSubset(root, 'HEAD', CREDIT_ONLY_FILES);
-  if (!headLockOrCredit) return false;
-  return commitTouchesOnly(root, 'HEAD~1', WAKE_HANDOFF_ALLOWLIST);
+  if (headLockOrCredit) return true;
+  // (B) early-wake + checkpoint sync / 二重 wake-handoff（bootstrap 3c 偽陽性）
+  return commitTouchesOnly(root, 'HEAD', WAKE_HANDOFF_ALLOWLIST);
 }
