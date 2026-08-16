@@ -464,7 +464,7 @@ OK → `partner_company` 入力欄の `readonly` を解除＋ `data-y678-partner
 
 | Rank | Task | 難易度 | Token | Impact | Priority |
 |------|------|--------|-------|--------|----------|
-| 1 | 夜セッションで完了通知の方法を相談し、合意＋実装GOのあと配線する（仕様: `docs/plans/2026-08-08 | 3/5 | 中 | 5/5 | 0 |
+| 1 | 〔制約〕次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improv | 2/5 | 低 | 5/5 | 0 |
 | 2 | B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化） | 2/5 | 中 | 3/5 | 21 |
 
 <!-- CIO-TASK-PRIORITY:AUTO:END -->

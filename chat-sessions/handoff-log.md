@@ -5814,3 +5814,21 @@ npm run cio:morning:ready
 **触らない**: 715再着手 / 688 heat外 / 677-679 / 712 / 736 / SKYSEA / 閉済9件
 
 ---
+
+### 2026-08-16 JST — **2026-08-16 694/696 UX close**
+
+**要約**: 694 rev29 and 696 rev15 closed. Runbook kintone-existing-app-ux-improve-v1. Next app waits Hamada.
+
+**話したこと**: 694 then 696 visual OK lane close. Procedure runbook for existing kintone UX. Session complete. Not project-closures.
+
+**次の1手**: 次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
+
+**Git**: `e699d648` — 
+
+**BUILD**: 694=2026-08-16-694-meta-count-chips rev29; 696=2026-08-16-696-ui-print-polish rev15
+
+**GO待ち**: none
+
+**触らない**: 688 heat / 677-679 / 712 / 736 / SKYSEA / closures 9 / 715
+
+---
