@@ -86,7 +86,21 @@ async function main() {
   const liveRev = entry?.revision || '?';
 
   const status = sh('git status -sb');
-  console.log('[cio:eod:github] git:', status.out.trim().split('\n')[0]);
+  const branchLine = status.out.trim().split('\n')[0] || '';
+  console.log('[cio:eod:github] git:', branchLine);
+  const aheadMatch = branchLine.match(/ahead\s+(\d+)/i);
+  const behindMatch = branchLine.match(/behind\s+(\d+)/i);
+  const ahead = aheadMatch ? Number(aheadMatch[1]) : 0;
+  const behind = behindMatch ? Number(behindMatch[1]) : 0;
+  if (ahead > 0 || behind > 0) {
+    console.log(
+      `[cio:eod:github] sync: origin に対し ahead=${ahead}` +
+        (behind > 0 ? ` behind=${behind}` : '') +
+        (ahead > 0 ? '（未 push — 締め close-git で push、または浜田へ確認）' : ''),
+    );
+  } else {
+    console.log('[cio:eod:github] sync: origin と一致（ahead=0）');
+  }
   console.log(`[cio:eod:github] 674 live BUILD=${liveBuild} rev=${liveRev}`);
 
   if (classified.failureCount > 0 || classified.unresolvedCancellationCount > 0) {

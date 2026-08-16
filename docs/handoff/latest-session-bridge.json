@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-16T09:04:26.905Z",
-  "gitHead": "9436493a",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。",
+  "exportedAt": "2026-08-16T10:07:11.628Z",
+  "gitHead": "1d187eb5",
+  "gitStatus": "## main...origin/main [ahead 6]",
+  "nextTask": "（締め後）次回 cold-start。閉済UXレーンは再開しない（浜田指示のみ）。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=9436493a | 次=夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=1d187eb5 | 次=（締め後）次回 cold-start。閉済UXレーンは再開しない（浜田指示のみ）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-08-16T10:07:12.156Z",
+  "crosscheckOk": true
 }

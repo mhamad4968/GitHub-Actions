@@ -135,7 +135,12 @@ if (fs.existsSync(kintoneApps)) {
   const text = fs.readFileSync(kintoneApps, 'utf8');
   const lines = text.split(/\r?\n/);
   const todayPrefix = `| ${today.iso} `;
-  const todayLines = lines.filter((l) => l.startsWith(todayPrefix));
+  // #D1: 日付先頭の追記行に加え、当日 BUILD / 注記を含む表行も拾う
+  const todayLines = lines.filter((l) => {
+    if (!l.startsWith('|')) return false;
+    if (l.startsWith(todayPrefix)) return true;
+    return l.includes(today.iso) && /`\d{4}-\d{2}-\d{2}-/.test(l);
+  });
   if (todayLines.length === 0) {
     kintoneAppsSection = '_(本日の追記なし)_';
   } else {

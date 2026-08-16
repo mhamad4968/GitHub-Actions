@@ -8,6 +8,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { runNpmScriptSync } from './lib/win-hidden-spawn.mjs';
 
@@ -37,6 +38,26 @@ function goPath(date) {
   return path.join(root, 'docs/approved-changes', `${date}-evening-reflection-hamada-go.md`);
 }
 
+function logGitAheadHint() {
+  try {
+    const out = execFileSync('git', ['status', '-sb'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    const branchLine = String(out || '').trim().split('\n')[0] || '';
+    const aheadMatch = branchLine.match(/ahead\s+(\d+)/i);
+    const ahead = aheadMatch ? Number(aheadMatch[1]) : 0;
+    if (ahead > 0) {
+      console.log(`[cio:day-close] sync: origin に対し ahead=${ahead}（未 push — close-git で push）`);
+    } else {
+      console.log('[cio:day-close] sync: origin と一致（ahead=0）');
+    }
+  } catch (err) {
+    console.log(`[cio:day-close] sync: git status 取得失敗 (${err.message || err})`);
+  }
+}
+
 function untilPause() {
   const date = jstDate();
   const gha = runNpmScriptSync(root, 'cio:eod:github');
@@ -51,6 +72,7 @@ function untilPause() {
   writeStatus({ phase: 'pause-go', date });
   console.log(`[cio:day-close] PAUSE ③ 改善案は運用→体制→MCP→ルール→憲法の順でチャットへ（脚本A/#Sを主表にしない）。GO 後: ④実装 → npm run cio:day-close -- --after-go`);
   console.log(`[cio:day-close] 夕反省: docs/reports/${date}-evening-reflection.md`);
+  logGitAheadHint();
   process.exit(0);
 }
 
@@ -62,6 +84,7 @@ function afterGo() {
     process.exit(2);
   }
   console.log('[cio:day-close] ④ は CIO が先に実施済みであること。ここから ⑤⑥⑦');
+  logGitAheadHint();
   const chain = [
     ['cio:checkpoint:sync-live-674', []],
     ['cio:session:export-handoff', []],

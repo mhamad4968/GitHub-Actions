@@ -5839,7 +5839,7 @@ npm run cio:morning:ready
 
 **話したこと**: Cursorの大きなフォルダ除外通知へ jsconfig とローカル .vscode で対応。customize の desktop.js は除外しない。再読み込み後に新通知なしを浜田確認。694/696/715 は再開しない。夜は浜田指示の次アプリ。
 
-**次の1手**: 夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
+**次の1手**: （締め後）次回 cold-start。閉済UXレーンは再開しない（浜田指示のみ）。
 
 **Git**: `72b846de` — 72b846de chore(editor): exclude large JS trees from language service
 
