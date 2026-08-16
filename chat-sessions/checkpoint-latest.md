@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-16 10:15 JST — 694/696 改善レーン **クローズ**。セッション締め。
-**次の1手**: 次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
-**レーン変更**: 696 目視OKクローズ → セッション close
+**最終更新**: 2026-08-16 10:39 JST — Cursor JS/TS 除外後、朝セッション再締め。
+**次の1手**: 夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
+**レーン変更**: Cursor言語サーバ除外 → セッション close
 **Git**: **`e699d648`** = docs commit — close-git で origin 同期
 **closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
@@ -49,6 +49,12 @@
 - 手順正本: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
 - 715 再開しない。次アプリは浜田指示
 - closeStatus: **closed**（朝セッション締め。day-close は今夜最終ならそのとき）
+
+### 2026-08-16 朝追記（Cursor JS/TS 除外）
+- 大フォルダ除外通知 → `jsconfig.json` 拡張。浜田再読み込み後、新通知なし
+- `.vscode/settings.json` は gitignore（ローカルのみ）
+- 694/696/715 再開しない。夜は浜田指示
+- closeStatus: **closed**（再締め。day-close は今夜）
 
 ## 2026-08-15
 

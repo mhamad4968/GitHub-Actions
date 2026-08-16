@@ -5832,3 +5832,19 @@ npm run cio:morning:ready
 **触らない**: 688 heat / 677-679 / 712 / 736 / SKYSEA / closures 9 / 715
 
 ---
+
+### 2026-08-16 JST — **Cursor JS/TS除外後の朝再締め**
+
+**要約**: jsconfig.json で言語サーバ除外を入れ、浜田再読み込み後に新通知なし。朝セッション再締め。day-close は今夜。
+
+**話したこと**: Cursorの大きなフォルダ除外通知へ jsconfig とローカル .vscode で対応。customize の desktop.js は除外しない。再読み込み後に新通知なしを浜田確認。694/696/715 は再開しない。夜は浜田指示の次アプリ。
+
+**次の1手**: 夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。
+
+**Git**: `72b846de` — 72b846de chore(editor): exclude large JS trees from language service
+
+**GO待ち**: 次アプリ＝浜田指示（夜）
+
+**触らない**: 688 heat外 / 677-679 / 712 / 736 / SKYSEA / 715再開 / 閉済9件
+
+---

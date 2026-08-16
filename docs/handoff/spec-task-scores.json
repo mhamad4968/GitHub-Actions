@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-16T01:23:11.267Z",
+  "scoredAt": "2026-08-16T01:45:37.729Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。",
+  "topTask": "夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。",
   "topTaskKind": "constraint",
   "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:次アプリは浜田指示。手順正本_`docs/runbooks/kintone-ex",
-      "text": "次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。",
+      "id": "checkpoint:夜セッション。次アプリは浜田指示。手順正本_`docs/runbooks/kin",
+      "text": "夜セッション。次アプリは浜田指示。手順正本 `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。**694/696/715 再開しない**。",
       "source": "checkpoint",
       "kind": "constraint",
       "difficulty": 2,
