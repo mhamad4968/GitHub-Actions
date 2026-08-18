@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-m365-usage-filter';
+  const BUILD = '2026-08-18-674-m365-usage-label';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -9172,27 +9172,6 @@ ${bodyInner}\
     showList674Loading674(false);
   }
 
-  function isM365UsageRowFull674(row, lim) {
-    if (!row) return false;
-    if (String(row.status || '') === '満杯') return true;
-    return Number(row.ledgerCount || 0) >= lim;
-  }
-
-  function filterM365UsageRows674(rows, mode, lim) {
-    const list = rows || [];
-    if (mode === 'available') {
-      return list.filter(function (r) {
-        return !isM365UsageRowFull674(r, lim);
-      });
-    }
-    if (mode === 'full') {
-      return list.filter(function (r) {
-        return isM365UsageRowFull674(r, lim);
-      });
-    }
-    return list;
-  }
-
   function openM365UsagePanel674() {
     if (!isSkyseaAdmin674()) return;
     closeM365UsagePanel674();
@@ -9211,12 +9190,10 @@ ${bodyInner}\
       'flex:0 0 auto;display:flex;gap:8px;align-items:center;padding:12px 16px;background:#4c1d95;color:#fff;';
     const title = document.createElement('div');
     title.style.cssText = 'flex:1;font-weight:700;line-height:1.45;';
-    const titleMain = document.createElement('span');
-    titleMain.textContent = 'M365利用状況';
+    title.textContent = 'M365利用状況';
     const sub = document.createElement('div');
     sub.style.cssText = 'font-size:12px;font-weight:600;opacity:.92;margin-top:2px;';
     sub.textContent = '1ライセンスあたり最大 5 台';
-    title.appendChild(titleMain);
     title.appendChild(document.createElement('br'));
     title.appendChild(sub);
     const btnClose = document.createElement('button');
@@ -9228,38 +9205,13 @@ ${bodyInner}\
     toolbar.appendChild(title);
     toolbar.appendChild(btnClose);
 
-    const filterBar = document.createElement('div');
-    filterBar.style.cssText =
-      'flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;' +
-      'background:#f5f3ff;border-bottom:1px solid #ddd6fe;';
-    const filterLabel = document.createElement('span');
-    filterLabel.style.cssText = 'font-size:12px;font-weight:800;color:#4c1d95;margin-right:4px;';
-    filterLabel.textContent = '表示:';
-    filterBar.appendChild(filterLabel);
-
-    const filterState = { mode: 'all', lim: 5, allRows: [] };
-    const filterBtns = [];
-
-    function styleM365FilterBtn674(btn, active) {
-      if (active) {
-        btn.style.background = '#4c1d95';
-        btn.style.color = '#fff';
-        btn.style.borderColor = '#4c1d95';
-      } else {
-        btn.style.background = '#fff';
-        btn.style.color = '#4c1d95';
-        btn.style.borderColor = '#a78bfa';
-      }
-      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-    }
-
     const scroll = document.createElement('div');
     scroll.style.cssText = 'flex:1;overflow:auto;padding:12px 16px;';
     const table = document.createElement('table');
     table.style.cssText = 'width:100%;border-collapse:collapse;background:#fff;font-size:13px;';
     table.innerHTML =
       '<thead><tr style="background:#ede9fe;">' +
-      '<th style="padding:8px;text-align:left;">671番号</th>' +
+      '<th style="padding:8px;text-align:left;">番号</th>' +
       '<th style="padding:8px;text-align:left;">M365 ID</th>' +
       '<th style="padding:8px;text-align:left;">使用数</th>' +
       '<th style="padding:8px;text-align:left;">状態</th>' +
@@ -9268,117 +9220,18 @@ ${bodyInner}\
     const tbody = document.createElement('tbody');
     table.appendChild(tbody);
     scroll.appendChild(table);
-
-    const appId = kintone.app.getId();
-
-    function renderM365UsageTable674(mode) {
-      filterState.mode = mode || 'all';
-      const lim = filterState.lim;
-      const rows = filterM365UsageRows674(filterState.allRows, filterState.mode, lim);
-      const modeLabel =
-        filterState.mode === 'available'
-          ? '利用可'
-          : filterState.mode === 'full'
-            ? '満杯'
-            : 'すべて';
-      titleMain.textContent =
-        'M365利用状況（' +
-        modeLabel +
-        ' ' +
-        String(rows.length) +
-        ' / 全' +
-        String(filterState.allRows.length) +
-        '）';
-      for (let bi = 0; bi < filterBtns.length; bi++) {
-        styleM365FilterBtn674(filterBtns[bi], filterBtns[bi].dataset.mode === filterState.mode);
-      }
-      tbody.innerHTML = '';
-      if (!filterState.allRows.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 5;
-        td.style.padding = '16px';
-        td.textContent = '共有・JR端末で M365 管理マスタに紐づく PC はありません。';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
-      }
-      if (!rows.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 5;
-        td.style.padding = '16px';
-        td.textContent =
-          modeLabel + 'に該当するライセンスはありません（別の表示に切り替えてください）。';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
-      }
-      rows.forEach(function (row) {
-        const tr = document.createElement('tr');
-        tr.style.borderTop = '1px solid #ddd6fe';
-        if (row.mismatch) tr.style.background = '#fefce8';
-        function tdPlain(txt) {
-          const c = document.createElement('td');
-          c.style.padding = '8px';
-          c.textContent = txt || '';
-          return c;
-        }
-        tr.appendChild(tdPlain(row.mid));
-        tr.appendChild(tdPlain(row.m365Id));
-        const tdUse = document.createElement('td');
-        tdUse.style.padding = '8px';
-        const full = isM365UsageRowFull674(row, lim);
-        if (full) tdUse.style.background = '#fee2e2';
-        tdUse.appendChild(document.createTextNode(String(row.ledgerCount) + '/' + String(lim)));
-        if (row.mismatch) {
-          const note = document.createElement('span');
-          note.style.cssText = 'display:block;font-size:11px;color:#92400e;margin-top:2px;';
-          note.textContent =
-            '台帳' + String(row.ledgerCount) + '／マスタ' + String(row.masterUsage);
-          tdUse.appendChild(note);
-        }
-        tr.appendChild(tdUse);
-        tr.appendChild(tdPlain(row.status));
-        const tdPc = document.createElement('td');
-        tdPc.style.padding = '8px';
-        appendM365UsagePcLinks674(tdPc, row.pcs, appId);
-        tr.appendChild(tdPc);
-        tbody.appendChild(tr);
-      });
-    }
-
-    [
-      { mode: 'available', label: '利用可' },
-      { mode: 'full', label: '満杯' },
-      { mode: 'all', label: 'すべて' },
-    ].forEach(function (def) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.dataset.mode = def.mode;
-      b.textContent = def.label;
-      b.style.cssText =
-        'padding:6px 14px;border-radius:6px;border:2px solid #a78bfa;font-weight:800;cursor:pointer;font-size:13px;';
-      styleM365FilterBtn674(b, def.mode === 'all');
-      b.addEventListener('click', function () {
-        renderM365UsageTable674(def.mode);
-      });
-      filterBtns.push(b);
-      filterBar.appendChild(b);
-    });
-
     panel.appendChild(toolbar);
-    panel.appendChild(filterBar);
     panel.appendChild(scroll);
     document.body.appendChild(panel);
 
     showList674Loading674(true);
+    const appId = kintone.app.getId();
     Promise.all([loadEnv670Map(), fetchM365Usage674Records674()])
       .then(function (res) {
         const envMap = res[0];
         const rec674 = res[1];
         const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
-        sub.textContent = '1ライセンスあたり最大 ' + String(lim) + ' 台（670 M365_LICENSE_LIMIT）';
+        sub.textContent = '1ライセンスあたり最大 ' + String(lim) + ' 台';
         table.querySelector('th:nth-child(3)').textContent = '使用数（上限' + String(lim) + '）';
         const byMid = aggregateM365UsageFrom674Records674(rec674);
         const mids = Object.keys(byMid);
@@ -9394,9 +9247,52 @@ ${bodyInner}\
       })
       .then(function (payload) {
         showList674Loading674(false);
-        filterState.lim = payload.lim;
-        filterState.allRows = payload.rows || [];
-        renderM365UsageTable674('all');
+        const lim = payload.lim;
+        const rows = payload.rows;
+        title.childNodes[0].textContent = 'M365利用状況（' + String(rows.length) + ' ライセンス）';
+        tbody.innerHTML = '';
+        if (!rows.length) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 5;
+          td.style.padding = '16px';
+          td.textContent = '共有・JR端末で M365 管理マスタに紐づく PC はありません。';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (row) {
+          const tr = document.createElement('tr');
+          tr.style.borderTop = '1px solid #ddd6fe';
+          if (row.mismatch) tr.style.background = '#fefce8';
+          function tdPlain(txt) {
+            const c = document.createElement('td');
+            c.style.padding = '8px';
+            c.textContent = txt || '';
+            return c;
+          }
+          tr.appendChild(tdPlain(row.mid));
+          tr.appendChild(tdPlain(row.m365Id));
+          const tdUse = document.createElement('td');
+          tdUse.style.padding = '8px';
+          const full = row.ledgerCount >= lim;
+          if (full) tdUse.style.background = '#fee2e2';
+          tdUse.appendChild(document.createTextNode(String(row.ledgerCount) + '/' + String(lim)));
+          if (row.mismatch) {
+            const note = document.createElement('span');
+            note.style.cssText = 'display:block;font-size:11px;color:#92400e;margin-top:2px;';
+            note.textContent =
+              '台帳' + String(row.ledgerCount) + '／マスタ' + String(row.masterUsage);
+            tdUse.appendChild(note);
+          }
+          tr.appendChild(tdUse);
+          tr.appendChild(tdPlain(row.status));
+          const tdPc = document.createElement('td');
+          tdPc.style.padding = '8px';
+          appendM365UsagePcLinks674(tdPc, row.pcs, appId);
+          tr.appendChild(tdPc);
+          tbody.appendChild(tr);
+        });
       })
       .catch(function (e) {
         showList674Loading674(false);
