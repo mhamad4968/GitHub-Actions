@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-org-picker-sort';
+  const BUILD = '2026-08-18-674-org-picker-keep-open';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3857,8 +3857,9 @@
 
     const hint = document.createElement('div');
     hint.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.45;';
-    hint.textContent =
-      '①グループ（ダブルクリックでその所属を全選択）→ ②レ点。未選択＝絞り込みなし。候補は680＋台帳の実在値。';
+    hint.textContent = embedded
+      ? '①グループ（ダブルクリックでその所属を全選択）→ ②レ点。未選択＝絞り込みなし。候補は680＋台帳の実在値。'
+      : 'レ点は開いたまま複数選べます。「この条件で絞り込み」で一覧に反映します。';
 
     const filterInp = document.createElement('input');
     filterInp.type = 'search';
@@ -4023,29 +4024,39 @@
     if (backdrop) backdrop.remove();
   }
 
-  function open674OrgPopover674(anchorBtn, selectedDepts, onChange) {
+  function open674OrgPopover674(anchorBtn, selectedDepts, onLiveChange, onApply) {
     close674OrgPopover674();
+    function finish674OrgPopover674() {
+      close674OrgPopover674();
+      if (typeof onApply === 'function') onApply();
+    }
     const backdrop = document.createElement('div');
     backdrop.id = 'npl674-org-popover-backdrop';
     backdrop.style.cssText = 'position:fixed;inset:0;z-index:2147482750;background:transparent;';
-    backdrop.addEventListener('click', close674OrgPopover674);
+    backdrop.addEventListener('click', finish674OrgPopover674);
 
     const pop = document.createElement('div');
     pop.id = 'npl674-org-popover';
     pop.style.cssText = 'position:fixed;z-index:2147482760;';
+    pop.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+    });
     const widget = create674OrgPickerWidget674({
       selectedDepts: selectedDepts,
       onChange: function () {
-        onChange();
+        if (typeof onLiveChange === 'function') onLiveChange();
       },
       embedded: false,
     });
     const btnDone = document.createElement('button');
     btnDone.type = 'button';
-    btnDone.textContent = '閉じる';
+    btnDone.textContent = 'この条件で絞り込み';
     btnDone.style.cssText =
       'margin-top:10px;width:100%;padding:8px 12px;border-radius:6px;border:none;background:#4c1d95;color:#fff;font-weight:800;cursor:pointer;';
-    btnDone.addEventListener('click', close674OrgPopover674);
+    btnDone.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      finish674OrgPopover674();
+    });
     widget.root.appendChild(btnDone);
     pop.appendChild(widget.root);
     document.body.appendChild(backdrop);
@@ -12145,13 +12156,24 @@ ${bodyInner}\
       const existing = document.getElementById('npl674-org-popover');
       if (existing) {
         close674OrgPopover674();
-        return;
-      }
-      open674OrgPopover674(btnOrg, selectedDepts, function () {
         syncOrgBtn674();
         updateActiveSummary674();
         scheduleApply674();
-      });
+        return;
+      }
+      open674OrgPopover674(
+        btnOrg,
+        selectedDepts,
+        function () {
+          syncOrgBtn674();
+          updateActiveSummary674();
+        },
+        function () {
+          syncOrgBtn674();
+          updateActiveSummary674();
+          scheduleApply674();
+        }
+      );
     });
     syncOrgBtn674();
 
