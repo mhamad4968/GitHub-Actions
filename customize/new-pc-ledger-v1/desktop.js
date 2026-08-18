@@ -28,11 +28,12 @@
  *   - **個人の PC 名重複**: 他の個人レコード（廃棄・取消以外）と **全く同一の `pc_name`**（trim 後・大文字小文字無視）のとき **保存不可（ハードブロック）**。JBIS コアのみ同じで月違い（例 JBIS0016-202401 vs -202402）は可。詳細・編集でも赤バナー表示。
  *
  * **674 本番**: `npl_disposed_pc_copy` を一覧キーワード検索に含める。**フィールド未追加のまま本 BUILD の JS だけ載せると一覧 REST が失敗し得る**ため、先に **`npm run pc-ledger:674:add-npl-disposed-pc-field-preview`**（`kintone-apps.md` 674 行の反映順）。
+ * **674 SKYSEA対応**: `skysea_manual_done` 空レコードは保存時必須検証で落ちるため、show/submit で既定「未了」を補完（非 admin・非表示時も record 上は必須）。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-13-674-inventory-hist-type';
+  const BUILD = '2026-08-18-674-skysea-manual-done-backfill';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1419,6 +1420,36 @@
       out[FC_SKYSEA_MANUAL_DONE] = { value: SKYSEA_MANUAL_DONE_PENDING };
     }
     return out;
+  }
+
+  /**
+   * SKYSEA対応（skysea_manual_done）が空の既存レコードは保存時に必須検証で落ちる。
+   * 非 admin・非表示時も record 上は必須のため、既定「未了」を補完する。
+   * disabled=true のまま値を書くと検証エラーになるため、一時的に解除してから復元する。
+   * @param {Record<string, object>} record
+   */
+  function ensureSkyseaManualDoneOnRecord674(record) {
+    if (!record) return;
+    let cell = record[FC_SKYSEA_MANUAL_DONE];
+    // ACL everyone=NONE 等で cell 自体が無いときも必須のため、レコード上に補完する
+    if (!cell || typeof cell !== 'object') {
+      record[FC_SKYSEA_MANUAL_DONE] = { value: SKYSEA_MANUAL_DONE_PENDING };
+      return;
+    }
+    const cur = String((cell.value != null ? cell.value : '') || '').trim();
+    if (cur) return;
+    const hadOwn = Object.prototype.hasOwnProperty.call(cell, 'disabled');
+    const prev = hadOwn ? cell.disabled : undefined;
+    if (hadOwn && cell.disabled === true) {
+      cell.disabled = false;
+    }
+    try {
+      cell.value = SKYSEA_MANUAL_DONE_PENDING;
+    } finally {
+      if (hadOwn) {
+        cell.disabled = prev;
+      }
+    }
   }
 
   function formatKintoneApiError674(err) {
@@ -8027,6 +8058,9 @@ ${bodyInner}\
     applyInternalMetaFieldUi(event.record, editable ? 'editable' : 'detail');
     applyVisibilityByType(event.record);
     applySkyseaGroupUi(event.record, editable ? 'editable' : 'detail');
+    if (editable) {
+      ensureSkyseaManualDoneOnRecord674(event.record);
+    }
     applyM365MasterRecordIdFieldUi674(event.record, editable ? 'editable' : 'detail');
     syncVpnFieldUiToForm674(event.record, editable ? 'editable' : 'detail');
     showJrBannerIfNeeded(event.record);
@@ -12228,6 +12262,7 @@ ${bodyInner}\
     if (!check674ReplaceFirstSaveHwGate674(event)) {
       return event;
     }
+    ensureSkyseaManualDoneOnRecord674(event.record);
     try {
       ensureInventoryHistoryOnSubmit674(event);
     } catch (invErr) {
