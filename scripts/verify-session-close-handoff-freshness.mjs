@@ -49,9 +49,12 @@ function main() {
     const today = jstTodayYmd();
     const closeStatusM = text.match(/\*\*closeStatus\*\*\s*:\s*(\S+)/i);
     const closeStatus = closeStatusM ? closeStatusM[1].trim().toLowerCase() : "";
+    // priorClose: closed* に加え、WAKE 限定で「前日以前の stuck closing」
+    // （heal 未実行の bootstrap 単独でも #D-CLOSE-02 偽陽性にしない）
     const priorClose =
       /^(closed-day|closed|full|closed-full)$/.test(closeStatus) ||
-      closeStatus.includes("closed");
+      closeStatus.includes("closed") ||
+      (wakeContext && closeStatus === "closing" && m && m[1] < today);
     if (!m) {
       issues.push('checkpoint に「**最終更新**: YYYY-MM-DD」が無い');
     } else if (m[1] !== today) {

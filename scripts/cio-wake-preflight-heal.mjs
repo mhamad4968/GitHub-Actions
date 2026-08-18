@@ -145,6 +145,40 @@ function healPhantomGitDirty() {
 }
 
 /**
+ * #D-CLOSE-02 偽陽性根絶 — 前日以前の closeStatus=closing が凍結ゾーンに残ると
+ * --wake-context の priorClose（closed* のみ）に入らず WARN になる。
+ * 当日の締め途中（最終更新=当日）は触らない。
+ */
+function healStuckClosingStatus() {
+  const cpPath = path.join(root, 'chat-sessions', 'checkpoint-latest.md');
+  if (!fs.existsSync(cpPath)) return false;
+  let text = fs.readFileSync(cpPath, 'utf8');
+  const updatedM = text.match(/\*\*最終更新\*\*\s*:\s*(\d{4}-\d{2}-\d{2})/);
+  const statusM = text.match(/\*\*closeStatus\*\*\s*:\s*(\S+)/i);
+  if (!updatedM || !statusM) return false;
+  const updatedYmd = updatedM[1];
+  const statusRaw = statusM[1].trim();
+  const status = statusRaw.toLowerCase().replace(/[,;.]+$/, '');
+  const today = jstYmdIso();
+  if (status !== 'closing') return false;
+  if (!(updatedYmd < today)) {
+    console.log(
+      `[cio:wake:preflight-heal] closeStatus=closing だが最終更新=${updatedYmd}（当日）— 締め途中として不触`,
+    );
+    return false;
+  }
+  text = text.replace(
+    /(\*\*closeStatus\*\*\s*:\s*)closing\b/i,
+    '$1closed',
+  );
+  fs.writeFileSync(cpPath, text, 'utf8');
+  console.log(
+    `[cio:wake:preflight-heal] ✅ stuck closing→closed（最終更新=${updatedYmd} < ${today} · reason=auto-heal-stuck-closing）`,
+  );
+  return true;
+}
+
+/**
  * Part C 主タスクを checkpoint の「次の1手」「最終更新」に同期。
  * evening-reflect の代替ではない（夕反省ブロックは触らない）— WAKE 誤誘導だけ防ぐ。
  */
@@ -202,9 +236,10 @@ function main() {
   const purged = purgeTmpCloseReports();
   const ragHealed = healRagMirrorOnce();
   const phantom = healPhantomGitDirty();
+  const closingHealed = healStuckClosingStatus();
   const partSynced = syncPartCFromCheckpoint();
   console.log(
-    `[cio:wake:preflight-heal] OK purged=${purged} ragHealed=${ragHealed} phantom=${phantom} partC=${partSynced}`,
+    `[cio:wake:preflight-heal] OK purged=${purged} ragHealed=${ragHealed} phantom=${phantom} closingHeal=${closingHealed} partC=${partSynced}`,
   );
 }
 

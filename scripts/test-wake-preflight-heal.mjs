@@ -61,5 +61,11 @@ assert.match(temp, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
 const healSrc = read('scripts/cio-wake-preflight-heal.mjs');
 assert.match(healSrc, /TMP_CLOSE_PURGE_RE/);
 assert.match(healSrc, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
+assert.match(healSrc, /healStuckClosingStatus/);
+assert.match(healSrc, /auto-heal-stuck-closing/);
+
+const freshness = read('scripts/verify-session-close-handoff-freshness.mjs');
+assert.match(freshness, /stuck closing/);
+assert.match(freshness, /closeStatus === "closing"/);
 
 console.log('[test:wake-preflight-heal] OK');
