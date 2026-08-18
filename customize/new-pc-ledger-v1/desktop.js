@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-m365-usage-default-available';
+  const BUILD = '2026-08-18-674-org-picker-search';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3690,6 +3690,347 @@
         return deptMasterRowsCache674;
       });
   }
+
+
+  const ORG674_GROUP_CODE_LABELS = {
+    honsya: '本社',
+    tohoku: '東北支店',
+    'kan-etsu': '関越支店',
+    tokyo: '東京支店',
+    tokai: '東海支店',
+    reform: 'リフォーム統括事業部',
+    tekko: '鉄構支店',
+    wangan: '湾岸工事所',
+  };
+
+  function label674OrgGroup674(groupKey) {
+    const g = String(groupKey || '').trim();
+    if (!g || g === '（グループなし）') return '（グループなし）';
+    return ORG674_GROUP_CODE_LABELS[g] || g;
+  }
+
+  function append674DeptNameInFilter674(parts, deptNames) {
+    const list = [];
+    const seen = Object.create(null);
+    const src = deptNames instanceof Set ? Array.from(deptNames) : deptNames || [];
+    for (let i = 0; i < src.length; i++) {
+      const d = String(src[i] || '').trim();
+      if (!d || seen[d]) continue;
+      seen[d] = true;
+      list.push(d);
+    }
+    if (!list.length) return;
+    const quoted = list
+      .map(function (d) {
+        return '"' + escape674QueryLike(d) + '"';
+      })
+      .join(', ');
+    parts.push('(' + FC_DEPT_NAME + ' in (' + quoted + '))');
+  }
+
+  function format674DeptSelectionSummary674(deptNames) {
+    const list = [];
+    const seen = Object.create(null);
+    const src = deptNames instanceof Set ? Array.from(deptNames) : deptNames || [];
+    for (let i = 0; i < src.length; i++) {
+      const d = String(src[i] || '').trim();
+      if (!d || seen[d]) continue;
+      seen[d] = true;
+      list.push(d);
+    }
+    if (!list.length) return '';
+    if (list.length <= 2) return list.join('・');
+    return list.slice(0, 2).join('・') + ' ほか' + String(list.length - 2);
+  }
+
+  function buildOrgPickerCatalog674(masterRows, records) {
+    const byGroup = Object.create(null);
+    function add(dept, group, sortNo) {
+      const d = String(dept || '').trim();
+      if (!d) return;
+      const g = String(group || '').trim() || '（グループなし）';
+      if (!byGroup[g]) byGroup[g] = Object.create(null);
+      const prev = byGroup[g][d];
+      const sn = Number(sortNo);
+      const sort = Number.isFinite(sn) && sn > 0 ? sn : 99999;
+      if (!prev || sort < prev.sort_no) {
+        byGroup[g][d] = { dept_name: d, group_name: g, sort_no: sort };
+      }
+    }
+    for (let i = 0; i < (masterRows || []).length; i++) {
+      const r = masterRows[i];
+      add(r.dept_name, r.group_name, r.sort_no);
+    }
+    for (let j = 0; j < (records || []).length; j++) {
+      const rec = records[j];
+      const d = cell674PlainForSearch(rec, FC_DEPT_NAME);
+      const g = cell674PlainForSearch(rec, FC_GROUP_NAME);
+      add(d, g, 99999);
+    }
+    const groupKeys = Object.keys(byGroup).sort(function (a, b) {
+      if (a === '（グループなし）') return 1;
+      if (b === '（グループなし）') return -1;
+      return label674OrgGroup674(a).localeCompare(label674OrgGroup674(b), 'ja');
+    });
+    return groupKeys.map(function (gk) {
+      const depts = Object.keys(byGroup[gk])
+        .map(function (dk) {
+          return byGroup[gk][dk];
+        })
+        .sort(function (a, b) {
+          if (a.sort_no !== b.sort_no) return a.sort_no - b.sort_no;
+          return String(a.dept_name).localeCompare(String(b.dept_name), 'ja');
+        });
+      return { key: gk, label: label674OrgGroup674(gk), depts: depts };
+    });
+  }
+
+  function loadOrgPickerCatalog674() {
+    return Promise.all([
+      fetchDeptMasterRows674(),
+      typeof fetch674IndexSearchCache === 'function'
+        ? fetch674IndexSearchCache().catch(function () {
+            return [];
+          })
+        : Promise.resolve([]),
+    ]).then(function (pair) {
+      return buildOrgPickerCatalog674(pair[0], pair[1]);
+    });
+  }
+
+  /**
+   * 所属グループ＋所属名のレ点ピッカー（一覧検索／リスト作成で共用）。
+   * @returns {{ root: HTMLElement, selectedDepts: Set<string>, refresh: Function, clear: Function, getSummary: Function, destroy: Function }}
+   */
+  function create674OrgPickerWidget674(opts) {
+    const options = opts || {};
+    const selectedDepts =
+      options.selectedDepts instanceof Set ? options.selectedDepts : new Set();
+    const viewGroups = new Set();
+    const onChange = typeof options.onChange === 'function' ? options.onChange : function () {};
+    const embedded = !!options.embedded;
+
+    const root = document.createElement('div');
+    root.className = 'npl674-org-picker';
+    root.style.cssText = embedded
+      ? 'border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;padding:10px 12px;margin-bottom:12px;'
+      : 'width:min(420px,92vw);max-height:min(70vh,520px);overflow:auto;border:1px solid #94a3b8;' +
+        'border-radius:10px;background:#fff;box-shadow:0 16px 40px rgba(15,23,42,.22);padding:12px;';
+
+    const head = document.createElement('div');
+    head.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
+    const title = document.createElement('div');
+    title.style.cssText = 'flex:1;font-size:13px;font-weight:800;color:#0f172a;';
+    title.textContent = '所属を選択';
+    const btnClear = document.createElement('button');
+    btnClear.type = 'button';
+    btnClear.textContent = '選択解除';
+    btnClear.style.cssText =
+      'padding:4px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:700;cursor:pointer;';
+    head.appendChild(title);
+    head.appendChild(btnClear);
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.45;';
+    hint.textContent =
+      '①グループ（ダブルクリックでその所属を全選択）→ ②レ点。未選択＝絞り込みなし。候補は680＋台帳の実在値。';
+
+    const filterInp = document.createElement('input');
+    filterInp.type = 'search';
+    filterInp.placeholder = '候補を絞り込み…';
+    filterInp.setAttribute('aria-label', '所属候補の絞り込み');
+    filterInp.style.cssText =
+      'width:100%;box-sizing:border-box;margin-bottom:8px;padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;';
+
+    const groupRow = document.createElement('div');
+    groupRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;';
+
+    const deptHost = document.createElement('div');
+    deptHost.style.cssText =
+      'display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 8px;' +
+      'max-height:240px;overflow:auto;padding:4px 2px;';
+
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12px;color:#64748b;padding:8px 0;';
+    empty.textContent = '候補を読み込み中…';
+
+    root.appendChild(head);
+    root.appendChild(hint);
+    root.appendChild(filterInp);
+    root.appendChild(groupRow);
+    root.appendChild(deptHost);
+    root.appendChild(empty);
+
+    let catalog = [];
+
+    function emit() {
+      onChange();
+    }
+
+    function clearSelection() {
+      selectedDepts.clear();
+      viewGroups.clear();
+      render();
+      emit();
+    }
+
+    btnClear.addEventListener('click', clearSelection);
+
+    function deptMatchesFilter(name, q) {
+      if (!q) return true;
+      return String(name || '').toLowerCase().indexOf(q) !== -1;
+    }
+
+    function render() {
+      const q = String(filterInp.value || '').trim().toLowerCase();
+      while (groupRow.firstChild) groupRow.removeChild(groupRow.firstChild);
+      while (deptHost.firstChild) deptHost.removeChild(deptHost.firstChild);
+
+      if (!catalog.length) {
+        empty.style.display = '';
+        empty.textContent = '所属候補がありません。';
+        return;
+      }
+      empty.style.display = 'none';
+
+      catalog.forEach(function (g) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = g.label;
+        const on = viewGroups.has(g.key);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.style.cssText =
+          'padding:4px 10px;border-radius:999px;border:1px solid ' +
+          (on ? '#7c3aed' : '#94a3b8') +
+          ';background:' +
+          (on ? '#ede9fe' : '#fff') +
+          ';font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;';
+        b.addEventListener('click', function () {
+          if (viewGroups.has(g.key)) viewGroups.delete(g.key);
+          else viewGroups.add(g.key);
+          render();
+        });
+        b.addEventListener('dblclick', function (ev) {
+          ev.preventDefault();
+          for (let i = 0; i < g.depts.length; i++) selectedDepts.add(g.depts[i].dept_name);
+          viewGroups.add(g.key);
+          render();
+          emit();
+        });
+        groupRow.appendChild(b);
+      });
+
+      const showAllGroups = viewGroups.size === 0;
+      let shown = 0;
+      catalog.forEach(function (g) {
+        if (!showAllGroups && !viewGroups.has(g.key)) return;
+        for (let i = 0; i < g.depts.length; i++) {
+          const row = g.depts[i];
+          if (!deptMatchesFilter(row.dept_name, q) && !deptMatchesFilter(g.label, q)) continue;
+          const lab = document.createElement('label');
+          lab.style.cssText =
+            'display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:1.35;cursor:pointer;' +
+            'padding:4px 6px;border-radius:6px;background:#fff;border:1px solid #e2e8f0;';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = selectedDepts.has(row.dept_name);
+          cb.addEventListener('change', function () {
+            if (cb.checked) selectedDepts.add(row.dept_name);
+            else selectedDepts.delete(row.dept_name);
+            emit();
+          });
+          const span = document.createElement('span');
+          span.textContent = row.dept_name;
+          lab.appendChild(cb);
+          lab.appendChild(span);
+          deptHost.appendChild(lab);
+          shown++;
+        }
+      });
+      if (!shown) {
+        empty.style.display = '';
+        empty.textContent = q
+          ? '該当する所属がありません。'
+          : 'グループを選ぶか、上の欄で絞り込んでください。';
+      }
+    }
+
+    filterInp.addEventListener('input', render);
+
+    function refresh() {
+      empty.style.display = '';
+      empty.textContent = '候補を読み込み中…';
+      return loadOrgPickerCatalog674().then(function (cat) {
+        catalog = cat || [];
+        render();
+      });
+    }
+
+    return {
+      root: root,
+      selectedDepts: selectedDepts,
+      refresh: refresh,
+      clear: clearSelection,
+      getSummary: function () {
+        return format674DeptSelectionSummary674(selectedDepts);
+      },
+      destroy: function () {
+        if (root.parentNode) root.parentNode.removeChild(root);
+      },
+    };
+  }
+
+  function close674OrgPopover674() {
+    const p = document.getElementById('npl674-org-popover');
+    if (p) p.remove();
+    const backdrop = document.getElementById('npl674-org-popover-backdrop');
+    if (backdrop) backdrop.remove();
+  }
+
+  function open674OrgPopover674(anchorBtn, selectedDepts, onChange) {
+    close674OrgPopover674();
+    const backdrop = document.createElement('div');
+    backdrop.id = 'npl674-org-popover-backdrop';
+    backdrop.style.cssText = 'position:fixed;inset:0;z-index:2147482750;background:transparent;';
+    backdrop.addEventListener('click', close674OrgPopover674);
+
+    const pop = document.createElement('div');
+    pop.id = 'npl674-org-popover';
+    pop.style.cssText = 'position:fixed;z-index:2147482760;';
+    const widget = create674OrgPickerWidget674({
+      selectedDepts: selectedDepts,
+      onChange: function () {
+        onChange();
+      },
+      embedded: false,
+    });
+    const btnDone = document.createElement('button');
+    btnDone.type = 'button';
+    btnDone.textContent = '閉じる';
+    btnDone.style.cssText =
+      'margin-top:10px;width:100%;padding:8px 12px;border-radius:6px;border:none;background:#4c1d95;color:#fff;font-weight:800;cursor:pointer;';
+    btnDone.addEventListener('click', close674OrgPopover674);
+    widget.root.appendChild(btnDone);
+    pop.appendChild(widget.root);
+    document.body.appendChild(backdrop);
+    document.body.appendChild(pop);
+
+    const rect = anchorBtn.getBoundingClientRect();
+    const left = Math.min(Math.max(8, rect.left), window.innerWidth - 440);
+    let top = rect.bottom + 6;
+    pop.style.left = String(left) + 'px';
+    pop.style.top = String(top) + 'px';
+    widget.refresh().then(function () {
+      const h = pop.offsetHeight || 320;
+      if (top + h > window.innerHeight - 8) {
+        top = Math.max(8, rect.top - h - 6);
+        pop.style.top = String(top) + 'px';
+      }
+    });
+    return widget;
+  }
+
 
   function applyDeptMasterPick674(dept, grp) {
     const bag = getRecordFormHolder674();
@@ -8385,7 +8726,7 @@ ${bodyInner}\
     parts.push('(' + fieldCode + ' like "' + escape674QueryLike(v) + '")');
   }
 
-  function buildList674Query674(deptName, groupName, userName, selectedTypes, includeCurrentListQuery) {
+  function buildList674Query674(deptName, groupName, userName, selectedTypes, includeCurrentListQuery, selectedDepts) {
     const parts = [];
     if (includeCurrentListQuery) {
       let cur = '';
@@ -8411,6 +8752,7 @@ ${bodyInner}\
         .join(', ');
       parts.push('(' + FC_ACCOUNT_TYPE + ' in (' + quoted + '))');
     }
+    append674DeptNameInFilter674(parts, selectedDepts);
     appendList674LikeField674(parts, FC_DEPT_NAME, deptName);
     appendList674LikeField674(parts, FC_GROUP_NAME, groupName);
     appendList674LikeField674(parts, FC_USER_NAME, userName);
@@ -8554,13 +8896,13 @@ ${bodyInner}\
   /** リスト一覧作成モーダルの入力を初期状態に戻す */
   function resetList674CreateForm674() {
     const u = document.getElementById('npl674-list-user');
-    const d = document.getElementById('npl674-list-dept');
-    const g = document.getElementById('npl674-list-group');
     const m = document.getElementById('npl674-list-merge-current');
     if (u) u.value = '';
-    if (d) d.value = '';
-    if (g) g.value = '';
     if (m) m.checked = true;
+    const modal = document.getElementById(LIST674_MODAL_ID);
+    if (modal && modal.__npl674OrgPicker && typeof modal.__npl674OrgPicker.clear === 'function') {
+      modal.__npl674OrgPicker.clear();
+    }
     const typeRow = document.getElementById('npl674-list-type-row');
     if (typeRow) {
       typeRow.querySelectorAll('input[type=checkbox][data-npl-list-type]').forEach(function (cb) {
@@ -8584,7 +8926,7 @@ ${bodyInner}\
 
       const box = document.createElement('div');
       box.style.cssText =
-        'background:#fff;border-radius:10px;max-width:560px;width:100%;max-height:90vh;overflow:auto;' +
+        'background:#fff;border-radius:10px;max-width:640px;width:100%;max-height:90vh;overflow:auto;' +
         'padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.25);font-family:system-ui,sans-serif;';
       box.addEventListener('click', function (ev) {
         ev.stopPropagation();
@@ -8598,7 +8940,7 @@ ${bodyInner}\
       intro.style.cssText = 'margin:0 0 14px;font-size:13px;line-height:1.55;color:#475569;';
       intro.textContent =
         '条件に合うレコードをこの画面内に表で表示します（別ウィンドウは開きません）。' +
-        '出力する列を選べます。所属名・所属グループ・利用者名は部分一致で検索します。';
+        '出力する列を選べます。所属はレ点選択、利用者名は部分一致です。';
 
       const lblUser = document.createElement('label');
       lblUser.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
@@ -8610,25 +8952,19 @@ ${bodyInner}\
       inpUser.style.cssText =
         'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
 
-      const lblDept = document.createElement('label');
-      lblDept.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
-      lblDept.textContent = '所属名（任意・部分一致）';
-      const inpDept = document.createElement('input');
-      inpDept.type = 'text';
-      inpDept.id = 'npl674-list-dept';
-      inpDept.placeholder = '例: 首都圏（支店名の一部でも可）';
-      inpDept.style.cssText =
-        'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
-
-      const lblGrp = document.createElement('label');
-      lblGrp.style.cssText = 'display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:#334155;';
-      lblGrp.textContent = '所属グループ（任意・部分一致）';
-      const inpGrp = document.createElement('input');
-      inpGrp.type = 'text';
-      inpGrp.id = 'npl674-list-group';
-      inpGrp.placeholder = '例: reform（一部でも可）';
-      inpGrp.style.cssText =
-        'width:100%;box-sizing:border-box;margin-bottom:12px;padding:8px 10px;border:1px solid #94a3b8;border-radius:6px;';
+      const orgHost = document.createElement('div');
+      orgHost.id = 'npl674-list-org-host';
+      orgHost.style.cssText = 'margin-bottom:12px;';
+      const listOrgSelected = new Set();
+      const listOrgPicker = create674OrgPickerWidget674({
+        selectedDepts: listOrgSelected,
+        embedded: true,
+        onChange: function () {
+          /* selection kept in listOrgSelected */
+        },
+      });
+      orgHost.appendChild(listOrgPicker.root);
+      modal.__npl674OrgPicker = listOrgPicker;
 
       const lblTypes = document.createElement('div');
       lblTypes.style.cssText = 'font-size:12px;font-weight:700;margin-bottom:6px;color:#334155;';
@@ -8752,20 +9088,20 @@ ${bodyInner}\
           window.alert('出力する列を1つ以上選んでください。');
           return;
         }
+        const orgSummary = format674DeptSelectionSummary674(listOrgSelected);
         const q = buildList674Query674(
-          inpDept.value,
-          inpGrp.value,
+          '',
+          '',
           inpUser.value,
           selected,
-          cbMerge.checked
+          cbMerge.checked,
+          listOrgSelected
         );
         const summary =
           '利用者: ' +
           (String(inpUser.value || '').trim() || '（指定なし）') +
           '　／　所属: ' +
-          (String(inpDept.value || '').trim() || '（指定なし）') +
-          '　／　グループ: ' +
-          (String(inpGrp.value || '').trim() || '（指定なし）') +
+          (orgSummary || '（指定なし）') +
           '　／　列: ' +
           exportCols.length +
           '項目' +
@@ -8791,10 +9127,7 @@ ${bodyInner}\
       box.appendChild(intro);
       box.appendChild(lblUser);
       box.appendChild(inpUser);
-      box.appendChild(lblDept);
-      box.appendChild(inpDept);
-      box.appendChild(lblGrp);
-      box.appendChild(inpGrp);
+      box.appendChild(orgHost);
       box.appendChild(lblTypes);
       box.appendChild(typeRow);
       box.appendChild(lblCols);
@@ -8808,6 +9141,9 @@ ${bodyInner}\
     resetList674ColCheckboxes674();
     updateList674SensitiveNotice674();
     modal.style.display = 'flex';
+    if (modal.__npl674OrgPicker && typeof modal.__npl674OrgPicker.refresh === 'function') {
+      modal.__npl674OrgPicker.refresh();
+    }
   }
 
   // --- 一覧：SKYSEA対応一覧（admin 専用・個人のみ・パスワード列なし・所属複数印刷） ---
@@ -10865,6 +11201,7 @@ ${bodyInner}\
       transferOnly: false,
       cbFilters: { m365: null, shisan: null },
       statuses: [],
+      depts: [],
       sort: sortFromQ ? format674SortSpec674(sortFromQ) : '',
     };
     if (!raw) return out;
@@ -10889,6 +11226,14 @@ ${bodyInner}\
 
     out.cbFilters.m365 = parse674CheckboxDoneFilter674(raw, FC_M365_KIRIKAE);
     out.cbFilters.shisan = parse674CheckboxDoneFilter674(raw, FC_SHISAN_DAICHO);
+
+    const deptInRe = new RegExp(
+      '\\(\\s*' + FC_DEPT_NAME + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)',
+    );
+    const deptInM = deptInRe.exec(raw);
+    if (deptInM) {
+      out.depts = parse674QuotedListInner674(deptInM[1]);
+    }
 
     const statusRe = new RegExp(
       '\\(\\s*' + FC_PC_STATUS + '\\s+in\\s*\\(([^)]*)\\)\\s*\\)',
@@ -10993,6 +11338,14 @@ ${bodyInner}\
     if (ref.noteSearchBox) ref.noteSearchBox.checked = noteSearchOnly674;
     ref.selectedTypes.clear();
     for (let ti = 0; ti < st.types.length; ti++) ref.selectedTypes.add(st.types[ti]);
+    if (ref.selectedDepts) {
+      ref.selectedDepts.clear();
+      const deptList = st.depts || [];
+      for (let di = 0; di < deptList.length; di++) {
+        if (deptList[di]) ref.selectedDepts.add(deptList[di]);
+      }
+      if (typeof ref.syncOrgBtn === 'function') ref.syncOrgBtn();
+    }
     const kwFromUrlEarly =
       urlKwDecoded ||
       (urlNativeQ && !urlQuery ? extract674KeywordFromNativeQ674(urlNativeQ) : '');
@@ -11062,6 +11415,7 @@ ${bodyInner}\
     recordsForKeyword674,
     selectedStatuses674,
     noteSearchOnly674,
+    selectedDepts674,
   ) {
     const parts = [];
     const types = selectedTypes instanceof Set ? [...selectedTypes] : [];
@@ -11078,6 +11432,7 @@ ${bodyInner}\
     }
     append674StatusFilter674(parts, selectedStatuses674);
     append674HideCancelled674(parts);
+    append674DeptNameInFilter674(parts, selectedDepts674);
     if (cbFilterBoxes674) {
       for (let fi = 0; fi < SEARCH674_DONE_CB_FILTERS.length; fi++) {
         const defF = SEARCH674_DONE_CB_FILTERS[fi];
@@ -11234,6 +11589,9 @@ ${bodyInner}\
     init674DefaultStatusSet674().forEach(function (sv) {
       ref.selectedStatuses.add(sv);
     });
+    if (ref.selectedDepts) ref.selectedDepts.clear();
+    if (typeof ref.syncOrgBtn === 'function') ref.syncOrgBtn();
+    close674OrgPopover674();
     if (ref.transferBox) ref.transferBox.v = false;
     if (ref.sortSel) ref.sortSel.value = '';
     ref.syncChips();
@@ -11728,6 +12086,40 @@ ${bodyInner}\
     noteSearchLabel.appendChild(noteSearchBox);
     noteSearchLabel.appendChild(document.createTextNode('備考検索'));
 
+    const selectedDepts = new Set();
+    const btnOrg = document.createElement('button');
+    btnOrg.type = 'button';
+    btnOrg.id = 'npl674-index-org-btn';
+    btnOrg.textContent = '所属';
+    btnOrg.setAttribute('aria-label', '所属で絞り込み');
+    btnOrg.setAttribute('aria-haspopup', 'dialog');
+    btnOrg.setAttribute('aria-pressed', 'false');
+    btnOrg.style.cssText =
+      'padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:800;cursor:pointer;color:#0f172a;';
+    function syncOrgBtn674() {
+      const n = selectedDepts.size;
+      const sum = format674DeptSelectionSummary674(selectedDepts);
+      btnOrg.textContent = n ? '所属（' + String(n) + '）' : '所属';
+      btnOrg.title = sum ? '選択中: ' + sum : '所属グループ／所属名で絞り込み';
+      btnOrg.setAttribute('aria-pressed', n ? 'true' : 'false');
+      btnOrg.style.background = n ? '#ede9fe' : '#fff';
+      btnOrg.style.borderColor = n ? '#7c3aed' : '#94a3b8';
+      btnOrg.style.color = n ? '#4c1d95' : '#0f172a';
+    }
+    btnOrg.addEventListener('click', function () {
+      const existing = document.getElementById('npl674-org-popover');
+      if (existing) {
+        close674OrgPopover674();
+        return;
+      }
+      open674OrgPopover674(btnOrg, selectedDepts, function () {
+        syncOrgBtn674();
+        updateActiveSummary674();
+        scheduleApply674();
+      });
+    });
+    syncOrgBtn674();
+
     const sortWrap = document.createElement('label');
     sortWrap.style.cssText =
       'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#0f172a;' +
@@ -11832,6 +12224,7 @@ ${bodyInner}\
     row.appendChild(inpKw);
     row.appendChild(dl);
     row.appendChild(noteSearchLabel);
+    row.appendChild(btnOrg);
     row.appendChild(sortWrap);
     row.appendChild(btnGo);
     row.appendChild(btnClr);
@@ -12083,6 +12476,9 @@ ${bodyInner}\
       const kw = String(inpKw.value || '').trim();
       if (kw) parts.push('キーワード「' + kw + '」');
       if (noteSearchBox.checked) parts.push('備考検索ON');
+      if (selectedDepts.size) {
+        parts.push('所属: ' + format674DeptSelectionSummary674(selectedDepts));
+      }
       if (selectedTypes.size) {
         parts.push(
           '種別: ' +
@@ -12258,6 +12654,7 @@ ${bodyInner}\
             recs,
             selectedStatuses,
             noteSearchBox.checked,
+            selectedDepts,
           );
           navigate674ListWithQuery(q, inpKw.value, selSort.value, noteSearchBox.checked);
         })
@@ -12271,6 +12668,7 @@ ${bodyInner}\
             null,
             selectedStatuses,
             noteSearchBox.checked,
+            selectedDepts,
           );
           navigate674ListWithQuery(q, inpKw.value, selSort.value, noteSearchBox.checked);
         });
@@ -12322,6 +12720,9 @@ ${bodyInner}\
       selSort.value = '$id:desc';
       syncChips674();
       wrap.setAttribute('data-npl-synced-query', '');
+      selectedDepts.clear();
+      syncOrgBtn674();
+      close674OrgPopover674();
       const q = build674IndexListQuery(
         '',
         selectedTypes,
@@ -12330,6 +12731,7 @@ ${bodyInner}\
         null,
         selectedStatuses,
         false,
+        selectedDepts,
       );
       navigate674ListWithQuery(q, '', '$id:desc', false);
     });
@@ -12383,6 +12785,8 @@ ${bodyInner}\
       sortSel: selSort,
       selectedTypes: selectedTypes,
       selectedStatuses: selectedStatuses,
+      selectedDepts: selectedDepts,
+      syncOrgBtn: syncOrgBtn674,
       transferBox: transferBox,
       cbFilterBoxes: cbFilterBoxes,
       syncChips: syncChips674,
