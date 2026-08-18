@@ -4,6 +4,7 @@
  * 仕様: docs/plans/2026-04-21-new-pc-ledger-spec.md v2.1 §4
  * Day 4 plan: docs/plans/2026-04-26-pc-ledger-day4-action.md
  *
+ * 直近: admin 管理タブ「M365利用状況」パネル（674 正本・671 参照・5 台上限一覧）
  * 直近: アカウント手入力優先・671 満杯時の上書き抑止・627 相当の印刷帳票（§4.9）
  *
  * Day 4 雛形スコープ:
@@ -33,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-hide-m365-license-banner';
+  const BUILD = '2026-08-18-674-m365-usage-admin';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -8934,6 +8935,7 @@ ${bodyInner}\
   // --- 一覧：SKYSEAクライアント削除対応（admin 専用・個人・未了） ---
   const SKYSEA674_CLIENT_DELETE_PANEL_ID = 'npl674-skysea-client-delete-panel';
   const SKYSEA674_CLIENT_DELETE_BANNER_ID = 'npl674-skysea-client-delete-banner';
+  const M365674_USAGE_PANEL_ID = 'npl674-m365-usage-panel';
 
   function buildSkyseaClientDeleteListQuery674() {
     return (
@@ -9018,6 +9020,285 @@ ${bodyInner}\
     const p = document.getElementById(SKYSEA674_CLIENT_DELETE_PANEL_ID);
     if (p) p.remove();
     showList674Loading674(false);
+  }
+
+  function buildM365Usage674Query674() {
+    return (
+      FC_ACCOUNT_TYPE +
+      ' in ("' +
+      escapeQueryValue(TYPE_SHARED) +
+      '", "' +
+      escapeQueryValue(TYPE_JR) +
+      '") and ' +
+      buildPcStatusActiveOnlyQuery674() +
+      ' and ' +
+      FC_M365_MASTER_RECORD_ID +
+      ' > 0'
+    );
+  }
+
+  function fetchM365Usage674Records674() {
+    const app = kintone.app.getId();
+    const fields = ['$id', FC_PC_NAME, FC_M365_MASTER_RECORD_ID, FC_ACCOUNT_TYPE];
+    const base = buildM365Usage674Query674();
+    const all = [];
+    return new Promise(function (resolve, reject) {
+      function page(off) {
+        const q =
+          base + ' order by ' + FC_M365_MASTER_RECORD_ID + ' asc, $id asc limit 500 offset ' + off;
+        kintoneApiGet('/k/v1/records.json', { app: app, query: q, fields: fields })
+          .then(function (res) {
+            const recs = res.records || [];
+            for (let i = 0; i < recs.length; i++) all.push(recs[i]);
+            if (recs.length < 500) resolve(all);
+            else page(off + 500);
+          })
+          .catch(reject);
+      }
+      page(0);
+    });
+  }
+
+  function fetchM671RecordsByIds674(masterIds) {
+    const uniq = [];
+    const seen = Object.create(null);
+    for (let i = 0; i < (masterIds || []).length; i++) {
+      const s = String(masterIds[i] || '').trim();
+      if (!s || seen[s]) continue;
+      seen[s] = true;
+      uniq.push(s);
+    }
+    if (!uniq.length) return Promise.resolve([]);
+    const all = [];
+    const chunkSize = 100;
+    function fetchChunk(start) {
+      const chunk = uniq.slice(start, start + chunkSize);
+      if (!chunk.length) return Promise.resolve(all);
+      const q = '$id in (' + chunk.join(',') + ')';
+      return kintoneApiGet('/k/v1/records.json', {
+        app: APP_M365_MASTER,
+        query: q,
+        fields: ['$id', FC_M365_ID, 'usage_count', 'status'],
+      }).then(function (res) {
+        const recs = res.records || [];
+        for (let j = 0; j < recs.length; j++) all.push(recs[j]);
+        return fetchChunk(start + chunkSize);
+      });
+    }
+    return fetchChunk(0);
+  }
+
+  function aggregateM365UsageFrom674Records674(records674) {
+    const byMid = Object.create(null);
+    for (let i = 0; i < (records674 || []).length; i++) {
+      const rec = records674[i];
+      const mid = String((rec[FC_M365_MASTER_RECORD_ID] && rec[FC_M365_MASTER_RECORD_ID].value) || '').trim();
+      if (!mid) continue;
+      if (!byMid[mid]) byMid[mid] = { mid: mid, pcs: [] };
+      const rid = rec.$id && rec.$id.value;
+      const pcName = String((rec[FC_PC_NAME] && rec[FC_PC_NAME].value) || '').trim();
+      byMid[mid].pcs.push({ rid: rid, pcName: pcName || '（PC名なし）' });
+    }
+    return byMid;
+  }
+
+  function countUniquePcNamesM365Usage674(pcs) {
+    const seen = Object.create(null);
+    let n = 0;
+    for (let i = 0; i < (pcs || []).length; i++) {
+      const k = pcs[i].pcName;
+      if (seen[k]) continue;
+      seen[k] = true;
+      n++;
+    }
+    return n;
+  }
+
+  function buildM365UsageRows674(byMid, map671, lim) {
+    const rows = [];
+    const mids = Object.keys(byMid || {});
+    for (let i = 0; i < mids.length; i++) {
+      const mid = mids[i];
+      const agg = byMid[mid];
+      const ledgerCount = countUniquePcNamesM365Usage674(agg.pcs);
+      const r671 = map671[mid];
+      const m365Id = r671 ? (r671[FC_M365_ID] && r671[FC_M365_ID].value) || '' : '';
+      const masterUsage =
+        r671 != null
+          ? parseInt((r671.usage_count && r671.usage_count.value) || '0', 10) || 0
+          : null;
+      let status = r671 ? (r671.status && r671.status.value) || '' : '';
+      if (!status) status = next671StatusFromUsage(ledgerCount, lim);
+      rows.push({
+        mid: mid,
+        m365Id: m365Id,
+        ledgerCount: ledgerCount,
+        masterUsage: masterUsage,
+        lim: lim,
+        status: status,
+        pcs: agg.pcs,
+        mismatch: masterUsage !== null && masterUsage !== ledgerCount,
+      });
+    }
+    rows.sort(function (a, b) {
+      if (b.ledgerCount !== a.ledgerCount) return b.ledgerCount - a.ledgerCount;
+      return Number(a.mid) - Number(b.mid);
+    });
+    return rows;
+  }
+
+  function appendM365UsagePcLinks674(td, pcs, appId) {
+    for (let i = 0; i < (pcs || []).length; i++) {
+      if (i > 0) td.appendChild(document.createTextNode(', '));
+      const pc = pcs[i];
+      const a = document.createElement('a');
+      a.href =
+        location.origin +
+        '/k/' +
+        encodeURIComponent(String(appId)) +
+        '/show#record=' +
+        encodeURIComponent(String(pc.rid));
+      a.textContent = pc.pcName;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.cssText = 'color:#2563eb;text-decoration:underline;font-weight:600;';
+      td.appendChild(a);
+    }
+  }
+
+  function closeM365UsagePanel674() {
+    const p = document.getElementById(M365674_USAGE_PANEL_ID);
+    if (p) p.remove();
+    showList674Loading674(false);
+  }
+
+  function openM365UsagePanel674() {
+    if (!isSkyseaAdmin674()) return;
+    closeM365UsagePanel674();
+    closeList674ResultPanel674();
+    closeSkysea674ListPanel674();
+    closeSkyseaClientDeleteListPanel674();
+
+    const panel = document.createElement('div');
+    panel.id = M365674_USAGE_PANEL_ID;
+    panel.style.cssText =
+      'position:fixed;inset:0;z-index:2147482900;background:#f8fafc;display:flex;flex-direction:column;' +
+      'font-family:system-ui,sans-serif;color:#0f172a;';
+
+    const toolbar = document.createElement('div');
+    toolbar.style.cssText =
+      'flex:0 0 auto;display:flex;gap:8px;align-items:center;padding:12px 16px;background:#4c1d95;color:#fff;';
+    const title = document.createElement('div');
+    title.style.cssText = 'flex:1;font-weight:700;line-height:1.45;';
+    title.textContent = 'M365利用状況';
+    const sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;font-weight:600;opacity:.92;margin-top:2px;';
+    sub.textContent = '1ライセンスあたり最大 5 台';
+    title.appendChild(document.createElement('br'));
+    title.appendChild(sub);
+    const btnClose = document.createElement('button');
+    btnClose.type = 'button';
+    btnClose.textContent = '閉じる';
+    btnClose.style.cssText =
+      'padding:6px 14px;border-radius:6px;border:1px solid #ddd6fe;background:#fff;color:#4c1d95;font-weight:700;cursor:pointer;';
+    btnClose.addEventListener('click', closeM365UsagePanel674);
+    toolbar.appendChild(title);
+    toolbar.appendChild(btnClose);
+
+    const scroll = document.createElement('div');
+    scroll.style.cssText = 'flex:1;overflow:auto;padding:12px 16px;';
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;background:#fff;font-size:13px;';
+    table.innerHTML =
+      '<thead><tr style="background:#ede9fe;">' +
+      '<th style="padding:8px;text-align:left;">671番号</th>' +
+      '<th style="padding:8px;text-align:left;">M365 ID</th>' +
+      '<th style="padding:8px;text-align:left;">使用数</th>' +
+      '<th style="padding:8px;text-align:left;">状態</th>' +
+      '<th style="padding:8px;text-align:left;">利用PC</th>' +
+      '</tr></thead>';
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    panel.appendChild(toolbar);
+    panel.appendChild(scroll);
+    document.body.appendChild(panel);
+
+    showList674Loading674(true);
+    const appId = kintone.app.getId();
+    Promise.all([loadEnv670Map(), fetchM365Usage674Records674()])
+      .then(function (res) {
+        const envMap = res[0];
+        const rec674 = res[1];
+        const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
+        sub.textContent = '1ライセンスあたり最大 ' + String(lim) + ' 台（670 M365_LICENSE_LIMIT）';
+        table.querySelector('th:nth-child(3)').textContent = '使用数（上限' + String(lim) + '）';
+        const byMid = aggregateM365UsageFrom674Records674(rec674);
+        const mids = Object.keys(byMid);
+        return fetchM671RecordsByIds674(mids).then(function (rec671List) {
+          const map671 = Object.create(null);
+          for (let i = 0; i < rec671List.length; i++) {
+            const r = rec671List[i];
+            const id = r.$id && r.$id.value;
+            if (id) map671[String(id)] = r;
+          }
+          return { lim: lim, rows: buildM365UsageRows674(byMid, map671, lim) };
+        });
+      })
+      .then(function (payload) {
+        showList674Loading674(false);
+        const lim = payload.lim;
+        const rows = payload.rows;
+        title.childNodes[0].textContent = 'M365利用状況（' + String(rows.length) + ' ライセンス）';
+        tbody.innerHTML = '';
+        if (!rows.length) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 5;
+          td.style.padding = '16px';
+          td.textContent = '共有・JR端末で M365 管理マスタに紐づく PC はありません。';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach(function (row) {
+          const tr = document.createElement('tr');
+          tr.style.borderTop = '1px solid #ddd6fe';
+          if (row.mismatch) tr.style.background = '#fefce8';
+          function tdPlain(txt) {
+            const c = document.createElement('td');
+            c.style.padding = '8px';
+            c.textContent = txt || '';
+            return c;
+          }
+          tr.appendChild(tdPlain(row.mid));
+          tr.appendChild(tdPlain(row.m365Id));
+          const tdUse = document.createElement('td');
+          tdUse.style.padding = '8px';
+          const full = row.ledgerCount >= lim;
+          if (full) tdUse.style.background = '#fee2e2';
+          tdUse.appendChild(document.createTextNode(String(row.ledgerCount) + '/' + String(lim)));
+          if (row.mismatch) {
+            const note = document.createElement('span');
+            note.style.cssText = 'display:block;font-size:11px;color:#92400e;margin-top:2px;';
+            note.textContent =
+              '台帳' + String(row.ledgerCount) + '／マスタ' + String(row.masterUsage);
+            tdUse.appendChild(note);
+          }
+          tr.appendChild(tdUse);
+          tr.appendChild(tdPlain(row.status));
+          const tdPc = document.createElement('td');
+          tdPc.style.padding = '8px';
+          appendM365UsagePcLinks674(tdPc, row.pcs, appId);
+          tr.appendChild(tdPc);
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(function (e) {
+        showList674Loading674(false);
+        window.alert('取得失敗: ' + formatKintoneApiError674(e));
+        closeM365UsagePanel674();
+      });
   }
 
   function openSkyseaClientDeleteListPanel674() {
@@ -11391,6 +11672,7 @@ ${bodyInner}\
 
     let btnSkyseaList = null;
     let btnSkyseaClientDelete = null;
+    let btnM365Usage = null;
     if (isSkyseaAdmin674()) {
       btnSkyseaList = document.createElement('button');
       btnSkyseaList.type = 'button';
@@ -11410,6 +11692,16 @@ ${bodyInner}\
         'padding:6px 12px;border-radius:6px;border:none;background:var(--npl-danger,#b91c1c);color:#fff;font-weight:700;cursor:pointer;';
       btnSkyseaClientDelete.addEventListener('click', function () {
         openSkyseaClientDeleteListPanel674();
+      });
+
+      btnM365Usage = document.createElement('button');
+      btnM365Usage.type = 'button';
+      btnM365Usage.textContent = 'M365利用状況';
+      btnM365Usage.setAttribute('aria-label', 'M365利用状況一覧（admin専用・674正本）');
+      btnM365Usage.style.cssText =
+        'padding:6px 12px;border-radius:6px;border:none;background:#6d28d9;color:#fff;font-weight:700;cursor:pointer;';
+      btnM365Usage.addEventListener('click', function () {
+        openM365UsagePanel674();
       });
     }
 
@@ -11485,12 +11777,13 @@ ${bodyInner}\
     if (isAdmin674) {
       adminHint = document.createElement('div');
       adminHint.style.cssText = 'font-size:12px;color:#475569;margin-bottom:8px;line-height:1.45;';
-      adminHint.textContent = 'SKYSEA 管理機能（admin 専用）';
+      adminHint.textContent = 'SKYSEA / M365 管理機能（admin 専用）';
       adminButtonRow = document.createElement('div');
       adminButtonRow.style.cssText =
         'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;';
       if (btnSkyseaList) adminButtonRow.appendChild(btnSkyseaList);
       if (btnSkyseaClientDelete) adminButtonRow.appendChild(btnSkyseaClientDelete);
+      if (btnM365Usage) adminButtonRow.appendChild(btnM365Usage);
     }
 
     const activeSummary = document.createElement('div');

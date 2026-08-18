@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-18-674-hide-m365-license-banner",
-      "fileKey": "a11b40cf-03ca-4333-8491-12caf5cf13c2",
-      "revision": "332",
+      "build": "2026-08-18-674-m365-usage-admin",
+      "fileKey": "c5d4fb42-d0eb-4214-aacf-37876ba7f577",
+      "revision": "333",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-18T05:00:02.406Z",
+      "deployedAt": "2026-08-18T05:12:04.526Z",
       "note": null
     },
     "677": {
