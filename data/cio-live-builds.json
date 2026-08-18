@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-18-674-skysea-personal-only",
-      "fileKey": "0b8adb6d-e5ea-40c0-9d36-2d8f2198a10b",
-      "revision": "331",
+      "build": "2026-08-18-674-hide-m365-license-banner",
+      "fileKey": "a11b40cf-03ca-4333-8491-12caf5cf13c2",
+      "revision": "332",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-18T04:54:02.126Z",
+      "deployedAt": "2026-08-18T05:00:02.406Z",
       "note": null
     },
     "677": {

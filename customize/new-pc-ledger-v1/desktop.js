@@ -33,7 +33,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-skysea-personal-only';
+  const BUILD = '2026-08-18-674-hide-m365-license-banner';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -834,48 +834,18 @@
     space.appendChild(banner);
   }
 
-  // ===== 5 台ライセンス警告 (仕様書 §4.6.4 / 671 実参照) =====
+  // ===== 5 台ライセンス上限（仕様書 §4.6.4 / 671 実参照・内部のみ）=====
 
   /**
-   * 共有・JR で m365_master_record_id があるとき、671 の usage_count が上限以上なら赤バナー。
+   * 赤バナー表示は行わない（浜田 2026-08-18: 表示不要・上限は割当ロジックで厳守）。
+   * 既存 DOM が残っていれば除去するだけ。usage_count / M365_LICENSE_LIMIT の判定・満杯切替・
+   * fetchAssignable（usage_count<5）・6 台目ブロックは別経路で継続。
    * @returns {Promise<void>}
    */
-  function refreshLicenseBannerFrom671(record) {
+  function refreshLicenseBannerFrom671(_record) {
     const existing = document.querySelector('#new-pc-ledger-license-banner');
     if (existing) existing.remove();
-
-    const masterId = String(record[FC_M365_MASTER_RECORD_ID]?.value || '').trim();
-    if (!masterId) return Promise.resolve();
-    const type = record[FC_ACCOUNT_TYPE]?.value || '';
-    if (type !== TYPE_SHARED && type !== TYPE_JR) return Promise.resolve();
-
-    return Promise.all([
-      loadEnv670Map(),
-      kintoneApiGet('/k/v1/record.json', { app: APP_M365_MASTER, id: masterId }),
-    ]).then(function (results) {
-      const envMap = results[0];
-      const getResp = results[1];
-      const lim = parseInt(envMap.M365_LICENSE_LIMIT || '5', 10) || 5;
-      const usage = parseInt((getResp.record.usage_count && getResp.record.usage_count.value) || '0', 10) || 0;
-      if (usage < lim) return;
-
-      const space = getHeaderSpace674();
-      if (!space) return;
-
-      const banner = document.createElement('div');
-      banner.id = 'new-pc-ledger-license-banner';
-      banner.style.cssText =
-        'background:#f8d7da;color:#842029;padding:8px 12px;margin:6px 0;border:1px solid #f5c2c7;border-radius:4px;font-weight:bold;';
-      banner.textContent =
-        'この M365 アカウント（671 レコード番号 ' +
-        masterId +
-        '）は利用台数がライセンス上限に達しています（' +
-        usage +
-        '/' +
-        lim +
-        '）。Microsoft のポリシーに反する追加分の割当は行わないでください。';
-      space.appendChild(banner);
-    });
+    return Promise.resolve();
   }
 
   // ===== Day 5: 自動生成（§4.4 / L1 フォーム表示のみ・手入力済は上書きしない）=====
