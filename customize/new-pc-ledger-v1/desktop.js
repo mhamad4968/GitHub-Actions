@@ -28,12 +28,12 @@
  *   - **個人の PC 名重複**: 他の個人レコード（廃棄・取消以外）と **全く同一の `pc_name`**（trim 後・大文字小文字無視）のとき **保存不可（ハードブロック）**。JBIS コアのみ同じで月違い（例 JBIS0016-202401 vs -202402）は可。詳細・編集でも赤バナー表示。
  *
  * **674 本番**: `npl_disposed_pc_copy` を一覧キーワード検索に含める。**フィールド未追加のまま本 BUILD の JS だけ載せると一覧 REST が失敗し得る**ため、先に **`npm run pc-ledger:674:add-npl-disposed-pc-field-preview`**（`kintone-apps.md` 674 行の反映順）。
- * **674 SKYSEA対応**: `skysea_manual_done` 空レコードは保存時必須検証で落ちるため、show/submit で既定「未了」を補完（非 admin・非表示時も record 上は必須）。
+ * **674 SKYSEA対応**: 個人のみ対象・非個人は空。`skysea_manual_done` 空の個人レコードは保存時必須検証で落ちるため、show/submit で既定「未了」を補完。
  */
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-skysea-manual-done-backfill';
+  const BUILD = '2026-08-18-674-skysea-personal-only';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -1409,10 +1409,12 @@
 
   /**
    * 部分 PUT でも必須フィールドが空の既存レコードは検証エラーになる。
-   * SKYSEA対応が空のときは既定「未了」を同梱して棚卸保存を通す（値がある場合は触らない）。
+   * **個人のみ**: SKYSEA対応が空のときは既定「未了」を同梱して棚卸保存を通す（値がある場合は触らない）。
    */
   function withInventoryRequiredBackfill674(rec, putRecord) {
     const out = putRecord || {};
+    const type = String((rec && rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) || '').trim();
+    if (type !== TYPE_PERSONAL) return out;
     const done = String(
       (rec && rec[FC_SKYSEA_MANUAL_DONE] && rec[FC_SKYSEA_MANUAL_DONE].value) || '',
     ).trim();
@@ -1423,15 +1425,37 @@
   }
 
   /**
-   * SKYSEA対応（skysea_manual_done）が空の既存レコードは保存時に必須検証で落ちる。
-   * 非 admin・非表示時も record 上は必須のため、既定「未了」を補完する。
-   * disabled=true のまま値を書くと検証エラーになるため、一時的に解除してから復元する。
+   * SKYSEA対応（skysea_manual_done）は **種別=個人のみ** 対象。
+   * 個人: 空なら既定「未了」を補完（保存時必須検証対策）。disabled=true のまま値を書くと検証エラーになるため一時解除。
+   * 個人以外（共有/JR端末/サーバーNAS/その他）: 対象外。既存 cell があれば skysea_manual_* を空にクリア（cell 無しは作らない）。
    * @param {Record<string, object>} record
    */
   function ensureSkyseaManualDoneOnRecord674(record) {
     if (!record) return;
+    const type = String((record[FC_ACCOUNT_TYPE] && record[FC_ACCOUNT_TYPE].value) || '').trim();
+
+    if (type !== TYPE_PERSONAL) {
+      [FC_SKYSEA_MANUAL_DONE, FC_SKYSEA_MANUAL_DATE, FC_SKYSEA_MANUAL_HANDLER].forEach(function (code) {
+        const cell = record[code];
+        if (!cell || typeof cell !== 'object') return;
+        const hadOwn = Object.prototype.hasOwnProperty.call(cell, 'disabled');
+        const prev = hadOwn ? cell.disabled : undefined;
+        if (hadOwn && cell.disabled === true) {
+          cell.disabled = false;
+        }
+        try {
+          cell.value = '';
+        } finally {
+          if (hadOwn) {
+            cell.disabled = prev;
+          }
+        }
+      });
+      return;
+    }
+
     let cell = record[FC_SKYSEA_MANUAL_DONE];
-    // ACL everyone=NONE 等で cell 自体が無いときも必須のため、レコード上に補完する
+    // ACL everyone=NONE 等で cell 自体が無いときも、個人は未了をレコード上に載せる
     if (!cell || typeof cell !== 'object') {
       record[FC_SKYSEA_MANUAL_DONE] = { value: SKYSEA_MANUAL_DONE_PENDING };
       return;
@@ -7061,7 +7085,7 @@
       out[code].value = emptyValueForFieldType674(out[code].type);
     }
 
-    // skysea_manual_done はフォーム必須。空にすると CB_VA01「入力内容が正しくありません」になる
+    // skysea_manual_done はフォーム必須（**個人のみ**対象）。買替新PCは個人想定で「未了」をセット
     if (out[FC_SKYSEA_MANUAL_DONE]) {
       out[FC_SKYSEA_MANUAL_DONE].value = SKYSEA_MANUAL_DONE_PENDING;
     } else {
