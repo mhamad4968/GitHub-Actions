@@ -3,7 +3,7 @@
 **次の1手**: 次回 cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田指示のみ再開）。
 **レーン変更**: なし（694/696/715/734/751 UX クローズ維持）
 **Git**: **`0de5f401`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: closing
+**closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
 **本日状態**: **674** SKYSEA対応=個人のみ／M365赤バナー廃止／admin M365利用状況／所属ピッカー。live **rev 339**。浜田目視 OK → **本セッション分完了**。
@@ -55,7 +55,7 @@
 - 台帳 **所属ピッカー**（680 `sort_no`・レ点中は閉じない）→ 浜田目視 **OK**
 - live BUILD=`2026-08-18-674-org-picker-keep-open` rev **339**
 - 仕様: `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.6.4/§4.6.7/§4.8a-D、`docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
-- closeStatus: **closing → closed**（本セッション締め。day-close は今夜最終ならそのとき）
+- closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
 
 ## 2026-08-16
 
