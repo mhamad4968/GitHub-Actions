@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-16 自動更新）】
-- 次の1手: （締め後）次回 cold-start。**734/751/694/696/715 再開しない**（浜田指示のみ）。
-- checkpoint: 2026-08-16 18:57 JST — 734 UX/ライセンス目視OK。日次締め開始。
-- 進行中 plan: docs/plans/2026-06-16-vpn-account-kintone-spec.md
-- 当日コミット (上位 3):
-  - feat(734): open account list from license seat counts
-  - feat(734): improve license compare and status UX
-  - docs(734): pin license P0 baseline fix as next GO
+【今やってる主タスク（2026-08-16 反映・2026-08-18 WAKE同期）】
+- 本日レーン: （締め後）次回 cold-start。閉済UXレーンは再開しない（浜田指示のみ）。
+- checkpoint: 2026-08-16 19:05 JST — 夕反省全承認・④実装後、day-close ⑤⑥⑦へ。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
