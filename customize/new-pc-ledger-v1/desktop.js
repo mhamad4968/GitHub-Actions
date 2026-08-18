@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-org-picker-search';
+  const BUILD = '2026-08-18-674-org-picker-sort';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -3709,6 +3709,18 @@
     return ORG674_GROUP_CODE_LABELS[g] || g;
   }
 
+  /** 台帳の日本語グループ名と 680 のコード（honsya 等）を同一キーに寄せる */
+  function normalize674OrgGroupKey674(groupKey) {
+    const g = String(groupKey || '').trim();
+    if (!g || g === '（グループなし）') return '（グループなし）';
+    if (ORG674_GROUP_CODE_LABELS[g]) return g;
+    const codes = Object.keys(ORG674_GROUP_CODE_LABELS);
+    for (let i = 0; i < codes.length; i++) {
+      if (ORG674_GROUP_CODE_LABELS[codes[i]] === g) return codes[i];
+    }
+    return g;
+  }
+
   function append674DeptNameInFilter674(parts, deptNames) {
     const list = [];
     const seen = Object.create(null);
@@ -3745,31 +3757,43 @@
 
   function buildOrgPickerCatalog674(masterRows, records) {
     const byGroup = Object.create(null);
-    function add(dept, group, sortNo) {
+    const groupMinSort = Object.create(null);
+    const deptHome = Object.create(null);
+    function add(dept, group, sortNo, fromMaster) {
       const d = String(dept || '').trim();
       if (!d) return;
-      const g = String(group || '').trim() || '（グループなし）';
-      if (!byGroup[g]) byGroup[g] = Object.create(null);
-      const prev = byGroup[g][d];
+      const g = normalize674OrgGroupKey674(group);
       const sn = Number(sortNo);
       const sort = Number.isFinite(sn) && sn > 0 ? sn : 99999;
+      if (!fromMaster && deptHome[d]) return;
+      if (!byGroup[g]) byGroup[g] = Object.create(null);
+      const prev = byGroup[g][d];
       if (!prev || sort < prev.sort_no) {
         byGroup[g][d] = { dept_name: d, group_name: g, sort_no: sort };
+      }
+      if (fromMaster) {
+        deptHome[d] = g;
+        if (groupMinSort[g] == null || sort < groupMinSort[g]) groupMinSort[g] = sort;
+      } else if (groupMinSort[g] == null) {
+        groupMinSort[g] = 99999;
       }
     }
     for (let i = 0; i < (masterRows || []).length; i++) {
       const r = masterRows[i];
-      add(r.dept_name, r.group_name, r.sort_no);
+      add(r.dept_name, r.group_name, r.sort_no, true);
     }
     for (let j = 0; j < (records || []).length; j++) {
       const rec = records[j];
       const d = cell674PlainForSearch(rec, FC_DEPT_NAME);
       const g = cell674PlainForSearch(rec, FC_GROUP_NAME);
-      add(d, g, 99999);
+      add(d, g, 99999, false);
     }
     const groupKeys = Object.keys(byGroup).sort(function (a, b) {
       if (a === '（グループなし）') return 1;
       if (b === '（グループなし）') return -1;
+      const sa = groupMinSort[a] != null ? groupMinSort[a] : 99999;
+      const sb = groupMinSort[b] != null ? groupMinSort[b] : 99999;
+      if (sa !== sb) return sa - sb;
       return label674OrgGroup674(a).localeCompare(label674OrgGroup674(b), 'ja');
     });
     return groupKeys.map(function (gk) {
@@ -3923,11 +3947,23 @@
 
       const showAllGroups = viewGroups.size === 0;
       let shown = 0;
+      const deptRows = [];
+      const seenDept = Object.create(null);
       catalog.forEach(function (g) {
         if (!showAllGroups && !viewGroups.has(g.key)) return;
         for (let i = 0; i < g.depts.length; i++) {
           const row = g.depts[i];
+          if (seenDept[row.dept_name]) continue;
+          seenDept[row.dept_name] = true;
           if (!deptMatchesFilter(row.dept_name, q) && !deptMatchesFilter(g.label, q)) continue;
+          deptRows.push(row);
+        }
+      });
+      deptRows.sort(function (a, b) {
+        if (a.sort_no !== b.sort_no) return a.sort_no - b.sort_no;
+        return String(a.dept_name).localeCompare(String(b.dept_name), 'ja');
+      });
+      deptRows.forEach(function (row) {
           const lab = document.createElement('label');
           lab.style.cssText =
             'display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:1.35;cursor:pointer;' +
@@ -3946,7 +3982,6 @@
           lab.appendChild(span);
           deptHost.appendChild(lab);
           shown++;
-        }
       });
       if (!shown) {
         empty.style.display = '';
