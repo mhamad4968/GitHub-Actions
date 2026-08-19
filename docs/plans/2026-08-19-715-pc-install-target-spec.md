@@ -263,7 +263,7 @@ and pc_status not in ("廃棄", "取消", "保管")
 
 - [x] `npm run cio:pre-implement-gate` + DeepSeek §50-3-8
 - [x] `npm run cio:preflight:715` → `npm run deploy:715`（595 ミラー除外も `deploy:595`）
-- [ ] 浜田目視（個人 1台/2台、共有、0台エラー、リスト印刷）
+- [ ] 浜田目視（個人 1台/2台、共有、0台エラー、リスト印刷）— **2026-08-19 個人登録 OK**（共有・2台・印刷は未確認）
 
 ### 7.4 触らない
 
