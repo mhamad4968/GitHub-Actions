@@ -69,14 +69,15 @@
         "dept_name",
         "group_name",
         "note"
-      ]
+      ],
+      "notes": "715 dash REST 先。v1.2 追補: docs/plans/2026-08-19-715-pc-install-target-spec.md（設置先+674連携・2026-08-19 GO）"
     },
     "715": {
       "label": "ソフトウエア管理台帳ver.1",
       "customizeDirs": ["software-ledger-dash"],
       "inheritsRecordFieldsFrom": "714",
       "specRel": "docs/plans/2026-06-13-software-ledger-kintone-spec.md",
-      "notes": "715 dash は App 714 へ REST CRUD。DB フィールドは 714 と同一。"
+      "notes": "715 dash は App 714 へ REST CRUD。DB フィールドは 714 と同一。v1.2: docs/plans/2026-08-19-715-pc-install-target-spec.md"
     },
     "716": {
       "label": "記憶媒体等台帳DB",
