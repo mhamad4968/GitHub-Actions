@@ -237,6 +237,7 @@
     "software-ledger:setup": "npm run software-ledger:create-db && npm run software-ledger:create-dash",
     "software-ledger:714:add-pc-fields": "npx dotenv -e .env -e .env.proxy -- node scripts/software-ledger-714-add-pc-fields.mjs",
     "software-ledger:714:emp-fields-optional": "npx dotenv -e .env -e .env.proxy -- node scripts/software-ledger-714-emp-fields-optional.mjs",
+    "software-ledger:714:backfill-pc-from-674": "npx dotenv -e .env -e .env.proxy -- node scripts/software-ledger-714-backfill-pc-from-674.mjs",
     "cio:preflight:714": "node scripts/cio-preflight-stamp.mjs --app 714",
     "cio:preflight:715": "node scripts/cio-preflight-stamp.mjs --app 715",
     "wifi-ssid:create-db": "npx dotenv -e .env -e .env.proxy -- node scripts/wifi-ssid-create-db-app.mjs",
