@@ -82,6 +82,7 @@
       "label": "ソフトウエア管理台帳ver.1",
       "customizeDirs": ["software-ledger-dash"],
       "inheritsRecordFieldsFrom": "714",
+      "relatedAppFieldsFrom": ["595", "674", "680"],
       "specRel": "docs/plans/2026-06-13-software-ledger-kintone-spec.md",
       "notes": "715 dash は App 714 へ REST CRUD。DB フィールドは 714 と同一。v1.2: docs/plans/2026-08-19-715-pc-install-target-spec.md"
     },

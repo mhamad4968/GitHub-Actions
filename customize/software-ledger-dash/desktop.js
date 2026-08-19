@@ -6,7 +6,9 @@
   var APP_EMPLOYEE = 595;
   var APP_DEPT_MASTER = 680;
   var APP_PC = 674;
-  var BUILD = "2026-08-19-715-install-target-pc";
+  var FC595_PC674_SUB = "pc_ledger_v1_list";
+  var FC595_PC674_ID = "pc_674_record_id";
+  var BUILD = "2026-08-19-715-pc-lookup-mail-subtable";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya", sort_no: 1 },
@@ -416,6 +418,7 @@
       pc_name: val(rec, "pc_name"),
       shared_terminal_name: val(rec, "shared_terminal_name"),
       emp_id: val(rec, "emp_id"),
+      mail: val(rec, "mail"),
       dept_name: val(rec, "dept_name"),
       group_name: val(rec, "group_name"),
       account_type: val(rec, "account_type"),
@@ -423,33 +426,126 @@
     };
   }
 
-  function fetchPersonalPcs674(empId) {
+  var PC674_GET_FIELDS = [
+    "$id",
+    "pc_name",
+    "shared_terminal_name",
+    "emp_id",
+    "mail",
+    "dept_name",
+    "group_name",
+    "account_type",
+    "pc_status",
+  ];
+
+  function isEligiblePersonalPc(p) {
+    return (
+      p &&
+      String(p.account_type || "").trim() === "個人" &&
+      !pcStatusExcluded(p.pc_status)
+    );
+  }
+
+  function uniquePcsById(list) {
+    var seen = {};
+    var out = [];
+    (list || []).forEach(function (p) {
+      var id = String(p && p.id ? p.id : "").trim();
+      if (!id || seen[id]) return;
+      seen[id] = true;
+      out.push(p);
+    });
+    return out;
+  }
+
+  function fetch674PcsByQuery(q) {
+    return apiGet("/k/v1/records.json", {
+      app: APP_PC,
+      query: q,
+      fields: PC674_GET_FIELDS,
+    }).then(function (resp) {
+      return (resp.records || []).map(flatten674Pc).filter(isEligiblePersonalPc);
+    });
+  }
+
+  function fetchPersonalPcs674ByEmpId(empId) {
     var emp = String(empId || "").trim();
     if (!emp) return Promise.resolve([]);
     var q =
       'account_type in ("個人") and emp_id = "' +
       escapeQueryValue(emp) +
       '" and pc_status not in ("廃棄","取消","保管") order by pc_name asc limit 100';
+    return fetch674PcsByQuery(q);
+  }
+
+  function fetchPersonalPcs674ByMail(mail) {
+    var m = String(mail || "").trim();
+    if (!m) return Promise.resolve([]);
+    var q =
+      'account_type in ("個人") and mail = "' +
+      escapeQueryValue(m) +
+      '" and pc_status not in ("廃棄","取消","保管") order by pc_name asc limit 100';
+    return fetch674PcsByQuery(q);
+  }
+
+  function fetch674PcsByIds(ids) {
+    var nums = (ids || [])
+      .map(function (id) {
+        return String(id || "").trim();
+      })
+      .filter(function (id) {
+        return /^\d+$/.test(id);
+      });
+    if (!nums.length) return Promise.resolve([]);
+    return fetch674PcsByQuery("$id in (" + nums.join(",") + ") limit 100");
+  }
+
+  function parse595LinkedPcIds(rec) {
+    var sub = rec && rec[FC595_PC674_SUB] && rec[FC595_PC674_SUB].value;
+    if (!Array.isArray(sub)) return [];
+    return sub
+      .map(function (row) {
+        var cell = row && row.value && row.value[FC595_PC674_ID];
+        return cell && cell.value != null ? String(cell.value).trim() : "";
+      })
+      .filter(Boolean);
+  }
+
+  function fetchEmployee595ByEmpId(empId) {
+    var emp = String(empId || "").trim();
+    if (!emp) return Promise.resolve(null);
     return apiGet("/k/v1/records.json", {
-      app: APP_PC,
-      query: q,
-      fields: [
-        "$id",
-        "pc_name",
-        "shared_terminal_name",
-        "emp_id",
-        "dept_name",
-        "group_name",
-        "account_type",
-        "pc_status",
-      ],
+      app: APP_EMPLOYEE,
+      query: 'emp_id = "' + escapeQueryValue(emp) + '" limit 1',
+      fields: ["emp_id", "mail", "user_name", FC595_PC674_SUB],
     }).then(function (resp) {
-      return (resp.records || [])
-        .map(flatten674Pc)
-        .filter(function (p) {
-          return !pcStatusExcluded(p.pc_status);
-        });
+      return (resp.records || [])[0] || null;
     });
+  }
+
+  /** 674 の emp_id は空のことが多い。595 と同じ mail / サブテーブル紐づけでも引く。 */
+  function fetchPersonalPcsForEmployee(emp) {
+    var empId = String((emp && emp.emp_id) || "").trim();
+    var mail = String((emp && emp.mail) || "").trim();
+    return fetchEmployee595ByEmpId(empId)
+      .catch(function () {
+        return null;
+      })
+      .then(function (rec595) {
+        if (rec595 && !mail) mail = val(rec595, "mail");
+        var linkedIds = rec595 ? parse595LinkedPcIds(rec595) : [];
+        return Promise.all([
+          fetchPersonalPcs674ByEmpId(empId),
+          fetchPersonalPcs674ByMail(mail),
+          fetch674PcsByIds(linkedIds),
+        ]).then(function (parts) {
+          var merged = uniquePcsById([].concat(parts[0], parts[1], parts[2]));
+          merged.sort(function (a, b) {
+            return String(a.pc_name || "").localeCompare(String(b.pc_name || ""), "ja");
+          });
+          return merged;
+        });
+      });
   }
 
   function searchSharedPcs674(keyword, limit) {
@@ -521,7 +617,7 @@
     return apiGet("/k/v1/records.json", {
       app: APP_EMPLOYEE,
       query: q,
-      fields: ["user_name", "emp_id", "dept_name", "group_name", "employment_status"],
+      fields: ["user_name", "emp_id", "mail", "dept_name", "group_name", "employment_status"],
     }).then(function (resp) {
       return resp.records || [];
     });
@@ -587,6 +683,7 @@
       var dept = val(row, "dept_name");
       var grp = val(row, "group_name");
       var emp = val(row, "emp_id");
+      var mail = val(row, "mail");
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "swl-e595-item";
@@ -605,6 +702,7 @@
         if (state.emp595PickCallback) {
           state.emp595PickCallback({
             emp_id: emp,
+            mail: mail,
             user_name: un,
             dept_name: dept,
             group_name: grp,
@@ -825,6 +923,7 @@
   function readEmployeeFromModal(box) {
     return {
       emp_id: (box.querySelector("#swl-emp-id") || {}).value || "",
+      mail: (box.querySelector("#swl-emp-mail") || {}).value || "",
       user_name: (box.querySelector("#swl-user-name") || {}).value || "",
       dept_name: (box.querySelector("#swl-dept-name") || {}).value || "",
       group_name: (box.querySelector("#swl-group-name") || {}).value || "",
@@ -834,6 +933,7 @@
   function setEmployeeInModal(box, emp) {
     var map = [
       ["#swl-emp-id", emp.emp_id],
+      ["#swl-emp-mail", emp.mail],
       ["#swl-user-name", emp.user_name],
       ["#swl-dept-name", emp.dept_name],
       ["#swl-group-name", emp.group_name],
@@ -930,7 +1030,7 @@
     var sel = box.querySelector("#swl-pc-select");
     var emp = readEmployeeFromModal(box);
     if (msg) msg.textContent = "PC台帳を照合しています…";
-    fetchPersonalPcs674(emp.emp_id)
+    fetchPersonalPcsForEmployee(emp)
       .then(function (pcs) {
         box._personalPcs = pcs || [];
         if (!pcs.length) {
@@ -997,7 +1097,7 @@
         var next = targetSel.value;
         if (prev !== next) {
           if (next === TARGET_SHARED) {
-            setEmployeeInModal(box, { emp_id: "", user_name: "", dept_name: "", group_name: "" });
+            setEmployeeInModal(box, { emp_id: "", mail: "", user_name: "", dept_name: "", group_name: "" });
           } else {
             var cn = box.querySelector("#swl-contact-name");
             var cd = box.querySelector("#swl-contact-dept");
@@ -1128,6 +1228,9 @@
       '<input type="hidden" id="swl-emp-id" value="' +
       esc(row.emp_id) +
       '">' +
+      '<input type="hidden" id="swl-emp-mail" value="' +
+      esc(row.mail) +
+      '">' +
       '<label>氏名<input id="swl-user-name" value="' +
       esc(row.user_name) +
       '" readonly></label>' +
@@ -1222,7 +1325,7 @@
         alert("担当者名を入力してください");
         return;
       }
-      emp = { emp_id: "", user_name: "", dept_name: "", group_name: "" };
+      emp = { emp_id: "", mail: "", user_name: "", dept_name: "", group_name: "" };
     }
     var slotFields = slotsToRowFields(slots);
     var payload = {

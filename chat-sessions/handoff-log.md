@@ -5897,3 +5897,13 @@ npm run cio:morning:ready
 
 ---
 
+### 2026-08-19 JST — **715 個人PC照合修正（emp_id空）**
+
+**要約**: 前田邦彦は 674 id 349（JBIS0351・利用中）だが emp_id 空。715 は mail と 595 サブテーブルでも照合するよう修正。live rev **26** BUILD=`2026-08-19-715-pc-lookup-mail-subtable`。
+
+**次の1手**: 浜田が 715 強制再読込のうえ前田邦彦で再確認。
+
+**触らない**: 674 customize
+
+---
+
