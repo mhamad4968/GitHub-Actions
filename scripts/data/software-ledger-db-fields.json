@@ -143,7 +143,7 @@
       "type": "SINGLE_LINE_TEXT",
       "code": "emp_id",
       "label": "社員番号",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": ""
     },
@@ -151,7 +151,7 @@
       "type": "SINGLE_LINE_TEXT",
       "code": "user_name",
       "label": "氏名",
-      "required": true,
+      "required": false,
       "noLabel": false,
       "defaultValue": ""
     },

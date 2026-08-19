@@ -5909,3 +5909,11 @@ npm run cio:morning:ready
 
 ---
 
+### 2026-08-19 JST — **714 共有保存: emp_id/user_name 必須オフ**
+
+**要約**: 共有登録が 714 の kintone 必須（氏名・社員番号）で失敗。required=false にして 714 deploy。個人の必須は 715 JS。
+
+**次の1手**: 浜田が 715 で共有を再保存。
+
+---
+

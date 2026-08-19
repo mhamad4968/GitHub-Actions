@@ -130,7 +130,7 @@ and pc_status not in ("廃棄", "取消", "保管")
 |------------|------|------|
 | `install_target` | ○ | ○ |
 | `pc_674_id` / `pc_name` | ○ | ○ |
-| `emp_id` / `user_name` / `dept_name` / `group_name` | ○（595） | **空**（使用しない） |
+| `emp_id` / `user_name` / `dept_name` / `group_name` | ○（595） | **空**（使用しない）。**714 の kintone 必須はオフ**（個人時の必須は 715 JS） |
 | `contact_name` | 空 | ○ |
 | `contact_dept` | 空 | —（推奨） |
 | `shared_terminal_name` | 空で可 | 674 から自動 |
@@ -293,6 +293,7 @@ and pc_status not in ("廃棄", "取消", "保管")
 
 | 日付 | 内容 |
 |------|------|
+| 2026-08-19 | 714 `emp_id`/`user_name` の kintone 必須をオフ（共有保存のため。個人必須は JS） |
 | 2026-08-19 | 後続: 674 `emp_id` 空欄是正は 715 確認後（674 SPEC §12.6） |
 | 2026-08-19 | 個人PC照合を emp_id に加え mail・595 サブテーブル紐づけでも行う（674 emp_id 空対策） |
 | 2026-08-19 | DeepSeek レビュー反映 — 保管 PC 除外・既存行移行・種別変更時クリア・emp_id 文字列比較 |
