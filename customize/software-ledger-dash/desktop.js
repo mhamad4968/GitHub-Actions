@@ -5,7 +5,8 @@
   var APP_DB = 714;
   var APP_EMPLOYEE = 595;
   var APP_DEPT_MASTER = 680;
-  var BUILD = "2026-08-15-715-list-dept-680-sync";
+  var APP_PC = 674;
+  var BUILD = "2026-08-19-715-install-target-pc";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya", sort_no: 1 },
@@ -54,6 +55,8 @@
   var STATUS_ACTIVE = "利用中";
   var STATUS_RETIRED = "廃止";
   var LICENSE_VOLUME = "ボリュームライセンス";
+  var TARGET_PERSONAL = "個人";
+  var TARGET_SHARED = "共有";
   var PAGE_SIZE = 100;
 
   var FC = {
@@ -75,6 +78,12 @@
     dept_name: "dept_name",
     group_name: "group_name",
     note: "note",
+    install_target: "install_target",
+    pc_674_id: "pc_674_id",
+    pc_name: "pc_name",
+    shared_terminal_name: "shared_terminal_name",
+    contact_name: "contact_name",
+    contact_dept: "contact_dept",
   };
 
   var API_FIELDS = [
@@ -98,6 +107,12 @@
     FC.dept_name,
     FC.group_name,
     FC.note,
+    FC.install_target,
+    FC.pc_674_id,
+    FC.pc_name,
+    FC.shared_terminal_name,
+    FC.contact_name,
+    FC.contact_dept,
   ];
 
   var ID_KIND_OPTIONS = [
@@ -117,13 +132,15 @@
     { key: "license_type", label: "ライセンス", sort: true },
     { key: "software_name", label: "製品", sort: true },
     { key: "ident", label: "ソフトウエアの情報", sort: false },
-    { key: "user_name", label: "利用者", sort: true },
+    { key: "install_target", label: "種別", sort: true },
+    { key: "pc_name", label: "PC名", sort: true },
+    { key: "user_name", label: "利用者／担当者", sort: true },
     { key: "dept_name", label: "所属", sort: true },
   ];
 
   var MAIN_PRINT_ID = "swl-main-print";
   var MAIN_PRINT_STYLE_ID = "swl-main-print-style";
-  var TABLE_VISUAL_COLS = 9;
+  var TABLE_VISUAL_COLS = 11;
 
   var LIST_TABLE_COLS = [
     { key: "legacy_no", label: "管理番号" },
@@ -131,6 +148,8 @@
     { key: "software_name", label: "製品名" },
     { key: "license_type", label: "ライセンス" },
     { key: "ident", label: "ソフトウエアの情報" },
+    { key: "install_target", label: "種別" },
+    { key: "pc_name", label: "PC名" },
     { key: "emp_id", label: "社員番号" },
     { key: "user_name", label: "氏名" },
     { key: "dept_name", label: "所属名" },
@@ -213,6 +232,12 @@
       dept_name: val(rec, FC.dept_name),
       group_name: val(rec, FC.group_name),
       note: val(rec, FC.note),
+      install_target: val(rec, FC.install_target),
+      pc_674_id: val(rec, FC.pc_674_id),
+      pc_name: val(rec, FC.pc_name),
+      shared_terminal_name: val(rec, FC.shared_terminal_name),
+      contact_name: val(rec, FC.contact_name),
+      contact_dept: val(rec, FC.contact_dept),
     };
     row.ident = formatIdentification(row);
     return row;
@@ -256,11 +281,47 @@
         else clear(FC[vc]);
       }
     });
-    if (!partial || partial.emp_id) set(FC.emp_id, row.emp_id);
-    if (!partial || partial.user_name) set(FC.user_name, row.user_name);
-    if (!partial || partial.dept_name) set(FC.dept_name, row.dept_name);
-    if (!partial || partial.group_name) set(FC.group_name, row.group_name);
+    if (!partial || partial.emp_id) {
+      if (row.emp_id) set(FC.emp_id, row.emp_id);
+      else clear(FC.emp_id);
+    }
+    if (!partial || partial.user_name) {
+      if (row.user_name) set(FC.user_name, row.user_name);
+      else clear(FC.user_name);
+    }
+    if (!partial || partial.dept_name) {
+      if (row.dept_name) set(FC.dept_name, row.dept_name);
+      else clear(FC.dept_name);
+    }
+    if (!partial || partial.group_name) {
+      if (row.group_name) set(FC.group_name, row.group_name);
+      else clear(FC.group_name);
+    }
     if (!partial || partial.note) set(FC.note, row.note);
+    if (!partial || partial.install_target) {
+      if (row.install_target) set(FC.install_target, row.install_target);
+      else clear(FC.install_target);
+    }
+    if (!partial || partial.pc_674_id) {
+      if (row.pc_674_id) set(FC.pc_674_id, row.pc_674_id);
+      else clear(FC.pc_674_id);
+    }
+    if (!partial || partial.pc_name) {
+      if (row.pc_name) set(FC.pc_name, row.pc_name);
+      else clear(FC.pc_name);
+    }
+    if (!partial || partial.shared_terminal_name) {
+      if (row.shared_terminal_name) set(FC.shared_terminal_name, row.shared_terminal_name);
+      else clear(FC.shared_terminal_name);
+    }
+    if (!partial || partial.contact_name) {
+      if (row.contact_name) set(FC.contact_name, row.contact_name);
+      else clear(FC.contact_name);
+    }
+    if (!partial || partial.contact_dept) {
+      if (row.contact_dept) set(FC.contact_dept, row.contact_dept);
+      else clear(FC.contact_dept);
+    }
     return o;
   }
 
@@ -328,7 +389,107 @@
     return page();
   }
 
+  function isSharedAssign(row) {
+    return String((row && row.install_target) || "").trim() === TARGET_SHARED;
+  }
+
+  function displayUserName(row) {
+    if (isSharedAssign(row)) return String(row.contact_name || "").trim();
+    return String(row.user_name || "").trim();
+  }
+
+  function displayDeptName(row) {
+    if (isSharedAssign(row) && String(row.contact_dept || "").trim()) {
+      return String(row.contact_dept).trim();
+    }
+    return String(row.dept_name || "").trim();
+  }
+
+  function pcStatusExcluded(status) {
+    var s = String(status || "").trim();
+    return s === "廃棄" || s === "取消" || s === "保管";
+  }
+
+  function flatten674Pc(rec) {
+    return {
+      id: val(rec, "$id"),
+      pc_name: val(rec, "pc_name"),
+      shared_terminal_name: val(rec, "shared_terminal_name"),
+      emp_id: val(rec, "emp_id"),
+      dept_name: val(rec, "dept_name"),
+      group_name: val(rec, "group_name"),
+      account_type: val(rec, "account_type"),
+      pc_status: val(rec, "pc_status"),
+    };
+  }
+
+  function fetchPersonalPcs674(empId) {
+    var emp = String(empId || "").trim();
+    if (!emp) return Promise.resolve([]);
+    var q =
+      'account_type in ("個人") and emp_id = "' +
+      escapeQueryValue(emp) +
+      '" and pc_status not in ("廃棄","取消","保管") order by pc_name asc limit 100';
+    return apiGet("/k/v1/records.json", {
+      app: APP_PC,
+      query: q,
+      fields: [
+        "$id",
+        "pc_name",
+        "shared_terminal_name",
+        "emp_id",
+        "dept_name",
+        "group_name",
+        "account_type",
+        "pc_status",
+      ],
+    }).then(function (resp) {
+      return (resp.records || [])
+        .map(flatten674Pc)
+        .filter(function (p) {
+          return !pcStatusExcluded(p.pc_status);
+        });
+    });
+  }
+
+  function searchSharedPcs674(keyword, limit) {
+    var k = String(keyword || "").trim();
+    var lim = Math.min(Math.max(parseInt(String(limit || "20"), 10) || 20, 1), 50);
+    var q =
+      'account_type in ("共有") and pc_status not in ("廃棄","取消","保管")';
+    if (k) {
+      q +=
+        ' and (pc_name like "' +
+        escapeQueryValue(k) +
+        '" or shared_terminal_name like "' +
+        escapeQueryValue(k) +
+        '")';
+    }
+    q += " order by pc_name asc limit " + lim;
+    return apiGet("/k/v1/records.json", {
+      app: APP_PC,
+      query: q,
+      fields: [
+        "$id",
+        "pc_name",
+        "shared_terminal_name",
+        "emp_id",
+        "dept_name",
+        "group_name",
+        "account_type",
+        "pc_status",
+      ],
+    }).then(function (resp) {
+      return (resp.records || [])
+        .map(flatten674Pc)
+        .filter(function (p) {
+          return !pcStatusExcluded(p.pc_status);
+        });
+    });
+  }
+
   function isRetiredEmployeeRow(row) {
+    if (isSharedAssign(row)) return false;
     var emp = String(row.emp_id || "").trim();
     return emp && state.retiredEmpIds[emp];
   }
@@ -681,6 +842,282 @@
       var el = box.querySelector(pair[0]);
       if (el) el.value = pair[1] || "";
     });
+    refreshPersonalPcChoices(box);
+  }
+
+  function assignmentFieldsHtml(row) {
+    row = row || {};
+    var target = String(row.install_target || TARGET_PERSONAL).trim() || TARGET_PERSONAL;
+    return (
+      '<div class="swl-sec" id="swl-assign-sec"><div class="swl-sec-title">設置先</div>' +
+      '<label>種別<select id="swl-install-target">' +
+      '<option value="' +
+      TARGET_PERSONAL +
+      '"' +
+      (target === TARGET_SHARED ? "" : " selected") +
+      ">" +
+      TARGET_PERSONAL +
+      "</option>" +
+      '<option value="' +
+      TARGET_SHARED +
+      '"' +
+      (target === TARGET_SHARED ? " selected" : "") +
+      ">" +
+      TARGET_SHARED +
+      "</option></select></label>" +
+      '<div id="swl-personal-block">' +
+      employeeFieldsHtml(row) +
+      '<p id="swl-pc-msg" class="swl-pc-msg"></p>' +
+      '<label>PC名<input id="swl-pc-name" value="' +
+      esc(row.pc_name) +
+      '" readonly></label>' +
+      '<label id="swl-pc-select-wrap" style="display:none">PCを選ぶ<select id="swl-pc-select"></select></label>' +
+      '<input type="hidden" id="swl-pc-674-id" value="' +
+      esc(row.pc_674_id) +
+      '">' +
+      '<input type="hidden" id="swl-shared-terminal-name" value="' +
+      esc(row.shared_terminal_name) +
+      '">' +
+      "</div>" +
+      '<div id="swl-shared-block" style="display:none">' +
+      '<button type="button" id="swl-pick-shared-pc" class="kintoneplugin-button-normal">共有PCを選ぶ</button>' +
+      '<label>PC名<input id="swl-shared-pc-name" value="' +
+      esc(row.pc_name) +
+      '" readonly></label>' +
+      '<label>共有端末名<input id="swl-shared-term-disp" value="' +
+      esc(row.shared_terminal_name) +
+      '" readonly></label>' +
+      '<label>担当者名<input id="swl-contact-name" value="' +
+      esc(row.contact_name) +
+      '"></label>' +
+      '<label>担当所属<input id="swl-contact-dept" value="' +
+      esc(row.contact_dept) +
+      '"></label>' +
+      "</div></div>"
+    );
+  }
+
+  function applyPcToModal(box, pc, shared) {
+    var idEl = box.querySelector("#swl-pc-674-id");
+    var nameEl = box.querySelector("#swl-pc-name");
+    var nameShared = box.querySelector("#swl-shared-pc-name");
+    var termHid = box.querySelector("#swl-shared-terminal-name");
+    var termDisp = box.querySelector("#swl-shared-term-disp");
+    var deptEl = box.querySelector("#swl-contact-dept");
+    if (idEl) idEl.value = pc && pc.id ? pc.id : "";
+    if (nameEl) nameEl.value = pc && pc.pc_name ? pc.pc_name : "";
+    if (nameShared) nameShared.value = pc && pc.pc_name ? pc.pc_name : "";
+    if (termHid) termHid.value = pc && pc.shared_terminal_name ? pc.shared_terminal_name : "";
+    if (termDisp) termDisp.value = pc && pc.shared_terminal_name ? pc.shared_terminal_name : "";
+    if (shared && deptEl && pc && pc.dept_name && !String(deptEl.value || "").trim()) {
+      deptEl.value = pc.dept_name;
+    }
+  }
+
+  function clearPcInModal(box) {
+    applyPcToModal(box, null, false);
+    var sel = box.querySelector("#swl-pc-select");
+    var wrap = box.querySelector("#swl-pc-select-wrap");
+    var msg = box.querySelector("#swl-pc-msg");
+    if (sel) sel.innerHTML = "";
+    if (wrap) wrap.style.display = "none";
+    if (msg) msg.textContent = "";
+  }
+
+  function refreshPersonalPcChoices(box) {
+    var msg = box.querySelector("#swl-pc-msg");
+    var wrap = box.querySelector("#swl-pc-select-wrap");
+    var sel = box.querySelector("#swl-pc-select");
+    var emp = readEmployeeFromModal(box);
+    if (msg) msg.textContent = "PC台帳を照合しています…";
+    fetchPersonalPcs674(emp.emp_id)
+      .then(function (pcs) {
+        box._personalPcs = pcs || [];
+        if (!pcs.length) {
+          clearPcInModal(box);
+          if (msg) {
+            msg.textContent =
+              "PC台帳に該当 PC がありません。先に PC 台帳（674）へ登録してください。保存できません。";
+          }
+          return;
+        }
+        if (pcs.length === 1) {
+          applyPcToModal(box, pcs[0], false);
+          if (wrap) wrap.style.display = "none";
+          if (msg) msg.textContent = "PC 1 台を自動セットしました。";
+          return;
+        }
+        if (wrap) wrap.style.display = "";
+        var current = (box.querySelector("#swl-pc-674-id") || {}).value || "";
+        sel.innerHTML =
+          '<option value="">— 選択してください —</option>' +
+          pcs
+            .map(function (p) {
+              return (
+                '<option value="' +
+                esc(p.id) +
+                '"' +
+                (String(p.id) === String(current) ? " selected" : "") +
+                ">" +
+                esc(p.pc_name || "(無題)") +
+                "</option>"
+              );
+            })
+            .join("");
+        if (current) {
+          var hit = pcs.filter(function (p) {
+            return String(p.id) === String(current);
+          })[0];
+          if (hit) applyPcToModal(box, hit, false);
+        } else {
+          applyPcToModal(box, null, false);
+        }
+        if (msg) msg.textContent = "PC が " + pcs.length + " 台あります。1 台選んでください。";
+      })
+      .catch(function (e) {
+        if (msg) msg.textContent = "PC 照合失敗: " + (e.message || e);
+      });
+  }
+
+  function syncAssignBlocks(box) {
+    var sel = box.querySelector("#swl-install-target");
+    var personal = box.querySelector("#swl-personal-block");
+    var shared = box.querySelector("#swl-shared-block");
+    var isShared = sel && sel.value === TARGET_SHARED;
+    if (personal) personal.style.display = isShared ? "none" : "";
+    if (shared) shared.style.display = isShared ? "" : "none";
+  }
+
+  function wireAssignmentUi(box, row) {
+    wireEmployeePicker(box);
+    var targetSel = box.querySelector("#swl-install-target");
+    var prev = targetSel ? targetSel.value : TARGET_PERSONAL;
+    if (targetSel) {
+      targetSel.addEventListener("change", function () {
+        var next = targetSel.value;
+        if (prev !== next) {
+          if (next === TARGET_SHARED) {
+            setEmployeeInModal(box, { emp_id: "", user_name: "", dept_name: "", group_name: "" });
+          } else {
+            var cn = box.querySelector("#swl-contact-name");
+            var cd = box.querySelector("#swl-contact-dept");
+            if (cn) cn.value = "";
+            if (cd) cd.value = "";
+          }
+          clearPcInModal(box);
+        }
+        prev = next;
+        syncAssignBlocks(box);
+        if (next !== TARGET_SHARED) {
+          var emp = readEmployeeFromModal(box);
+          if (emp.emp_id) refreshPersonalPcChoices(box);
+        }
+      });
+    }
+    var pcSel = box.querySelector("#swl-pc-select");
+    if (pcSel) {
+      pcSel.addEventListener("change", function () {
+        var id = pcSel.value;
+        var pcs = box._personalPcs || [];
+        var hit = pcs.filter(function (p) {
+          return String(p.id) === String(id);
+        })[0];
+        applyPcToModal(box, hit || null, false);
+      });
+    }
+    var sharedBtn = box.querySelector("#swl-pick-shared-pc");
+    if (sharedBtn) {
+      sharedBtn.addEventListener("click", function () {
+        openSharedPcPicker(function (pc) {
+          applyPcToModal(box, pc, true);
+        });
+      });
+    }
+    syncAssignBlocks(box);
+    if (targetSel && targetSel.value !== TARGET_SHARED) {
+      var emp = readEmployeeFromModal(box);
+      if (emp.emp_id) refreshPersonalPcChoices(box);
+    }
+  }
+
+  function openSharedPcPicker(onPick) {
+    var id = "swl-pc674-modal";
+    var backdrop = document.getElementById(id);
+    if (!backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.id = id;
+      backdrop.className = "swl-e595-bg";
+      backdrop.innerHTML =
+        '<div class="swl-e595-box">' +
+        "<h3>共有PC検索</h3>" +
+        '<p class="swl-e595-sub">廃棄・取消・保管は出ません。PC名または共有端末名で検索してください。</p>' +
+        '<div class="swl-e595-search-row">' +
+        '<input type="text" id="swl-pc674-q" placeholder="例: S-JBIS または 端末名">' +
+        '<button type="button" id="swl-pc674-go" class="kintoneplugin-button-dialog-ok">検索</button>' +
+        "</div>" +
+        '<div id="swl-pc674-results" class="swl-e595-results"></div>' +
+        '<div class="swl-e595-foot">' +
+        '<button type="button" id="swl-pc674-close" class="kintoneplugin-button-normal">閉じる</button>' +
+        "</div></div>";
+      document.body.appendChild(backdrop);
+      backdrop.addEventListener("click", function (ev) {
+        if (ev.target === backdrop) backdrop.style.display = "none";
+      });
+      backdrop.querySelector("#swl-pc674-close").addEventListener("click", function () {
+        backdrop.style.display = "none";
+      });
+      function run() {
+        var inp = document.getElementById("swl-pc674-q");
+        var container = document.getElementById("swl-pc674-results");
+        var kw = String((inp && inp.value) || "").trim();
+        if (!kw) {
+          container.innerHTML = '<p class="swl-e595-hint">検索語を入力してください。</p>';
+          return;
+        }
+        container.innerHTML = '<p class="swl-e595-hint">検索しています…</p>';
+        searchSharedPcs674(kw, 30)
+          .then(function (pcs) {
+            container.innerHTML = "";
+            if (!pcs.length) {
+              container.innerHTML = '<p class="swl-e595-hint">該当する共有PCがありません。</p>';
+              return;
+            }
+            pcs.forEach(function (p) {
+              var btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "swl-e595-item";
+              btn.textContent =
+                (p.pc_name || "(無題)") +
+                (p.shared_terminal_name ? "　／　" + p.shared_terminal_name : "") +
+                (p.dept_name ? "　／　" + p.dept_name : "");
+              btn.addEventListener("click", function () {
+                var cb = backdrop._onPick;
+                if (cb) cb(p);
+                backdrop.style.display = "none";
+              });
+              container.appendChild(btn);
+            });
+          })
+          .catch(function (e) {
+            container.innerHTML =
+              '<p class="swl-e595-err">検索に失敗しました: ' + esc(e.message || e) + "</p>";
+          });
+      }
+      backdrop.querySelector("#swl-pc674-go").addEventListener("click", run);
+      backdrop.querySelector("#swl-pc674-q").addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          run();
+        }
+      });
+    }
+    var inp = document.getElementById("swl-pc674-q");
+    var res = document.getElementById("swl-pc674-results");
+    if (inp) inp.value = "";
+    if (res) res.innerHTML = '<p class="swl-e595-hint">検索語を入力して「検索」を押してください。</p>';
+    backdrop.style.display = "flex";
+    if (inp) inp.focus();
+    backdrop._onPick = onPick;
   }
 
   function employeeFieldsHtml(row) {
@@ -744,15 +1181,48 @@
       }
     }
     var emp = readEmployeeFromModal(box);
-    if (!String(emp.user_name || "").trim()) {
-      alert("社員検索で利用者を選択してください");
+    var targetSel = box.querySelector("#swl-install-target");
+    var installTarget = targetSel ? targetSel.value : TARGET_PERSONAL;
+    if (installTarget !== TARGET_PERSONAL && installTarget !== TARGET_SHARED) {
+      alert("種別（個人／共有）を選んでください");
       return;
     }
-    if (!String(emp.emp_id || "").trim()) {
+    var pcId = String((box.querySelector("#swl-pc-674-id") || {}).value || "").trim();
+    var pcName = String((box.querySelector("#swl-pc-name") || {}).value || "").trim();
+    if (installTarget === TARGET_SHARED) {
+      pcName = String((box.querySelector("#swl-shared-pc-name") || {}).value || "").trim() || pcName;
+    }
+    var sharedTerm = String((box.querySelector("#swl-shared-terminal-name") || {}).value || "").trim();
+    var contactName = String((box.querySelector("#swl-contact-name") || {}).value || "").trim();
+    var contactDept = String((box.querySelector("#swl-contact-dept") || {}).value || "").trim();
+    if (!pcId || !pcName) {
       alert(
-        "社員管理番号（emp_id）が空のため保存できません。595 社員マスタで該当社員を保存して番号を付与してから、再度お試しください。",
+        installTarget === TARGET_SHARED
+          ? "共有PCを選んでください"
+          : "PC台帳に該当 PC がありません。先に PC 台帳（674）へ登録してください。",
       );
       return;
+    }
+    if (installTarget === TARGET_PERSONAL) {
+      if (!String(emp.user_name || "").trim()) {
+        alert("社員検索で利用者を選択してください");
+        return;
+      }
+      if (!String(emp.emp_id || "").trim()) {
+        alert(
+          "社員管理番号（emp_id）が空のため保存できません。595 社員マスタで該当社員を保存して番号を付与してから、再度お試しください。",
+        );
+        return;
+      }
+      contactName = "";
+      contactDept = "";
+      sharedTerm = "";
+    } else {
+      if (!contactName) {
+        alert("担当者名を入力してください");
+        return;
+      }
+      emp = { emp_id: "", user_name: "", dept_name: "", group_name: "" };
     }
     var slotFields = slotsToRowFields(slots);
     var payload = {
@@ -765,6 +1235,12 @@
       dept_name: emp.dept_name,
       group_name: emp.group_name,
       note: (box.querySelector("#swl-note") || {}).value || "",
+      install_target: installTarget,
+      pc_674_id: pcId,
+      pc_name: pcName,
+      shared_terminal_name: sharedTerm,
+      contact_name: contactName,
+      contact_dept: contactDept,
     };
     Object.keys(slotFields).forEach(function (k) {
       payload[k] = slotFields[k];
@@ -816,6 +1292,12 @@
             dept_name: 1,
             group_name: 1,
             note: 1,
+            install_target: 1,
+            pc_674_id: 1,
+            pc_name: 1,
+            shared_terminal_name: 1,
+            contact_name: 1,
+            contact_dept: 1,
           }),
         });
       })
@@ -895,7 +1377,7 @@
       ".swl-modal input,.swl-modal select,.swl-modal textarea{width:100%;box-sizing:border-box;padding:6px;margin-top:4px;}" +
       ".swl-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}" +
       ".swl-id-slot{margin:8px 0;padding:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;}" +
-      ".swl-emp-block{margin:10px 0;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;}" +
+      ".swl-pc-msg{font-size:12px;color:#b45309;margin:8px 0;}" +
       ".swl-e595-bg{position:fixed;inset:0;z-index:10001;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:16px;}" +
       ".swl-e595-box{background:#fff;border-radius:8px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:16px 18px;}" +
       ".swl-e595-sub{font-size:12px;color:#64748b;margin:0 0 10px;}" +
@@ -996,20 +1478,23 @@
       (r.model_number
         ? '<span class="swl-cell-sub">バージョン ' + esc(r.model_number) + "</span>"
         : "");
+    var dispUser = displayUserName(r);
     var userCell;
     if (linkUser) {
       userCell =
         '<span class="swl-user-link" data-user="' +
-        esc(r.user_name) +
+        esc(dispUser) +
         '">' +
-        esc(r.user_name) +
+        esc(dispUser) +
         "</span>";
     } else {
-      userCell = esc(r.user_name);
+      userCell = esc(dispUser);
     }
     var deptCell =
-      esc(r.dept_name) +
-      (r.group_name ? '<span class="swl-cell-sub">' + esc(r.group_name) + "</span>" : "");
+      esc(displayDeptName(r)) +
+      (r.group_name && !isSharedAssign(r)
+        ? '<span class="swl-cell-sub">' + esc(r.group_name) + "</span>"
+        : "");
     var html =
       '<tr class="' +
       cls +
@@ -1029,6 +1514,10 @@
       '</td><td class="swl-ident">' +
       esc(r.ident) +
       "</td><td>" +
+      esc(r.install_target || "") +
+      "</td><td>" +
+      esc(r.pc_name || "") +
+      "</td><td>" +
       userCell +
       "</td><td>" +
       deptCell +
@@ -1041,7 +1530,9 @@
           ? '<button type="button" class="swl-btn-retire">廃止</button>'
           : "") +
         '<button type="button" class="swl-btn-del">削除</button>' +
-        '<button type="button" class="swl-btn-user-list">この社員のリスト</button>' +
+        (isSharedAssign(r)
+          ? ""
+          : '<button type="button" class="swl-btn-user-list">この社員のリスト</button>') +
         "</td>";
     }
     html += "</tr>";
@@ -1145,8 +1636,10 @@
     var rows = visibleRecords().filter(function (r) {
       if (state.filter === "active" && r.status !== STATUS_ACTIVE) return false;
       if (state.filter === "retired" && r.status !== STATUS_RETIRED) return false;
-      if (state.deptFilter && String(r.dept_name || "").indexOf(state.deptFilter) < 0) return false;
-      if (state.userFilter && r.user_name !== state.userFilter) return false;
+      if (state.deptFilter && String(displayDeptName(r) || "").indexOf(state.deptFilter) < 0) {
+        return false;
+      }
+      if (state.userFilter && displayUserName(r) !== state.userFilter) return false;
       if (!q) return true;
       var hay = (
         r.software_name +
@@ -1167,7 +1660,17 @@
         " " +
         r.group_name +
         " " +
-        r.ident
+        r.ident +
+        " " +
+        r.pc_name +
+        " " +
+        r.install_target +
+        " " +
+        r.contact_name +
+        " " +
+        r.contact_dept +
+        " " +
+        r.shared_terminal_name
       ).toLowerCase();
       return hay.indexOf(q) >= 0;
     });
@@ -1215,7 +1718,18 @@
     var userEl = document.getElementById("swl-user-chips");
     if (!deptEl || !userEl) return;
     var base = visibleRecords();
-    var depts = distinctValues(base, "dept_name");
+    var depts = [];
+    var seenD = {};
+    base.forEach(function (r) {
+      var d = displayDeptName(r);
+      if (d && !seenD[d]) {
+        seenD[d] = true;
+        depts.push(d);
+      }
+    });
+    depts.sort(function (a, b) {
+      return a.localeCompare(b, "ja");
+    });
     var users = distinctValues(base, "user_name");
     deptEl.innerHTML = depts
       .map(function (d) {
@@ -1341,26 +1855,40 @@
     return box;
   }
 
-  function openCreateModal() {
+  function openCreateModal(seed) {
+    seed = seed || {};
     var today = todayJstYmd();
+    var assignSeed = {
+      install_target: seed.install_target || TARGET_PERSONAL,
+      emp_id: seed.emp_id,
+      user_name: seed.user_name,
+      dept_name: seed.dept_name,
+      group_name: seed.group_name,
+      contact_name: seed.contact_name,
+      contact_dept: seed.contact_dept,
+    };
     var box = openModal(
       "新規登録",
       '<div class="swl-sec"><div class="swl-sec-title">製品</div>' +
         '<label>ライセンス種別<select id="swl-license-type">' +
-        licenseOptionsHtml("") +
-        '</select></label><label>製品名<input id="swl-software-name"></label>' +
-        '<label>バージョン<input id="swl-model-number"></label></div>' +
+        licenseOptionsHtml(seed.license_type || "") +
+        '</select></label><label>製品名<input id="swl-software-name" value="' +
+        esc(seed.software_name || "") +
+        '"></label>' +
+        '<label>バージョン<input id="swl-model-number" value="' +
+        esc(seed.model_number || "") +
+        '"></label></div>' +
         '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
-        buildIdSlotsHtml(null, 1) +
+        buildIdSlotsHtml(seed.software_name ? seed : null, seed.software_name ? 3 : 1) +
         "</div>" +
-        '<div class="swl-sec"><div class="swl-sec-title">利用者</div>' +
-        employeeFieldsHtml(null) +
-        "</div>" +
+        assignmentFieldsHtml(assignSeed) +
         '<div class="swl-sec"><div class="swl-sec-title">日付・備考</div>' +
         '<label>購入日<input type="date" id="swl-purchase-date" value="' +
         esc(today) +
         '"></label>' +
-        '<label>備考<textarea id="swl-note" rows="3"></textarea></label></div>',
+        '<label>備考<textarea id="swl-note" rows="3">' +
+        esc(seed.note || "") +
+        "</textarea></label></div>",
       [
         { label: "キャンセル" },
         {
@@ -1373,7 +1901,7 @@
       ],
     );
     wireIdSlotUi(box);
-    wireEmployeePicker(box);
+    wireAssignmentUi(box, assignSeed);
   }
 
   function openEditModal(row) {
@@ -1399,9 +1927,7 @@
         '<div class="swl-sec"><div class="swl-sec-title">ソフトウエアの情報</div>' +
         buildIdSlotsHtml(row) +
         "</div>" +
-        '<div class="swl-sec"><div class="swl-sec-title">利用者</div>' +
-        employeeFieldsHtml(row) +
-        "</div>" +
+        assignmentFieldsHtml(row) +
         '<div class="swl-sec"><div class="swl-sec-title">日付・備考</div>' +
         statusHtml +
         '<label>購入日<input type="date" id="swl-purchase-date" value="' +
@@ -1412,6 +1938,31 @@
       [
         { label: "キャンセル" },
         {
+          label: "別PCへ複製",
+          onClick: function (close) {
+            close();
+            openCreateModal({
+              license_type: row.license_type,
+              software_name: row.software_name,
+              model_number: row.model_number,
+              id_kind_1: row.id_kind_1,
+              id_value_1: row.id_value_1,
+              id_kind_2: row.id_kind_2,
+              id_value_2: row.id_value_2,
+              id_kind_3: row.id_kind_3,
+              id_value_3: row.id_value_3,
+              note: row.note,
+              install_target: row.install_target,
+              emp_id: row.emp_id,
+              user_name: row.user_name,
+              dept_name: row.dept_name,
+              group_name: row.group_name,
+              contact_name: row.contact_name,
+              contact_dept: row.contact_dept,
+            });
+          },
+        },
+        {
           label: "保存",
           primary: true,
           onClick: function (close) {
@@ -1421,7 +1972,7 @@
       ],
     );
     wireIdSlotUi(box);
-    wireEmployeePicker(box);
+    wireAssignmentUi(box, row);
   }
 
   function openRetireModal(row) {
@@ -1581,12 +2132,15 @@
       tr.querySelector(".swl-btn-del").addEventListener("click", function () {
         openDeleteModal(row);
       });
-      tr.querySelector(".swl-btn-user-list").addEventListener("click", function () {
-        openListCreateModal({
-          emp_id: row.emp_id,
-          user_name: row.user_name,
+      var listBtn = tr.querySelector(".swl-btn-user-list");
+      if (listBtn) {
+        listBtn.addEventListener("click", function () {
+          openListCreateModal({
+            emp_id: row.emp_id,
+            user_name: row.user_name,
+          });
         });
-      });
+      }
     });
     updateSortHeaders();
     updateAccHint();
@@ -1785,7 +2339,14 @@
         var tr = document.createElement("tr");
         LIST_TABLE_COLS.forEach(function (col) {
           var td = document.createElement("td");
-          td.textContent = col.key === "ident" ? r.ident : r[col.key] || "";
+          td.textContent =
+            col.key === "ident"
+              ? r.ident
+              : col.key === "user_name"
+                ? displayUserName(r)
+                : col.key === "dept_name"
+                  ? displayDeptName(r)
+                  : r[col.key] || "";
           tr.appendChild(td);
         });
         tbody.appendChild(tr);

@@ -178,6 +178,67 @@
       "required": false,
       "noLabel": false,
       "defaultValue": ""
+    },
+    "install_target": {
+      "type": "DROP_DOWN",
+      "code": "install_target",
+      "label": "種別",
+      "required": false,
+      "noLabel": false,
+      "defaultValue": "",
+      "options": {
+        "個人": { "label": "個人", "index": "0" },
+        "共有": { "label": "共有", "index": "1" }
+      }
+    },
+    "pc_674_id": {
+      "type": "NUMBER",
+      "code": "pc_674_id",
+      "label": "PC台帳ID",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "digit": false,
+      "defaultValue": "",
+      "displayScale": "",
+      "unit": "",
+      "unitPosition": "BEFORE"
+    },
+    "pc_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "pc_name",
+      "label": "PC名",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "shared_terminal_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "shared_terminal_name",
+      "label": "共有端末名",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "contact_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "contact_name",
+      "label": "担当者名",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
+    },
+    "contact_dept": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "contact_dept",
+      "label": "担当所属",
+      "required": false,
+      "noLabel": false,
+      "unique": false,
+      "defaultValue": ""
     }
   }
 }

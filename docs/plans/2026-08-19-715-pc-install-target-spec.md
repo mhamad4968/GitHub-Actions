@@ -247,21 +247,21 @@ and pc_status not in ("廃棄", "取消", "保管")
 
 ### 7.1 kintone フィールド
 
-- [ ] App **714** に §4 の 6 フィールド追加（715 は inherits・フィールド追加不要）
-- [ ] `scripts/data/software-ledger-db-fields.json` 更新
-- [ ] `data/kintone-field-registry.json` の 714/715 notes 更新
+- [x] App **714** に §4 の 6 フィールド追加（715 は inherits・フィールド追加不要）
+- [x] `scripts/data/software-ledger-db-fields.json` 更新
+- [x] `data/kintone-field-registry.json` の 714/715 notes 更新
 
 ### 7.2 customize
 
-- [ ] `customize/software-ledger-dash/desktop.js` — 種別分岐・674 REST・バリデーション
-- [ ] 一覧列・検索・リスト出力
-- [ ] （推奨）複製 UI
-- [ ] BUILD タグ更新
+- [x] `customize/software-ledger-dash/desktop.js` — 種別分岐・674 REST・バリデーション
+- [x] 一覧列・検索・リスト出力
+- [x] （推奨）複製 UI
+- [x] BUILD タグ更新
 
 ### 7.3 ゲート
 
-- [ ] `npm run cio:pre-implement-gate` + DeepSeek §50-3-8
-- [ ] `npm run cio:preflight:715` → `npm run deploy:715`
+- [x] `npm run cio:pre-implement-gate` + DeepSeek §50-3-8
+- [x] `npm run cio:preflight:715` → `npm run deploy:715`（595 ミラー除外も `deploy:595`）
 - [ ] 浜田目視（個人 1台/2台、共有、0台エラー、リスト印刷）
 
 ### 7.4 触らない

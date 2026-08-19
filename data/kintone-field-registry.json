@@ -68,7 +68,13 @@
         "user_name",
         "dept_name",
         "group_name",
-        "note"
+        "note",
+        "install_target",
+        "pc_674_id",
+        "pc_name",
+        "shared_terminal_name",
+        "contact_name",
+        "contact_dept"
       ],
       "notes": "715 dash REST 先。v1.2 追補: docs/plans/2026-08-19-715-pc-install-target-spec.md（設置先+674連携・2026-08-19 GO）"
     },

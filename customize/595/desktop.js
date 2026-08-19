@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-19-595-skip-715-shared-install（715 共有PC行は社員ミラー対象外）
    * BUILD: 2026-08-13-595-sort-insert-list-ui（表示順モーダル: 部署メンバーリスト選択）
    * BUILD: 2026-08-13-595-sort-insert-picker（新規/異動: 表示順挿入モーダル・sort 自動採番）
    * BUILD: 2026-08-13-595-index-match-count（一覧: 該当件数表示・sessionStorage 復元）
@@ -26,7 +27,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-13-595-sort-insert-list-ui";
+  var BUILD = "2026-08-19-595-skip-715-shared-install";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -2944,10 +2945,13 @@
         .api(urlGet, "GET", {
           app: APP_SOFTWARE_DB,
           query: q,
-          fields: ["$id", "$revision", FC_SWL_NAME, FC_SWL_DEPT, FC_SWL_GROUP],
+          fields: ["$id", "$revision", FC_SWL_NAME, FC_SWL_DEPT, FC_SWL_GROUP, "install_target"],
         })
         .then(function (resp) {
-          var list = resp.records || [];
+          var list = (resp.records || []).filter(function (rec) {
+            var t = rec.install_target && rec.install_target.value;
+            return String(t || "").trim() !== "共有";
+          });
           var updates = recordsNeedingMirror(
             list,
             name,
