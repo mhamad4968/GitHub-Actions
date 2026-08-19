@@ -550,6 +550,8 @@
     "pc-ledger:b1-patch-674-secrets-from-627:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/patch-674-account-secrets-from-627.mjs --dry-run",
     "pc-ledger:b1-patch-674-secrets-from-627:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/patch-674-account-secrets-from-627.mjs --apply",
     "pc-ledger:backfill-org-from-595:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/backfill-org-from-595-to-674-594.mjs --dry-run",
+    "pc-ledger:backfill-emp-id-from-595:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-backfill-emp-id-from-595.mjs --dry-run",
+    "pc-ledger:backfill-emp-id-from-595:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/pc-ledger-674-backfill-emp-id-from-595.mjs --apply",
     "pc-ledger:backfill-org-from-595:apply": "npx dotenv -e .env -e .env.proxy -- node scripts/backfill-org-from-595-to-674-594.mjs --apply",
     "pc-ledger:audit-595-674-gaps": "npx dotenv -e .env -e .env.proxy -- node scripts/audit-595-674-sync-gaps.mjs",
     "pc-ledger:backfill-595-pc674-from-674:dry-run": "npx dotenv -e .env -e .env.proxy -- node scripts/backfill-595-pc674-from-674.mjs --dry-run",

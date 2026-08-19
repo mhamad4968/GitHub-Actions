@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-19-595-mirror-674-emp-id（674 個人の空 emp_id を 595 から埋める）
    * BUILD: 2026-08-19-595-skip-715-shared-install（715 共有PC行は社員ミラー対象外）
    * BUILD: 2026-08-13-595-sort-insert-list-ui（表示順モーダル: 部署メンバーリスト選択）
    * BUILD: 2026-08-13-595-sort-insert-picker（新規/異動: 表示順挿入モーダル・sort 自動採番）
@@ -27,7 +28,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-19-595-skip-715-shared-install";
+  var BUILD = "2026-08-19-595-mirror-674-emp-id";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -2711,23 +2712,32 @@
     });
   }
 
-  function recordsNeedingMirror(rows, name, dept, grp, nameCode, deptCode, grpCode) {
+  function recordsNeedingMirror(rows, name, dept, grp, nameCode, deptCode, grpCode, empId, empCode) {
     var updates = [];
+    var empWant = String(empId || "").trim();
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       var curN = ((r[nameCode] && r[nameCode].value) || "").trim();
       var curD = ((r[deptCode] && r[deptCode].value) || "").trim();
       var curG = ((r[grpCode] && r[grpCode].value) || "").trim();
-      if (curN === name.trim() && curD === dept.trim() && curG === grp.trim()) {
+      var curEmp = empCode ? ((r[empCode] && r[empCode].value) || "").trim() : "";
+      var needOrg = !(curN === name.trim() && curD === dept.trim() && curG === grp.trim());
+      var needEmp = !!(empCode && empWant && !curEmp);
+      if (!needOrg && !needEmp) {
         continue;
       }
       var row = {
         id: r.$id.value,
         record: {}
       };
-      row.record[nameCode] = { value: name };
-      row.record[deptCode] = { value: dept };
-      row.record[grpCode] = { value: grp };
+      if (needOrg) {
+        row.record[nameCode] = { value: name };
+        row.record[deptCode] = { value: dept };
+        row.record[grpCode] = { value: grp };
+      }
+      if (needEmp) {
+        row.record[empCode] = { value: empWant };
+      }
       if (r.$revision && r.$revision.value !== undefined && r.$revision.value !== null) {
         row.revision = r.$revision.value;
       }
@@ -2832,6 +2842,7 @@
       FC674_NAME,
       FC674_DEPT,
       FC674_GROUP,
+      FC674_EMP_ID,
     ];
     var parts = chunk(ids, 100);
     return parts.reduce(function (chain, part) {
@@ -2885,6 +2896,7 @@
         return;
       }
       return fetch674RowsByIdsForMirror(ids).then(function (rows) {
+        var empId = record ? scalarFrom595(record, FC595_EMP_ID).trim() : "";
         var updates = recordsNeedingMirror(
           rows,
           name,
@@ -2892,7 +2904,9 @@
           grp,
           FC674_NAME,
           FC674_DEPT,
-          FC674_GROUP
+          FC674_GROUP,
+          empId,
+          FC674_EMP_ID
         );
         return put674MirrorUpdates(updates);
       });

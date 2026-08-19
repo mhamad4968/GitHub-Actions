@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-08-19-595-skip-715-shared-install",
-      "fileKey": "a66e603d-e671-4e0c-93a7-12d7b7fa8c0c",
-      "revision": "127",
+      "build": "2026-08-19-595-mirror-674-emp-id",
+      "fileKey": "1fbd188e-86b6-4a41-9371-f9a69c9f7963",
+      "revision": "128",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-19T10:08:31.271Z",
+      "deployedAt": "2026-08-19T10:37:39.192Z",
       "note": null
     },
     "627": {
@@ -26,11 +26,11 @@
       "note": "RETIRED+DELETED — live absence reconfirmed 2026-07-18"
     },
     "674": {
-      "build": "2026-08-18-674-org-picker-keep-open",
-      "fileKey": "df27e165-fa33-4048-9be3-fba1ea153ee7",
-      "revision": "339",
+      "build": "2026-08-19-674-fill-emp-id-from-595",
+      "fileKey": "cfd4743d-a09d-4bbc-b4c1-59843b6da105",
+      "revision": "340",
       "relPath": "customize/new-pc-ledger-v1/desktop.bundle.js",
-      "deployedAt": "2026-08-18T05:42:50.433Z",
+      "deployedAt": "2026-08-19T10:37:19.456Z",
       "note": null
     },
     "677": {

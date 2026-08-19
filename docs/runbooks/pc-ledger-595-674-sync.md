@@ -81,6 +81,6 @@ npm run cio:preflight:595
 
 ---
 
-## 7. 後続 GO — 674 `emp_id` 空欄是正（2026-08-19 浜田）
+## 7. 674 `emp_id` 空欄是正（2026-08-19 実施）
 
-個人 PC で 674 `emp_id` が空のまま残ることがある（715 は mail / 595 サブテーブルで救済済）。**空白にしない**是正は 715 目視のあと。既存 `pc-ledger:backfill-org-from-595` は氏名・所属のみ。手順正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§12.6**。
+個人 PC の空 `emp_id` は 595（mail / サブテーブル / 氏名）で埋めた。再実行: `npm run pc-ledger:backfill-emp-id-from-595:dry-run` → `:apply`。保存時は 674 customize が 595 から補完。手順正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§12.6**。

@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-18-674-org-picker-keep-open';
+  const BUILD = '2026-08-19-674-fill-emp-id-from-595';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -5681,12 +5681,21 @@
     );
   }
 
+  function fillPersonalEmpIdAndMailFrom595674(rec, emp) {
+    if (!rec || !emp) return;
+    mergeScalarField(rec, FC_EMP_ID, (emp.emp_id && emp.emp_id.value) || '');
+    mergeScalarField(rec, FC_MAIL, (emp.mail && emp.mail.value) || '');
+  }
+
   function validateUserNameIn595ForPersonal674(event) {
     if (!isPersonal595AssistEnabled674(event.record)) return Promise.resolve(null);
     const un = String(event.record[FC_USER_NAME]?.value || '').trim();
     if (!un) return Promise.resolve(null);
     return findEmployee595ByUserName(un).then(function (emp) {
-      if (emp) return null;
+      if (emp) {
+        fillPersonalEmpIdAndMailFrom595674(event.record, emp);
+        return null;
+      }
       if (readNplTransferManualChecked674(event.record)) {
         return '該当なし（社員マスタ595に在籍として一致する氏名がありません）。新入社員の場合は先に595へ登録してから保存してください。';
       }
