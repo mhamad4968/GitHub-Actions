@@ -78,3 +78,9 @@ npm run cio:preflight:595
 | customize | `customize/595/desktop.js` |
 | 監査 | `scripts/audit-595-674-sync-gaps.mjs` |
 | 697 フィールド | `scripts/business-improvement-add-bulk-downstream-595-log-field.mjs` |
+
+---
+
+## 7. 後続 GO — 674 `emp_id` 空欄是正（2026-08-19 浜田）
+
+個人 PC で 674 `emp_id` が空のまま残ることがある（715 は mail / 595 サブテーブルで救済済）。**空白にしない**是正は 715 目視のあと。既存 `pc-ledger:backfill-org-from-595` は氏名・所属のみ。手順正本は `docs/plans/2026-04-21-new-pc-ledger-spec.md` **§12.6**。
