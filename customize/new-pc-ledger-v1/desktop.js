@@ -34,7 +34,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-19-674-fill-emp-id-from-595';
+  const BUILD = '2026-08-19-674-replace-fill-emp-id';
 
   /** 編集画面表示直後の割当状態（submit.success で §4.10 / §5.3 と突合） */
   const snapshotBeforeEdit674 = Object.create(null);
@@ -2902,6 +2902,39 @@
       // 一括・未棚卸のみ period-gate。棚卸状況一覧は通年表示（仕様 §3.3）
       if (btnBulk) btnBulk.style.display = active ? '' : 'none';
       if (btnUninv) btnUninv.style.display = active ? '' : 'none';
+    });
+  }
+
+  function findEmployee595ByMail674(mail) {
+    const m = String(mail || '').trim();
+    if (!m) return Promise.resolve(null);
+    return kintoneApiGet('/k/v1/records.json', {
+      app: APP_EMPLOYEE,
+      query: 'mail = "' + escapeQueryValue(m) + '" and employment_status not in ("退職") order by $id asc limit 2',
+      fields: ['user_name', 'mail', 'emp_id', 'dept_name', 'group_name', 'employment_status'],
+    }).then(function (resp) {
+      const rows = resp.records || [];
+      if (rows.length === 1) return rows[0];
+      if (rows.length > 1) return rows[0];
+      return null;
+    });
+  }
+
+  /** 個人レコードの emp_id が空なら 595（mail → 氏名）から埋める。買替 POST 前・保存前で使う。 */
+  function ensurePersonalEmpIdOnRecord674(rec) {
+    if (!rec || (rec[FC_ACCOUNT_TYPE] && rec[FC_ACCOUNT_TYPE].value) !== TYPE_PERSONAL) {
+      return Promise.resolve(rec);
+    }
+    if (trimmedScalarValue674(rec, FC_EMP_ID)) return Promise.resolve(rec);
+    const mail = trimmedScalarValue674(rec, FC_MAIL);
+    const un = trimmedScalarValue674(rec, FC_USER_NAME);
+    function apply(emp) {
+      if (emp) fillPersonalEmpIdAndMailFrom595674(rec, emp);
+      return rec;
+    }
+    return findEmployee595ByMail674(mail).then(function (byMail) {
+      if (byMail && ((byMail.emp_id && byMail.emp_id.value) || '').trim()) return apply(byMail);
+      return findEmployee595ByUserName(un).then(apply);
     });
   }
 
@@ -7600,7 +7633,8 @@
       })
       .then(function (ctx) {
         if (!ctx || !claim) return null;
-        const postBody = build674ReplacementPostRecord674(
+        return ensurePersonalEmpIdOnRecord674(ctx.src0).then(function () {
+          const postBody = build674ReplacementPostRecord674(
           ctx.src0,
           ctx.newPcName,
           oldId,
@@ -7626,6 +7660,7 @@
               acType,
               srcForSkysea,
             );
+            if (empId) oldPut[FC_EMP_ID] = { value: empId };
             return kintoneApiPut('/k/v1/record.json', {
               app: kintone.app.getId(),
               id: oldId,
@@ -7751,6 +7786,7 @@
                 throw ePost;
               });
           });
+        });
       })
       .catch(function (e) {
         console.error('[NEW-PC-LEDGER-V1] PC買替', e);
