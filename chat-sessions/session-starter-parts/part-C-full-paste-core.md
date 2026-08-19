@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-18 反映・2026-08-19 WAKE同期）】
-- 本日レーン: 次回 cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田指示のみ再開）。
+【今やってる主タスク（2026-08-19 自動更新）】
+- 次の1手: 次回 cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田指示のみ再開）。
 - checkpoint: 2026-08-18 14:45 JST — 674 M365利用状況＋所属ピッカー目視OK。セッション締め。
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
-- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
+- 進行中 plan: docs/plans/2026-08-19-715-pc-install-target-spec.md
+- 当日コミット (上位 3):
+  - chore(checkpoint): sync Git line after commit
+  - docs(715): record Hamada OK for all 2026-08-19 work
+  - chore(checkpoint): sync Git line after commit

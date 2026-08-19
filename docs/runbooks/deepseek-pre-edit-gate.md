@@ -32,6 +32,8 @@
 4. [ ] **約 3 行突合メモ**（採用/却下/要 CEO 確認）を残した
 5. [ ] その後に初めて Write/StrReplace / deploy / PUT
 
+**A3（2026-08-19）**: 上 1–4 を customize 着手で飛ばさない。飛ばすならチャットに `§50-3-8 スキップ理由:` を残してから編集する。
+
 **OpenRouter**: DeepSeek 不通時のみ。チャットに `SECOND_REVIEWER: openrouter` と理由を残す。
 
 ---
@@ -71,3 +73,4 @@ npm run cio:report-verify-response -- --file <下書き>
 | 日付 | 内容 |
 |------|------|
 | 2026-05-17 | U4 初版（CEO 承認・CIO 実装） |
+| 2026-08-19 | A3 — customize 着手で本リスト省略禁止（夕反省 GO） |

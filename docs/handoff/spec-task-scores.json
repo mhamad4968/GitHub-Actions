@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-19T09:29:55.341Z",
+  "scoredAt": "2026-08-19T10:56:48.315Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "次回 cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田指示のみ再開）。",
+  "topTask": "次回 cold-start。閉済UXレーンは再開しない。本日分は完了（浜田指示のみ再開）。",
   "topTaskKind": "constraint",
   "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:次回_cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田",
-      "text": "次回 cold-start。閉済UXレーンは再開しない。674本日分は完了（浜田指示のみ再開）。",
+      "id": "checkpoint:次回_cold-start。閉済UXレーンは再開しない。本日分は完了（浜田指示の",
+      "text": "次回 cold-start。閉済UXレーンは再開しない。本日分は完了（浜田指示のみ再開）。",
       "source": "checkpoint",
       "kind": "constraint",
       "difficulty": 2,
