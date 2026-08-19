@@ -5960,3 +5960,9 @@ npm run cio:morning:ready
 
 ---
 
+### 2026-08-19 JST — **715 種別チップ（すべて/個人/共有）**
+
+**要約**: 絞り込みに種別チップ。既定すべて。live BUILD=`2026-08-19-715-target-filter-chips` rev **27**。
+
+---
+

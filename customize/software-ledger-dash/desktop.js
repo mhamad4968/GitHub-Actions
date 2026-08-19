@@ -8,7 +8,7 @@
   var APP_PC = 674;
   var FC595_PC674_SUB = "pc_ledger_v1_list";
   var FC595_PC674_ID = "pc_674_record_id";
-  var BUILD = "2026-08-19-715-pc-lookup-mail-subtable";
+  var BUILD = "2026-08-19-715-target-filter-chips";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya", sort_no: 1 },
@@ -169,6 +169,7 @@
     records: [],
     retiredEmpIds: {},
     filter: "active",
+    targetFilter: "all",
     search: "",
     deptFilter: "",
     userFilter: "",
@@ -1444,6 +1445,9 @@
       ".swl-chip-sec--user .swl-chip-sec-title{color:#15803d;font-size:12px;font-weight:700;margin:0 0 8px;}" +
       ".swl-chip-sec--dept .swl-chip--active{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}" +
       ".swl-chip-sec--user .swl-chip--active{background:#15803d;color:#fff;border-color:#15803d;}" +
+      ".swl-chip-sec--target{background:#fff7ed;border:1px solid #fdba74;}" +
+      ".swl-chip-sec--target .swl-chip-sec-title{color:#c2410c;font-size:12px;font-weight:700;margin:0 0 8px;}" +
+      ".swl-chip-sec--target .swl-chip--active{background:#c2410c;color:#fff;border-color:#c2410c;}" +
       ".swl-chip-sec .swl-chips{margin-bottom:0;}" +
       ".swl-filter-sum:after{content:\"\\25bc\";float:right;font-size:10px;color:#64748b;}" +
       ".swl-filter-acc:not([open]) > .swl-filter-sum:after{content:\"\\25b6\";}" +
@@ -1649,6 +1653,8 @@
     );
     if (state.deptFilter) parts.push("所属: " + state.deptFilter);
     if (state.userFilter) parts.push("利用者: " + state.userFilter);
+    if (state.targetFilter === TARGET_PERSONAL) parts.push("種別: 個人");
+    if (state.targetFilter === TARGET_SHARED) parts.push("種別: 共有");
     if (state.search.trim()) parts.push("検索: " + state.search.trim());
     return parts.join("　");
   }
@@ -1734,11 +1740,19 @@
     return String(a[key] || "").localeCompare(String(b[key] || ""), "ja");
   }
 
+  function rowMatchesTargetFilter(r) {
+    var t = String((r && r.install_target) || "").trim();
+    if (state.targetFilter === TARGET_SHARED) return t === TARGET_SHARED;
+    if (state.targetFilter === TARGET_PERSONAL) return t !== TARGET_SHARED;
+    return true;
+  }
+
   function filteredRecords() {
     var q = state.search.trim().toLowerCase();
     var rows = visibleRecords().filter(function (r) {
       if (state.filter === "active" && r.status !== STATUS_ACTIVE) return false;
       if (state.filter === "retired" && r.status !== STATUS_RETIRED) return false;
+      if (!rowMatchesTargetFilter(r)) return false;
       if (state.deptFilter && String(displayDeptName(r) || "").indexOf(state.deptFilter) < 0) {
         return false;
       }
@@ -1807,13 +1821,31 @@
     var parts = [];
     if (state.filter === "retired") {
       parts.push("廃止");
-    } else if (state.deptFilter || state.userFilter || state.search.trim()) {
+    } else if (
+      state.deptFilter ||
+      state.userFilter ||
+      state.search.trim() ||
+      state.targetFilter === TARGET_PERSONAL ||
+      state.targetFilter === TARGET_SHARED
+    ) {
       parts.push("利用中");
     }
     if (state.deptFilter) parts.push("所属:" + esc(state.deptFilter));
     if (state.userFilter) parts.push("利用者:" + esc(state.userFilter));
+    if (state.targetFilter === TARGET_PERSONAL) parts.push("種別:個人");
+    if (state.targetFilter === TARGET_SHARED) parts.push("種別:共有");
     if (state.search.trim()) parts.push("検索:" + esc(state.search.trim()));
     el.innerHTML = parts.join("　");
+  }
+
+  function renderTargetChips() {
+    var wrap = document.getElementById("swl-target-chips");
+    if (!wrap) return;
+    wrap.querySelectorAll("button[data-target]").forEach(function (btn) {
+      var v = btn.getAttribute("data-target") || "all";
+      if (v === state.targetFilter) btn.classList.add("swl-chip--active");
+      else btn.classList.remove("swl-chip--active");
+    });
   }
 
   function renderChips() {
@@ -2246,12 +2278,14 @@
       }
     });
     updateSortHeaders();
+    renderTargetChips();
     updateAccHint();
   }
 
   function clearFilters() {
     state.search = "";
     state.filter = "active";
+    state.targetFilter = "all";
     state.deptFilter = "";
     state.userFilter = "";
     state.sortKey = null;
@@ -2260,6 +2294,7 @@
     if (search) search.value = "";
     var activeRb = document.querySelector('input[name="swl-filter"][value="active"]');
     if (activeRb) activeRb.checked = true;
+    renderTargetChips();
     renderChips();
     updateSortHeaders();
     renderTable();
@@ -2289,6 +2324,11 @@
     if (opts.includeMain) {
       if (state.deptFilter) appendListLike(parts, FC.dept_name, state.deptFilter);
       if (state.userFilter) parts.push(FC.user_name + ' = "' + escapeQueryValue(state.userFilter) + '"');
+      if (state.targetFilter === TARGET_SHARED) {
+        parts.push(FC.install_target + ' = "' + escapeQueryValue(TARGET_SHARED) + '"');
+      } else if (state.targetFilter === TARGET_PERSONAL) {
+        parts.push(FC.install_target + ' not in ("' + escapeQueryValue(TARGET_SHARED) + '")');
+      }
       var q = state.search.trim();
       if (q) appendListLike(parts, FC.software_name, q);
     }
@@ -2834,6 +2874,17 @@
       '<input type="search" id="swl-search" placeholder="製品名・バージョン・ソフトウエアの情報・氏名・所属…" style="min-width:240px;padding:6px;margin-left:8px">' +
       '<button type="button" id="swl-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
+      '<div class="swl-chip-sec swl-chip-sec--target">' +
+      '<div class="swl-chip-sec-title">種別</div>' +
+      '<div id="swl-target-chips" class="swl-chips">' +
+      '<button type="button" class="swl-chip swl-chip--active" data-target="all">すべて</button>' +
+      '<button type="button" class="swl-chip" data-target="' +
+      TARGET_PERSONAL +
+      '">個人</button>' +
+      '<button type="button" class="swl-chip" data-target="' +
+      TARGET_SHARED +
+      '">共有</button>' +
+      "</div></div>" +
       '<div class="swl-chip-sec swl-chip-sec--dept">' +
       '<div class="swl-chip-sec-title">所属</div>' +
       '<div id="swl-dept-chips" class="swl-chips"></div>' +
@@ -2889,6 +2940,16 @@
       renderTable();
     });
     document.getElementById("swl-clear").addEventListener("click", clearFilters);
+    var targetWrap = document.getElementById("swl-target-chips");
+    if (targetWrap) {
+      targetWrap.addEventListener("click", function (ev) {
+        var btn = ev.target.closest("button[data-target]");
+        if (!btn) return;
+        state.targetFilter = btn.getAttribute("data-target") || "all";
+        renderTargetChips();
+        renderTable();
+      });
+    }
   }
 
   function scheduleMount() {
