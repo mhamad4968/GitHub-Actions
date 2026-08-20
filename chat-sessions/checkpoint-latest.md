@@ -2,8 +2,8 @@
 **最終更新**: 2026-08-19 19:55 JST — 715 v1.2 + 674 emp_id + day-close。
 **次の1手**: 次回 cold-start。閉済UXレーンは再開しない。本日分は完了（浜田指示のみ再開）。
 **レーン変更**: なし（694/696/715/734/751 UX クローズ維持）
-**Git**: **`9453d3df`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: closing
+**Git**: **`20ceca17`** = `origin/main` — push 済
+**closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
 **本日状態**: **715** v1.2 個人/共有・種別チップ **rev 27**。**674** emp_id 買替埋め **rev 341**。**595** mirror **rev 128**。浜田目視 OK → day-close GO 済。
