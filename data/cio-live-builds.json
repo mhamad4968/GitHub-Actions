@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-agg-design",
-      "fileKey": "1ef16822-c8bc-4760-b972-6843e35a7380",
-      "revision": "30",
+      "build": "2026-08-21-776-pc-ledger-summary",
+      "fileKey": "6c7e81cf-12c7-43af-97b0-058082e0b83d",
+      "revision": "31",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T12:10:10.377Z",
+      "deployedAt": "2026-08-21T12:13:07.822Z",
       "note": null
     }
   }

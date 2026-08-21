@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-pc-ledger-summary（いまの条件／該当件数をPC台帳型に）
  * BUILD: 2026-08-21-776-agg-design（集計表のデザイン刷新）
  * BUILD: 2026-08-21-776-list-dept-sep-tint（部署区切りを薄紫／薄緑に）
  * BUILD: 2026-08-21-776-agg-drop-total-col（右端合計列を削除）
  * BUILD: 2026-08-21-776-list-dept-sep-soft（部署区切りを薄いラインに）
- * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
    */
-  var BUILD = "2026-08-21-776-agg-design";
+  var BUILD = "2026-08-21-776-pc-ledger-summary";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -752,6 +752,53 @@
     return bits.length ? bits.join("・") : "条件なし（全件）";
   }
 
+  /** PC台帳型: いまの条件の部品 */
+  function buildActiveConditionParts(st) {
+    var parts = [];
+    var kw = String(st.kw || "").trim();
+    if (kw) parts.push("キーワード「" + kw + "」");
+    if (st.cat === "seishain") parts.push("雇用区分: 正社員");
+    else if (st.cat === "junshain") parts.push("雇用区分: 準社員");
+    else parts.push("雇用区分: すべて");
+    if (st.depts && st.depts.length) {
+      parts.push("所属: " + st.depts.join("・"));
+    }
+    if (st.groups && st.groups.length) {
+      parts.push(
+        "部署グループ: " +
+          st.groups
+            .map(function (g) {
+              return GROUP_LABEL[g] || g;
+            })
+            .join("・"),
+      );
+    }
+    parts.push("並び: 名簿順（list_sort↑）");
+    return parts;
+  }
+
+  function activeConditionLine(st) {
+    return "いまの条件: " + buildActiveConditionParts(st).join(" ／ ");
+  }
+
+  function fetchMatchCount(queryBase) {
+    var app = getAppId();
+    var where = String(queryBase || "")
+      .replace(/\s*order by[\s\S]*$/i, "")
+      .trim();
+    var q = (where ? where + " " : "") + "limit 1";
+    return kintone
+      .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+        app: app,
+        query: q,
+        totalCount: true,
+        fields: ["$id"],
+      })
+      .then(function (res) {
+        return Number(res && res.totalCount != null ? res.totalCount : 0);
+      });
+  }
+
   /** 集計表ヘッダ用：件数＋具体条件 */
   function filterDetailLines(st) {
     var catLabel =
@@ -928,17 +975,13 @@
     recordsPromise
       .then(function (recs) {
         var model = buildAggTableModel(recs);
-        var deptRowCount = model.rows.filter(function (r) {
-          return !r.isSubtotal;
-        }).length;
         metaCount.textContent =
-          "検索件数  行数 " +
+          activeConditionLine(st) +
+          " ｜ 該当件数: " +
           recs.length +
-          "  ·  人数（本務） " +
+          "件 ｜ 人数（本務） " +
           countPeople(recs) +
-          "  ·  部署 " +
-          deptRowCount +
-          "  ·  総合計 " +
+          "人 ｜ 総合計 " +
           model.grand;
         host.innerHTML = "";
         var table = document.createElement("table");
@@ -1160,20 +1203,36 @@
     row.appendChild(buildEl);
     wrap.appendChild(row);
 
+    /* PC台帳型: いまの条件 ＋ 該当件数 */
+    var summaryRow = document.createElement("div");
+    summaryRow.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px 12px;align-items:stretch;";
+    var activeSummary = document.createElement("div");
+    activeSummary.setAttribute("aria-live", "polite");
+    activeSummary.style.cssText =
+      "flex:1;min-width:220px;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" +
+      "font-size:13px;font-weight:700;color:#0f172a;line-height:1.5;";
+    activeSummary.textContent = activeConditionLine(st);
+    var matchCountEl = document.createElement("div");
+    matchCountEl.setAttribute("aria-live", "polite");
+    matchCountEl.style.cssText =
+      "flex:0 0 auto;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" +
+      "font-size:14px;font-weight:800;color:#0f172a;line-height:1.5;white-space:nowrap;";
+    matchCountEl.textContent = "該当件数: …";
+    summaryRow.appendChild(activeSummary);
+    summaryRow.appendChild(matchCountEl);
+    wrap.appendChild(summaryRow);
+
     var sub = document.createElement("div");
     sub.style.cssText =
       "display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:12px;color:#334155;";
-    var countEl = document.createElement("span");
-    countEl.style.cssText = "font-weight:800;";
-    countEl.textContent = "件数…";
-    var sumEl = document.createElement("span");
-    sumEl.style.cssText = "color:#64748b;";
-    sumEl.textContent = filterSummary(st);
+    var peopleEl = document.createElement("span");
+    peopleEl.style.cssText = "font-weight:700;color:#475569;";
+    peopleEl.textContent = "人数（本務）…";
     var conf = document.createElement("span");
     conf.style.cssText = "color:#991b1b;font-size:11px;";
     conf.textContent = "【機密】Excel・印刷は社内管理目的";
-    sub.appendChild(countEl);
-    sub.appendChild(sumEl);
+    sub.appendChild(peopleEl);
     sub.appendChild(conf);
     wrap.appendChild(sub);
 
@@ -1181,12 +1240,21 @@
     else space.appendChild(wrap);
 
     var uiOpen = loadUiOpen();
-    var recordsP = fetchRecordsByQuery(buildQuery(st));
+    var queryBase = buildQuery(st);
+    var recordsP = fetchRecordsByQuery(queryBase);
+
+    fetchMatchCount(queryBase)
+      .then(function (n) {
+        matchCountEl.textContent = "該当件数: " + n + "件";
+      })
+      .catch(function (err) {
+        console.warn("[jbis 776 match count]", err);
+        matchCountEl.textContent = "該当件数: —";
+      });
 
     recordsP
       .then(function (recs) {
-        countEl.textContent =
-          "行数 " + recs.length + " ／ 人数（本務） " + countPeople(recs);
+        peopleEl.textContent = "人数（本務） " + countPeople(recs) + "人";
         btnExcel.onclick = function () {
           exportCsv(recs);
         };
@@ -1196,8 +1264,8 @@
       })
       .catch(function (err) {
         console.warn("[jbis 776 count]", err);
-        countEl.textContent = "件数取得失敗";
-        countEl.style.color = "#b91c1c";
+        peopleEl.textContent = "人数（本務） —";
+        peopleEl.style.color = "#b91c1c";
       });
 
     btnReorder.addEventListener("click", function () {
