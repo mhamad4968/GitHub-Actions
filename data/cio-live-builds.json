@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-list-dept-sep-soft",
-      "fileKey": "67794b94-78b1-4578-929e-009f632e429d",
-      "revision": "27",
+      "build": "2026-08-21-776-agg-drop-total-col",
+      "fileKey": "d1c02888-4dfb-43ef-b93d-1026bbd018a7",
+      "revision": "28",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T12:06:43.805Z",
+      "deployedAt": "2026-08-21T12:07:52.536Z",
       "note": null
     }
   }

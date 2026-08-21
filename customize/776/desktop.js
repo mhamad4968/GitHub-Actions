@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-drop-total-col（右端合計列を削除）
  * BUILD: 2026-08-21-776-list-dept-sep-soft（部署区切りを薄いラインに）
  * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
  * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
  * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
- * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
    */
-  var BUILD = "2026-08-21-776-list-dept-sep-soft";
+  var BUILD = "2026-08-21-776-agg-drop-total-col";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -788,7 +788,7 @@
   }
 
   /**
-   * Excel「集計表」型: 拠点 / 部署 / 在籍数 / 合計
+   * 集計表: 拠点 / 部署 / 在籍数（拠点合計はブロック最終行）
    * 本務のみ・人ベース（source_595_id DISTINCT）
    */
   function buildAggTableModel(records) {
@@ -840,16 +840,14 @@
           hub: di === 0 ? hubLabel : "",
           dept: d,
           count: deptMap[d],
-          total: "",
           isSubtotal: false,
         });
       });
-      // 拠点ブロック最終行に合計（見やすさ優先・Excel先頭合計とは配置を変える）
+      // 拠点ブロック最終行に合計（在籍数列）
       rows.push({
         hub: "",
         dept: hubLabel + " 合計",
         count: subtotal,
-        total: subtotal,
         isSubtotal: true,
       });
     });
@@ -932,12 +930,12 @@
           "border-collapse:collapse;width:100%;font-size:13px;min-width:420px;";
         var thead = document.createElement("thead");
         var hr = document.createElement("tr");
-        ["拠点", "部署", "在籍数", "合計"].forEach(function (h, hi) {
+        ["拠点", "部署", "在籍数"].forEach(function (h, hi) {
           var th = document.createElement("th");
           th.textContent = h;
           th.style.cssText =
             "border:1px solid #334155;padding:6px 8px;background:#e2e8f0;" +
-            (hi >= 2 ? "text-align:right;" : "text-align:left;");
+            (hi === 2 ? "text-align:right;" : "text-align:left;");
           hr.appendChild(th);
         });
         thead.appendChild(hr);
@@ -945,25 +943,23 @@
         var tbody = document.createElement("tbody");
         model.rows.forEach(function (row) {
           var tr = document.createElement("tr");
-          [row.hub, row.dept, row.count, row.total === "" ? "" : row.total].forEach(
-            function (v, vi) {
-              var td = document.createElement("td");
-              td.textContent = v === "" || v == null ? "" : String(v);
-              var base =
-                "border:1px solid #94a3b8;padding:5px 8px;" +
-                (vi >= 2 ? "text-align:right;" : "");
-              if (row.isSubtotal) {
-                td.style.cssText =
-                  base +
-                  "font-weight:800;background:#e2e8f0;border-top:2px solid #334155;border-bottom:2px solid #334155;";
-              } else {
-                td.style.cssText =
-                  base +
-                  (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
-              }
-              tr.appendChild(td);
-            },
-          );
+          [row.hub, row.dept, row.count].forEach(function (v, vi) {
+            var td = document.createElement("td");
+            td.textContent = v === "" || v == null ? "" : String(v);
+            var base =
+              "border:1px solid #94a3b8;padding:5px 8px;" +
+              (vi === 2 ? "text-align:right;" : "");
+            if (row.isSubtotal) {
+              td.style.cssText =
+                base +
+                "font-weight:800;background:#e2e8f0;border-top:2px solid #334155;border-bottom:2px solid #334155;";
+            } else {
+              td.style.cssText =
+                base +
+                (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
+            }
+            tr.appendChild(td);
+          });
           tbody.appendChild(tr);
         });
         table.appendChild(tbody);
@@ -978,12 +974,8 @@
         tdC.textContent = String(model.grand);
         tdC.style.cssText =
           "border:1px solid #334155;padding:6px 8px;text-align:right;font-weight:800;background:#f1f5f9;";
-        var tdT = document.createElement("td");
-        tdT.textContent = String(model.grand);
-        tdT.style.cssText = tdC.style.cssText;
         fr.appendChild(tdL);
         fr.appendChild(tdC);
-        fr.appendChild(tdT);
         tfoot.appendChild(fr);
         table.appendChild(tfoot);
         host.appendChild(table);
