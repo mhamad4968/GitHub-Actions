@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-08-21-595-sync-roster-776-on-save",
-      "fileKey": "6887ec5a-33f6-43cd-a7cf-be3bba1f99da",
-      "revision": "139",
+      "fileKey": "0b65d4f0-4054-433c-b703-46d607dad729",
+      "revision": "140",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-21T11:02:55.698Z",
+      "deployedAt": "2026-08-21T11:40:00.207Z",
       "note": null
     },
     "627": {
@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-reorder-by-name",
-      "fileKey": "6206a804-c979-4039-9df1-8617b9cfb030",
-      "revision": "15",
+      "build": "2026-08-21-776-list-sort-int-1n",
+      "fileKey": "439b12b6-79f6-4336-b25e-a23dd8af28cb",
+      "revision": "19",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T11:06:50.261Z",
+      "deployedAt": "2026-08-21T11:39:55.343Z",
       "note": null
     }
   }

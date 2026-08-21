@@ -3,11 +3,12 @@
 
   /**
    * 776 社員名簿
-   * BUILD: 2026-08-21-776-reorder-by-name（名前検索→基準の上/下へ list_sort）
+   * BUILD: 2026-08-21-776-list-sort-int-1n（表示順=整数1..N・並び替え後も振り直し）
+   * BUILD: 2026-08-21-776-reorder-by-name
    * BUILD: 2026-08-21-776-index-list-sort-view
    * BUILD: 2026-08-21-776-index-employment-category
    */
-  var BUILD = "2026-08-21-776-reorder-by-name";
+  var BUILD = "2026-08-21-776-list-sort-int-1n";
   var WRAP_ID = "jbis-776-index-cat-filter";
   var REORDER_ID = "jbis-776-index-reorder";
   var STORAGE_KEY = "jbis776-index-cat";
@@ -109,14 +110,6 @@
     return "all";
   }
 
-  function formatListSortValue(n) {
-    var x = Number(n);
-    if (!isFinite(x)) return "999999";
-    var rounded = Math.round(x * 1000) / 1000;
-    if (Number.isInteger(rounded)) return String(rounded);
-    return String(rounded);
-  }
-
   function labelOfHit(r) {
     var name = (r.user_name && r.user_name.value) || "";
     var dept = (r.dept_name && r.dept_name.value) || "";
@@ -153,71 +146,67 @@
       });
   }
 
-  function fetchNeighbor(anchorSort, direction, excludeId) {
-    var sortN = Number(anchorSort);
-    if (!isFinite(sortN)) {
-      return Promise.resolve(null);
-    }
-    var query;
-    if (direction === "prev") {
-      query =
-        "list_sort < " +
-        sortN +
-        ' and $id != "' +
-        escapeForQuery(String(excludeId)) +
-        '" order by list_sort desc, レコード番号 desc limit 1';
-    } else {
-      query =
-        "list_sort > " +
-        sortN +
-        ' and $id != "' +
-        escapeForQuery(String(excludeId)) +
-        '" order by list_sort asc, レコード番号 asc limit 1';
-    }
-    return kintone
-      .api(kintone.api.url("/k/v1/records.json", true), "GET", {
-        app: getAppId(),
-        query: query,
-        fields: ["$id", "list_sort"],
-      })
-      .then(function (resp) {
-        var rows = resp.records || [];
-        return rows.length ? rows[0] : null;
-      });
-  }
+  /** 動かす人を基準の上/下へ移し、全体を整数 1..N に振り直す */
+  function placeMoverRelative(moverId, anchorId, place) {
+    var app = getAppId();
+    var all = [];
 
-  function computeNewSort(anchorSort, place, moverId) {
-    var t = Number(anchorSort);
-    if (!isFinite(t)) {
-      return Promise.reject(new Error("基準の表示順が不正です"));
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: app,
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) {
+            all.push(String(rows[i].$id.value));
+          }
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
     }
-    if (place === "above") {
-      return fetchNeighbor(t, "prev", moverId).then(function (prev) {
-        if (!prev) {
-          return t > 1 ? t - 0.5 : t / 2;
-        }
-        var p = Number(prev.list_sort.value);
-        if (!isFinite(p)) return t - 0.5;
-        return (p + t) / 2;
-      });
-    }
-    return fetchNeighbor(t, "next", moverId).then(function (next) {
-      if (!next) {
-        return t + 1;
+
+    return page(0).then(function (ids) {
+      var from = ids.indexOf(String(moverId));
+      var anchor = ids.indexOf(String(anchorId));
+      if (from < 0) {
+        return Promise.reject(new Error("動かす人が一覧にありません"));
       }
-      var n = Number(next.list_sort.value);
-      if (!isFinite(n)) return t + 0.5;
-      return (t + n) / 2;
-    });
-  }
+      if (anchor < 0) {
+        return Promise.reject(new Error("基準の人が一覧にありません"));
+      }
+      ids.splice(from, 1);
+      if (from < anchor) {
+        anchor -= 1;
+      }
+      var insertAt = place === "above" ? anchor : anchor + 1;
+      if (insertAt < 0) insertAt = 0;
+      if (insertAt > ids.length) insertAt = ids.length;
+      ids.splice(insertAt, 0, String(moverId));
 
-  function putMover(moverId, newSort) {
-    return kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", {
-      app: getAppId(),
-      id: moverId,
-      record: {
-        list_sort: { value: formatListSortValue(newSort) },
-      },
+      var updates = [];
+      for (var i = 0; i < ids.length; i++) {
+        updates.push({
+          id: ids[i],
+          record: { list_sort: { value: String(i + 1) } },
+        });
+      }
+      var chain = Promise.resolve();
+      for (var b = 0; b < updates.length; b += 100) {
+        (function (batch) {
+          chain = chain.then(function () {
+            return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+              app: app,
+              records: batch,
+            });
+          });
+        })(updates.slice(b, b + 100));
+      }
+      return chain.then(function () {
+        return { total: ids.length, at: insertAt + 1 };
+      });
     });
   }
 
@@ -251,13 +240,12 @@
 
     var title = document.createElement("div");
     title.style.cssText = "font-weight:700;color:#0f172a;font-size:13px;";
-    title.textContent = "並び替え（名前検索 → 基準の上／下）";
+    title.textContent = "並び替え（名前検索 → 基準の上／下・表示順は整数1〜）";
     box.appendChild(title);
 
     function mkRow(labelText) {
       var row = document.createElement("div");
-      row.style.cssText =
-        "display:flex;flex-wrap:wrap;align-items:center;gap:6px;";
+      row.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:6px;";
       var lab = document.createElement("span");
       lab.style.cssText = "min-width:4.5em;font-size:12px;color:#475569;font-weight:600;";
       lab.textContent = labelText;
@@ -345,11 +333,7 @@
     function selectedOption(sel) {
       var opt = sel.options[sel.selectedIndex];
       if (!opt || !opt.value) return null;
-      return {
-        id: opt.value,
-        list_sort: opt.getAttribute("data-list-sort") || "",
-        label: opt.textContent,
-      };
+      return { id: opt.value, label: opt.textContent };
     }
 
     function runPlace(place) {
@@ -370,19 +354,14 @@
         status.style.color = "#b91c1c";
         return;
       }
-      status.textContent = "更新中…";
+      status.textContent = "更新中（表示順を1〜に振り直し）…";
       status.style.color = "#64748b";
       btnAbove.disabled = true;
       btnBelow.disabled = true;
-      computeNewSort(a.list_sort, place, m.id)
-        .then(function (newSort) {
-          return putMover(m.id, newSort).then(function () {
-            return newSort;
-          });
-        })
-        .then(function (newSort) {
+      placeMoverRelative(m.id, a.id, place)
+        .then(function (res) {
           status.textContent =
-            "完了（表示順 " + formatListSortValue(newSort) + "）。再読込します…";
+            "完了（表示順 " + res.at + " / " + res.total + "）。再読込します…";
           status.style.color = "#047857";
           var cat = detectCatFromQuery();
           setTimeout(function () {
@@ -470,7 +449,7 @@
 
     var hint = document.createElement("span");
     hint.style.cssText = "color:#64748b;font-size:12px;";
-    hint.textContent = "（名簿は正社員・準社員。その他は595のみ）";
+    hint.textContent = "（並び＝表示順 1〜。名簿は正社員・準社員）";
     wrap.appendChild(hint);
 
     var buildEl = document.createElement("span");

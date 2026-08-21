@@ -3444,14 +3444,59 @@
   }
 
   function formatRosterListSortValue595(n) {
+    // 一時的な相対位置。同期後に 1..N 整数へ振り直す
     var x = Number(n);
     if (!isFinite(x)) {
       return "999999";
     }
-    if (Number.isInteger(x)) {
-      return String(x);
+    return String(Math.round(x * 1000) / 1000);
+  }
+
+  function renumberRoster776ListSortInt595() {
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: APP_ROSTER_776,
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id", "list_sort"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          all = all.concat(rows);
+          if (rows.length < 500) {
+            return all;
+          }
+          return page(offset + 500);
+        });
     }
-    return x.toFixed(1);
+    return page(0).then(function (rows) {
+      var updates = [];
+      for (var i = 0; i < rows.length; i++) {
+        var want = String(i + 1);
+        var cur = String((rows[i].list_sort && rows[i].list_sort.value) || "");
+        if (cur === want) continue;
+        updates.push({
+          id: rows[i].$id.value,
+          record: { list_sort: { value: want } },
+        });
+      }
+      if (!updates.length) {
+        return;
+      }
+      var chain = Promise.resolve();
+      for (var b = 0; b < updates.length; b += 100) {
+        (function (batch) {
+          chain = chain.then(function () {
+            return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+              app: APP_ROSTER_776,
+              records: batch,
+            });
+          });
+        })(updates.slice(b, b + 100));
+      }
+      return chain;
+    });
   }
 
   function buildRosterPrimaryRecord595(record, listSort) {
@@ -3515,7 +3560,9 @@
         var delIds = existing.map(function (r) {
           return r.$id.value;
         });
-        return delete776Records595(delIds);
+        return delete776Records595(delIds).then(function () {
+          return renumberRoster776ListSortInt595();
+        });
       }
 
       var ownSort = Number(scalarFrom595(record, FC595_SORT));
@@ -3613,12 +3660,14 @@
           for (var di = 1; di < desired.length; di++) {
             toAdd.push(desired[di].record);
           }
-          if (!toAdd.length) {
-            return;
-          }
-          return kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
-            app: APP_ROSTER_776,
-            records: toAdd,
+          var addP = !toAdd.length
+            ? Promise.resolve()
+            : kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
+                app: APP_ROSTER_776,
+                records: toAdd,
+              });
+          return addP.then(function () {
+            return renumberRoster776ListSortInt595();
           });
         });
       });
