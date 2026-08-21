@@ -156,6 +156,7 @@
 
 <!-- errors: npm run cio:session:cold-start` | npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `manda | npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:c -->
 
+
 ## [2026-08-20] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
