@@ -116,6 +116,7 @@
 |------|------|
 | 名前 | 社員名簿 |
 | Space | **48** |
+| **App ID** | **776**（2026-08-21 作成・deploy SUCCESS） |
 | 性質 | 595 の **投影＋行展開**（編集の正本は 595。名簿は同期結果＋出力 UI） |
 | 対象フィルタ | `employment_category` ∈ {社員, 準社員} のみ同期対象 |
 
@@ -177,11 +178,12 @@
 
 ## 6. 実装順序（夜レーン）
 
-- [ ] **S1** 本 SPEC commit/push
-- [ ] **S2** 595: `employee_no` / `employment_category` /（必要なら `job_title`）/ `concurrent_posts` 追加 → preview → 浜田レイアウト確認 → deploy（`cio:preflight:595` → `deploy:595`）
-- [ ] **S3** Space48 に「社員名簿」作成・フィールド・一覧
-- [ ] **S4** Excel 初期突合スクリプト（dry-run → apply）＋曖昧リスト
-- [ ] **S5** 595→名簿同期スクリプト／customize（出力・複数選択フィルタ）
+- [x] **S1** 本 SPEC commit/push
+- [x] **S2** 595: `employee_no` / `employment_category` / `job_title` / `concurrent_posts` 追加 → deploy（rev **131**・`emp_id` 不触確認済）
+- [x] **S3** Space48「社員名簿」**App 776** 作成・フィールド・deploy SUCCESS
+- [x] **S4a** Excel 初期突合 **dry-run**（`npm run` 相当: `node scripts/employee-roster-excel-match-dry-run.mjs`）— 一致253 / 曖昧0 / 未ヒット1
+- [ ] **S4b** 595 への `employee_no`・雇用区分・兼務 **書込 apply**（浜田目視後）
+- [ ] **S5** 595→776 同期スクリプト／customize（出力・複数選択フィルタ）
 - [ ] **S6** 浜田目視（名簿・集計・印刷）
 - [ ] **S7** Excel 削除は **移行完了後**（本 SPEC 外の最終 GO）
 
