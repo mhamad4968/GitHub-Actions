@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-compact-filter-ui",
-      "fileKey": "0b78d7da-d32a-4f91-83f2-ed4d94352b91",
-      "revision": "22",
+      "build": "2026-08-21-776-agg-table",
+      "fileKey": "3a9df709-9bf1-4efa-9ff5-ba667d042665",
+      "revision": "23",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T11:56:39.193Z",
+      "deployedAt": "2026-08-21T12:01:21.889Z",
       "note": null
     }
   }

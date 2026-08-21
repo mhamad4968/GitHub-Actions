@@ -3,20 +3,34 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
  * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
  * BUILD: 2026-08-21-776-phase1-filter-export
  * BUILD: 2026-08-21-776-list-sort-int-1n
- * BUILD: 2026-08-21-776-reorder-by-name
    */
-  var BUILD = "2026-08-21-776-compact-filter-ui";
+  var BUILD = "2026-08-21-776-agg-table";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
+  var AGG_ID = "jbis-776-index-agg";
   var ORG_POP_ID = "jbis-776-org-popover";
   var STORAGE_KEY = "jbis776-index-state-v1";
   var UI_OPEN_KEY = "jbis776-ui-open-v1";
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
   var APP_ID = null;
+
+  /** group_name コード → 集計表の拠点表示（Excel 集計表準拠） */
+  var GROUP_LABEL = {
+    honsya: "本社",
+    tohoku: "東北支店",
+    "kan-etsu": "関越支店",
+    tokyo: "東京支店",
+    tokai: "東海支店",
+    reform: "リフォーム事業統括部",
+    tekko: "鉄構支店",
+    wangan: "湾岸工事所",
+    bnp: "ブリッジニアプラス",
+  };
 
   /** 680 並び（scripts/data/pc-ledger-dept-master-seed-records.json と同期） */
   var DEPT_MASTER_680 = [
@@ -491,9 +505,9 @@
   function loadUiOpen() {
     try {
       var o = JSON.parse(sessionStorage.getItem(UI_OPEN_KEY) || "{}");
-      return { reorder: !!o.reorder };
+      return { reorder: !!o.reorder, agg: !!o.agg };
     } catch (e) {
-      return { reorder: false };
+      return { reorder: false, agg: false };
     }
   }
 
@@ -665,6 +679,165 @@
     return bits.length ? bits.join("・") : "条件なし（全件）";
   }
 
+  /**
+   * Excel「集計表」型: 拠点 / 部署 / 在籍数 / 合計
+   * 本務のみ・人ベース（source_595_id DISTINCT）
+   */
+  function buildAggTableModel(records) {
+    var byGroupDept = {};
+    var seenPerson = {};
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      if ((r.row_role && r.row_role.value) !== "本務") continue;
+      var sid = String((r.source_595_id && r.source_595_id.value) || "");
+      if (!sid || seenPerson[sid]) continue;
+      seenPerson[sid] = true;
+      var g = String((r.group_name && r.group_name.value) || "").trim() || "(未設定)";
+      var d = String((r.dept_name && r.dept_name.value) || "").trim() || "(未設定)";
+      if (!byGroupDept[g]) byGroupDept[g] = {};
+      byGroupDept[g][d] = (byGroupDept[g][d] || 0) + 1;
+    }
+
+    var deptOrder = {};
+    DEPT_MASTER_680.forEach(function (row, idx) {
+      deptOrder[row.group_name + "\0" + row.dept_name] = idx;
+    });
+
+    var groupKeys = GROUP_ORDER.slice();
+    Object.keys(byGroupDept).forEach(function (g) {
+      if (groupKeys.indexOf(g) === -1) groupKeys.push(g);
+    });
+
+    var rows = [];
+    var grand = 0;
+    groupKeys.forEach(function (g) {
+      var deptMap = byGroupDept[g];
+      if (!deptMap) return;
+      var depts = Object.keys(deptMap).sort(function (a, b) {
+        var ia = deptOrder[g + "\0" + a];
+        var ib = deptOrder[g + "\0" + b];
+        if (ia == null && ib == null) return a.localeCompare(b, "ja");
+        if (ia == null) return 1;
+        if (ib == null) return -1;
+        return ia - ib;
+      });
+      var subtotal = 0;
+      depts.forEach(function (d) {
+        subtotal += deptMap[d];
+      });
+      grand += subtotal;
+      depts.forEach(function (d, di) {
+        rows.push({
+          hub: di === 0 ? GROUP_LABEL[g] || g : "",
+          dept: d,
+          count: deptMap[d],
+          total: di === 0 ? subtotal : "",
+        });
+      });
+    });
+    return { rows: rows, grand: grand, people: Object.keys(seenPerson).length };
+  }
+
+  function mountAggPanel(space, st, uiOpen, recordsPromise) {
+    var old = document.getElementById(AGG_ID);
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    var box = document.createElement("div");
+    box.id = AGG_ID;
+    box.style.cssText =
+      "margin:0 0 12px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;" +
+      "flex-direction:column;gap:8px;box-sizing:border-box;" +
+      (uiOpen && uiOpen.agg ? "display:flex;" : "display:none;");
+
+    var title = document.createElement("div");
+    title.style.cssText = "font-weight:800;color:#0f172a;font-size:14px;";
+    title.textContent = "部署の人数集計表（本務・Excel集計表形式）";
+    box.appendChild(title);
+
+    var note = document.createElement("div");
+    note.style.cssText = "font-size:12px;color:#64748b;";
+    note.textContent =
+      "いまの絞り込み条件に合わせて集計します。拠点＝部署グループ、在籍数＝本務人数。";
+    box.appendChild(note);
+
+    var host = document.createElement("div");
+    host.style.cssText = "overflow:auto;max-height:min(60vh,520px);";
+    host.textContent = "集計中…";
+    box.appendChild(host);
+
+    var toolbar = document.getElementById(WRAP_ID);
+    var after = document.getElementById(REORDER_ID) || toolbar;
+    if (after && after.parentNode === space) {
+      if (after.nextSibling) space.insertBefore(box, after.nextSibling);
+      else space.appendChild(box);
+    } else {
+      space.appendChild(box);
+    }
+
+    recordsPromise
+      .then(function (recs) {
+        var model = buildAggTableModel(recs);
+        host.innerHTML = "";
+        var table = document.createElement("table");
+        table.style.cssText =
+          "border-collapse:collapse;width:100%;font-size:13px;min-width:420px;";
+        var thead = document.createElement("thead");
+        var hr = document.createElement("tr");
+        ["拠点", "部署", "在籍数", "合計"].forEach(function (h, hi) {
+          var th = document.createElement("th");
+          th.textContent = h;
+          th.style.cssText =
+            "border:1px solid #334155;padding:6px 8px;background:#e2e8f0;" +
+            (hi >= 2 ? "text-align:right;" : "text-align:left;");
+          hr.appendChild(th);
+        });
+        thead.appendChild(hr);
+        table.appendChild(thead);
+        var tbody = document.createElement("tbody");
+        model.rows.forEach(function (row) {
+          var tr = document.createElement("tr");
+          [row.hub, row.dept, row.count, row.total === "" ? "" : row.total].forEach(
+            function (v, vi) {
+              var td = document.createElement("td");
+              td.textContent = v === "" || v == null ? "" : String(v);
+              td.style.cssText =
+                "border:1px solid #94a3b8;padding:5px 8px;" +
+                (vi >= 2 ? "text-align:right;" : "") +
+                (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
+              tr.appendChild(td);
+            },
+          );
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        var tfoot = document.createElement("tfoot");
+        var fr = document.createElement("tr");
+        var tdL = document.createElement("td");
+        tdL.colSpan = 2;
+        tdL.textContent = "総合計";
+        tdL.style.cssText =
+          "border:1px solid #334155;padding:6px 8px;font-weight:800;background:#f1f5f9;";
+        var tdC = document.createElement("td");
+        tdC.textContent = String(model.grand);
+        tdC.style.cssText =
+          "border:1px solid #334155;padding:6px 8px;text-align:right;font-weight:800;background:#f1f5f9;";
+        var tdT = document.createElement("td");
+        tdT.textContent = String(model.grand);
+        tdT.style.cssText = tdC.style.cssText;
+        fr.appendChild(tdL);
+        fr.appendChild(tdC);
+        fr.appendChild(tdT);
+        tfoot.appendChild(fr);
+        table.appendChild(tfoot);
+        host.appendChild(table);
+      })
+      .catch(function (err) {
+        console.warn("[jbis 776 agg]", err);
+        host.textContent = "集計の取得に失敗しました";
+        host.style.color = "#b91c1c";
+      });
+  }
+
   function mountToolbar(space, st) {
     var old = document.getElementById(WRAP_ID);
     if (old && old.parentNode) old.parentNode.removeChild(old);
@@ -759,6 +932,13 @@
       "padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:800;cursor:pointer;";
     row.appendChild(btnReorder);
 
+    var btnAgg = document.createElement("button");
+    btnAgg.type = "button";
+    btnAgg.textContent = "集計表";
+    btnAgg.style.cssText =
+      "padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:800;cursor:pointer;";
+    row.appendChild(btnAgg);
+
     var btnExcel = document.createElement("button");
     btnExcel.type = "button";
     btnExcel.textContent = "Excel";
@@ -807,7 +987,10 @@
     if (space.firstChild) space.insertBefore(wrap, space.firstChild);
     else space.appendChild(wrap);
 
-    fetchRecordsByQuery(buildQuery(st))
+    var uiOpen = loadUiOpen();
+    var recordsP = fetchRecordsByQuery(buildQuery(st));
+
+    recordsP
       .then(function (recs) {
         countEl.textContent =
           "行数 " + recs.length + " ／ 人数（本務） " + countPeople(recs);
@@ -824,7 +1007,6 @@
         countEl.style.color = "#b91c1c";
       });
 
-    var uiOpen = loadUiOpen();
     btnReorder.addEventListener("click", function () {
       uiOpen.reorder = !uiOpen.reorder;
       saveUiOpen(uiOpen);
@@ -834,7 +1016,16 @@
     });
     if (uiOpen.reorder) btnReorder.style.background = "#fef3c7";
 
-    return { btnReorder: btnReorder, uiOpen: uiOpen };
+    btnAgg.addEventListener("click", function () {
+      uiOpen.agg = !uiOpen.agg;
+      saveUiOpen(uiOpen);
+      var box = document.getElementById(AGG_ID);
+      if (box) box.style.display = uiOpen.agg ? "flex" : "none";
+      btnAgg.style.background = uiOpen.agg ? "#e0f2fe" : "#fff";
+    });
+    if (uiOpen.agg) btnAgg.style.background = "#e0f2fe";
+
+    return { btnReorder: btnReorder, btnAgg: btnAgg, uiOpen: uiOpen, recordsP: recordsP };
   }
 
   function mountReorder(space, st, uiOpen) {
@@ -1001,6 +1192,7 @@
       }
       var tb = mountToolbar(space, st);
       mountReorder(space, st, tb.uiOpen);
+      mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
     } catch (e) {
       console.warn("[jbis 776 index]", e);
     }
