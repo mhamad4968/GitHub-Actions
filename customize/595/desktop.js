@@ -61,7 +61,7 @@
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
   var CAT_SONOTA = "その他";
-  var ROSTER_SORT_SCALE = 10;
+  var ROSTER_SORT_SCALE = 1;
   var FC595_RETIRED = "retired_date";
   var FC595_SORT = "sort";
   /** 業務改善 設定マスタ — 595 台帳一括反映ログ（共通設定行） */
@@ -3385,19 +3385,31 @@
       });
   }
 
-  function computeRosterListSort595(role, title, ownSort, bounds) {
-    var scale = ROSTER_SORT_SCALE;
+  function computeRosterListSort595(role, title, ownSort, bounds, kenmuIndex) {
     if (role === "兼務" && isBuchoTitle595(title)) {
-      return bounds.min * scale - 1;
+      return bounds.min - 0.5;
     }
     if (role === "兼務") {
-      return bounds.max * scale + 1;
+      var ki = kenmuIndex != null ? Number(kenmuIndex) : 0;
+      if (!isFinite(ki) || ki < 0) ki = 0;
+      return bounds.max + 0.1 * (ki + 1);
     }
     var s = Number(ownSort);
     if (!isFinite(s) || s <= 0) {
-      return 999999 * scale;
+      return 999999;
     }
-    return s * scale;
+    return s;
+  }
+
+  function formatRosterListSortValue595(n) {
+    var x = Number(n);
+    if (!isFinite(x)) {
+      return "999999";
+    }
+    if (Number.isInteger(x)) {
+      return String(x);
+    }
+    return x.toFixed(1);
   }
 
   function buildRosterPrimaryRecord595(record, listSort) {
@@ -3414,7 +3426,7 @@
       row_role: { value: "本務" },
       is_primary: { value: "本務" },
       match_status: { value: "一致" },
-      list_sort: { value: String(listSort) },
+      list_sort: { value: formatRosterListSortValue595(listSort) },
     };
   }
 
@@ -3436,7 +3448,7 @@
       row_role: { value: "兼務" },
       is_primary: { value: "兼務" },
       match_status: { value: "一致" },
-      list_sort: { value: String(listSort) },
+      list_sort: { value: formatRosterListSortValue595(listSort) },
     };
   }
 
@@ -3505,10 +3517,7 @@
               : "";
           if (!cDept && !cTitle) continue;
           var bb = boundsByDept[cDept] || { min: 999999, max: 999999 };
-          var ls = computeRosterListSort595("兼務", cTitle, ownSort, bb);
-          if (!isBuchoTitle595(cTitle)) {
-            ls = ls + ci;
-          }
+          var ls = computeRosterListSort595("兼務", cTitle, ownSort, bb, ci);
           desired.push({
             key: "兼務|" + cDept + "|" + cTitle + "|" + ci,
             record: buildRosterConcurrentRecord595(record, row, ls),

@@ -3,10 +3,10 @@
   "apps": {
     "595": {
       "build": "2026-08-21-595-sync-roster-776-on-save",
-      "fileKey": "f8265fac-e289-421e-a09c-663fbbc732e2",
-      "revision": "137",
+      "fileKey": "46e46918-94e1-471e-9d56-40a3d8158e14",
+      "revision": "138",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-21T10:47:37.503Z",
+      "deployedAt": "2026-08-21T10:54:31.900Z",
       "note": null
     },
     "627": {
