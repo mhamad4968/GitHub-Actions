@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 雇用区分一括:
- * - Excel名簿に載った人（employee_no が入っている／突合済）→ 社員
+ * - Excel名簿に載った人（employee_no が入っている／突合済）→ 正社員
  * - それ以外の595 → その他
  * emp_id は触らない。776 も同期。
  *
@@ -69,10 +69,10 @@ const toSonota = [];
 for (const r of rec595) {
   const no = String(r.employee_no?.value ?? '').trim();
   const cur = r.employment_category?.value ?? '';
-  const target = no ? '社員' : 'その他';
+  const target = no ? '正社員' : 'その他';
   if (cur === target) continue;
   const row = { id: r.$id.value, emp_id: r.emp_id.value, user_name: r.user_name.value, from: cur, to: target };
-  if (target === '社員') toShain.push(row);
+  if (target === '正社員') toShain.push(row);
   else toSonota.push(row);
 }
 
@@ -81,9 +81,9 @@ console.log(
     {
       dryRun: DRY,
       total595: rec595.length,
-      willSet社員: toShain.length,
+      willSet正社員: toShain.length,
       willSetその他: toSonota.length,
-      sample社員: toShain.slice(0, 3),
+      sample正社員: toShain.slice(0, 3),
       sampleその他: toSonota.slice(0, 3),
     },
     null,
@@ -117,7 +117,7 @@ if (!DRY) {
   const upd776 = [];
   for (const r of rec776) {
     const sid = String(r.source_595_id?.value ?? '');
-    const want = catBy595.get(sid) || (String(r.employee_no?.value ?? '').trim() ? '社員' : 'その他');
+    const want = catBy595.get(sid) || (String(r.employee_no?.value ?? '').trim() ? '正社員' : 'その他');
     if ((r.employment_category?.value ?? '') === want) continue;
     upd776.push({ id: r.$id.value, record: { employment_category: { value: want } } });
   }
@@ -138,7 +138,7 @@ fs.writeFileSync(
     {
       at: new Date().toISOString(),
       dryRun: DRY,
-      社員: toShain.length,
+      正社員: toShain.length,
       その他: toSonota.length,
       toShain,
       toSonota,

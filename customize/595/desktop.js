@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-21-595-index-employment-category（一覧: 雇用区分 正社員/準社員/その他/すべて）
    * BUILD: 2026-08-19-595-mirror-674-emp-id（674 個人の空 emp_id を 595 から埋める）
    * BUILD: 2026-08-19-595-skip-715-shared-install（715 共有PC行は社員ミラー対象外）
    * BUILD: 2026-08-13-595-sort-insert-list-ui（表示順モーダル: 部署メンバーリスト選択）
@@ -28,7 +29,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-19-595-mirror-674-emp-id";
+  var BUILD = "2026-08-21-595-index-employment-category";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -88,6 +89,9 @@
   var PC_STATUS_DISPOSED = "廃棄";
   var EMP_RETIRED = "退職";
   var EMP_ACTIVE = "在籍";
+  var CAT_SEISHAIN = "正社員";
+  var CAT_JUNSHAIN = "準社員";
+  var CAT_SONOTA = "その他";
 
   /** 595 上の 新・PC台帳（674） */
   var FC595_PC674_SUB = "pc_ledger_v1_list";
@@ -107,6 +111,7 @@
   var STORAGE_KEY_595_IDX_DEPT = "jbis595-index-search-dept";
   var STORAGE_KEY_595_IDX_GROUP = "jbis595-index-search-group";
   var STORAGE_KEY_595_IDX_PC = "jbis595-index-search-pc";
+  var STORAGE_KEY_595_IDX_CAT = "jbis595-index-search-cat";
   var STORAGE_KEY_595_IDX_COUNT = "jbis595-index-search-count";
   var INDEX_SEARCH_MAX_IDS = 800;
   /** 一覧クライアント検索で全件取得する上限（超えたら標準絞り込みへ誘導） */
@@ -206,12 +211,19 @@
       });
   }
 
-  function build595IndexServerFilterQuery(empFilter, dept, group) {
+  function build595IndexServerFilterQuery(empFilter, dept, group, catFilter) {
     var parts = [];
     if (empFilter === "active") {
       parts.push('employment_status in ("' + escapeForQuery(EMP_ACTIVE) + '")');
     } else if (empFilter === "retired") {
       parts.push('employment_status in ("' + escapeForQuery(EMP_RETIRED) + '")');
+    }
+    if (catFilter === "seishain") {
+      parts.push('employment_category in ("' + escapeForQuery(CAT_SEISHAIN) + '")');
+    } else if (catFilter === "junshain") {
+      parts.push('employment_category in ("' + escapeForQuery(CAT_JUNSHAIN) + '")');
+    } else if (catFilter === "sonota") {
+      parts.push('employment_category in ("' + escapeForQuery(CAT_SONOTA) + '")');
     }
     var d = String(dept || "").trim();
     if (d) {
@@ -224,10 +236,11 @@
     return parts.join(" and ");
   }
 
-  function save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter) {
+  function save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter, catFilter) {
     try {
       sessionStorage.setItem(STORAGE_KEY_595_IDX_EMP, String(empFilter || "all"));
       sessionStorage.setItem(STORAGE_KEY_595_IDX_PC, String(pcFilter || "all"));
+      sessionStorage.setItem(STORAGE_KEY_595_IDX_CAT, String(catFilter || "all"));
       sessionStorage.setItem(STORAGE_KEY_595_IDX_DEPT, String(dept || ""));
       sessionStorage.setItem(STORAGE_KEY_595_IDX_GROUP, String(group || ""));
       if (kw) {
@@ -245,6 +258,7 @@
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_KW);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_EMP);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_PC);
+      sessionStorage.removeItem(STORAGE_KEY_595_IDX_CAT);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_DEPT);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_GROUP);
       sessionStorage.removeItem(STORAGE_KEY_595_IDX_COUNT);
@@ -286,6 +300,19 @@
     return "すべて";
   }
 
+  function cat595FilterLabel595(v) {
+    if (v === "seishain") {
+      return "正社員";
+    }
+    if (v === "junshain") {
+      return "準社員";
+    }
+    if (v === "sonota") {
+      return "その他";
+    }
+    return "雇用すべて";
+  }
+
   function pc595FilterLabel595(v) {
     if (v === "has") {
       return "PCあり";
@@ -303,16 +330,21 @@
       return;
     }
     var empBtn = wrap.querySelector("[data-595-emp-filter].active");
+    var catBtn = wrap.querySelector("[data-595-cat-filter].active");
     var pcBtn = wrap.querySelector("[data-595-pc-filter].active");
     var selDept = wrap.querySelector('select[data-595-dept="1"]');
     var selGroup = wrap.querySelector('select[data-595-group="1"]');
     var input = wrap.querySelector('input[type="search"]');
     var emp = empBtn ? empBtn.getAttribute("data-595-emp-filter") || "active" : "active";
+    var cat = catBtn ? catBtn.getAttribute("data-595-cat-filter") || "all" : "all";
     var pc = pcBtn ? pcBtn.getAttribute("data-595-pc-filter") || "all" : "all";
     var dept = selDept ? String(selDept.value || "").trim() : "";
     var group = selGroup ? String(selGroup.value || "").trim() : "";
     var kw = input ? String(input.value || "").trim() : "";
     var parts = [emp595FilterLabel595(emp)];
+    if (cat === "seishain" || cat === "junshain" || cat === "sonota") {
+      parts.push(cat595FilterLabel595(cat));
+    }
     if (pc === "has" || pc === "none") {
       parts.push(pc595FilterLabel595(pc));
     }
@@ -527,17 +559,18 @@
   }
 
   /**
-   * 一覧を在籍/退職・所属・所属グループ・PC紐づけ・キーワードで絞り込む。
+   * 一覧を在籍/退職・雇用区分・所属・所属グループ・PC紐づけ・キーワードで絞り込む。
    * キーワード・PCあり/なしは部分一致/サブテーブル判定のため取得後にブラウザ側で判定。
    */
   function navigate595IndexOrSearch(opts, btnSearch, btnClear) {
     var o = opts || {};
     var kw = String(o.keyword || "").trim();
     var empFilter = String(o.empFilter || "all");
+    var catFilter = String(o.catFilter || "all");
     var pcFilter = String(o.pcFilter || "all");
     var dept = String(o.dept || "").trim();
     var group = String(o.group || "").trim();
-    var filterQuery = build595IndexServerFilterQuery(empFilter, dept, group);
+    var filterQuery = build595IndexServerFilterQuery(empFilter, dept, group, catFilter);
     var hasServerFilter = !!filterQuery;
     var needsClient = !!(kw || pcFilter === "has" || pcFilter === "none");
 
@@ -563,7 +596,7 @@
     }
 
     if (!needsClient && hasServerFilter) {
-      save595IndexFilterSession595(empFilter, dept, group, "", pcFilter);
+      save595IndexFilterSession595(empFilter, dept, group, "", pcFilter, catFilter);
       setBusy(true);
       set595IndexMatchCount595(undefined);
       fetch595RecordTotalCount(kintone.app.getId(), filterQuery)
@@ -629,7 +662,7 @@
           truncated = true;
         }
         var q = build595IdInQuery(ids);
-        save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter);
+        save595IndexFilterSession595(empFilter, dept, group, kw, pcFilter, catFilter);
         set595IndexMatchCount595(matchCount);
         if (truncated) {
           window.alert(
@@ -690,6 +723,7 @@
     wrap.appendChild(rowTitle);
 
     var empFilterState = "active";
+    var catFilterState = "all";
     var pcFilterState = "all";
 
     function applyEmpChipStyles595(container, value) {
@@ -699,6 +733,17 @@
         btn.style.background = on ? "#059669" : "#fff";
         btn.style.color = on ? "#fff" : "";
         btn.style.borderColor = on ? "#059669" : "#cbd5e1";
+        btn.style.fontWeight = on ? "700" : "";
+      });
+    }
+
+    function applyCatChipStyles595(container, value) {
+      container.querySelectorAll("[data-595-cat-filter]").forEach(function (btn) {
+        var on = btn.getAttribute("data-595-cat-filter") === value;
+        btn.classList.toggle("active", on);
+        btn.style.background = on ? "#7c3aed" : "#fff";
+        btn.style.color = on ? "#fff" : "";
+        btn.style.borderColor = on ? "#7c3aed" : "#cbd5e1";
         btn.style.fontWeight = on ? "700" : "";
       });
     }
@@ -740,6 +785,34 @@
     rowEmp.appendChild(mkEmpBtn("すべて", "all"));
     applyEmpChipStyles595(rowEmp, empFilterState);
     wrap.appendChild(rowEmp);
+
+    var rowCat = document.createElement("div");
+    rowCat.style.cssText = chipPanelStyle;
+    var catLabel = document.createElement("span");
+    catLabel.style.cssText = "font-weight:600;color:#475569;white-space:nowrap;";
+    catLabel.textContent = "雇用区分:";
+    rowCat.appendChild(catLabel);
+
+    function mkCatBtn(label, value) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.setAttribute("data-595-cat-filter", value);
+      b.style.cssText =
+        "padding:6px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;";
+      b.addEventListener("click", function () {
+        catFilterState = value;
+        applyCatChipStyles595(rowCat, value);
+        update595IndexFilterSummary595();
+      });
+      return b;
+    }
+    rowCat.appendChild(mkCatBtn("正社員", "seishain"));
+    rowCat.appendChild(mkCatBtn("準社員", "junshain"));
+    rowCat.appendChild(mkCatBtn("その他", "sonota"));
+    rowCat.appendChild(mkCatBtn("すべて", "all"));
+    applyCatChipStyles595(rowCat, catFilterState);
+    wrap.appendChild(rowCat);
 
     var rowPcWrap = document.createElement("div");
     rowPcWrap.style.cssText = "display:flex;flex-direction:column;gap:4px;width:100%;";
@@ -945,6 +1018,7 @@
       return {
         keyword: input.value,
         empFilter: empFilterState,
+        catFilter: catFilterState,
         pcFilter: pcFilterState,
         dept: selDept.value,
         group: selGroup.value
@@ -960,8 +1034,10 @@
     btnClear.addEventListener("click", function () {
       input.value = "";
       empFilterState = "active";
+      catFilterState = "all";
       pcFilterState = "all";
       applyEmpChipStyles595(rowEmp, "active");
+      applyCatChipStyles595(rowCat, "all");
       applyPcChipStyles595(rowPc, "all");
       selDept.value = "";
       fillGroupOptions595("");
@@ -969,7 +1045,7 @@
       update595IndexFilterSummary595();
       set595IndexMatchCount595(null);
       navigate595IndexOrSearch(
-        { keyword: "", empFilter: "active", dept: "", group: "", pcFilter: "all" },
+        { keyword: "", empFilter: "active", catFilter: "all", dept: "", group: "", pcFilter: "all" },
         btnSearch,
         btnClear
       );
@@ -993,6 +1069,11 @@
       if (se === "retired" || se === "all" || se === "active") {
         empFilterState = se;
         applyEmpChipStyles595(rowEmp, se);
+      }
+      var sc = sessionStorage.getItem(STORAGE_KEY_595_IDX_CAT);
+      if (sc === "seishain" || sc === "junshain" || sc === "sonota" || sc === "all") {
+        catFilterState = sc;
+        applyCatChipStyles595(rowCat, sc);
       }
       var sp = sessionStorage.getItem(STORAGE_KEY_595_IDX_PC);
       if (sp === "has" || sp === "none" || sp === "all") {

@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-08-19-595-mirror-674-emp-id",
-      "fileKey": "7a11ed46-ee85-4f70-9f29-61725697c0f2",
-      "revision": "131",
+      "build": "2026-08-21-595-index-employment-category",
+      "fileKey": "7155fe6c-e3be-4b23-aea4-78e1b0708118",
+      "revision": "135",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-21T09:43:44.719Z",
+      "deployedAt": "2026-08-21T10:23:50.190Z",
       "note": null
     },
     "627": {
@@ -471,6 +471,14 @@
       "revision": "16",
       "relPath": "customize/tokai-ipad-dash/desktop.js",
       "deployedAt": "2026-07-29T09:28:30.682Z",
+      "note": null
+    },
+    "776": {
+      "build": "2026-08-21-776-index-employment-category",
+      "fileKey": "cb8c3c16-82bb-479c-b9f6-72a836fa8e8f",
+      "revision": "8",
+      "relPath": "customize/776/desktop.js",
+      "deployedAt": "2026-08-21T10:23:19.437Z",
       "note": null
     }
   }

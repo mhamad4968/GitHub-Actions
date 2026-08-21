@@ -78,6 +78,8 @@
     "deploy:594": "node -e \"console.error('RETIRED app 594 — deleted from tenant; do not deploy');process.exit(1)\"",
     "cio:preflight:595": "node scripts/cio-preflight-stamp.mjs --app 595",
     "deploy:595": "node scripts/cio-deploy-preflight-guard.mjs 595 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 595 customize/595/desktop.js",
+    "cio:preflight:776": "node scripts/cio-preflight-stamp.mjs --app 776",
+    "deploy:776": "node scripts/cio-deploy-preflight-guard.mjs 776 && npx dotenv -e .env -e .env.proxy -- node scripts/deploy-customization.js 776 customize/776/desktop.js",
     "cio:preflight:626": "node -e \"console.error('RETIRED app 626 — deleted from tenant; do not preflight');process.exit(1)\"",
     "deploy:626": "node -e \"console.error('RETIRED app 626 — deleted from tenant; do not deploy');process.exit(1)\"",
     "cio:preflight:627": "node -e \"console.error('RETIRED app 627 — deleted from tenant; do not preflight');process.exit(1)\"",
