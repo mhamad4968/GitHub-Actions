@@ -6050,3 +6050,24 @@ npm run cio:morning:ready
 
 ---
 
+
+### 2026-08-21 JST — **朝セッション締め（夜=社員名簿SPEC〜実装）**
+
+**要約**: 朝は (1)747/746§19完了クローズ (2)社員名簿意見交換・調査・番号方針合意・Excel受領。SPEC未着手。夜は必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` から SPEC→実装。
+
+**話したこと**: 兼務=595 ST正／集計=本務のみ人ベース／名簿=社員+準社員／Space48新アプリ／employee_no新設(4桁・名の上)／emp_id=EMP-xxxx触るな／Excel=`C:\tmp\社員名簿（正社員・準社員）\社員一覧表.xlsx`（移行後削除）。
+
+**次の1手**: 夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。
+
+**Git**: （close-git後に更新）
+
+**BUILD**: 747 v9 rev15 / 746 strong rev9（朝完了・再開しない）
+
+**GO待ち**: なし（骨格合意済）。実装後に浜田目視。
+
+**触らない**: emp_id上書き / 閉済UX / 736 / 712 / SKYSEA remote
+
+**次セッションへの1行**: Start from `2026-08-21-employee-roster-night-handoff.md`; do NOT touch emp_id; SPEC then implement Space48 roster.
+
+---
+

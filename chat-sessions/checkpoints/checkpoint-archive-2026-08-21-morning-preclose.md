@@ -1,12 +1,12 @@
 ﻿# 復元チェックポイント（最新）
-**最終更新**: 2026-08-21 11:51 JST — **朝セッション締め**。夜は社員名簿SPEC〜実装。
-**次の1手**: 夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。
-**レーン変更**: **社員名簿（Space48）OPEN**。747/746 §19 および閉済UXは再開しない。
-**Git**: 締め commit 後に本行を close-git が更新
-**closeStatus**: closed
+**最終更新**: 2026-08-21 11:45 JST — 社員名簿 番号方針合意 + Excel受領。時計上限近い。
+**次の1手**: 次セッションで社員名簿SPEC作成→commit/push→実装。Excelは `C:\tmp\社員名簿（正社員・準社員）\社員一覧表.xlsx`（作成後削除希望）。
+**レーン変更**: **社員名簿（新・Space48）** 調査レーン OPEN。747/746 §19 クローズ維持。
+**Git**: **`5ec0e60b`** 付近 = `origin/main`（本追記後に更新可）
+**closeStatus**: open
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
-**本日状態**: 朝=747/746§19完了＋社員名簿合意・Excel受領。**SPECは夜**。番号=`employee_no`新設（4桁・名の上）。`emp_id`不触。
+**本日状態**: 社員名簿Q&A確定中。調査で **595 `emp_id`=既存自動付番（674/715利用）→人事社員番号の上書きは危険**。別フィールド案を浜田確認待ち。
 **closures JSON**: UXレーンクローズ時は **不触**（UXレーンのみ・closed-v1 維持）
 ### 本日アクティブ（BUILD/rev — 2026-08-21）
 | App | BUILD | rev |
@@ -28,9 +28,9 @@
 **715 live fileKey**: `0896775f-808e-435a-a4ef-d4d819cc94bf`
 **694 live fileKey**: `7d69bcc4-2bf8-4db4-bc7b-5005d7cdcd62`
 **696 live fileKey**: `614cd05b-7e04-4fa3-bdc4-8ba5fa1a2515`
-**継続メモ**: 夜は **社員名簿のみ**。閉済UX再開しない。詳細は `2026-08-21-employee-roster-night-handoff.md`。
-**GO待ち**: なし（骨格・番号方針合意済）。夜はSPEC→実装→浜田目視。
-**調査正本**: `chat-sessions/2026-08-21-employee-roster-night-handoff.md`（SPEC化前）
+**継続メモ**: **社員名簿調査中**。閉済UX（747/746§19・694/696/715/734/751）再開しない。
+**GO待ち**: なし（番号方針A合意済）。実装はSPEC後フロー。
+**調査正本**: （SPEC未作成・意見交換メモはcheckpoint）
 **運用**: 品質ゲート · Lifecycle v2 · closures=9 · 688 heat外 · 736触らない · 712 deploy禁止 · `verify:retired-app-refs`
 ## クローズ済み（`data/cio-project-closures.json` — 9件）
 業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
@@ -52,11 +52,6 @@
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 
 ## 2026-08-21
-
-### 2026-08-21 朝締め（747/746完了＋社員名簿を夜へ）
-- 747/746 §19 浜田OK・レーンクローズ済
-- 社員名簿: 合意・調査・Excel受領まで。SPEC未。夜必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md`
-- closeStatus: **closed**（朝セッション）
 
 ### 2026-08-21 朝（747/746 §19 UX・データ健全化・レーンクローズ）
 - SPEC §19 → commit/push → 746 強ロック + データ（2999クリア・部署680正）+ 747 UX v9
