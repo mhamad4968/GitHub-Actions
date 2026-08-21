@@ -60,6 +60,7 @@
   var FC595_EMP_ID = "emp_id";
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
+  var CAT_SONOTA = "その他";
   var ROSTER_SORT_SCALE = 10;
   var FC595_RETIRED = "retired_date";
   var FC595_SORT = "sort";
@@ -102,9 +103,6 @@
   var PC_STATUS_DISPOSED = "廃棄";
   var EMP_RETIRED = "退職";
   var EMP_ACTIVE = "在籍";
-  var CAT_SEISHAIN = "正社員";
-  var CAT_JUNSHAIN = "準社員";
-  var CAT_SONOTA = "その他";
 
   /** 595 上の 新・PC台帳（674） */
   var FC595_PC674_SUB = "pc_ledger_v1_list";
