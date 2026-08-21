@@ -3,9 +3,10 @@
 
   /**
    * 776 社員名簿
+   * BUILD: 2026-08-21-776-index-list-sort-view（一覧列固定・680/595並び・雇用区分チップ）
    * BUILD: 2026-08-21-776-index-employment-category（一覧: 正社員/準社員/すべて）
    */
-  var BUILD = "2026-08-21-776-index-employment-category";
+  var BUILD = "2026-08-21-776-index-list-sort-view";
   var WRAP_ID = "jbis-776-index-cat-filter";
   var STORAGE_KEY = "jbis776-index-cat";
   var CAT_SEISHAIN = "正社員";
@@ -26,13 +27,14 @@
   }
 
   function buildQuery(cat) {
+    var order = "order by list_sort asc, レコード番号 asc";
     if (cat === "seishain") {
-      return 'employment_category in ("' + escapeForQuery(CAT_SEISHAIN) + '") order by employee_no asc, レコード番号 asc';
+      return 'employment_category in ("' + escapeForQuery(CAT_SEISHAIN) + '") ' + order;
     }
     if (cat === "junshain") {
-      return 'employment_category in ("' + escapeForQuery(CAT_JUNSHAIN) + '") order by employee_no asc, レコード番号 asc';
+      return 'employment_category in ("' + escapeForQuery(CAT_JUNSHAIN) + '") ' + order;
     }
-    return "order by employee_no asc, レコード番号 asc";
+    return order;
   }
 
   function navigate(queryStr) {
