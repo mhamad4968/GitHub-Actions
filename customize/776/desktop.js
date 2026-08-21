@@ -3,17 +3,18 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
  * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
  * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
  * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
  * BUILD: 2026-08-21-776-phase1-filter-export
- * BUILD: 2026-08-21-776-list-sort-int-1n
    */
-  var BUILD = "2026-08-21-776-agg-meta";
+  var BUILD = "2026-08-21-776-list-dept-sep";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
   var ORG_POP_ID = "jbis-776-org-popover";
+  var DEPT_SEP_STYLE_ID = "jbis-776-dept-sep-style";
   var STORAGE_KEY = "jbis776-index-state-v1";
   var UI_OPEN_KEY = "jbis776-ui-open-v1";
   var CAT_SEISHAIN = "正社員";
@@ -327,10 +328,22 @@
       window.alert("ポップアップがブロックされました。許可してから再度お試しください。");
       return;
     }
+    var prevDept = null;
+    var blockIdx = -1;
     var rowsHtml = records
       .map(function (r) {
+        var dept = cell(r, "dept_name");
+        var cls = [];
+        if (dept !== prevDept) {
+          blockIdx += 1;
+          if (prevDept != null) cls.push("dept-sep");
+          prevDept = dept;
+        }
+        if (blockIdx % 2 === 1) cls.push("dept-alt");
         return (
-          "<tr>" +
+          '<tr class="' +
+          cls.join(" ") +
+          '">' +
           EXPORT_COLS.map(function (c) {
             return "<td>" + escapeHtml(cell(r, c.code)) + "</td>";
           }).join("") +
@@ -345,8 +358,10 @@
       "<!DOCTYPE html><html><head><meta charset='utf-8'><title>社員名簿</title>" +
         "<style>body{font-family:sans-serif;font-size:12px;}" +
         "table{border-collapse:collapse;width:100%;}" +
-        "th,td{border:1px solid #333;padding:4px 6px;}" +
-        "th{background:#f1f5f9;}" +
+        "th,td{border:1px solid #94a3b8;padding:4px 6px;}" +
+        "th{background:#e2e8f0;border:1px solid #334155;}" +
+        "tr.dept-sep td{border-top:2.5px solid #0f172a;}" +
+        "tr.dept-alt td{background:#f1f5f9;}" +
         ".note{margin:12px 0;color:#991b1b;font-weight:700;}" +
         "@media print{button{display:none}}</style></head><body>" +
         "<h1>社員名簿</h1>" +
@@ -368,6 +383,59 @@
         "</body></html>",
     );
     w.document.close();
+  }
+
+  /** 一覧画面: 部署が変わる行に太い上罫線＋ブロック交互背景 */
+  function ensureDeptSepStyle() {
+    if (document.getElementById(DEPT_SEP_STYLE_ID)) return;
+    var style = document.createElement("style");
+    style.id = DEPT_SEP_STYLE_ID;
+    style.textContent =
+      ".jbis-776-dept-sep > td," +
+      ".jbis-776-dept-sep > th{" +
+      "border-top:2.5px solid #0f172a !important;}" +
+      ".jbis-776-dept-alt > td," +
+      ".jbis-776-dept-alt > th{" +
+      "background-color:#f1f5f9 !important;}";
+    document.head.appendChild(style);
+  }
+
+  function applyIndexDeptSeparators(records) {
+    if (!records || !records.length) return;
+    ensureDeptSepStyle();
+    var selectors = [
+      ".recordlist-gaia tbody tr",
+      ".gaia-argoui-app-index-table tbody tr",
+      "table.recordlist-gaia tbody tr",
+      ".ocean-ui-app-index-table tbody tr",
+    ];
+    var trs = null;
+    for (var s = 0; s < selectors.length; s++) {
+      var found = document.querySelectorAll(selectors[s]);
+      if (found && found.length) {
+        trs = found;
+        break;
+      }
+    }
+    if (!trs || !trs.length) return;
+
+    var prevDept = null;
+    var blockIdx = -1;
+    var dataIdx = 0;
+    for (var i = 0; i < trs.length; i++) {
+      var tr = trs[i];
+      tr.classList.remove("jbis-776-dept-sep", "jbis-776-dept-alt");
+      if (tr.querySelector("th")) continue;
+      if (dataIdx >= records.length) break;
+      var dept = cell(records[dataIdx], "dept_name");
+      if (dept !== prevDept) {
+        if (prevDept != null) tr.classList.add("jbis-776-dept-sep");
+        blockIdx += 1;
+        prevDept = dept;
+      }
+      if (blockIdx % 2 === 1) tr.classList.add("jbis-776-dept-alt");
+      dataIdx += 1;
+    }
   }
 
   function escapeHtml(s) {
@@ -1259,6 +1327,13 @@
       var tb = mountToolbar(space, st);
       mountReorder(space, st, tb.uiOpen);
       mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
+      applyIndexDeptSeparators(event.records);
+      setTimeout(function () {
+        applyIndexDeptSeparators(event.records);
+      }, 0);
+      setTimeout(function () {
+        applyIndexDeptSeparators(event.records);
+      }, 300);
     } catch (e) {
       console.warn("[jbis 776 index]", e);
     }
