@@ -345,7 +345,8 @@
         "</tr></thead><tbody>" +
         rowsHtml +
         "</tbody></table>" +
-        "<script>window.onload=function(){window.print();}<\/script>" +
+        "<script>window.onload=function(){window.print();}</" +
+        "script>" +
         "</body></html>",
     );
     w.document.close();
