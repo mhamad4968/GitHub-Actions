@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-21 11:51 JST — **朝セッション締め**。夜は社員名簿SPEC〜実装。
 **次の1手**: 夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。
 **レーン変更**: **社員名簿（Space48）OPEN**。747/746 §19 および閉済UXは再開しない。
-**Git**: **`eac32816`** = `origin/main` — push 済（R44 parent）
+**Git**: **`9ea73a57`** = `origin/main` — push 済
 **closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
@@ -44,13 +44,10 @@
 | **756/757/758** | LIVE rev318 · MANUAL_ONLY |
 | **712** | 削除済 — deploy 禁止 |
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md` · **クローズ正本**: `data/cio-project-closures.json` · **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
-
-<!-- freeze-zone minChars pad (25+ chars; keep for mandatory-read-gate) -->
 ## セッション切替後の自律復元（Lifecycle v2 鏡像）
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-
 ## 2026-08-21
 
 ### 2026-08-21 朝締め（747/746完了＋社員名簿を夜へ）
@@ -65,6 +62,7 @@
 - 閉済 UX（694/696/715/734/751）再開しない
 - closeStatus: **closed**（本レーン締め。day-close は今夜最終ならそのとき）
 
+
 ## 2026-08-18
 
 ### 2026-08-18 昼（674 M365・所属ピッカー・セッション締め）
@@ -75,6 +73,7 @@
 - live BUILD=`2026-08-18-674-org-picker-keep-open` rev **339**
 - 仕様: `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.6.4/§4.6.7/§4.8a-D、`docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
 - closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
+
 
 
 ## 2026-08-16
@@ -94,23 +93,5 @@
 
 
 
-## 2026-08-15
 
-### 2026-08-15 朝（715 完了・セッション締め）
-- **715** ソフトウエア管理台帳ver.1: 可読性／バージョン表示／社員番号非表示／絞り込み既定閉じ／リスト所属を680（施工部含む）／2列／整理後39件同期 → BUILD=`2026-08-15-715-list-dept-680-sync` rev **24** → **浜田目視 OK**
-- **714** 閲覧のみ維持（save/delete ブロック）。書き込みは715のみ
-- 所属正本は **680**（今後の改修時）。動いている他アプリは問題なければ触らない
-- 夜は別アプリ改善（対象は浜田指示）。715は再着手しない
-- closeStatus: **closed**（朝セッション締め。day-closeしない）
-
-### 2026-08-15 夜（本日最終締め）
-- 夕反省全GO: `cio-ops-2026-08-15-evening-improvements`（MCP-2/CON-1見送り）
-- OPS-1／ORG-2／RULE-2 課金日期間判定／ORG-1 ③五観点／RULE-3 phantom dirty
-- closeStatus: **closed-day**
-
-
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-19.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-21.md -->

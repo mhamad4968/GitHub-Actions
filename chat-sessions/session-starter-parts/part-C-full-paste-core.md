@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-19 反映・2026-08-21 WAKE同期）】
-- 本日レーン: 次回 cold-start。閉済UXレーンは再開しない。本日分は完了（浜田指示のみ再開）。
-- checkpoint: 2026-08-19 19:55 JST — 715 v1.2 + 674 emp_id + day-close。
+【今やってる主タスク（2026-08-21 反映・2026-08-21 WAKE同期）】
+- 本日レーン: 夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。
+- checkpoint: 2026-08-21 11:51 JST — **朝セッション締め**。夜は社員名簿SPEC〜実装。
 - 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
 - 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
