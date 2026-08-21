@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-toolbar-align",
-      "fileKey": "d3598bc6-350b-4ef3-a21a-2ca9ba43d643",
-      "revision": "33",
+      "build": "2026-08-21-776-agg-col-fixed",
+      "fileKey": "f44e8867-9d55-4c29-b815-26bec59f6d0c",
+      "revision": "34",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T12:16:24.603Z",
+      "deployedAt": "2026-08-21T12:18:08.450Z",
       "note": null
     }
   }
