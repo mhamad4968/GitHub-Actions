@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-21-595-sync-roster-776-on-save（保存成功: 1人単位で776名簿 upsert）
    * BUILD: 2026-08-21-595-index-employment-category（一覧: 雇用区分 正社員/準社員/その他/すべて）
    * BUILD: 2026-08-19-595-mirror-674-emp-id（674 個人の空 emp_id を 595 から埋める）
    * BUILD: 2026-08-19-595-skip-715-shared-install（715 共有PC行は社員ミラー対象外）
@@ -29,7 +30,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-21-595-index-employment-category";
+  var BUILD = "2026-08-21-595-sync-roster-776-on-save";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -39,6 +40,8 @@
   var APP_SOFTWARE_DB = "714";
   /** 記憶媒体等台帳 DB — 595 所属ミラー（作成後に appId を更新） */
   var APP_STORAGE_MEDIA_DB = "716";
+  /** 社員名簿（Space48・595投影） */
+  var APP_ROSTER_776 = "776";
   /** M365 管理マスタ（674 退職連動後の usage_count 再計算） */
   var APP671 = "671";
 
@@ -47,7 +50,17 @@
   var FC595_DEPT = "dept_name";
   var FC595_GROUP = "group_name";
   var FC595_EMP = "employment_status";
+  var FC595_CAT = "employment_category";
+  var FC595_EMP_NO = "employee_no";
+  var FC595_JOB = "job_title";
+  var FC595_CONCURRENT = "concurrent_posts";
+  var FC595_CP_DEPT = "cp_dept_name";
+  var FC595_CP_GROUP = "cp_group_name";
+  var FC595_CP_TITLE = "cp_title";
   var FC595_EMP_ID = "emp_id";
+  var CAT_SEISHAIN = "正社員";
+  var CAT_JUNSHAIN = "準社員";
+  var ROSTER_SORT_SCALE = 10;
   var FC595_RETIRED = "retired_date";
   var FC595_SORT = "sort";
   /** 業務改善 設定マスタ — 595 台帳一括反映ログ（共通設定行） */
@@ -3306,14 +3319,280 @@
       });
   }
 
+  function isRosterCategory595(cat) {
+    return cat === CAT_SEISHAIN || cat === CAT_JUNSHAIN;
+  }
+
+  function isBuchoTitle595(title) {
+    return /部長/.test(String(title || ""));
+  }
+
+  function fetch776RowsBySource595(sourceId) {
+    var url = kintone.api.url("/k/v1/records.json", true);
+    return kintone
+      .api(url, "GET", {
+        app: APP_ROSTER_776,
+        query:
+          'source_595_id = ' +
+          String(sourceId) +
+          ' order by $id asc limit 100',
+        fields: ["$id", "row_role", "dept_name", "job_title", "list_sort"],
+      })
+      .then(function (resp) {
+        return resp.records || [];
+      });
+  }
+
+  function delete776Records595(ids) {
+    if (!ids || !ids.length) {
+      return Promise.resolve();
+    }
+    return kintone.api(kintone.api.url("/k/v1/records.json", true), "DELETE", {
+      app: APP_ROSTER_776,
+      ids: ids.map(String),
+    });
+  }
+
+  function fetchDeptPrimarySortBounds595(dept) {
+    var d = String(dept || "").trim();
+    if (!d) {
+      return Promise.resolve({ min: 999999, max: 999999 });
+    }
+    var url = kintone.api.url("/k/v1/records.json", true);
+    return kintone
+      .api(url, "GET", {
+        app: kintone.app.getId(),
+        query:
+          'employment_status in ("' +
+          escapeForQuery(EMP_ACTIVE) +
+          '") and dept_name = "' +
+          escapeForQuery(d) +
+          '" and sort != "" order by sort asc limit 500',
+        fields: ["$id", FC595_SORT],
+      })
+      .then(function (resp) {
+        var rows = resp.records || [];
+        var min = 999999;
+        var max = 0;
+        for (var i = 0; i < rows.length; i++) {
+          var s = Number(scalarFrom595(rows[i], FC595_SORT));
+          if (!isFinite(s) || s <= 0) continue;
+          if (s < min) min = s;
+          if (s > max) max = s;
+        }
+        if (max === 0) {
+          return { min: 999999, max: 999999 };
+        }
+        return { min: min, max: max };
+      });
+  }
+
+  function computeRosterListSort595(role, title, ownSort, bounds) {
+    var scale = ROSTER_SORT_SCALE;
+    if (role === "兼務" && isBuchoTitle595(title)) {
+      return bounds.min * scale - 1;
+    }
+    if (role === "兼務") {
+      return bounds.max * scale + 1;
+    }
+    var s = Number(ownSort);
+    if (!isFinite(s) || s <= 0) {
+      return 999999 * scale;
+    }
+    return s * scale;
+  }
+
+  function buildRosterPrimaryRecord595(record, listSort) {
+    return {
+      source_595_id: { value: String(record.$id.value) },
+      emp_id_ref: { value: scalarFrom595(record, FC595_EMP_ID) },
+      employee_no: { value: scalarFrom595(record, FC595_EMP_NO) },
+      user_name: { value: scalarFrom595(record, FC595_NAME) },
+      mail: { value: scalarFrom595(record, FC595_MAIL) },
+      job_title: { value: scalarFrom595(record, FC595_JOB) },
+      employment_category: { value: scalarFrom595(record, FC595_CAT) },
+      dept_name: { value: scalarFrom595(record, FC595_DEPT) },
+      group_name: { value: scalarFrom595(record, FC595_GROUP) },
+      row_role: { value: "本務" },
+      is_primary: { value: "本務" },
+      match_status: { value: "一致" },
+      list_sort: { value: String(listSort) },
+    };
+  }
+
+  function buildRosterConcurrentRecord595(record, cp, listSort) {
+    var v = cp && cp.value ? cp.value : {};
+    function cell(code) {
+      return v[code] && v[code].value != null ? String(v[code].value) : "";
+    }
+    return {
+      source_595_id: { value: String(record.$id.value) },
+      emp_id_ref: { value: scalarFrom595(record, FC595_EMP_ID) },
+      employee_no: { value: scalarFrom595(record, FC595_EMP_NO) },
+      user_name: { value: scalarFrom595(record, FC595_NAME) },
+      mail: { value: scalarFrom595(record, FC595_MAIL) },
+      job_title: { value: cell(FC595_CP_TITLE) },
+      employment_category: { value: scalarFrom595(record, FC595_CAT) },
+      dept_name: { value: cell(FC595_CP_DEPT) },
+      group_name: { value: cell(FC595_CP_GROUP) },
+      row_role: { value: "兼務" },
+      is_primary: { value: "兼務" },
+      match_status: { value: "一致" },
+      list_sort: { value: String(listSort) },
+    };
+  }
+
+  /**
+   * 595 1人 → 776 upsert（正社員/準社員のみ。以外・退職は776から削除）。
+   * list_sort: 本務=595.sort×10 / 兼務部長=部署本務min×10-1。
+   * emp_id は emp_id_ref へのコピーのみ。
+   */
+  function syncRoster776OneFrom595(record) {
+    if (!record || !record.$id || record.$id.value == null) {
+      return Promise.resolve();
+    }
+    var sid = String(record.$id.value);
+    var cat = scalarFrom595(record, FC595_CAT).trim();
+    var emp = scalarFrom595(record, FC595_EMP).trim();
+    var keep = isRosterCategory595(cat) && emp !== EMP_RETIRED;
+
+    return fetch776RowsBySource595(sid).then(function (existing) {
+      if (!keep) {
+        var delIds = existing.map(function (r) {
+          return r.$id.value;
+        });
+        return delete776Records595(delIds);
+      }
+
+      var ownSort = Number(scalarFrom595(record, FC595_SORT));
+      var primaryDept = scalarFrom595(record, FC595_DEPT).trim();
+      var conc = record[FC595_CONCURRENT];
+      var cpRows = conc && Array.isArray(conc.value) ? conc.value : [];
+
+      var deptSet = {};
+      deptSet[primaryDept] = true;
+      for (var i = 0; i < cpRows.length; i++) {
+        var cpv = cpRows[i] && cpRows[i].value ? cpRows[i].value : {};
+        var cd =
+          cpv[FC595_CP_DEPT] && cpv[FC595_CP_DEPT].value != null
+            ? String(cpv[FC595_CP_DEPT].value).trim()
+            : "";
+        if (cd) deptSet[cd] = true;
+      }
+
+      var deptList = Object.keys(deptSet).filter(Boolean);
+      return Promise.all(deptList.map(fetchDeptPrimarySortBounds595)).then(function (boundsList) {
+        var boundsByDept = {};
+        for (var bi = 0; bi < deptList.length; bi++) {
+          boundsByDept[deptList[bi]] = boundsList[bi];
+        }
+        var primaryBounds = boundsByDept[primaryDept] || { min: ownSort || 999999, max: ownSort || 999999 };
+        var primarySort = computeRosterListSort595("本務", "", ownSort, primaryBounds);
+
+        var desired = [];
+        desired.push({
+          key: "本務|" + primaryDept,
+          record: buildRosterPrimaryRecord595(record, primarySort),
+        });
+        for (var ci = 0; ci < cpRows.length; ci++) {
+          var row = cpRows[ci];
+          var rv = row && row.value ? row.value : {};
+          var cDept =
+            rv[FC595_CP_DEPT] && rv[FC595_CP_DEPT].value != null
+              ? String(rv[FC595_CP_DEPT].value).trim()
+              : "";
+          var cTitle =
+            rv[FC595_CP_TITLE] && rv[FC595_CP_TITLE].value != null
+              ? String(rv[FC595_CP_TITLE].value).trim()
+              : "";
+          if (!cDept && !cTitle) continue;
+          var bb = boundsByDept[cDept] || { min: 999999, max: 999999 };
+          var ls = computeRosterListSort595("兼務", cTitle, ownSort, bb);
+          if (!isBuchoTitle595(cTitle)) {
+            ls = ls + ci;
+          }
+          desired.push({
+            key: "兼務|" + cDept + "|" + cTitle + "|" + ci,
+            record: buildRosterConcurrentRecord595(record, row, ls),
+          });
+        }
+
+        var primaryExist = null;
+        var kenmuExist = [];
+        for (var ei = 0; ei < existing.length; ei++) {
+          var er = existing[ei];
+          if ((er.row_role && er.row_role.value) === "本務") {
+            primaryExist = er;
+          } else {
+            kenmuExist.push(er);
+          }
+        }
+
+        var ops = [];
+        var primaryDesired = desired[0];
+        if (primaryExist) {
+          ops.push(
+            kintone.api(kintone.api.url("/k/v1/record.json", true), "PUT", {
+              app: APP_ROSTER_776,
+              id: primaryExist.$id.value,
+              record: primaryDesired.record,
+            })
+          );
+        } else {
+          ops.push(
+            kintone.api(kintone.api.url("/k/v1/record.json", true), "POST", {
+              app: APP_ROSTER_776,
+              record: primaryDesired.record,
+            })
+          );
+        }
+
+        // 兼務は一旦削除して作り直し（行数変動に強い）
+        if (kenmuExist.length) {
+          ops.push(
+            delete776Records595(
+              kenmuExist.map(function (r) {
+                return r.$id.value;
+              })
+            )
+          );
+        }
+        return Promise.all(ops).then(function () {
+          var toAdd = [];
+          for (var di = 1; di < desired.length; di++) {
+            toAdd.push(desired[di].record);
+          }
+          if (!toAdd.length) {
+            return;
+          }
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
+            app: APP_ROSTER_776,
+            records: toAdd,
+          });
+        });
+      });
+    });
+  }
+
   function run595DownstreamSync(record) {
     var emp = scalarFrom595(record, FC595_EMP).trim();
+    var chain;
     if (emp === EMP_RETIRED) {
-      return retire674PcsFrom595(record);
+      chain = retire674PcsFrom595(record);
+    } else {
+      chain = sync674MirrorFrom595(record).then(function () {
+        return syncSoftwareLedgerMirrorFrom595(record).then(function () {
+          return syncStorageMediaLedgerMirrorFrom595(record);
+        });
+      });
     }
-    return sync674MirrorFrom595(record).then(function () {
-      return syncSoftwareLedgerMirrorFrom595(record).then(function () {
-        return syncStorageMediaLedgerMirrorFrom595(record);
+    return chain.then(function () {
+      return syncRoster776OneFrom595(record).catch(function (eRoster) {
+        console.error("[jbis 595 roster-776]", eRoster);
+        window.alert(
+          "社員マスタは保存されましたが、社員名簿（776）への反映に失敗しました。権限を確認し、必要なら再度保存してください。" +
+            (eRoster && eRoster.message ? "\n" + eRoster.message : "")
+        );
       });
     });
   }
@@ -3352,7 +3631,7 @@
       .catch(function (e) {
         console.error("[jbis 595 downstream]", e);
         var msg =
-          "社員マスタ保存後の連携（674／714／716）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で台帳を更新してください。";
+          "社員マスタ保存後の連携（674／714／716／776名簿）の一部に失敗しました。権限・ネットワークを確認し、必要なら手動で更新してください。";
         if (e && e.message) {
           msg += "\n" + e.message;
         }
