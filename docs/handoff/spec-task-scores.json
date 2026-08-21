@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-08-21T09:23:35.556Z",
+  "scoredAt": "2026-08-21T12:52:42.676Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。",
-  "topTaskKind": "work",
-  "topWorkTask": "夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。",
+  "topTask": "cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。",
+  "topTaskKind": "constraint",
+  "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:夜_cold-start_→_必読_`chat-sessions/2026-08",
-      "text": "夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。",
+      "id": "checkpoint:cold-start_→_社員名簿続き（Excel突合・list_sort要否）",
+      "text": "cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。",
       "source": "checkpoint",
-      "kind": "work",
+      "kind": "constraint",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,

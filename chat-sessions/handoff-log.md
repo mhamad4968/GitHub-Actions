@@ -6071,3 +6071,24 @@ npm run cio:morning:ready
 
 ---
 
+
+### 2026-08-21 夜締め（社員名簿 595/776 Phase1〜2）
+
+**要約**: Space48 社員名簿。595 兼務 DROP_DOWN 化・776 同期／list_sort／絞り込み・Excel印刷・件数。集計表（拠点/部署/在籍・拠点合計最終行）・PC台帳型いまの条件/該当件数・ツールバー高さ揃え・部署区切り薄紫緑・reform 所属順（統括→札幌→首都圏）。浜田目視で列幅・ヘッダ調整済。Excelは移行OKまで残置。
+
+**次の1手**: cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。
+
+**Git**: `f8afd3f8` — origin ahead（close-git で push）
+
+**BUILD**: 776 `2026-08-21-776-reform-dept-order` rev **38**
+
+**GO待ち**: なし（本日レーン浜田 OK・日締め③待ち）
+
+**触らない**: emp_id／閉済UX／688／677-679／736／712／SKYSEA remote
+
+**次セッションへの 1 行**: continue roster Space48; 776 agg+filters live; do not touch emp_id.
+
+
+**話したこと**: Space48 社員名簿。595 兼務 DROP_DOWN 化・776 同期／list_sort／絞り込み・Excel印刷・件数。集計表（拠点/部署/在籍・拠点合計最終行）・PC台帳型いまの条件/該当件数・ツールバー高さ揃え・部署区切り薄紫緑・reform 所属順（統括→札幌→首都圏）。浜田目視で列幅・ヘッダ調整済。Excelは移行OKまで残置。
+
+---

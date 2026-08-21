@@ -34,7 +34,7 @@
     bnp: "ブリッジニアプラス",
   };
 
-  /** 680 並び（scripts/data/pc-ledger-dept-master-seed-records.json と同期） */
+  /** BEGIN DEPT_MASTER_680 — synced from scripts/data/employee-roster-776-dept-master.json */
   var DEPT_MASTER_680 = [
     { dept_name: "役員室", group_name: "honsya" },
     { dept_name: "顧問室", group_name: "honsya" },
@@ -76,6 +76,7 @@
     { dept_name: "ブリッジニアプラス", group_name: "bnp" },
     { dept_name: "鎌ヶ谷作業所", group_name: "bnp" },
   ];
+  /** END DEPT_MASTER_680 */
 
   var GROUP_ORDER = [
     "honsya",
