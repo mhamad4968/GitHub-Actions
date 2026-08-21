@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-design（集計表のデザイン刷新）
  * BUILD: 2026-08-21-776-list-dept-sep-tint（部署区切りを薄紫／薄緑に）
  * BUILD: 2026-08-21-776-agg-drop-total-col（右端合計列を削除）
  * BUILD: 2026-08-21-776-list-dept-sep-soft（部署区切りを薄いラインに）
  * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
- * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
    */
-  var BUILD = "2026-08-21-776-list-dept-sep-tint";
+  var BUILD = "2026-08-21-776-agg-design";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -861,41 +861,58 @@
     var box = document.createElement("div");
     box.id = AGG_ID;
     box.style.cssText =
-      "margin:0 0 12px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;" +
-      "flex-direction:column;gap:8px;box-sizing:border-box;" +
+      "margin:0 0 12px;padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;" +
+      "background:linear-gradient(180deg,#fafbff 0%,#ffffff 48px);" +
+      "box-shadow:0 1px 2px rgba(15,23,42,0.04);" +
+      "flex-direction:column;gap:10px;box-sizing:border-box;" +
       (uiOpen && uiOpen.agg ? "display:flex;" : "display:none;");
 
+    var titleRow = document.createElement("div");
+    titleRow.style.cssText =
+      "display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;";
     var title = document.createElement("div");
-    title.style.cssText = "font-weight:800;color:#0f172a;font-size:14px;";
-    title.textContent = "部署の人数集計表（本務・Excel集計表形式）";
-    box.appendChild(title);
+    title.style.cssText =
+      "font-weight:800;color:#0f172a;font-size:15px;letter-spacing:0.02em;" +
+      "border-left:3px solid #a78bfa;padding-left:10px;";
+    title.textContent = "部署の人数集計表";
+    var titleSub = document.createElement("div");
+    titleSub.style.cssText = "font-size:11px;color:#64748b;font-weight:600;";
+    titleSub.textContent = "本務・人ベース";
+    titleRow.appendChild(title);
+    titleRow.appendChild(titleSub);
+    box.appendChild(titleRow);
 
     var meta = document.createElement("div");
     meta.style.cssText =
-      "display:flex;flex-direction:column;gap:4px;padding:8px 10px;" +
-      "background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;color:#334155;";
+      "display:flex;flex-direction:column;gap:6px;padding:10px 12px;" +
+      "background:#f8fafc;border:1px solid #e8ecf4;border-radius:8px;font-size:12px;color:#334155;";
     var metaCount = document.createElement("div");
-    metaCount.style.cssText = "font-weight:800;color:#0f172a;";
+    metaCount.style.cssText = "font-weight:800;color:#0f172a;font-size:13px;";
     metaCount.textContent = "件数取得中…";
     meta.appendChild(metaCount);
     var metaCond = document.createElement("div");
-    metaCond.style.cssText = "line-height:1.55;color:#475569;";
-    filterDetailLines(st).forEach(function (line, i) {
-      var p = document.createElement("div");
-      p.textContent = line;
-      if (i === 0) p.style.fontWeight = "700";
-      metaCond.appendChild(p);
+    metaCond.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:6px 10px;line-height:1.4;color:#475569;";
+    filterDetailLines(st).forEach(function (line) {
+      var chip = document.createElement("span");
+      chip.textContent = line;
+      chip.style.cssText =
+        "display:inline-block;padding:3px 8px;border-radius:999px;" +
+        "background:#fff;border:1px solid #e2e8f0;font-size:11px;color:#475569;";
+      metaCond.appendChild(chip);
     });
     meta.appendChild(metaCond);
     var metaHint = document.createElement("div");
-    metaHint.style.cssText = "color:#64748b;font-size:11px;margin-top:2px;";
+    metaHint.style.cssText = "color:#94a3b8;font-size:11px;";
     metaHint.textContent =
-      "上記条件の一覧行を集計（拠点＝部署グループ、在籍数＝本務人数）。";
+      "いまの絞り込み条件で集計。拠点＝部署グループ／在籍数＝本務人数。";
     meta.appendChild(metaHint);
     box.appendChild(meta);
 
     var host = document.createElement("div");
-    host.style.cssText = "overflow:auto;max-height:min(60vh,520px);";
+    host.style.cssText =
+      "overflow:auto;max-height:min(60vh,560px);border:1px solid #e2e8f0;" +
+      "border-radius:10px;background:#fff;";
     host.textContent = "集計中…";
     box.appendChild(host);
 
@@ -915,26 +932,35 @@
           return !r.isSubtotal;
         }).length;
         metaCount.textContent =
-          "検索件数: 行数 " +
+          "検索件数  行数 " +
           recs.length +
-          " ／ 人数（本務） " +
+          "  ·  人数（本務） " +
           countPeople(recs) +
-          " ／ 集計対象部署 " +
+          "  ·  部署 " +
           deptRowCount +
-          " 行（総合計 " +
-          model.grand +
-          "）";
+          "  ·  総合計 " +
+          model.grand;
         host.innerHTML = "";
         var table = document.createElement("table");
         table.style.cssText =
-          "border-collapse:collapse;width:100%;font-size:13px;min-width:420px;";
+          "border-collapse:separate;border-spacing:0;width:100%;" +
+          "font-size:13px;min-width:440px;font-variant-numeric:tabular-nums;";
         var thead = document.createElement("thead");
         var hr = document.createElement("tr");
-        ["拠点", "部署", "在籍数"].forEach(function (h, hi) {
+        var heads = [
+          { label: "拠点", w: "28%" },
+          { label: "部署", w: "52%" },
+          { label: "在籍数", w: "20%" },
+        ];
+        heads.forEach(function (h, hi) {
           var th = document.createElement("th");
-          th.textContent = h;
+          th.textContent = h.label;
           th.style.cssText =
-            "border:1px solid #334155;padding:6px 8px;background:#e2e8f0;" +
+            "position:sticky;top:0;z-index:1;width:" +
+            h.w +
+            ";padding:10px 14px;font-size:11px;font-weight:800;" +
+            "letter-spacing:0.06em;color:#5b21b6;background:#f5f3ff;" +
+            "border-bottom:1.5px solid #c4b5fd;" +
             (hi === 2 ? "text-align:right;" : "text-align:left;");
           hr.appendChild(th);
         });
@@ -943,20 +969,32 @@
         var tbody = document.createElement("tbody");
         model.rows.forEach(function (row) {
           var tr = document.createElement("tr");
+          var isHubStart = !row.isSubtotal && !!row.hub;
           [row.hub, row.dept, row.count].forEach(function (v, vi) {
             var td = document.createElement("td");
             td.textContent = v === "" || v == null ? "" : String(v);
-            var base =
-              "border:1px solid #94a3b8;padding:5px 8px;" +
-              (vi === 2 ? "text-align:right;" : "");
             if (row.isSubtotal) {
               td.style.cssText =
-                base +
-                "font-weight:800;background:#e2e8f0;border-top:2px solid #334155;border-bottom:2px solid #334155;";
+                "padding:9px 14px;border-top:1.5px solid #c4b5fd;" +
+                "border-bottom:1px solid #bbf7d0;background:#f0fdf4;" +
+                "font-weight:800;color:#166534;" +
+                (vi === 2 ? "text-align:right;font-size:14px;" : "text-align:left;");
+              if (vi === 1) td.style.letterSpacing = "0.02em";
+            } else if (isHubStart) {
+              td.style.cssText =
+                "padding:10px 14px 8px;border-top:1px solid #e9e5ff;" +
+                "background:" +
+                (vi === 0 ? "#faf8ff" : "#fff") +
+                ";color:#0f172a;" +
+                (vi === 0
+                  ? "font-weight:800;color:#4c1d95;border-left:3px solid #a78bfa;"
+                  : "border-left:none;") +
+                (vi === 2 ? "text-align:right;font-weight:700;" : "text-align:left;");
             } else {
               td.style.cssText =
-                base +
-                (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
+                "padding:7px 14px;border-top:1px solid #f1f5f9;background:#fff;color:#334155;" +
+                (vi === 2 ? "text-align:right;font-weight:600;" : "text-align:left;") +
+                (vi === 0 ? "border-left:3px solid transparent;" : "");
             }
             tr.appendChild(td);
           });
@@ -969,11 +1007,15 @@
         tdL.colSpan = 2;
         tdL.textContent = "総合計";
         tdL.style.cssText =
-          "border:1px solid #334155;padding:6px 8px;font-weight:800;background:#f1f5f9;";
+          "padding:12px 14px;font-weight:800;letter-spacing:0.04em;" +
+          "background:linear-gradient(90deg,#ede9fe,#ecfdf5);color:#1e1b4b;" +
+          "border-top:2px solid #a78bfa;";
         var tdC = document.createElement("td");
         tdC.textContent = String(model.grand);
         tdC.style.cssText =
-          "border:1px solid #334155;padding:6px 8px;text-align:right;font-weight:800;background:#f1f5f9;";
+          "padding:12px 14px;text-align:right;font-weight:800;font-size:15px;" +
+          "background:linear-gradient(90deg,#ede9fe,#ecfdf5);color:#14532d;" +
+          "border-top:2px solid #a78bfa;";
         fr.appendChild(tdL);
         fr.appendChild(tdC);
         tfoot.appendChild(fr);
