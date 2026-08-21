@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-list-dept-sep-soft（部署区切りを薄いラインに）
  * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
  * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
  * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
  * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
- * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
    */
-  var BUILD = "2026-08-21-776-agg-hub-total-last";
+  var BUILD = "2026-08-21-776-list-dept-sep-soft";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -360,8 +360,8 @@
         "table{border-collapse:collapse;width:100%;}" +
         "th,td{border:1px solid #94a3b8;padding:4px 6px;}" +
         "th{background:#e2e8f0;border:1px solid #334155;}" +
-        "tr.dept-sep td{border-top:2.5px solid #0f172a;}" +
-        "tr.dept-alt td{background:#f1f5f9;}" +
+        "tr.dept-sep td{border-top:1px solid #cbd5e1;}" +
+        "tr.dept-alt td{background:#f8fafc;}" +
         ".note{margin:12px 0;color:#991b1b;font-weight:700;}" +
         "@media print{button{display:none}}</style></head><body>" +
         "<h1>社員名簿</h1>" +
@@ -387,17 +387,21 @@
 
   /** 一覧画面: 部署が変わる行に太い上罫線＋ブロック交互背景 */
   function ensureDeptSepStyle() {
-    if (document.getElementById(DEPT_SEP_STYLE_ID)) return;
-    var style = document.createElement("style");
-    style.id = DEPT_SEP_STYLE_ID;
+    var style = document.getElementById(DEPT_SEP_STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = DEPT_SEP_STYLE_ID;
+      document.head.appendChild(style);
+    }
+    /* 薄い区切り線＋ごく薄い交互背景（太罫線は使わない） */
     style.textContent =
       ".jbis-776-dept-sep > td," +
       ".jbis-776-dept-sep > th{" +
-      "border-top:2.5px solid #0f172a !important;}" +
+      "border-top:1px solid #cbd5e1 !important;" +
+      "box-shadow:inset 0 1px 0 rgba(226,232,240,0.9);}" +
       ".jbis-776-dept-alt > td," +
       ".jbis-776-dept-alt > th{" +
-      "background-color:#f1f5f9 !important;}";
-    document.head.appendChild(style);
+      "background-color:#f8fafc !important;}";
   }
 
   function applyIndexDeptSeparators(records) {
