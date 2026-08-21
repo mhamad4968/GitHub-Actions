@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-list-dept-sep-tint（部署区切りを薄紫／薄緑に）
  * BUILD: 2026-08-21-776-agg-drop-total-col（右端合計列を削除）
  * BUILD: 2026-08-21-776-list-dept-sep-soft（部署区切りを薄いラインに）
  * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
  * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
- * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
    */
-  var BUILD = "2026-08-21-776-agg-drop-total-col";
+  var BUILD = "2026-08-21-776-list-dept-sep-tint";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -360,8 +360,8 @@
         "table{border-collapse:collapse;width:100%;}" +
         "th,td{border:1px solid #94a3b8;padding:4px 6px;}" +
         "th{background:#e2e8f0;border:1px solid #334155;}" +
-        "tr.dept-sep td{border-top:1px solid #cbd5e1;}" +
-        "tr.dept-alt td{background:#f8fafc;}" +
+        "tr.dept-sep td{border-top:1.5px solid #c4b5fd;}" +
+        "tr.dept-alt td{background:#f0fdf4;}" +
         ".note{margin:12px 0;color:#991b1b;font-weight:700;}" +
         "@media print{button{display:none}}</style></head><body>" +
         "<h1>社員名簿</h1>" +
@@ -393,15 +393,15 @@
       style.id = DEPT_SEP_STYLE_ID;
       document.head.appendChild(style);
     }
-    /* 薄い区切り線＋ごく薄い交互背景（太罫線は使わない） */
+    /* 薄紫の区切り線＋薄緑の交互背景 */
     style.textContent =
       ".jbis-776-dept-sep > td," +
       ".jbis-776-dept-sep > th{" +
-      "border-top:1px solid #cbd5e1 !important;" +
-      "box-shadow:inset 0 1px 0 rgba(226,232,240,0.9);}" +
+      "border-top:1.5px solid #c4b5fd !important;" +
+      "box-shadow:inset 0 1px 0 rgba(196,181,253,0.45);}" +
       ".jbis-776-dept-alt > td," +
       ".jbis-776-dept-alt > th{" +
-      "background-color:#f8fafc !important;}";
+      "background-color:#f0fdf4 !important;}";
   }
 
   function applyIndexDeptSeparators(records) {

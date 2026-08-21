@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-agg-drop-total-col",
-      "fileKey": "d1c02888-4dfb-43ef-b93d-1026bbd018a7",
-      "revision": "28",
+      "build": "2026-08-21-776-list-dept-sep-tint",
+      "fileKey": "ef33d022-09d2-4da1-8923-bf51d9926482",
+      "revision": "29",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T12:07:52.536Z",
+      "deployedAt": "2026-08-21T12:08:40.160Z",
       "note": null
     }
   }
