@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-th-larger（集計表ヘッダ文字を大きく）
  * BUILD: 2026-08-21-776-agg-col-mid2（集計表の列幅をさらに少し広く）
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
  * BUILD: 2026-08-21-776-toolbar-align（ツールバー高さ・PC台帳レイアウト揃え）
- * BUILD: 2026-08-21-776-agg-col-narrow（集計表の拠点・部署列をコンパクトに）
    */
-  var BUILD = "2026-08-21-776-agg-col-mid2";
+  var BUILD = "2026-08-21-776-agg-th-larger";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -1015,7 +1015,7 @@
             h.w +
             ";max-width:" +
             h.w +
-            ";box-sizing:border-box;padding:8px 8px;font-size:11px;font-weight:800;" +
+            ";box-sizing:border-box;padding:10px 8px;font-size:14px;font-weight:800;" +
             "letter-spacing:0.04em;color:#5b21b6;background:#f5f3ff;" +
             "border-bottom:1.5px solid #c4b5fd;white-space:nowrap;text-align:" +
             h.align +
