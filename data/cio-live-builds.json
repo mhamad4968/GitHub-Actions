@@ -370,19 +370,19 @@
       "note": null
     },
     "746": {
-      "build": "2026-06-27-jre-chub-account-db-block-v1",
-      "fileKey": "4e078e50-6c53-4124-aa15-94f241c9082e",
-      "revision": "6",
+      "build": "2026-08-21-jre-chub-account-db-block-v2-strong",
+      "fileKey": "e665227e-6085-41a1-a702-3e40081b0f55",
+      "revision": "9",
       "relPath": "customize/jre-chub-account-db/desktop.js",
-      "deployedAt": "2026-06-27T11:20:10.870Z",
+      "deployedAt": "2026-08-21T01:11:10.431Z",
       "note": null
     },
     "747": {
-      "build": "2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix",
-      "fileKey": "f013dbed-13ec-4c5d-8137-f9acb3589ba8",
-      "revision": "14",
+      "build": "2026-08-21-jre-chub-account-dash-v9-ux-dept680",
+      "fileKey": "09d6d907-29a3-4192-8e0c-9537b0740d17",
+      "revision": "15",
       "relPath": "customize/jre-chub-account-dash/desktop.js",
-      "deployedAt": "2026-07-18T04:59:32.673Z",
+      "deployedAt": "2026-08-21T01:12:29.391Z",
       "note": null
     },
     "748": {

@@ -2,7 +2,7 @@
   "use strict";
 
   /** JRE-C_Hubアカウント台帳 — DB REST CRUD + 月次集計 + 一覧出力 */
-  var BUILD = "2026-07-18-jre-chub-account-dash-v8-edge-autofill-fix";
+  var BUILD = "2026-08-21-jre-chub-account-dash-v9-ux-dept680";
   var APP_DB = 746;
   var APP_EMP_MASTER = 595;
   var PAGE_SIZE = 100;
@@ -14,13 +14,13 @@
     "仙台営業所",
     "千葉営業所",
     "新潟営業所",
-    "東京リペア部",
-    "東京施工部",
+    "東京支店橋りょうリペア部",
+    "東京支店施工部",
     "水戸営業所",
     "盛岡営業所",
     "秋田営業所",
     "長野営業所",
-    "関越施行部",
+    "関越支店施工部",
     "高崎営業所",
     "湾岸工事所",
   ];
@@ -92,13 +92,36 @@
     { key: "note", label: "備考" },
   ];
 
-  var LIST_EXPORT_COLUMNS = LIST_COLUMNS.slice(0, 9);
+  var LIST_EXPORT_COLUMNS = [
+    { key: "user_id", label: "ID" },
+    { key: "user_name", label: "アカウント名" },
+    { key: "org", label: "所属グループ" },
+    { key: "dept", label: "部門" },
+    { key: "mail", label: "メールアドレス" },
+    { key: "permissions", label: "権限" },
+    { key: "permissions", label: "権限（全文）", full: true },
+    { key: "proxy_targets", label: "代行対象" },
+    { key: "proxy_targets", label: "代行対象（全文）", full: true },
+    { key: "start_date", label: "利用開始日" },
+    { key: "end_date", label: "利用終了日" },
+    { key: "note", label: "備考" },
+  ];
+
+  var PERM_PILL_CLASS = {
+    グループ管理者: "jca-perm-pill-admin",
+    承認者: "jca-perm-pill-approver",
+    署名代行者: "jca-perm-pill-proxy",
+    署名者: "jca-perm-pill-signer",
+    閲覧者: "jca-perm-pill-viewer",
+  };
 
   var state = {
     records: [],
     search: "",
     lifecycleFilter: "active",
     permFilter: "",
+    orgFilter: [],
+    dupFilter: false,
     loading: false,
     isAdmin: false,
     aggMonths: [],
@@ -285,6 +308,132 @@
     if (list.length === 1) return list[0];
     if (list.length === 2) return list.join("、");
     return list[0] + "、他複数権限あり";
+  }
+
+  function permissionsPillsHtml(perms) {
+    var list = orderedPermissions(perms);
+    if (!list.length) return '<span class="jca-none">—</span>';
+    return list
+      .map(function (p) {
+        var cls = PERM_PILL_CLASS[p] || "jca-perm-pill-other";
+        return '<span class="jca-perm-pill ' + cls + '" title="' + esc(p) + '">' + esc(p) + "</span>";
+      })
+      .join(" ");
+  }
+
+  function copyToClipboard(text) {
+    var v = String(text || "").trim();
+    if (!v) return Promise.reject(new Error("empty"));
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(v);
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = v;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) resolve();
+        else reject(new Error("copy failed"));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  function showMetaToast(msg) {
+    var el = document.getElementById("jca-meta-toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("visible");
+    clearTimeout(showMetaToast._t);
+    showMetaToast._t = setTimeout(function () {
+      el.classList.remove("visible");
+    }, 1800);
+  }
+
+  function copyCellHtml(value, label) {
+    var v = String(value || "").trim();
+    if (!v) return '<span class="jca-none">—</span>';
+    return (
+      '<span class="jca-copy-cell">' +
+      esc(v) +
+      ' <button type="button" class="jca-copy-btn" data-copy="' +
+      esc(v) +
+      '" title="' +
+      esc(label + "をコピー") +
+      '" aria-label="' +
+      esc(label + "をコピー") +
+      '">⎘</button></span>'
+    );
+  }
+
+  function computeRecordCounts() {
+    var dupIds = computeMultiBranchDuplicateIds();
+    var total = state.records.length;
+    var active = 0;
+    var terminated = 0;
+    var irregular = 0;
+    state.records.forEach(function (r) {
+      if (r.end_date) terminated += 1;
+      else active += 1;
+      if (!r.end_date && dupIds[normalizeUserId(r.user_id)]) irregular += 1;
+    });
+    return { total: total, active: active, terminated: terminated, irregular: irregular };
+  }
+
+  function format595ReferenceHint(empRow) {
+    var dept = val(empRow, "dept_name").trim();
+    var group = val(empRow, "group_name").trim();
+    var mapped = GROUP595_MAP[group] || group || "—";
+    var deptPart = dept || "—";
+    return "595参考: " + deptPart + " / " + mapped + "（C-Hub部門は手選択）";
+  }
+
+  function orgChipBarHtml() {
+    return ORGS.map(function (o) {
+      var active = state.orgFilter.indexOf(o) >= 0;
+      return (
+        '<button type="button" class="jca-org-filter-btn' +
+        (active ? " active" : "") +
+        '" data-org="' +
+        esc(o) +
+        '">' +
+        esc(o) +
+        "</button>"
+      );
+    }).join("");
+  }
+
+  function toggleOrgFilter(org) {
+    var o = String(org || "").trim();
+    if (!o) return;
+    var idx = state.orgFilter.indexOf(o);
+    if (idx >= 0) state.orgFilter.splice(idx, 1);
+    else state.orgFilter.push(o);
+    var root = document.getElementById("jca-root");
+    if (root) {
+      root.querySelectorAll(".jca-org-filter-btn").forEach(function (btn) {
+        var v = btn.getAttribute("data-org") || "";
+        btn.classList.toggle("active", state.orgFilter.indexOf(v) >= 0);
+      });
+    }
+    renderTable();
+  }
+
+  function setDupFilter(on) {
+    state.dupFilter = !!on;
+    var root = document.getElementById("jca-root");
+    if (root) {
+      var chip = root.querySelector(".jca-count-chip-dup");
+      if (chip) chip.classList.toggle("active", state.dupFilter);
+    }
+    renderTable();
   }
 
   function proxyTargetsNames(targets) {
@@ -841,24 +990,14 @@
   function apply595PickToForm(empRow) {
     var nameEl = document.getElementById("jca-f-user-name");
     var mailEl = document.getElementById("jca-f-mail");
-    var orgEl = document.getElementById("jca-f-org");
-    var orgWarn = document.getElementById("jca-f-org-warn");
-    if (!nameEl || !mailEl || !orgEl) return;
+    var hintEl = document.getElementById("jca-f-595-hint");
+    if (!nameEl || !mailEl) return;
 
     nameEl.value = val(empRow, "user_name").trim();
     mailEl.value = val(empRow, "mail").trim();
     setCreate595Picked(true);
 
-    var org = resolveOrgFrom595(empRow);
-    if (org) {
-      orgEl.value = org;
-      if (orgWarn) orgWarn.textContent = "";
-    } else if (orgWarn) {
-      orgWarn.textContent =
-        "595の所属「" +
-        (val(empRow, "group_name") || val(empRow, "dept_name") || "—") +
-        "」は所属グループに未マッチです。手動で選択してください。";
-    }
+    if (hintEl) hintEl.textContent = format595ReferenceHint(empRow);
   }
 
   function permOptionsHtml(selected) {
@@ -1139,7 +1278,8 @@
           '<div class="jca-create-595-step">' +
           '<button type="button" id="jca-create-595-search" class="kintoneplugin-button-dialog-ok jca-create-595-btn">社員名検索（595）</button>' +
           "</div>" +
-          '<p class="jca-hint">社員名検索でアカウント名・メール・所属グループを自動入力します。アカウントコードと部門・権限は手入力です。</p>'
+          '<p class="jca-hint">社員名検索でアカウント名・メールを自動入力します。所属グループ・部門・権限は手選択です。</p>' +
+          '<p id="jca-f-595-hint" class="jca-hint jca-595-ref-hint"></p>'
         : "") +
       '<label>C-Hubアカウントコード<input type="search" id="jca-f-account-key" value="' +
       esc(r.user_id || "") +
@@ -1348,6 +1488,14 @@
 
   function filteredRecords() {
     var q = state.search.trim();
+    var dupIds = state.dupFilter ? computeMultiBranchDuplicateIds() : null;
+    var orgSet = null;
+    if (state.orgFilter.length) {
+      orgSet = {};
+      state.orgFilter.forEach(function (o) {
+        orgSet[o] = true;
+      });
+    }
     var rows = state.records.filter(function (r) {
       if (state.lifecycleFilter === "active" && r.end_date) return false;
       if (state.lifecycleFilter === "terminated" && !r.end_date) return false;
@@ -1355,6 +1503,8 @@
         var perms = r.permissions || [];
         if (perms.indexOf(state.permFilter) < 0) return false;
       }
+      if (orgSet && !orgSet[r.org]) return false;
+      if (dupIds && !dupIds[normalizeUserId(r.user_id)]) return false;
       if (!q) return true;
       return recordMatchesSearch(r, q);
     });
@@ -1369,6 +1519,13 @@
     if (root) {
       root.querySelectorAll(".jca-lifecycle-btn").forEach(function (b) {
         b.classList.toggle("active", b.getAttribute("data-lifecycle") === mode);
+      });
+      root.querySelectorAll(".jca-count-chip-lifecycle").forEach(function (chip) {
+        var m = chip.getAttribute("data-lifecycle") || "";
+        chip.classList.toggle("active", m === mode);
+      });
+      root.querySelectorAll(".jca-count-chip-all").forEach(function (chip) {
+        chip.classList.toggle("active", mode === "all");
       });
     }
     renderTable();
@@ -1388,8 +1545,18 @@
 
   function clearListFilters() {
     state.search = "";
+    state.orgFilter = [];
+    state.dupFilter = false;
     var searchEl = document.getElementById("jca-search");
     if (searchEl) searchEl.value = "";
+    var root = document.getElementById("jca-root");
+    if (root) {
+      root.querySelectorAll(".jca-org-filter-btn").forEach(function (btn) {
+        btn.classList.remove("active");
+      });
+      var dupChip = root.querySelector(".jca-count-chip-dup");
+      if (dupChip) dupChip.classList.remove("active");
+    }
     setLifecycleFilter("active");
     setPermFilter("");
   }
@@ -1430,18 +1597,27 @@
               ? '<button type="button" class="jca-btn-retire">利用終了</button>'
               : '<button type="button" class="jca-btn-restore">利用再開</button>');
         }
-        var trCls = isDup && !row.end_date ? ' class="jca-dup-row"' : "";
+        var trClsParts = [];
+        if (isDup && !row.end_date) trClsParts.push("jca-dup-row");
+        if (row.end_date) trClsParts.push("jca-retired-row");
+        var trCls = trClsParts.length ? ' class="' + trClsParts.join(" ") + '"' : "";
         return (
           "<tr" + trCls + ">" +
           "<td>" +
           statusBadge +
           "</td>" +
           LIST_COLUMNS.map(function (col) {
+            if (col.key === "user_id") {
+              return "<td>" + copyCellHtml(row.user_id, "ID") + "</td>";
+            }
+            if (col.key === "mail") {
+              return "<td>" + copyCellHtml(row.mail, "メール") + "</td>";
+            }
             if (col.key === "permissions") {
               var full = permissionsFullText(row.permissions);
-              var label = permissionsListText(row.permissions);
-              var titleAttr = full && full !== label ? ' title="' + esc(full) + '"' : "";
-              return "<td" + titleAttr + ">" + cellText(label) + "</td>";
+              var pills = permissionsPillsHtml(row.permissions);
+              var titleAttr = full ? ' title="' + esc(full) + '"' : "";
+              return "<td" + titleAttr + ">" + pills + "</td>";
             }
             if (col.key === "proxy_targets") {
               var proxyNames = proxyTargetsNames(row.proxy_targets);
@@ -1479,6 +1655,19 @@
           restoreRecord(row);
         });
       }
+      tr.querySelectorAll(".jca-copy-btn").forEach(function (btn) {
+        btn.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          var text = btn.getAttribute("data-copy") || "";
+          copyToClipboard(text)
+            .then(function () {
+              showMetaToast("コピーしました");
+            })
+            .catch(function () {
+              showMetaToast("コピーに失敗しました");
+            });
+        });
+      });
     });
   }
 
@@ -1874,6 +2063,7 @@
       ".jcaap-header{margin-bottom:10px;text-align:center;}" +
       ".jcaap-header h1{margin:0 0 6px;font-size:16pt;font-weight:700;color:#1e3a8a;}" +
       ".jcaap-meta{margin:0;font-size:10pt;color:#475569;}" +
+      ".jcaap-confidential{margin:8px 0 0;font-size:9pt;color:#b91c1c;font-weight:600;}" +
       ".jcaap-table{width:100%;border-collapse:collapse;font-size:10pt;}" +
       ".jcaap-table th,.jcaap-table td{border:1px solid #64748b;padding:5px 6px;text-align:center;}" +
       ".jcaap-table th{background:#dbeafe;}" +
@@ -1957,7 +2147,9 @@
       esc(todayJstYmd()) +
       " / " +
       esc(state.aggSummary) +
-      "</p></header>" +
+      ' / 行数=' +
+      esc(String(state.aggRows.length)) +
+      '</p><p class="jcaap-confidential">本紙は機密性の高い内容を含みます。</p></header>' +
       '<table class="jcaap-table">' +
       head +
       body +
@@ -1994,6 +2186,8 @@
     else parts.push("表示=すべて");
     if (state.search.trim()) parts.push("検索=" + state.search.trim());
     if (state.permFilter) parts.push("権限=" + state.permFilter);
+    if (state.orgFilter.length) parts.push("所属=" + state.orgFilter.join("、"));
+    if (state.dupFilter) parts.push("イレギュラーのみ");
     return parts.join(" / ");
   }
 
@@ -2009,7 +2203,7 @@
     rows.forEach(function (r) {
       matrix.push(
         LIST_EXPORT_COLUMNS.map(function (c) {
-          return listFieldDisplay(r, c.key, { full: true });
+          return listFieldDisplay(r, c.key, { full: !!c.full });
         }),
       );
     });
@@ -2029,6 +2223,7 @@
       ".jcal-header{margin-bottom:10px;text-align:center;}" +
       ".jcal-header h1{margin:0 0 6px;font-size:16pt;font-weight:700;color:#1e3a8a;}" +
       ".jcal-meta{margin:0;font-size:10pt;color:#475569;}" +
+      ".jcal-confidential{margin:8px 0 0;font-size:9pt;color:#b91c1c;font-weight:600;}" +
       ".jcal-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;}" +
       ".jcal-table th,.jcal-table td{border:1px solid #64748b;padding:5px 4px;vertical-align:top;line-height:1.4;word-break:break-word;overflow-wrap:anywhere;}" +
       ".jcal-table th{background:#dbeafe;font-weight:700;}" +
@@ -2074,7 +2269,7 @@
       esc(todayJstYmd()) +
       " / " +
       esc(summary) +
-      "</p></header>" +
+      '</p><p class="jcal-confidential">本紙は機密性の高い内容を含みます。</p></header>' +
       '<table class="jcal-table">' +
       head +
       body +
@@ -2107,28 +2302,57 @@
   function updateMeta() {
     var el = document.getElementById("jca-meta");
     if (!el) return;
-    var activeCount = 0;
-    state.records.forEach(function (r) {
-      if (!r.end_date) activeCount += 1;
-    });
+    var counts = computeRecordCounts();
     var html =
-      '<span class="jca-meta-count">全 ' +
-      esc(String(state.records.length)) +
-      " 件（稼働中 " +
-      esc(String(activeCount)) +
-      " 件）</span>";
-    html +=
-      '<div class="jca-meta-actions">' +
-      (state.isAdmin
-        ? '<button type="button" id="jca-new" class="kintoneplugin-button-dialog-ok">新規作成</button>'
-        : "") +
-      '<button type="button" id="jca-list-xlsx" class="kintoneplugin-button-normal">一覧 Excel</button>' +
-      '<button type="button" id="jca-list-print" class="kintoneplugin-button-normal">一覧印刷</button>' +
-      (state.isAdmin
-        ? ""
-        : '<span class="jca-readonly-msg">閲覧のみ（編集はシステム管理者）</span>') +
-      "</div>";
+      '<div class="jca-count-chips">' +
+      '<button type="button" class="jca-count-chip jca-count-chip-all' +
+      (state.lifecycleFilter === "all" ? " active" : "") +
+      '" data-count="all">' +
+      "全件 " +
+      esc(String(counts.total)) +
+      "</button>" +
+      '<button type="button" class="jca-count-chip jca-count-chip-lifecycle' +
+      (state.lifecycleFilter === "active" ? " active" : "") +
+      '" data-lifecycle="active">稼働 ' +
+      esc(String(counts.active)) +
+      "</button>" +
+      '<button type="button" class="jca-count-chip jca-count-chip-lifecycle' +
+      (state.lifecycleFilter === "terminated" ? " active" : "") +
+      '" data-lifecycle="terminated">終了 ' +
+      esc(String(counts.terminated)) +
+      "</button>" +
+      '<button type="button" class="jca-count-chip jca-count-chip-dup' +
+      (state.dupFilter ? " active" : "") +
+      '">⚠イレギュラー ' +
+      esc(String(counts.irregular)) +
+      "</button>" +
+      "</div>" +
+      '<span id="jca-meta-toast" class="jca-meta-toast" aria-live="polite"></span>';
+    if (!state.isAdmin) {
+      html += '<span class="jca-readonly-msg">閲覧のみ（編集はシステム管理者）</span>';
+    }
     el.innerHTML = html;
+
+    el.querySelectorAll(".jca-count-chip-lifecycle").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        setLifecycleFilter(chip.getAttribute("data-lifecycle"));
+      });
+    });
+    var dupChip = el.querySelector(".jca-count-chip-dup");
+    if (dupChip) {
+      dupChip.addEventListener("click", function () {
+        setDupFilter(!state.dupFilter);
+      });
+    }
+    var allChip = el.querySelector(".jca-count-chip-all");
+    if (allChip) {
+      allChip.addEventListener("click", function () {
+        setLifecycleFilter("all");
+      });
+    }
+  }
+
+  function wireListActionButtons() {
     var newBtn = document.getElementById("jca-new");
     if (newBtn) {
       newBtn.addEventListener("click", function () {
@@ -2136,13 +2360,17 @@
       });
     }
     var xlsxBtn = document.getElementById("jca-list-xlsx");
-    if (xlsxBtn) xlsxBtn.addEventListener("click", function () {
-      runListExport("xlsx");
-    });
+    if (xlsxBtn) {
+      xlsxBtn.addEventListener("click", function () {
+        runListExport("xlsx");
+      });
+    }
     var printBtn = document.getElementById("jca-list-print");
-    if (printBtn) printBtn.addEventListener("click", function () {
-      runListExport("print");
-    });
+    if (printBtn) {
+      printBtn.addEventListener("click", function () {
+        runListExport("print");
+      });
+    }
   }
 
   function reloadRecords() {
@@ -2170,7 +2398,24 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".jca-root{font-family:Segoe UI,Meiryo,sans-serif;font-size:15px;padding:8px 12px 24px;max-width:100%;}" +
-      ".jca-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;}" +
+      ".jca-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:12px;}" +
+      ".jca-tb-group{border:1px solid #cbd5e1;border-radius:8px;padding:8px 12px 10px;margin:0;background:#f8fafc;}" +
+      ".jca-tb-group legend{font-size:13px;font-weight:700;color:#475569;padding:0 6px;}" +
+      ".jca-tb-filters{flex:1 1 480px;min-width:280px;}" +
+      ".jca-tb-actions{margin-left:auto;}" +
+      ".jca-tb-actions-inner,.jca-tb-filters-inner{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;}" +
+      ".jca-tb-filter-block{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;width:100%;}" +
+      ".jca-org-filter-bar{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}" +
+      ".jca-org-filter-btn{padding:5px 12px;font-size:13px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;white-space:nowrap;}" +
+      ".jca-org-filter-btn.active{background:#0d9488;color:#fff;border-color:#0d9488;font-weight:600;}" +
+      ".jca-org-filter-btn:hover:not(.active){background:#f0fdfa;}" +
+      ".jca-count-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}" +
+      ".jca-count-chip{padding:6px 14px;font-size:14px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;font-weight:500;}" +
+      ".jca-count-chip.active{background:#059669;color:#fff;border-color:#059669;font-weight:700;}" +
+      ".jca-count-chip-dup.active{background:#dc2626;border-color:#dc2626;color:#fff;}" +
+      ".jca-count-chip:hover:not(.active){background:#f1f5f9;}" +
+      ".jca-meta-toast{font-size:13px;color:#059669;font-weight:600;opacity:0;transition:opacity .2s;}" +
+      ".jca-meta-toast.visible{opacity:1;}" +
       ".jca-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
       "background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:2px solid #10b981;border-radius:12px;" +
       "box-shadow:0 2px 8px rgba(16,185,129,.12);}" +
@@ -2233,9 +2478,23 @@
       ".jca-perm-filter-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600;}" +
       ".jca-perm-filter-btn:hover:not(.active){background:#eff6ff;}" +
       ".jca-table-wrap{overflow:auto;max-height:calc(100vh - 320px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".jca-table{border-collapse:collapse;width:100%;font-size:14px;min-width:1540px;}" +
+      ".jca-table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;min-width:1480px;}" +
       ".jca-table th,.jca-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
-      ".jca-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".jca-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;box-shadow:0 1px 0 #e2e8f0;}" +
+      ".jca-retired-row td{background:#f1f5f9;}" +
+      ".jca-dup-row td{background:#fef2f2;}" +
+      ".jca-dup-row.jca-retired-row td{background:#eceff3;}" +
+      ".jca-perm-pill{display:inline-block;padding:2px 8px;margin:1px 2px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.35;white-space:nowrap;}" +
+      ".jca-perm-pill-admin{background:#ede9fe;color:#5b21b6;}" +
+      ".jca-perm-pill-approver{background:#dbeafe;color:#1d4ed8;}" +
+      ".jca-perm-pill-proxy{background:#ffedd5;color:#c2410c;}" +
+      ".jca-perm-pill-signer{background:#dcfce7;color:#166534;}" +
+      ".jca-perm-pill-viewer{background:#f1f5f9;color:#475569;}" +
+      ".jca-perm-pill-other{background:#e2e8f0;color:#334155;}" +
+      ".jca-copy-cell{display:inline-flex;align-items:center;gap:4px;max-width:100%;}" +
+      ".jca-copy-btn{padding:0 4px;font-size:12px;line-height:1.2;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;color:#64748b;flex-shrink:0;}" +
+      ".jca-copy-btn:hover{background:#eff6ff;color:#2563eb;border-color:#93c5fd;}" +
+      ".jca-595-ref-hint{color:#0369a1;font-weight:500;}" +
       ".jca-none{color:#64748b;font-style:italic;}" +
       ".jca-badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;}" +
       ".jca-badge-active{background:#dcfce7;color:#166534;}" +
@@ -2254,7 +2513,7 @@
       ".jca-create-595-btn{font-size:15px;padding:10px 18px;}" +
       ".jca-595-results{margin-top:10px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:6px;}" +
       ".jca-595-pick{text-align:left;white-space:normal;}" +
-      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}"+".jca-perms-box{display:flex;flex-direction:column;gap:6px;margin-top:4px;}"+".jca-perm-row{display:flex;gap:8px;align-items:center;}"+".jca-perm-row select{flex:1;}"+".jca-proxy-section{margin:14px 0;padding:12px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;}"+".jca-proxy-heading{font-weight:700;color:#1e3a8a;}"+".jca-proxy-targets{display:flex;flex-direction:column;gap:6px;margin:8px 0;}"+".jca-proxy-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid #dbeafe;border-radius:6px;background:#fff;}"+".jca-proxy-person{display:flex;flex-direction:column;flex:1;min-width:0;}"+".jca-proxy-person small{color:#64748b;overflow-wrap:anywhere;}"+".jca-dup-row td{background:#fef2f2;}"+".jca-dup-warn{color:#dc2626;font-weight:700;}"+".jca-agg-footnote-acc{margin-top:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;background:#f8fafc;}"+".jca-agg-footnote-fixed{white-space:pre-wrap;font-size:13px;color:#475569;margin:8px 0 0;}"+".jca-agg-dup-notes{margin-top:10px;font-size:13px;color:#b91c1c;line-height:1.5;}";
+      ".jca-595-actions{display:flex;gap:8px;margin:8px 0;}"+".jca-perms-box{display:flex;flex-direction:column;gap:6px;margin-top:4px;}"+".jca-perm-row{display:flex;gap:8px;align-items:center;}"+".jca-perm-row select{flex:1;}"+".jca-proxy-section{margin:14px 0;padding:12px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;}"+".jca-proxy-heading{font-weight:700;color:#1e3a8a;}"+".jca-proxy-targets{display:flex;flex-direction:column;gap:6px;margin:8px 0;}"+".jca-proxy-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid #dbeafe;border-radius:6px;background:#fff;}"+".jca-proxy-person{display:flex;flex-direction:column;flex:1;min-width:0;}"+".jca-proxy-person small{color:#64748b;overflow-wrap:anywhere;}"+".jca-dup-warn{color:#dc2626;font-weight:700;}"+".jca-agg-footnote-acc{margin-top:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;background:#f8fafc;}"+".jca-agg-footnote-fixed{white-space:pre-wrap;font-size:13px;color:#475569;margin:8px 0 0;}"+".jca-agg-dup-notes{margin-top:10px;font-size:13px;color:#b91c1c;line-height:1.5;}";
     document.head.appendChild(st);
   }
 
@@ -2280,7 +2539,15 @@
       '<div class="jca-toolbar">' +
       "<strong style=\"font-size:18px\">JRE-C_Hubアカウント台帳</strong>" +
       '<button type="button" id="jca-reload" class="kintoneplugin-button-normal">再読込</button>' +
-      "</div>" +
+      '<fieldset class="jca-tb-group jca-tb-actions">' +
+      "<legend>操作</legend>" +
+      '<div class="jca-tb-actions-inner">' +
+      (state.isAdmin
+        ? '<button type="button" id="jca-new" class="kintoneplugin-button-dialog-ok">新規作成</button>'
+        : "") +
+      '<button type="button" id="jca-list-xlsx" class="kintoneplugin-button-normal">一覧 Excel</button>' +
+      '<button type="button" id="jca-list-print" class="kintoneplugin-button-normal">一覧印刷</button>' +
+      "</div></fieldset></div>" +
       '<div id="jca-meta" class="jca-meta"></div>' +
       '<details class="jca-agg-acc" id="jca-agg-acc">' +
       "<summary>月次アカウント数量集計（開くと <strong>" +
@@ -2325,12 +2592,20 @@
       "</div></div></div></details>" +
       '<div id="jca-agg-table-wrap" class="jca-agg-table-wrap"></div>' +
       "</div></details>" +
-      '<div class="jca-filters">' +
+      '<fieldset class="jca-tb-group jca-tb-filters">' +
+      "<legend>絞り込み</legend>" +
+      '<div class="jca-tb-filters-inner">' +
+      '<div class="jca-tb-filter-block jca-filters">' +
       '<span class="jca-filter-label">検索</span>' +
       '<input type="search" id="jca-search" placeholder="ユーザID / 氏名 / 所属・部署 / 代行対象 / 備考（スペース区切りで AND）">' +
       '<button type="button" id="jca-search-clear" class="kintoneplugin-button-normal">クリア</button>' +
       "</div>" +
-      '<div class="jca-lifecycle-bar">' +
+      '<div class="jca-tb-filter-block">' +
+      '<span class="jca-filter-label">所属</span>' +
+      '<div class="jca-org-filter-bar">' +
+      orgChipBarHtml() +
+      "</div></div>" +
+      '<div class="jca-tb-filter-block jca-lifecycle-bar">' +
       '<span class="jca-lifecycle-label">表示:</span>' +
       '<button type="button" class="jca-lifecycle-btn' +
       (state.lifecycleFilter === "active" ? " active" : "") +
@@ -2357,7 +2632,7 @@
           "</button>"
         );
       }).join("") +
-      "</div>" +
+      "</div></div></fieldset>" +
       '<div class="jca-table-wrap"><table class="jca-table"><thead><tr>' +
       "<th>状態</th>" +
       LIST_COLUMNS.map(function (c) {
@@ -2388,6 +2663,12 @@
         setPermFilter(btn.getAttribute("data-perm") || "");
       });
     });
+    root.querySelectorAll(".jca-org-filter-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        toggleOrgFilter(btn.getAttribute("data-org") || "");
+      });
+    });
+    wireListActionButtons();
     wireAggChipBar(document.getElementById("jca-agg-org"));
     wireAggChipBar(document.getElementById("jca-agg-dept"));
     document.getElementById("jca-agg-all-org").addEventListener("click", function () {
@@ -2419,6 +2700,7 @@
       });
     }
     renderAggTable();
+    updateMeta();
   }
 
   function scheduleMount() {
