@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-21 21:55 JST — **夜セッション締め（社員名簿）**。day-close ⑤⑥⑦進行中。
 **次の1手**: cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。
 **レーン変更**: **社員名簿（Space48）OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: **`f8afd3f8`** = local tip — push は close-git
+**Git**: **`8ea7d80b`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: closing
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ／**emp_id 不触**

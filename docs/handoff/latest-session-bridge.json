@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-21T12:52:43.105Z",
-  "gitHead": "f8afd3f8",
-  "gitStatus": "## main...origin/main [ahead 32]",
+  "exportedAt": "2026-08-21T12:52:51.702Z",
+  "gitHead": "8ea7d80b",
+  "gitStatus": "## main...origin/main [ahead 33]",
   "nextTask": "cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=f8afd3f8 | 次=cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=8ea7d80b | 次=cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-08-21T12:52:43.624Z",
+  "validatedAt": "2026-08-21T12:52:52.150Z",
   "crosscheckOk": true
 }
