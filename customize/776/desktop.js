@@ -3,14 +3,17 @@
 
   /**
    * 776 社員名簿
-   * BUILD: 2026-08-21-776-phase1-filter-export（キーワード・所属/G複数・件数・Excel/印刷）
-   * BUILD: 2026-08-21-776-list-sort-int-1n
-   * BUILD: 2026-08-21-776-reorder-by-name
+ * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
+ * BUILD: 2026-08-21-776-phase1-filter-export
+ * BUILD: 2026-08-21-776-list-sort-int-1n
+ * BUILD: 2026-08-21-776-reorder-by-name
    */
-  var BUILD = "2026-08-21-776-phase1-filter-export";
+  var BUILD = "2026-08-21-776-compact-filter-ui";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
+  var ORG_POP_ID = "jbis-776-org-popover";
   var STORAGE_KEY = "jbis776-index-state-v1";
+  var UI_OPEN_KEY = "jbis776-ui-open-v1";
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
   var APP_ID = null;
@@ -485,200 +488,329 @@
     return out;
   }
 
+  function loadUiOpen() {
+    try {
+      var o = JSON.parse(sessionStorage.getItem(UI_OPEN_KEY) || "{}");
+      return { reorder: !!o.reorder };
+    } catch (e) {
+      return { reorder: false };
+    }
+  }
+
+  function saveUiOpen(o) {
+    try {
+      sessionStorage.setItem(UI_OPEN_KEY, JSON.stringify(o));
+    } catch (e) {
+      /* noop */
+    }
+  }
+
+  function closeOrgPopover() {
+    var el = document.getElementById(ORG_POP_ID);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function openOrgPopover(anchorBtn, st, onApplied) {
+    closeOrgPopover();
+    var pop = document.createElement("div");
+    pop.id = ORG_POP_ID;
+    var rect = anchorBtn.getBoundingClientRect();
+    pop.style.cssText =
+      "position:fixed;z-index:10050;width:min(440px,92vw);max-height:min(70vh,520px);overflow:auto;" +
+      "border:1px solid #94a3b8;border-radius:10px;background:#fff;" +
+      "box-shadow:0 16px 40px rgba(15,23,42,.22);padding:12px;" +
+      "left:" +
+      Math.max(8, Math.min(rect.left, window.innerWidth - 460)) +
+      "px;top:" +
+      (rect.bottom + 6) +
+      "px;";
+
+    var head = document.createElement("div");
+    head.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;";
+    var title = document.createElement("div");
+    title.style.cssText = "flex:1;font-size:13px;font-weight:800;color:#0f172a;";
+    title.textContent = "所属・部署グループ";
+    var btnClr = document.createElement("button");
+    btnClr.type = "button";
+    btnClr.textContent = "選択解除";
+    btnClr.style.cssText =
+      "padding:4px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:700;cursor:pointer;";
+    head.appendChild(title);
+    head.appendChild(btnClr);
+    pop.appendChild(head);
+
+    var hint = document.createElement("div");
+    hint.style.cssText = "font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.45;";
+    hint.textContent = "グループ／所属にレ点 →「この条件で絞り込み」。未選択＝条件なし。";
+    pop.appendChild(hint);
+
+    var filterInp = document.createElement("input");
+    filterInp.type = "search";
+    filterInp.placeholder = "候補を絞り込み…";
+    filterInp.style.cssText =
+      "width:100%;box-sizing:border-box;margin-bottom:8px;padding:6px 8px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;";
+    pop.appendChild(filterInp);
+
+    var groupHost = document.createElement("div");
+    groupHost.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;";
+    pop.appendChild(groupHost);
+
+    var deptHost = document.createElement("div");
+    deptHost.style.cssText =
+      "display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px 8px;" +
+      "max-height:220px;overflow:auto;padding:4px 2px;margin-bottom:10px;";
+    pop.appendChild(deptHost);
+
+    var selectedDepts = {};
+    var selectedGroups = {};
+    (st.depts || []).forEach(function (d) {
+      selectedDepts[d] = true;
+    });
+    (st.groups || []).forEach(function (g) {
+      selectedGroups[g] = true;
+    });
+
+    function render() {
+      var q = String(filterInp.value || "").trim().toLowerCase();
+      groupHost.innerHTML = "";
+      uniqueGroups().forEach(function (g) {
+        if (q && g.toLowerCase().indexOf(q) === -1) return;
+        var lab = document.createElement("label");
+        lab.style.cssText =
+          "display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border:1px solid #cbd5e1;" +
+          "border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;background:" +
+          (selectedGroups[g] ? "#ecfdf5" : "#fff") +
+          ";";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!selectedGroups[g];
+        cb.addEventListener("change", function () {
+          if (cb.checked) selectedGroups[g] = true;
+          else delete selectedGroups[g];
+          render();
+        });
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(g));
+        groupHost.appendChild(lab);
+      });
+
+      deptHost.innerHTML = "";
+      DEPT_MASTER_680.forEach(function (row) {
+        var d = row.dept_name;
+        if (
+          q &&
+          d.toLowerCase().indexOf(q) === -1 &&
+          String(row.group_name || "")
+            .toLowerCase()
+            .indexOf(q) === -1
+        ) {
+          return;
+        }
+        var lab = document.createElement("label");
+        lab.style.cssText =
+          "display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!selectedDepts[d];
+        cb.addEventListener("change", function () {
+          if (cb.checked) selectedDepts[d] = true;
+          else delete selectedDepts[d];
+        });
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(d));
+        deptHost.appendChild(lab);
+      });
+    }
+    filterInp.addEventListener("input", render);
+    btnClr.addEventListener("click", function () {
+      selectedDepts = {};
+      selectedGroups = {};
+      render();
+    });
+    render();
+
+    var foot = document.createElement("div");
+    foot.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;";
+    var btnCancel = document.createElement("button");
+    btnCancel.type = "button";
+    btnCancel.textContent = "閉じる";
+    btnCancel.style.cssText =
+      "padding:6px 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;cursor:pointer;font-weight:700;";
+    btnCancel.addEventListener("click", closeOrgPopover);
+    var btnOk = document.createElement("button");
+    btnOk.type = "button";
+    btnOk.textContent = "この条件で絞り込み";
+    btnOk.style.cssText =
+      "padding:6px 14px;border:none;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;font-weight:700;";
+    btnOk.addEventListener("click", function () {
+      st.depts = Object.keys(selectedDepts);
+      st.groups = Object.keys(selectedGroups);
+      closeOrgPopover();
+      onApplied();
+    });
+    foot.appendChild(btnCancel);
+    foot.appendChild(btnOk);
+    pop.appendChild(foot);
+    document.body.appendChild(pop);
+  }
+
+  function filterSummary(st) {
+    var bits = [];
+    if (st.kw) bits.push("キーワードあり");
+    if (st.depts && st.depts.length) bits.push("所属" + st.depts.length);
+    if (st.groups && st.groups.length) bits.push("グループ" + st.groups.length);
+    if (st.cat === "seishain") bits.push("正社員");
+    if (st.cat === "junshain") bits.push("準社員");
+    return bits.length ? bits.join("・") : "条件なし（全件）";
+  }
+
   function mountToolbar(space, st) {
     var old = document.getElementById(WRAP_ID);
     if (old && old.parentNode) old.parentNode.removeChild(old);
+    closeOrgPopover();
 
     var wrap = document.createElement("div");
     wrap.id = WRAP_ID;
     wrap.style.cssText =
-      "margin:0 0 12px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;" +
-      "display:flex;flex-direction:column;gap:10px;box-sizing:border-box;";
+      "margin:0 0 10px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;" +
+      "display:flex;flex-direction:column;gap:8px;box-sizing:border-box;";
 
-    // row1: cat chips
-    var row1 = document.createElement("div");
-    row1.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;";
-    var lab1 = document.createElement("span");
-    lab1.style.cssText = "font-weight:700;color:#0f172a;";
-    lab1.textContent = "雇用区分:";
-    row1.appendChild(lab1);
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
 
     function mkChip(text, value) {
       var b = document.createElement("button");
       b.type = "button";
       b.textContent = text;
-      b.setAttribute("data-776-cat", value);
       var on = st.cat === value;
       b.style.cssText =
-        "padding:6px 14px;font-size:13px;border:1px solid " +
-        (on ? "#7c3aed" : "#cbd5e1") +
-        ";border-radius:999px;background:" +
+        "padding:5px 12px;font-size:12px;border:1px solid " +
+        (on ? "#7c3aed" : "#94a3b8") +
+        ";border-radius:6px;background:" +
         (on ? "#7c3aed" : "#fff") +
         ";color:" +
-        (on ? "#fff" : "#334155") +
-        ";cursor:pointer;font-weight:" +
-        (on ? "700" : "500") +
-        ";";
+        (on ? "#fff" : "#0f172a") +
+        ";cursor:pointer;font-weight:800;";
       b.addEventListener("click", function () {
         st.cat = value;
         applyAndReload(st);
       });
       return b;
     }
-    row1.appendChild(mkChip("正社員", "seishain"));
-    row1.appendChild(mkChip("準社員", "junshain"));
-    row1.appendChild(mkChip("すべて", "all"));
-    var buildEl = document.createElement("span");
-    buildEl.style.cssText = "margin-left:auto;color:#94a3b8;font-size:11px;";
-    buildEl.textContent = BUILD;
-    row1.appendChild(buildEl);
-    wrap.appendChild(row1);
+    row.appendChild(mkChip("正社員", "seishain"));
+    row.appendChild(mkChip("準社員", "junshain"));
+    row.appendChild(mkChip("すべて", "all"));
 
-    // row2: keyword
-    var row2 = document.createElement("div");
-    row2.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;";
-    var lab2 = document.createElement("span");
-    lab2.style.cssText = "font-weight:700;min-width:5em;font-size:13px;";
-    lab2.textContent = "キーワード:";
-    row2.appendChild(lab2);
     var kwInput = document.createElement("input");
     kwInput.type = "search";
-    kwInput.placeholder = "氏名・部署・メール・社員番号";
+    kwInput.placeholder = "氏名 / 部署 / メール / 社員番号";
     kwInput.value = st.kw || "";
     kwInput.style.cssText =
-      "flex:1;min-width:200px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;";
-    row2.appendChild(kwInput);
-    var kwBtn = document.createElement("button");
-    kwBtn.type = "button";
-    kwBtn.textContent = "検索";
-    kwBtn.style.cssText =
-      "padding:6px 14px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;font-weight:600;";
-    function runKw() {
+      "min-width:220px;flex:1;max-width:420px;padding:6px 10px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;";
+    row.appendChild(kwInput);
+
+    var btnGo = document.createElement("button");
+    btnGo.type = "button";
+    btnGo.textContent = "絞り込み";
+    btnGo.style.cssText =
+      "padding:6px 14px;border:none;border-radius:6px;background:#0f766e;color:#fff;font-weight:700;cursor:pointer;";
+    function runSearch() {
       st.kw = kwInput.value;
       applyAndReload(st);
     }
-    kwBtn.addEventListener("click", runKw);
+    btnGo.addEventListener("click", runSearch);
     kwInput.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter") {
         ev.preventDefault();
-        runKw();
+        runSearch();
       }
     });
-    row2.appendChild(kwBtn);
-    wrap.appendChild(row2);
+    row.appendChild(btnGo);
 
-    // row3: multi selects
-    var row3 = document.createElement("div");
-    row3.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;";
-
-    function mkMulti(label, options, selected, onChange) {
-      var box = document.createElement("div");
-      box.style.cssText = "flex:1;min-width:220px;";
-      var t = document.createElement("div");
-      t.style.cssText = "font-weight:700;font-size:13px;margin-bottom:4px;";
-      t.textContent = label;
-      box.appendChild(t);
-      var sel = document.createElement("select");
-      sel.multiple = true;
-      sel.size = Math.min(8, Math.max(4, options.length));
-      sel.style.cssText =
-        "width:100%;padding:4px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;";
-      var selSet = {};
-      for (var i = 0; i < selected.length; i++) selSet[selected[i]] = true;
-      for (var j = 0; j < options.length; j++) {
-        var opt = document.createElement("option");
-        opt.value = options[j];
-        opt.textContent = options[j];
-        if (selSet[options[j]]) opt.selected = true;
-        sel.appendChild(opt);
-      }
-      sel.addEventListener("change", function () {
-        var vals = [];
-        for (var k = 0; k < sel.options.length; k++) {
-          if (sel.options[k].selected) vals.push(sel.options[k].value);
-        }
-        onChange(vals);
-      });
-      box.appendChild(sel);
-      var hint = document.createElement("div");
-      hint.style.cssText = "font-size:11px;color:#64748b;margin-top:2px;";
-      hint.textContent = "Ctrl/⌘で複数選択";
-      box.appendChild(hint);
-      return box;
+    var btnOrg = document.createElement("button");
+    btnOrg.type = "button";
+    function syncOrgBtn() {
+      var n = (st.depts ? st.depts.length : 0) + (st.groups ? st.groups.length : 0);
+      btnOrg.textContent = n ? "所属（" + n + "）" : "所属";
+      btnOrg.style.background = n ? "#ecfdf5" : "#fff";
+      btnOrg.style.borderColor = n ? "#0f766e" : "#94a3b8";
+      btnOrg.style.color = n ? "#065f46" : "#0f172a";
     }
-
-    var deptOpts = DEPT_MASTER_680.map(function (r) {
-      return r.dept_name;
+    btnOrg.style.cssText =
+      "padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:800;cursor:pointer;";
+    syncOrgBtn();
+    btnOrg.addEventListener("click", function () {
+      if (document.getElementById(ORG_POP_ID)) {
+        closeOrgPopover();
+        return;
+      }
+      openOrgPopover(btnOrg, st, function () {
+        syncOrgBtn();
+        applyAndReload(st);
+      });
     });
-    row3.appendChild(
-      mkMulti("所属（部署名）", deptOpts, st.depts, function (vals) {
-        st.depts = vals;
-      }),
-    );
-    row3.appendChild(
-      mkMulti("部署グループ", uniqueGroups(), st.groups, function (vals) {
-        st.groups = vals;
-      }),
-    );
-    var applyBtn = document.createElement("button");
-    applyBtn.type = "button";
-    applyBtn.textContent = "所属・グループを適用";
-    applyBtn.style.cssText =
-      "align-self:flex-end;padding:8px 14px;border:1px solid #334155;border-radius:6px;background:#334155;color:#fff;cursor:pointer;font-weight:600;";
-    applyBtn.addEventListener("click", function () {
-      applyAndReload(st);
-    });
-    row3.appendChild(applyBtn);
-    wrap.appendChild(row3);
+    row.appendChild(btnOrg);
 
-    // row4: counts + export
-    var row4 = document.createElement("div");
-    row4.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:10px;";
-    var countEl = document.createElement("span");
-    countEl.style.cssText = "font-size:13px;color:#0f172a;font-weight:600;";
-    countEl.textContent = "件数を集計中…";
-    row4.appendChild(countEl);
+    var btnReorder = document.createElement("button");
+    btnReorder.type = "button";
+    btnReorder.textContent = "並び替え";
+    btnReorder.style.cssText =
+      "padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:800;cursor:pointer;";
+    row.appendChild(btnReorder);
 
     var btnExcel = document.createElement("button");
     btnExcel.type = "button";
-    btnExcel.textContent = "Excel出力";
+    btnExcel.textContent = "Excel";
     btnExcel.style.cssText =
-      "padding:6px 12px;border:1px solid #0369a1;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;font-weight:600;";
+      "padding:5px 10px;border-radius:6px;border:none;background:#0369a1;color:#fff;font-size:12px;font-weight:800;cursor:pointer;";
     var btnPrint = document.createElement("button");
     btnPrint.type = "button";
     btnPrint.textContent = "印刷";
     btnPrint.style.cssText =
-      "padding:6px 12px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;font-weight:600;";
-    var btnClear = document.createElement("button");
-    btnClear.type = "button";
-    btnClear.textContent = "条件クリア";
-    btnClear.style.cssText =
-      "padding:6px 12px;border:1px solid #94a3b8;border-radius:6px;background:#fff;cursor:pointer;";
-    btnClear.addEventListener("click", function () {
+      "padding:5px 10px;border-radius:6px;border:none;background:#0f766e;color:#fff;font-size:12px;font-weight:800;cursor:pointer;";
+    var btnClr = document.createElement("button");
+    btnClr.type = "button";
+    btnClr.textContent = "条件クリア";
+    btnClr.style.cssText =
+      "padding:5px 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:700;cursor:pointer;";
+    btnClr.addEventListener("click", function () {
       applyAndReload(defaultState());
     });
-    row4.appendChild(btnExcel);
-    row4.appendChild(btnPrint);
-    row4.appendChild(btnClear);
-    wrap.appendChild(row4);
+    row.appendChild(btnExcel);
+    row.appendChild(btnPrint);
+    row.appendChild(btnClr);
 
-    var conf = document.createElement("div");
-    conf.style.cssText = "font-size:11px;color:#991b1b;";
-    conf.textContent =
-      "【機密】Excel・印刷は社内管理目的です。取扱い・廃棄に注意してください。";
-    wrap.appendChild(conf);
+    var buildEl = document.createElement("span");
+    buildEl.style.cssText = "margin-left:auto;color:#94a3b8;font-size:11px;";
+    buildEl.textContent = BUILD;
+    row.appendChild(buildEl);
+    wrap.appendChild(row);
+
+    var sub = document.createElement("div");
+    sub.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:12px;color:#334155;";
+    var countEl = document.createElement("span");
+    countEl.style.cssText = "font-weight:800;";
+    countEl.textContent = "件数…";
+    var sumEl = document.createElement("span");
+    sumEl.style.cssText = "color:#64748b;";
+    sumEl.textContent = filterSummary(st);
+    var conf = document.createElement("span");
+    conf.style.cssText = "color:#991b1b;font-size:11px;";
+    conf.textContent = "【機密】Excel・印刷は社内管理目的";
+    sub.appendChild(countEl);
+    sub.appendChild(sumEl);
+    sub.appendChild(conf);
+    wrap.appendChild(sub);
 
     if (space.firstChild) space.insertBefore(wrap, space.firstChild);
     else space.appendChild(wrap);
 
-    var q = buildQuery(st);
-    // strip trailing order for fetch helper that appends limit — buildQuery includes order
-    fetchRecordsByQuery(q)
+    fetchRecordsByQuery(buildQuery(st))
       .then(function (recs) {
-        var rows = recs.length;
-        var people = countPeople(recs);
-        countEl.textContent = "行数 " + rows + " ／ 人数（本務） " + people;
+        countEl.textContent =
+          "行数 " + recs.length + " ／ 人数（本務） " + countPeople(recs);
         btnExcel.onclick = function () {
           exportCsv(recs);
         };
@@ -688,12 +820,24 @@
       })
       .catch(function (err) {
         console.warn("[jbis 776 count]", err);
-        countEl.textContent = "件数の取得に失敗しました";
+        countEl.textContent = "件数取得失敗";
         countEl.style.color = "#b91c1c";
       });
+
+    var uiOpen = loadUiOpen();
+    btnReorder.addEventListener("click", function () {
+      uiOpen.reorder = !uiOpen.reorder;
+      saveUiOpen(uiOpen);
+      var box = document.getElementById(REORDER_ID);
+      if (box) box.style.display = uiOpen.reorder ? "flex" : "none";
+      btnReorder.style.background = uiOpen.reorder ? "#fef3c7" : "#fff";
+    });
+    if (uiOpen.reorder) btnReorder.style.background = "#fef3c7";
+
+    return { btnReorder: btnReorder, uiOpen: uiOpen };
   }
 
-  function mountReorder(space, st) {
+  function mountReorder(space, st, uiOpen) {
     var old = document.getElementById(REORDER_ID);
     if (old && old.parentNode) old.parentNode.removeChild(old);
 
@@ -701,11 +845,12 @@
     box.id = REORDER_ID;
     box.style.cssText =
       "margin:0 0 12px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;" +
-      "display:flex;flex-direction:column;gap:8px;box-sizing:border-box;";
+      "flex-direction:column;gap:8px;box-sizing:border-box;" +
+      (uiOpen && uiOpen.reorder ? "display:flex;" : "display:none;");
 
     var title = document.createElement("div");
     title.style.cssText = "font-weight:700;color:#0f172a;font-size:13px;";
-    title.textContent = "並び替え（名前検索 → 基準の上／下・表示順は整数1〜）";
+    title.textContent = "並び替え（名前検索 → 基準の上／下）";
     box.appendChild(title);
 
     function mkRow(labelText) {
@@ -742,6 +887,10 @@
 
     var actions = document.createElement("div");
     actions.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+    var status = document.createElement("span");
+    status.style.cssText = "font-size:12px;color:#64748b;";
+    status.textContent = "必要なときだけ開いて使います";
+
     function mkAction(text, place) {
       var b = document.createElement("button");
       b.type = "button";
@@ -757,15 +906,13 @@
     var btnBelow = mkAction("基準の下に置く", "below");
     actions.appendChild(btnAbove);
     actions.appendChild(btnBelow);
-    var status = document.createElement("span");
-    status.style.cssText = "font-size:12px;color:#64748b;";
-    status.textContent = "兼務行の差し込み位置などに";
     actions.appendChild(status);
     box.appendChild(actions);
 
     function wireSearch(ui) {
       function run() {
         status.textContent = "検索中…";
+        status.style.color = "#64748b";
         searchByName(ui.input.value)
           .then(function (recs) {
             fillSelect(ui.sel, recs, recs.length ? "候補から選択" : "ヒットなし");
@@ -852,8 +999,8 @@
         navigate(wantQ);
         return event;
       }
-      mountToolbar(space, st);
-      mountReorder(space, st);
+      var tb = mountToolbar(space, st);
+      mountReorder(space, st, tb.uiOpen);
     } catch (e) {
       console.warn("[jbis 776 index]", e);
     }
