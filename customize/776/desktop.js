@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-hub-total-last（拠点合計をブロック最終行に表示）
  * BUILD: 2026-08-21-776-list-dept-sep（一覧の部署区切り罫線）
  * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
  * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
  * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
- * BUILD: 2026-08-21-776-phase1-filter-export
    */
-  var BUILD = "2026-08-21-776-list-dept-sep";
+  var BUILD = "2026-08-21-776-agg-hub-total-last";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -830,13 +830,23 @@
         subtotal += deptMap[d];
       });
       grand += subtotal;
+      var hubLabel = GROUP_LABEL[g] || g;
       depts.forEach(function (d, di) {
         rows.push({
-          hub: di === 0 ? GROUP_LABEL[g] || g : "",
+          hub: di === 0 ? hubLabel : "",
           dept: d,
           count: deptMap[d],
-          total: di === 0 ? subtotal : "",
+          total: "",
+          isSubtotal: false,
         });
+      });
+      // 拠点ブロック最終行に合計（見やすさ優先・Excel先頭合計とは配置を変える）
+      rows.push({
+        hub: "",
+        dept: hubLabel + " 合計",
+        count: subtotal,
+        total: subtotal,
+        isSubtotal: true,
       });
     });
     return { rows: rows, grand: grand, people: Object.keys(seenPerson).length };
@@ -899,13 +909,16 @@
     recordsPromise
       .then(function (recs) {
         var model = buildAggTableModel(recs);
+        var deptRowCount = model.rows.filter(function (r) {
+          return !r.isSubtotal;
+        }).length;
         metaCount.textContent =
           "検索件数: 行数 " +
           recs.length +
           " ／ 人数（本務） " +
           countPeople(recs) +
           " ／ 集計対象部署 " +
-          model.rows.length +
+          deptRowCount +
           " 行（総合計 " +
           model.grand +
           "）";
@@ -932,10 +945,18 @@
             function (v, vi) {
               var td = document.createElement("td");
               td.textContent = v === "" || v == null ? "" : String(v);
-              td.style.cssText =
+              var base =
                 "border:1px solid #94a3b8;padding:5px 8px;" +
-                (vi >= 2 ? "text-align:right;" : "") +
-                (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
+                (vi >= 2 ? "text-align:right;" : "");
+              if (row.isSubtotal) {
+                td.style.cssText =
+                  base +
+                  "font-weight:800;background:#e2e8f0;border-top:2px solid #334155;border-bottom:2px solid #334155;";
+              } else {
+                td.style.cssText =
+                  base +
+                  (vi === 0 && row.hub ? "font-weight:700;background:#f8fafc;" : "");
+              }
               tr.appendChild(td);
             },
           );
