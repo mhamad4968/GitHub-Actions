@@ -3,12 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-meta（集計表に件数・検索条件を表示）
  * BUILD: 2026-08-21-776-agg-table（集計表＝Excel型の拠点/部署/在籍数/合計）
  * BUILD: 2026-08-21-776-compact-filter-ui（PC台帳型・所属ポップオーバー・並び替えは開閉）
  * BUILD: 2026-08-21-776-phase1-filter-export
  * BUILD: 2026-08-21-776-list-sort-int-1n
    */
-  var BUILD = "2026-08-21-776-agg-table";
+  var BUILD = "2026-08-21-776-agg-meta";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -679,6 +680,41 @@
     return bits.length ? bits.join("・") : "条件なし（全件）";
   }
 
+  /** 集計表ヘッダ用：件数＋具体条件 */
+  function filterDetailLines(st) {
+    var catLabel =
+      st.cat === "seishain"
+        ? "正社員"
+        : st.cat === "junshain"
+          ? "準社員"
+          : "すべて（正社員・準社員）";
+    var lines = [];
+    lines.push("雇用区分: " + catLabel);
+    if (st.kw && String(st.kw).trim()) {
+      lines.push("キーワード: 「" + String(st.kw).trim() + "」");
+    } else {
+      lines.push("キーワード: （なし）");
+    }
+    if (st.depts && st.depts.length) {
+      lines.push("所属: " + st.depts.join("、"));
+    } else {
+      lines.push("所属: （指定なし）");
+    }
+    if (st.groups && st.groups.length) {
+      lines.push(
+        "部署グループ: " +
+          st.groups
+            .map(function (g) {
+              return GROUP_LABEL[g] || g;
+            })
+            .join("、"),
+      );
+    } else {
+      lines.push("部署グループ: （指定なし）");
+    }
+    return lines;
+  }
+
   /**
    * Excel「集計表」型: 拠点 / 部署 / 在籍数 / 合計
    * 本務のみ・人ベース（source_595_id DISTINCT）
@@ -754,11 +790,29 @@
     title.textContent = "部署の人数集計表（本務・Excel集計表形式）";
     box.appendChild(title);
 
-    var note = document.createElement("div");
-    note.style.cssText = "font-size:12px;color:#64748b;";
-    note.textContent =
-      "いまの絞り込み条件に合わせて集計します。拠点＝部署グループ、在籍数＝本務人数。";
-    box.appendChild(note);
+    var meta = document.createElement("div");
+    meta.style.cssText =
+      "display:flex;flex-direction:column;gap:4px;padding:8px 10px;" +
+      "background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;color:#334155;";
+    var metaCount = document.createElement("div");
+    metaCount.style.cssText = "font-weight:800;color:#0f172a;";
+    metaCount.textContent = "件数取得中…";
+    meta.appendChild(metaCount);
+    var metaCond = document.createElement("div");
+    metaCond.style.cssText = "line-height:1.55;color:#475569;";
+    filterDetailLines(st).forEach(function (line, i) {
+      var p = document.createElement("div");
+      p.textContent = line;
+      if (i === 0) p.style.fontWeight = "700";
+      metaCond.appendChild(p);
+    });
+    meta.appendChild(metaCond);
+    var metaHint = document.createElement("div");
+    metaHint.style.cssText = "color:#64748b;font-size:11px;margin-top:2px;";
+    metaHint.textContent =
+      "上記条件の一覧行を集計（拠点＝部署グループ、在籍数＝本務人数）。";
+    meta.appendChild(metaHint);
+    box.appendChild(meta);
 
     var host = document.createElement("div");
     host.style.cssText = "overflow:auto;max-height:min(60vh,520px);";
@@ -777,6 +831,16 @@
     recordsPromise
       .then(function (recs) {
         var model = buildAggTableModel(recs);
+        metaCount.textContent =
+          "検索件数: 行数 " +
+          recs.length +
+          " ／ 人数（本務） " +
+          countPeople(recs) +
+          " ／ 集計対象部署 " +
+          model.rows.length +
+          " 行（総合計 " +
+          model.grand +
+          "）";
         host.innerHTML = "";
         var table = document.createElement("table");
         table.style.cssText =
@@ -833,6 +897,8 @@
       })
       .catch(function (err) {
         console.warn("[jbis 776 agg]", err);
+        metaCount.textContent = "件数の取得に失敗しました";
+        metaCount.style.color = "#b91c1c";
         host.textContent = "集計の取得に失敗しました";
         host.style.color = "#b91c1c";
       });
