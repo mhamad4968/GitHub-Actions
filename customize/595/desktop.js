@@ -3385,13 +3385,55 @@
       });
   }
 
+  /** Excel/兼務の日本語拠点 → 595 group_name（本社=honsya 等） */
+  var ROSTER_SITE_LABEL_TO_CODE_595 = {
+    本社: "honsya",
+    東北支店: "tohoku",
+    関越支店: "kan-etsu",
+    東京支店: "tokyo",
+    東海支店: "tokai",
+    札幌支店: "reform",
+    首都圏支店: "reform",
+    鉄構支店: "tekko",
+    湾岸工事所: "wangan",
+    リフォーム事業統括部: "reform",
+    リフォーム統括事業部: "reform",
+  };
+
+  function resolveRosterGroupCode595(groupRaw, deptRaw) {
+    var g = String(groupRaw || "").trim();
+    if (ROSTER_SITE_LABEL_TO_CODE_595[g]) {
+      return ROSTER_SITE_LABEL_TO_CODE_595[g];
+    }
+    if (/^[a-z][a-z0-9-]*$/i.test(g)) {
+      return g;
+    }
+    var d = String(deptRaw || "");
+    if (/東北|秋田|盛岡|仙台/.test(d)) return "tohoku";
+    if (/関越|新潟|長野|高崎/.test(d)) return "kan-etsu";
+    if (/東京支店|千葉営業|水戸営業|鎌ヶ谷/.test(d)) return "tokyo";
+    if (/東海|静岡|名古屋|関西|東京営業/.test(d)) return "tokai";
+    if (/札幌|首都圏|リフォーム/.test(d)) return "reform";
+    if (/鉄構/.test(d)) return "tekko";
+    if (/湾岸/.test(d)) return "wangan";
+    if (/本社|役員|顧問|総務|経理|経営企画|人事|安全|施工|メンテ|塗装|品質|出向/.test(d)) {
+      return "honsya";
+    }
+    return g;
+  }
+
   function computeRosterListSort595(role, title, ownSort, bounds, kenmuIndex) {
+    var ki = kenmuIndex != null ? Number(kenmuIndex) : 0;
+    if (!isFinite(ki) || ki < 0) ki = 0;
     if (role === "兼務" && isBuchoTitle595(title)) {
+      // 部署に本務がいない兼務部長は本務（支店長含む）の直後へ — 支店長より前に浮かない
+      if (!bounds || !isFinite(bounds.min) || bounds.min >= 999999) {
+        var o = Number(ownSort);
+        return (isFinite(o) && o > 0 ? o : 999999) + 0.1 * (ki + 1);
+      }
       return bounds.min - 0.5;
     }
     if (role === "兼務") {
-      var ki = kenmuIndex != null ? Number(kenmuIndex) : 0;
-      if (!isFinite(ki) || ki < 0) ki = 0;
       return bounds.max + 0.1 * (ki + 1);
     }
     var s = Number(ownSort);
@@ -3435,6 +3477,8 @@
     function cell(code) {
       return v[code] && v[code].value != null ? String(v[code].value) : "";
     }
+    var cDept = cell(FC595_CP_DEPT);
+    var cGroup = resolveRosterGroupCode595(cell(FC595_CP_GROUP), cDept);
     return {
       source_595_id: { value: String(record.$id.value) },
       emp_id_ref: { value: scalarFrom595(record, FC595_EMP_ID) },
@@ -3443,8 +3487,8 @@
       mail: { value: scalarFrom595(record, FC595_MAIL) },
       job_title: { value: cell(FC595_CP_TITLE) },
       employment_category: { value: scalarFrom595(record, FC595_CAT) },
-      dept_name: { value: cell(FC595_CP_DEPT) },
-      group_name: { value: cell(FC595_CP_GROUP) },
+      dept_name: { value: cDept },
+      group_name: { value: cGroup },
       row_role: { value: "兼務" },
       is_primary: { value: "兼務" },
       match_status: { value: "一致" },
@@ -3454,7 +3498,7 @@
 
   /**
    * 595 1人 → 776 upsert（正社員/準社員のみ。以外・退職は776から削除）。
-   * list_sort: 本務=595.sort×10 / 兼務部長=部署本務min×10-1。
+   * list_sort: 本務=595.sort（1から）。兼務部長は部署先頭だが支店長より前に出さない。
    * emp_id は emp_id_ref へのコピーのみ。
    */
   function syncRoster776OneFrom595(record) {
