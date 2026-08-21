@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-21 11:51 JST — **朝セッション締め**。夜は社員名簿SPEC〜実装。
 **次の1手**: 夜 cold-start → 必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md` → SPEC作成→commit/push→実装→浜田目視。
 **レーン変更**: **社員名簿（Space48）OPEN**。747/746 §19 および閉済UXは再開しない。
-**Git**: 締め commit 後に本行を close-git が更新
+**Git**: **`eac32816`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: closed
 **8月レーン**: ①依頼効率化v0.2済 / ②MCP月次+DEL-3済 / **V2-N完了通知=実装済** / ③薄い統合Desktop37済 / ④B-MDFLOW薄い済 / 経営会議ネタレーン確定＋**8月度レポート本体=完了**
 **制約**: 閉済9件（751/734 は CLOSED 維持・UX のみ）／688 heat外／677–679／712 deploy／736触らない／新アプリ=相談・GO後のみ／**SKYSEA=案件外**／所属正本680は今後改修時のみ
