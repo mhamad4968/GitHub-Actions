@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-reform-dept-order（reform所属順: 統括→札幌→首都圏）
  * BUILD: 2026-08-21-776-agg-th-larger（集計表ヘッダ文字を大きく）
  * BUILD: 2026-08-21-776-agg-col-mid2（集計表の列幅をさらに少し広く）
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
- * BUILD: 2026-08-21-776-toolbar-align（ツールバー高さ・PC台帳レイアウト揃え）
    */
-  var BUILD = "2026-08-21-776-agg-th-larger";
+  var BUILD = "2026-08-21-776-reform-dept-order";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -68,10 +68,10 @@
     { dept_name: "静岡営業所", group_name: "tokai" },
     { dept_name: "名古屋営業所", group_name: "tokai" },
     { dept_name: "関西営業所", group_name: "tokai" },
-    { dept_name: "札幌支店", group_name: "reform" },
     { dept_name: "リフォーム事業統括部", group_name: "reform" },
-    { dept_name: "鉄構支店", group_name: "tekko" },
+    { dept_name: "札幌支店", group_name: "reform" },
     { dept_name: "首都圏支店", group_name: "reform" },
+    { dept_name: "鉄構支店", group_name: "tekko" },
     { dept_name: "湾岸工事所", group_name: "wangan" },
     { dept_name: "ブリッジニアプラス", group_name: "bnp" },
     { dept_name: "鎌ヶ谷作業所", group_name: "bnp" },
