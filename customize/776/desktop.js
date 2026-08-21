@@ -3,13 +3,13 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
  * BUILD: 2026-08-21-776-toolbar-align（ツールバー高さ・PC台帳レイアウト揃え）
  * BUILD: 2026-08-21-776-agg-col-narrow（集計表の拠点・部署列をコンパクトに）
  * BUILD: 2026-08-21-776-pc-ledger-summary（いまの条件／該当件数をPC台帳型に）
- * BUILD: 2026-08-21-776-agg-design（集計表のデザイン刷新）
    */
-  var BUILD = "2026-08-21-776-agg-col-fixed";
+  var BUILD = "2026-08-21-776-agg-col-mid";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -984,10 +984,10 @@
           "人 ｜ 総合計 " +
           model.grand;
         host.innerHTML = "";
-        /* 列幅: 拠点 7em / 部署 12em / 在籍 3.5em（nowrapで部署が伸びないよう固定） */
-        var AGG_W_HUB = "7em";
-        var AGG_W_DEPT = "12em";
-        var AGG_W_CNT = "3.5em";
+        /* 列幅（中庸）: 拠点 10em / 部署 18em / 在籍 4.5em ≈ 読みやすい固定幅 */
+        var AGG_W_HUB = "10em";
+        var AGG_W_DEPT = "18em";
+        var AGG_W_CNT = "4.5em";
         var table = document.createElement("table");
         table.style.cssText =
           "border-collapse:separate;border-spacing:0;" +
