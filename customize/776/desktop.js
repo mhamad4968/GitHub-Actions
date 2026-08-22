@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-e1-title-filter（役職チップ: すべて／役職者／一般・Excel/集計も同条件）
  * BUILD: 2026-08-22-776-p1-title-over-kenmu（兼務行でも役職色が勝つ・列ずれ補正）
  * BUILD: 2026-08-22-776-p1-title-rank-fix（常務・監査役を役職者に・役職列ヘッダ照合で部長漏れ修正）
  * BUILD: 2026-08-22-776-p1-read-title-rank（P1: 集計二重表示整理・兼務色トーン・役職ランク強調）
@@ -34,7 +35,8 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p1-title-over-kenmu";
+  var BUILD = "2026-08-22-776-e1-title-filter";
+  var ID_CACHE_KEY = "jbis776-idcache-v3";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -168,7 +170,15 @@
   }
 
   function defaultState() {
-    return { cat: "all", kw: "", depts: [], groups: [], page: 1, pageSize: 40 };
+    return {
+      cat: "all",
+      titleRank: "all",
+      kw: "",
+      depts: [],
+      groups: [],
+      page: 1,
+      pageSize: 40,
+    };
   }
 
   function loadState() {
@@ -183,6 +193,8 @@
       if (!isFinite(page) || page < 1) page = 1;
       return {
         cat: o.cat === "seishain" || o.cat === "junshain" || o.cat === "all" ? o.cat : "all",
+        titleRank:
+          o.titleRank === "lead" || o.titleRank === "member" ? o.titleRank : "all",
         kw: String(o.kw || ""),
         depts: Array.isArray(o.depts) ? o.depts.map(String) : [],
         groups: Array.isArray(o.groups) ? o.groups.map(String) : [],
@@ -205,6 +217,7 @@
   function filterFingerprint(st) {
     return JSON.stringify({
       cat: st.cat || "all",
+      titleRank: st.titleRank || "all",
       kw: String(st.kw || "").trim(),
       depts: (st.depts || []).slice().sort(),
       groups: (st.groups || []).slice().sort(),
@@ -298,9 +311,8 @@
 
   function fetchFilteredIds(st) {
     var fp = filterFingerprint(st);
-    var cacheKey = "jbis776-idcache-v2";
     try {
-      var cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+      var cached = JSON.parse(sessionStorage.getItem(ID_CACHE_KEY) || "null");
       if (cached && cached.fp === fp && cached.build === BUILD && Array.isArray(cached.ids)) {
         return Promise.resolve(cached.ids.map(String));
       }
@@ -309,6 +321,7 @@
     }
     try {
       sessionStorage.removeItem("jbis776-idcache-v1");
+      sessionStorage.removeItem("jbis776-idcache-v2");
     } catch (eOld) {
       /* noop */
     }
@@ -321,7 +334,7 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: where + "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id", "list_sort"],
+          fields: ["$id", "list_sort", "job_title"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
@@ -329,6 +342,7 @@
             all.push({
               id: String(rows[i].$id.value),
               sort: Number(rows[i].list_sort && rows[i].list_sort.value),
+              title: rows[i].job_title && rows[i].job_title.value,
             });
           }
           if (rows.length < 500) return all;
@@ -336,15 +350,21 @@
         });
     }
     return page(0).then(function (rows) {
-      var ids = rows.map(function (r) {
+      var filtered = rows;
+      if (st.titleRank === "lead" || st.titleRank === "member") {
+        filtered = rows.filter(function (r) {
+          return titleRank776(r.title) === st.titleRank;
+        });
+      }
+      var ids = filtered.map(function (r) {
         return r.id;
       });
-      var sorts = rows.map(function (r) {
+      var sorts = filtered.map(function (r) {
         return r.sort;
       });
       try {
         sessionStorage.setItem(
-          cacheKey,
+          ID_CACHE_KEY,
           JSON.stringify({ fp: fp, build: BUILD, ids: ids, sorts: sorts, t: Date.now() }),
         );
       } catch (eSave) {
@@ -356,9 +376,8 @@
 
   function fetchFilteredSortMeta(st) {
     var fp = filterFingerprint(st);
-    var cacheKey = "jbis776-idcache-v2";
     try {
-      var cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+      var cached = JSON.parse(sessionStorage.getItem(ID_CACHE_KEY) || "null");
       if (
         cached &&
         cached.fp === fp &&
@@ -374,7 +393,7 @@
     }
     return fetchFilteredIds(st).then(function (ids) {
       try {
-        var cached2 = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+        var cached2 = JSON.parse(sessionStorage.getItem(ID_CACHE_KEY) || "null");
         if (cached2 && Array.isArray(cached2.sorts) && cached2.sorts.length === ids.length) {
           return { ids: ids, sorts: cached2.sorts.map(Number) };
         }
@@ -397,11 +416,13 @@
     var start = (p - 1) * ps;
     var slice = list.slice(start, start + ps);
     var where = buildWhere(st || {});
+    var rankActive =
+      st && (st.titleRank === "lead" || st.titleRank === "member");
     var query;
     if (!slice.length) {
       // where は末尾スペースのみ（and 無し）→ $id 前に and 必須（欠落だと GAIA_IL08）
       query = where ? where + 'and $id = "0"' : '$id = "0"';
-    } else if (!where) {
+    } else if (!where && !rankActive) {
       // 絞り込みなし: list_sort 連続番号で範囲指定（URL短・一覧で安定）
       var sortSlice = (sorts || []).slice(start, start + ps).filter(function (n) {
         return isFinite(n);
@@ -417,16 +438,16 @@
       }
       query = "list_sort >= " + lo + " and list_sort <= " + hi;
     } else {
-      // 絞り込みあり: 該当 $id だけ（order by はビュー側 list_sort に任せる＝URL不一致ループ回避）
-      query =
-        where +
-        "and $id in (" +
+      // 絞り込みあり or 役職のみ: 該当 $id だけ（order by はビュー側 list_sort に任せる）
+      var idClause =
+        "$id in (" +
         slice
           .map(function (id) {
             return '"' + id + '"';
           })
           .join(",") +
         ")";
+      query = where ? where + "and " + idClause : idClause;
     }
     return {
       query: query,
@@ -442,6 +463,7 @@
   function goRosterPage(st, page) {
     var next = {
       cat: st.cat,
+      titleRank: st.titleRank || "all",
       kw: st.kw,
       depts: st.depts,
       groups: st.groups,
@@ -491,6 +513,7 @@
     try {
       sessionStorage.removeItem("jbis776-idcache-v1");
       sessionStorage.removeItem("jbis776-idcache-v2");
+      sessionStorage.removeItem(ID_CACHE_KEY);
     } catch (e) {
       /* noop */
     }
@@ -1463,6 +1486,8 @@
     if (st.groups && st.groups.length) bits.push("グループ" + st.groups.length);
     if (st.cat === "seishain") bits.push("正社員");
     if (st.cat === "junshain") bits.push("準社員");
+    if (st.titleRank === "lead") bits.push("役職者");
+    else if (st.titleRank === "member") bits.push("一般");
     return bits.length ? bits.join("・") : "条件なし（全件）";
   }
 
@@ -1474,6 +1499,8 @@
     if (st.cat === "seishain") parts.push("雇用区分: 正社員");
     else if (st.cat === "junshain") parts.push("雇用区分: 準社員");
     else parts.push("雇用区分: すべて");
+    if (st.titleRank === "lead") parts.push("役職: 役職者");
+    else if (st.titleRank === "member") parts.push("役職: 一般");
     if (st.depts && st.depts.length) {
       parts.push("所属: " + st.depts.join("・"));
     }
@@ -1523,6 +1550,13 @@
           : "すべて（正社員・準社員）";
     var lines = [];
     lines.push("雇用区分: " + catLabel);
+    var titleLabel =
+      st.titleRank === "lead"
+        ? "役職者"
+        : st.titleRank === "member"
+          ? "一般"
+          : "すべて";
+    lines.push("役職: " + titleLabel);
     if (st.kw && String(st.kw).trim()) {
       lines.push("キーワード: 「" + String(st.kw).trim() + "」");
     } else {
@@ -2829,6 +2863,43 @@
     chipRow.appendChild(mkChip("すべて", "all"));
     bandFilter.appendChild(chipRow);
 
+    var titleChipRow = document.createElement("div");
+    titleChipRow.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:2px;";
+    var titleLabel = document.createElement("span");
+    titleLabel.textContent = "役職";
+    titleLabel.style.cssText =
+      "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;margin-right:4px;";
+    titleChipRow.appendChild(titleLabel);
+
+    function mkTitleChip(text, value) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      var rank = st.titleRank || "all";
+      b.setAttribute("aria-pressed", rank === value ? "true" : "false");
+      var on = rank === value;
+      b.style.cssText =
+        "box-sizing:border-box;height:28px;padding:0 12px;border-radius:999px;" +
+        "font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;" +
+        "border:1px solid " +
+        (on ? "#0d9488" : "#94a3b8") +
+        ";background:" +
+        (on ? "#0d9488" : "#fff") +
+        ";color:" +
+        (on ? "#fff" : "#0f172a") +
+        ";";
+      b.addEventListener("click", function () {
+        st.titleRank = value;
+        applyAndReload(st);
+      });
+      return b;
+    }
+    titleChipRow.appendChild(mkTitleChip("すべて", "all"));
+    titleChipRow.appendChild(mkTitleChip("役職者", "lead"));
+    titleChipRow.appendChild(mkTitleChip("一般", "member"));
+    bandFilter.appendChild(titleChipRow);
+
     var filterRow = document.createElement("div");
     filterRow.style.cssText =
       "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
@@ -2996,16 +3067,36 @@
 
     var uiOpen = loadUiOpen();
     var queryBase = buildQuery(st);
-    var recordsP = fetchRecordsByQuery(queryBase);
+    var recordsP = fetchRecordsByQuery(queryBase).then(function (recs) {
+      // 役職チップは query に載らないため、人数・Excel・印刷・集計も同一判定で絞る
+      if (st.titleRank === "lead" || st.titleRank === "member") {
+        return (recs || []).filter(function (r) {
+          var t = r && r.job_title && r.job_title.value;
+          return titleRank776(t) === st.titleRank;
+        });
+      }
+      return recs || [];
+    });
 
-    fetchMatchCount(queryBase)
-      .then(function (n) {
-        matchCountEl.textContent = "該当件数: " + n + "件";
-      })
-      .catch(function (err) {
-        console.warn("[jbis 776 match count]", err);
-        matchCountEl.textContent = "該当件数: —";
-      });
+    if (st.titleRank === "lead" || st.titleRank === "member") {
+      fetchFilteredIds(st)
+        .then(function (ids) {
+          matchCountEl.textContent = "該当件数: " + ids.length + "件";
+        })
+        .catch(function (err) {
+          console.warn("[jbis 776 match count title]", err);
+          matchCountEl.textContent = "該当件数: —";
+        });
+    } else {
+      fetchMatchCount(queryBase)
+        .then(function (n) {
+          matchCountEl.textContent = "該当件数: " + n + "件";
+        })
+        .catch(function (err) {
+          console.warn("[jbis 776 match count]", err);
+          matchCountEl.textContent = "該当件数: —";
+        });
+    }
 
     recordsP
       .then(function (recs) {
@@ -3195,6 +3286,7 @@
             try {
               sessionStorage.removeItem("jbis776-idcache-v1");
               sessionStorage.removeItem("jbis776-idcache-v2");
+              sessionStorage.removeItem(ID_CACHE_KEY);
             } catch (eCache) {
               /* noop */
             }
