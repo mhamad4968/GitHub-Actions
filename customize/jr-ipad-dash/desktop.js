@@ -28,7 +28,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
   "use strict";
 
   /** JRシステム用iPad管理台帳 ver.1 — DB REST CRUD + 部署×ステータス集計 + A4印刷 */
-  var BUILD = "2026-08-23-jr-ipad-dash-p0-p1-ux";
+  var BUILD = "2026-08-23-jr-ipad-dash-p2-vux";
 
   var APP_DB = 720;
   var FIXED_APPLE_PW = "Honten00";
@@ -122,6 +122,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     filterStatus: "",
     filterDept: "",
     lifecycleFilter: "active",
+    summaryFilterActive: false,
     loading: false,
     isAdmin: false,
   };
@@ -426,18 +427,32 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       ".jip-summary th{background:#f1f5f9;}" +
       ".jip-summary td.jip-dept{text-align:left;font-weight:600;white-space:nowrap;}" +
       ".jip-summary tr.jip-summary-total td{font-weight:700;background:#f8fafc;}" +
-      ".jip-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;}" +
+      ".jip-summary-clickable{cursor:pointer;}" +
+      ".jip-summary-clickable:hover{background:#e0f2fe;}" +
+      ".jip-filters{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}" +
+      ".jip-filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}" +
       ".jip-filters input,.jip-filters select{padding:8px 10px;font-size:15px;}" +
       ".jip-filter-clear{white-space:nowrap;}" +
       ".jip-status-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}" +
       ".jip-status-chip{padding:6px 14px;font-size:14px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;}" +
       ".jip-status-chip.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:700;}" +
       ".jip-status-chip:hover:not(.active){background:#f1f5f9;}" +
+      ".jip-st-待機{background:#dbeafe;color:#1e40af;}" +
+      ".jip-st-貸出中{background:#dcfce7;color:#166534;}" +
+      ".jip-st-確認中{background:#fef3c7;color:#92400e;}" +
+      ".jip-st-故障{background:#fee2e2;color:#991b1b;}" +
+      ".jip-st-廃棄{background:#f1f5f9;color:#475569;}" +
+      ".jip-status-chip.jip-st-待機:not(.active){background:#dbeafe;color:#1e40af;border-color:#93c5fd;}" +
+      ".jip-status-chip.jip-st-貸出中:not(.active){background:#dcfce7;color:#166534;border-color:#86efac;}" +
+      ".jip-status-chip.jip-st-確認中:not(.active){background:#fef3c7;color:#92400e;border-color:#fcd34d;}" +
+      ".jip-status-chip.jip-st-故障:not(.active){background:#fee2e2;color:#991b1b;border-color:#fca5a5;}" +
+      ".jip-status-chip.jip-st-廃棄:not(.active){background:#f1f5f9;color:#475569;border-color:#cbd5e1;}" +
       ".jip-condition-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;" +
       "margin-bottom:12px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;}" +
       ".jip-condition-text{color:#334155;}" +
       ".jip-condition-count{font-weight:700;color:#1e40af;white-space:nowrap;}" +
-      ".jip-lifecycle-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}" +
+      ".jip-condition-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}" +
+      ".jip-lifecycle-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}" +
       ".jip-lifecycle-label{font-size:14px;font-weight:600;color:#475569;}" +
       ".jip-lifecycle-btn{padding:8px 18px;font-size:15px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer;}" +
       ".jip-lifecycle-btn.active{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:700;}" +
@@ -446,6 +461,13 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       ".jip-table{border-collapse:collapse;width:100%;font-size:15px;min-width:1500px;}" +
       ".jip-table th,.jip-table td{border:1px solid #e2e8f0;padding:6px 8px;vertical-align:middle;line-height:1.45;}" +
       ".jip-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;font-size:14px;}" +
+      ".jip-col-device_name,.jip-table td.jip-col-device_name{min-width:120px;}" +
+      ".jip-col-apple_id,.jip-table td.jip-col-apple_id{min-width:140px;}" +
+      ".jip-table tr.jip-dept-break td{border-top:2px solid #94a3b8;background:#f8fafc;}" +
+      ".jip-table tr.jip-row-attention td:first-child{border-left:4px solid #f59e0b;}" +
+      ".jip-cell-copy-wrap{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;}" +
+      ".jip-btn-copy{padding:2px 8px;font-size:12px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;cursor:pointer;white-space:nowrap;}" +
+      ".jip-btn-copy:hover{background:#f1f5f9;}" +
       ".jip-none{color:#64748b;font-style:italic;}" +
       ".jip-actions button{margin:0 3px;padding:4px 10px;font-size:14px;}" +
       ".jip-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
@@ -487,6 +509,90 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     });
   }
 
+  function syncFilterUi() {
+    syncStatusChips();
+    var deptSel = document.getElementById("jip-filter-dept");
+    if (deptSel) deptSel.value = state.filterDept || "";
+    var root = document.getElementById("jip-root");
+    if (root) {
+      root.querySelectorAll(".jip-lifecycle-btn").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-lifecycle") === state.lifecycleFilter);
+      });
+    }
+  }
+
+  function statusCssClass(st) {
+    var s = String(st || "").trim();
+    if (!s) return "";
+    return "jip-st-" + s;
+  }
+
+  function clearSummaryFilter() {
+    state.summaryFilterActive = false;
+    state.filterDept = "";
+    state.filterStatus = "";
+    syncFilterUi();
+    renderTable();
+  }
+
+  function applySummaryDeptStatus(dept, status) {
+    state.summaryFilterActive = true;
+    state.filterDept = dept;
+    state.filterStatus = status;
+    if (status === STATUS_DISPOSED) {
+      state.lifecycleFilter = "retired";
+    } else {
+      state.lifecycleFilter = "active";
+    }
+    syncLifecycleStatusFilter();
+    syncFilterUi();
+    renderTable();
+  }
+
+  function applySummaryDeptOnly(dept) {
+    state.summaryFilterActive = true;
+    state.filterDept = dept;
+    state.filterStatus = "";
+    syncFilterUi();
+    renderTable();
+  }
+
+  function copyTextToClipboard(text, btn) {
+    var s = String(text || "").trim();
+    if (!s) return;
+    function showCopied() {
+      if (!btn) return;
+      var orig = btn.textContent;
+      btn.textContent = "コピー済";
+      setTimeout(function () {
+        btn.textContent = orig;
+      }, 1500);
+    }
+    function fallbackCopy(t) {
+      var ta = document.createElement("textarea");
+      ta.value = t;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+      } catch (e) {
+        /* ignore */
+      }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(s).then(showCopied).catch(function () {
+        fallbackCopy(s);
+        showCopied();
+      });
+    } else {
+      fallbackCopy(s);
+      showCopied();
+    }
+  }
+
   function syncLifecycleStatusFilter() {
     if (state.lifecycleFilter === "active" && state.filterStatus === STATUS_DISPOSED) {
       state.filterStatus = "";
@@ -502,6 +608,10 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     var hasOther = !!(state.filterStatus || state.filterDept || state.search.trim());
     if (state.lifecycleFilter === "retired") parts.push("表示=廃止");
     else if (hasOther) parts.push("表示=有効");
+    if (state.summaryFilterActive) {
+      if (state.filterStatus) parts.push("集計=部署×ステータス");
+      else parts.push("集計=部署");
+    }
     if (state.filterStatus) parts.push("ステータス=" + state.filterStatus);
     if (state.filterDept) parts.push("管理部署=" + state.filterDept);
     if (state.search.trim()) parts.push("検索=" + state.search.trim());
@@ -514,12 +624,23 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     var parts = buildFilterConditionParts();
     var condText = parts.length ? parts.join(" ・ ") : "（なし）";
     var count = filteredRecords().length;
+    var clearSummaryBtnHtml = state.summaryFilterActive
+      ? '<button type="button" id="jip-clear-summary-filter" class="kintoneplugin-button-normal">集計絞込を外す</button>'
+      : "";
     bar.innerHTML =
       '<span class="jip-condition-text">いまの条件: ' +
       esc(condText) +
-      '</span><span class="jip-condition-count">該当 ' +
+      '</span><span class="jip-condition-actions">' +
+      clearSummaryBtnHtml +
+      '<span class="jip-condition-count">該当 ' +
       esc(String(count)) +
-      " 台</span>";
+      " 台</span></span>";
+    var clearSummaryBtn = document.getElementById("jip-clear-summary-filter");
+    if (clearSummaryBtn) {
+      clearSummaryBtn.addEventListener("click", function () {
+        clearSummaryFilter();
+      });
+    }
   }
 
   function setLifecycleFilter(mode) {
@@ -633,11 +754,21 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
         var n = row[st] || 0;
         rowTotal += n;
         colTotals[st] += n;
-        return "<td>" + esc(String(n)) + "</td>";
+        return (
+          '<td class="jip-summary-clickable" data-dept="' +
+          esc(d.name) +
+          '" data-status="' +
+          esc(st) +
+          '">' +
+          esc(String(n)) +
+          "</td>"
+        );
       }).join("");
       grand += rowTotal;
       return (
-        "<tr><td class=\"jip-dept\">" +
+        '<tr><td class="jip-dept jip-summary-clickable" data-dept="' +
+        esc(d.name) +
+        '" data-dept-only="1">' +
         esc(d.name) +
         "</td>" +
         cells +
@@ -655,6 +786,16 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       "<td><strong>" +
       esc(String(grand)) +
       "</strong></td></tr>";
+    el.querySelectorAll(".jip-summary-clickable").forEach(function (td) {
+      td.addEventListener("click", function () {
+        var dept = td.getAttribute("data-dept") || "";
+        if (td.getAttribute("data-dept-only") === "1") {
+          applySummaryDeptOnly(dept);
+        } else {
+          applySummaryDeptStatus(dept, td.getAttribute("data-status") || "");
+        }
+      });
+    });
   }
 
   function closeModal() {
@@ -925,7 +1066,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     var nextDevice = nextJbisDevice(state.records);
     var nextApple = nextJrAppleId(state.records);
     var html =
-      '<span class="jip-meta-count">全 ' +
+      '<span class="jip-meta-count">登録 ' +
       esc(String(state.records.length)) +
       " 台</span>" +
       '<div class="jip-next-slot">' +
@@ -973,6 +1114,35 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     var t = String(text || "").trim();
     if (!t) return '<span class="jip-none">—</span>';
     return esc(t);
+  }
+
+  function renderListCell(row, col) {
+    var t = String(row[col.key] || "").trim();
+    if (col.key === "device_name" || col.key === "apple_id") {
+      if (!t) return '<span class="jip-none">—</span>';
+      return (
+        '<span class="jip-cell-copy-wrap">' +
+        esc(t) +
+        ' <button type="button" class="jip-btn-copy" data-copy="' +
+        esc(t) +
+        '">コピー</button></span>'
+      );
+    }
+    if (col.key === "status") {
+      return cellText(t);
+    }
+    return cellText(row[col.key]);
+  }
+
+  function listCellClass(col, row) {
+    var cls = [];
+    if (col.key === "device_name") cls.push("jip-col-device_name");
+    if (col.key === "apple_id") cls.push("jip-col-apple_id");
+    if (col.key === "status") {
+      var stCls = statusCssClass(row.status);
+      if (stCls) cls.push(stCls);
+    }
+    return cls.join(" ");
   }
 
   function printVal(raw) {
@@ -1307,17 +1477,25 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       return;
     }
     tbody.innerHTML = rows
-      .map(function (row) {
+      .map(function (row, idx) {
         var actionBtns = "";
         if (state.isAdmin) {
           actionBtns =
             '<button type="button" class="jip-btn-edit">修正</button>' +
             '<button type="button" class="jip-btn-print">印刷</button>';
         }
+        var trCls = "";
+        if (idx > 0 && rows[idx - 1].mgmt_dept !== row.mgmt_dept) trCls = "jip-dept-break";
+        if (row.status === "故障" || row.status === "確認中") {
+          trCls = trCls ? trCls + " jip-row-attention" : "jip-row-attention";
+        }
         return (
-          "<tr>" +
+          '<tr class="' +
+          trCls +
+          '">' +
           LIST_COLUMNS.map(function (col) {
-            return "<td>" + cellText(row[col.key]) + "</td>";
+            var tdCls = listCellClass(col, row);
+            return '<td' + (tdCls ? ' class="' + tdCls + '"' : "") + ">" + renderListCell(row, col) + "</td>";
           }).join("") +
           '<td class="jip-actions">' +
           actionBtns +
@@ -1329,6 +1507,12 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     rows.forEach(function (row, idx) {
       var tr = tbody.rows[idx];
       if (!tr) return;
+      tr.querySelectorAll(".jip-btn-copy").forEach(function (btn) {
+        btn.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          copyTextToClipboard(btn.getAttribute("data-copy"), btn);
+        });
+      });
       var editB = tr.querySelector(".jip-btn-edit");
       if (editB) {
         editB.addEventListener("click", function () {
@@ -1348,6 +1532,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     state.search = "";
     state.filterStatus = "";
     state.filterDept = "";
+    state.summaryFilterActive = false;
     state.lifecycleFilter = "active";
     var search = document.getElementById("jip-search");
     var deptSel = document.getElementById("jip-filter-dept");
@@ -1390,29 +1575,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       }).join("") +
       "<th>合計</th></tr></thead><tbody id=\"jip-summary-tbody\"></tbody></table></div></details>" +
       '<div class="jip-filters">' +
-      '<input type="search" id="jip-search" placeholder="端末名・電話・Apple ID・貸出先・モデル・備考" style="min-width:260px">' +
-      '<button type="button" id="jip-filter-clear" class="kintoneplugin-button-normal jip-filter-clear">クリア</button>' +
-      '<div class="jip-status-chips" id="jip-status-chips">' +
-      '<button type="button" class="jip-status-chip' +
-      (state.filterStatus === "" ? " active" : "") +
-      '" data-status="">すべて</button>' +
-      STATUS_VALUES.map(function (s) {
-        return (
-          '<button type="button" class="jip-status-chip' +
-          (state.filterStatus === s ? " active" : "") +
-          '" data-status="' +
-          esc(s) +
-          '">' +
-          esc(s) +
-          "</button>"
-        );
-      }).join("") +
-      "</div>" +
-      '<select id="jip-filter-dept"><option value="">管理部署: すべて</option>' +
-      MGMT_DEPTS.map(function (d) {
-        return '<option value="' + esc(d.name) + '">' + esc(d.name) + "</option>";
-      }).join("") +
-      "</select></div>" +
+      '<div class="jip-filter-row jip-filter-row-1">' +
       '<div class="jip-lifecycle-bar">' +
       '<span class="jip-lifecycle-label">表示:</span>' +
       '<button type="button" class="jip-lifecycle-btn' +
@@ -1422,10 +1585,42 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       (state.lifecycleFilter === "retired" ? " active" : "") +
       '" data-lifecycle="retired">廃止</button>' +
       "</div>" +
+      '<div class="jip-status-chips" id="jip-status-chips">' +
+      '<button type="button" class="jip-status-chip' +
+      (state.filterStatus === "" ? " active" : "") +
+      '" data-status="">すべて</button>' +
+      STATUS_VALUES.map(function (s) {
+        return (
+          '<button type="button" class="jip-status-chip ' +
+          statusCssClass(s) +
+          (state.filterStatus === s ? " active" : "") +
+          '" data-status="' +
+          esc(s) +
+          '">' +
+          esc(s) +
+          "</button>"
+        );
+      }).join("") +
+      "</div></div>" +
+      '<div class="jip-filter-row jip-filter-row-2">' +
+      '<input type="search" id="jip-search" placeholder="端末名・電話・Apple ID・貸出先・モデル・備考" style="min-width:260px">' +
+      '<select id="jip-filter-dept"><option value="">管理部署: すべて</option>' +
+      MGMT_DEPTS.map(function (d) {
+        return '<option value="' + esc(d.name) + '">' + esc(d.name) + "</option>";
+      }).join("") +
+      "</select>" +
+      '<button type="button" id="jip-filter-clear" class="kintoneplugin-button-normal jip-filter-clear">クリア</button>' +
+      "</div></div>" +
       '<div class="jip-condition-bar" id="jip-condition-bar"></div>' +
       '<div class="jip-table-wrap"><table class="jip-table"><thead><tr>' +
       LIST_COLUMNS.map(function (c) {
-        return "<th>" + esc(c.label) + "</th>";
+        var thCls =
+          c.key === "device_name"
+            ? ' class="jip-col-device_name"'
+            : c.key === "apple_id"
+              ? ' class="jip-col-apple_id"'
+              : "";
+        return "<th" + thCls + ">" + esc(c.label) + "</th>";
       }).join("") +
       "<th>操作</th></tr></thead><tbody id=\"jip-tbody\"></tbody></table></div>";
     host.appendChild(root);
