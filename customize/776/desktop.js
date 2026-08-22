@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-agg-kanetsu-seko-under-koji（集計: 関越支店施工部を工事部の直下へ）
  * BUILD: 2026-08-22-776-e1-title-filter（役職チップ: すべて／役職者／一般・Excel/集計も同条件）
  * BUILD: 2026-08-22-776-p1-title-over-kenmu（兼務行でも役職色が勝つ・列ずれ補正）
  * BUILD: 2026-08-22-776-p1-title-rank-fix（常務・監査役を役職者に・役職列ヘッダ照合で部長漏れ修正）
@@ -35,7 +36,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-e1-title-filter";
+  var BUILD = "2026-08-22-776-agg-kanetsu-seko-under-koji";
   var ID_CACHE_KEY = "jbis776-idcache-v3";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -1678,10 +1679,10 @@
     "関越支店管理部",
     "関越支店安全部",
     "関越支店工事部",
+    "関越支店施工部",
     "関越支店新潟営業所",
     "関越支店長野営業所",
     "関越支店高崎営業所",
-    "関越支店施工部",
     "東京支店",
     "東京支店施工支援部",
     "東京支店安全部",
