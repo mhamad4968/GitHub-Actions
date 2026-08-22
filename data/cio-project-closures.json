@@ -102,7 +102,7 @@
       "id": "jr-ipad-ledger",
       "laneId": "jr-ipad-ledger",
       "label": "JRシステム用 iPad 管理台帳 ver.1",
-      "status": "reopened",
+      "status": "closed-v1",
       "closedAt": "2026-06-15",
       "reopenedAt": "2026-08-23",
       "reclosedAt": "2026-08-23",
@@ -110,7 +110,7 @@
       "completionReport": "docs/reports/2026-06-15-jr-ipad-ledger-completion.md",
       "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260615.txt",
       "kintoneAppsSection": "JRシステム用 iPad 管理台帳 ver.1（Space 34 — 720–721）",
-      "kintoneAppsStateMarker": "v1 + P0/P1 → P2-1/VUX reopen",
+      "kintoneAppsStateMarker": "v1 + P0/P1 + P2-1/VUX（2026-08-23 目視OK）",
       "forbiddenNextTaskPatterns": [
         "JR iPad",
         "jr-ipad",
@@ -120,7 +120,7 @@
         "721",
         "JRシステム用iPad"
       ],
-      "note": "2026-08-23: P0/P1目視OK後reclosed→同日P2-1+A+B+V1-7で再reopen。720/P2-2不触。"
+      "note": "2026-08-23: P0/P1→P2-1+A+B+V1-7 目視OK・reclosed。P2-2/C-Iおよび694/674連携は浜田明示GOまで再開しない。"
     },
     {
       "id": "vpn-account-ledger",

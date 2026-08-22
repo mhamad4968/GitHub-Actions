@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-23 09:00 JST — **721 P2-VUX deploy 済・浜田目視待ち**
-**次の1手**: [721](https://jbis-kintone.cybozu.com/k/721/) 目視（集計クリック・解除・コピー・V1–7）。OK 後 reclosed
-**レーン変更**: **`jr-ipad-ledger` reopened**（P2-1+A+B+V1-7）。P2-2/C-I 見送り
-**Git**: R63 commit 予定
-**closeStatus**: **open**（目視待ち）
-**制約**: 閉済8件＋jr-ipad **reopened**／688 heat外／677–679／712禁止／736不触／SKYSEA=案件外／emp_id不触／**720不触**／**P2-2しない**
-**本日状態**: 721 live BUILD=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**最終更新**: 2026-08-23 09:00 JST — **721 P2-VUX 目視OK・reclosed**。721 改善レーン完了
+**次の1手**: 新規レーンのみ（項番 -0）。721 追加改善は明示 GO まで再開しない
+**レーン変更**: **`jr-ipad-ledger` reclosed**（P0/P1＋P2-1+A+B+V1-7 目視OK）。P2-2/C-I・694/674 は見送り継続
+**Git**: closures reclosed コミット予定
+**closeStatus**: **open**（セッション継続可・721レーンは閉じた）
+**制約**: 閉済9件／688 heat外／677–679／712禁止／736不触／SKYSEA=案件外／emp_id不触／**720–721再開禁止（明示GOまで）**
+**本日状態**: 721 live BUILD=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**（目視OK）
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-23）
 | App | BUILD | rev |
@@ -16,14 +16,14 @@
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: P2-2・C〜I は今回やらない。
-**GO待ち**: **721 浜田目視**（P2-VUX）。
+**継続メモ**: 721 は運用継続。追加改善は不要判定（明示GO時のみ）。
+**GO待ち**: なし（721完了）。次レーンは浜田指示待ち。
 **調査正本**: `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
-## クローズ済み（`data/cio-project-closures.json` — reopen 中 1）
-業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=reopened(P2-VUX目視待ち)** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
+## クローズ済み（`data/cio-project-closures.json` — 9件）
+業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=closed-v1（P0/P1+P2-VUX済）** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
 
 ## 保留・その他の制約
 | 状態 | 内容 |
