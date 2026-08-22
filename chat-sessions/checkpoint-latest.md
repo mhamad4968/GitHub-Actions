@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-22 11:15 JST — **昼セッション締め**（夜継続用）。776 revision衝突修正を緊急 deploy 済。
-**次の1手**: cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。
+**最終更新**: 2026-08-22 11:26 JST — 昼締め＋夜作業順（Excel兼務・並び・部室）を必読に追記。
+**次の1手**: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
 **レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
 **Git**: **`f31c526e`** = `origin/main` — push 済
 **closeStatus**: closed（昼区切り・夜継続）
@@ -14,8 +14,8 @@
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 名簿レーン継続。夜必読あり。Excelは移行OKまで残置。
-**GO待ち**: 776 保存衝突修正の目視確認（ハードリロード後）。
+**継続メモ**: 夜=最新Excel(C:\\tmp\\社員名簿…\\社員一覧表.xlsx 11:13更新)で兼務・並び・部室。削除は最終GOまで残置。
+**GO待ち**: なし（夜作業順は浜田指示済）。部／室のExcel列マッピングだけ曖昧なら1問。
 **調査正本**: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`

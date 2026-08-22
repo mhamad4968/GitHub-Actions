@@ -6112,3 +6112,22 @@ npm run cio:morning:ready
 **話したこと**: 部／室は776のみ固定マスタ・本務兼務両方可・一括は並び聞かず・個別保存で前/後ろ・595兼務追加は部署末尾。
 
 ---
+
+### 2026-08-22 11:26 JST — **夜作業順（浜田）Excel兼務・並び・部室**
+
+**要約**: 最新Excelを `C:\tmp\社員名簿（正社員・準社員）\社員一覧表.xlsx` に入れ直し（兼務抜け修正・2026-08-22 11:13）。夜の順は固定: ①Excel突合で兼務反映 ②`list_sort`をExcel行順＝当社役職順に合わせる ③課／室をExcelベースで登録 ④漏れ点検＋機能／レイアウト／集計整え。
+
+**次の1手**: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
+
+**触らない**: emp_id／閉済UX／Excel削除（最終GOまで）
+
+**次セッションへの 1 行**: Excel at `C:\tmp\社員名簿（正社員・準社員）\社員一覧表.xlsx` is source of truth for kenmu+order; then section_name; then polish.
+
+
+**Git**: **`f31c526e`** = `origin/main` — push 済
+
+**GO待ち**: 776 保存衝突修正の目視
+
+**話したこと**: 最新Excelを `C:\tmp\社員名簿（正社員・準社員）\社員一覧表.xlsx` に入れ直し（兼務抜け修正・2026-08-22 11:13）。夜の順は固定: ①Excel突合で兼務反映 ②`list_sort`をExcel行順＝当社役職順に合わせる ③課／室をExcelベースで登録 ④漏れ点検＋機能／レイアウト／集計整え。
+
+---

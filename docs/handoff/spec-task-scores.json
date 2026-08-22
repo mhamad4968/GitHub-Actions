@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-22T02:17:02.683Z",
+  "scoredAt": "2026-08-22T02:28:00.522Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。",
+  "topTask": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
   "topTaskKind": "work",
-  "topWorkTask": "cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。",
+  "topWorkTask": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
   "tasks": [
     {
-      "id": "checkpoint:cold-start_→_必読_`chat-sessions/2026-08-2",
-      "text": "cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。",
+      "id": "checkpoint:cold-start_→_必読_chat-sessions/2026-08-22",
+      "text": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,
