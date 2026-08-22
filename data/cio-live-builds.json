@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-22-776-p0-toolbar-frames",
-      "fileKey": "2b1c8055-e39e-4905-bdec-e66921cedbbe",
-      "revision": "62",
+      "build": "2026-08-22-776-p0-toolbar-tight-top",
+      "fileKey": "272b3442-712b-48f6-9d4b-79e999208e03",
+      "revision": "63",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T09:13:32.977Z",
+      "deployedAt": "2026-08-22T09:16:44.359Z",
       "note": null
     }
   }

@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p0-toolbar-tight-top（①絞り込み上の余白を詰める）
  * BUILD: 2026-08-22-776-p0-toolbar-frames（P0: 絞込／状況／操作を枠分け・人数を状況帯へ）
  * BUILD: 2026-08-22-776-agg-total-col（集計表に本務＋兼務の合計列）
  * BUILD: 2026-08-22-776-fix-query-and（絞り込み＋$id in の and 欠落で GAIA_IL08 を修正）
@@ -26,7 +27,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p0-toolbar-frames";
+  var BUILD = "2026-08-22-776-p0-toolbar-tight-top";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -2548,6 +2549,33 @@
     if (old && old.parentNode) old.parentNode.removeChild(old);
     closeOrgPopover();
 
+    /* ヘッダスペース上余白を詰める（①の上の空き） */
+    if (space && space.style) {
+      space.style.marginTop = "0";
+      space.style.paddingTop = "0";
+      space.style.marginBottom = "0";
+      space.style.paddingBottom = "4px";
+    }
+    try {
+      var hsCssId = "jbis-776-header-space-tight";
+      if (!document.getElementById(hsCssId)) {
+        var hsCss = document.createElement("style");
+        hsCss.id = hsCssId;
+        hsCss.textContent =
+          ".gaia-argoui-app-infomenu + .gaia-argoui-app-toolbar," +
+          ".contents-actionmenu-gaia," +
+          "#header-space-element," +
+          ".gaia-argoui-app-showindex-toolbar-spacer{margin-top:0!important;padding-top:0!important;}" +
+          "div[id^='user-js-']{margin-top:0!important;}" +
+          "#" +
+          WRAP_ID +
+          "{margin-top:0!important;}";
+        document.head.appendChild(hsCss);
+      }
+    } catch (eCss) {
+      /* noop */
+    }
+
     /* PC台帳（674）準拠の共通ボタン高さ */
     var BTN =
       "box-sizing:border-box;height:32px;padding:0 12px;border-radius:6px;" +
@@ -2561,11 +2589,15 @@
       "border:2px solid #c2410c;background:#fff7ed;color:#9a3412;font-weight:800;" +
       "box-shadow:0 1px 0 rgba(194,65,12,.15);padding:0 14px;";
 
-    function mkBand(title, borderColor, bg) {
+    function mkBand(title, borderColor, bg, opts) {
+      var o = opts || {};
+      var pad = o.tightTop ? "6px 12px 10px" : "10px 12px 12px";
       var band = document.createElement("section");
       band.setAttribute("aria-label", title);
       band.style.cssText =
-        "margin:0;padding:10px 12px 12px;border:1.5px solid " +
+        "margin:0;padding:" +
+        pad +
+        ";border:1.5px solid " +
         borderColor +
         ";border-radius:10px;background:" +
         bg +
@@ -2574,7 +2606,7 @@
       lab.textContent = title;
       lab.style.cssText =
         "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;" +
-        "text-transform:none;line-height:1;";
+        "text-transform:none;line-height:1;margin:0;";
       band.appendChild(lab);
       return band;
     }
@@ -2582,11 +2614,11 @@
     var wrap = document.createElement("div");
     wrap.id = WRAP_ID;
     wrap.style.cssText =
-      "margin:0 0 12px;padding:0;border:none;background:transparent;" +
-      "display:flex;flex-direction:column;gap:10px;box-sizing:border-box;";
+      "margin:0 0 8px;padding:0;border:none;background:transparent;" +
+      "display:flex;flex-direction:column;gap:8px;box-sizing:border-box;";
 
     /* —— 帯1: 絞り込み —— */
-    var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc");
+    var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc", { tightTop: true });
     var chipRow = document.createElement("div");
     chipRow.style.cssText =
       "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
