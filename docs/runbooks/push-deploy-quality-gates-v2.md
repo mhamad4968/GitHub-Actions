@@ -35,6 +35,8 @@ commit 前（軽量） → push 前（標準） → deploy 前（app 固有）
 | **push** | `npm run cio:pre-push-check` | constitution-handoff + lint + **`cio:pre-push-local-parity`（O-1・2026-07-30）** + jikkou gates | **git push 前**（hook 同等） |
 | **deploy** | `npm run cio:deploy-gate -- 736` | app manifest 参照 | **`cio:preflight` → `deploy` の間** |
 
+**#R1（2026-08-22 夕反省 GO）**: customize で **client 側絞込**を足すとき、一覧だけでなく **人数・Excel／印刷・集計（records 経路）も同じ絞込か**を着手チェックに含める。
+
 ```mermaid
 flowchart LR
   C[customize 編集] --> B[build/bundle]

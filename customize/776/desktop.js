@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-reorder-range-put（並び替え: 変化範囲だけ list_sort PUT）
  * BUILD: 2026-08-22-776-agg-kanetsu-seko-under-koji（集計: 関越支店施工部を工事部の直下へ）
  * BUILD: 2026-08-22-776-e1-title-filter（役職チップ: すべて／役職者／一般・Excel/集計も同条件）
  * BUILD: 2026-08-22-776-p1-title-over-kenmu（兼務行でも役職色が勝つ・列ずれ補正）
@@ -36,7 +37,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-agg-kanetsu-seko-under-koji";
+  var BUILD = "2026-08-22-776-reorder-range-put";
   var ID_CACHE_KEY = "jbis776-idcache-v3";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -734,6 +735,15 @@
       "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}";
   }
 
+  /** 役職チップ用: records 配列を titleRank776 で絞る（人数・Excel・印刷・集計と ID 経路で共用） */
+  function filterRecordsByTitleRank776(recs, titleRank) {
+    if (titleRank !== "lead" && titleRank !== "member") return recs || [];
+    return (recs || []).filter(function (r) {
+      var t = r && r.job_title && r.job_title.value;
+      return titleRank776(t) === titleRank;
+    });
+  }
+
   /** 役職文字列 → lead（役職者） / member（部員等） / other */
   function titleRank776(title) {
     var t = String(title || "").trim();
@@ -1175,18 +1185,24 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id"],
+          fields: ["$id", "list_sort"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
           for (var i = 0; i < rows.length; i++) {
-            all.push(String(rows[i].$id.value));
+            all.push({
+              id: String(rows[i].$id.value),
+              sort: Number(rows[i].list_sort && rows[i].list_sort.value),
+            });
           }
           if (rows.length < 500) return all;
           return page(offset + 500);
         });
     }
-    return page(0).then(function (ids) {
+    return page(0).then(function (rows) {
+      var ids = rows.map(function (r) {
+        return r.id;
+      });
       var from = ids.indexOf(String(moverId));
       var anchor = ids.indexOf(String(anchorId));
       if (from < 0) return Promise.reject(new Error("動かす人が一覧にありません"));
@@ -1197,7 +1213,7 @@
       if (insertAt < 0) insertAt = 0;
       if (insertAt > ids.length) insertAt = ids.length;
       ids.splice(insertAt, 0, String(moverId));
-      return renumberListSortIds(app, ids).then(function () {
+      return applyListSortOrder776(app, rows, ids).then(function () {
         return { total: ids.length, at: insertAt + 1 };
       });
     });
@@ -1212,7 +1228,7 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id", "dept_name"],
+          fields: ["$id", "dept_name", "list_sort"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
@@ -1220,6 +1236,7 @@
             all.push({
               id: String(rows[i].$id.value),
               dept: cell(rows[i], "dept_name"),
+              sort: Number(rows[i].list_sort && rows[i].list_sort.value),
             });
           }
           if (rows.length < 500) return all;
@@ -1254,16 +1271,97 @@
       if (insertAt < 0) insertAt = 0;
       if (insertAt > ids.length) insertAt = ids.length;
       ids.splice(insertAt, 0, String(moverId));
-      return renumberListSortIds(app, ids).then(function () {
+      return applyListSortOrder776(app, rows, ids).then(function () {
         return { total: ids.length, at: insertAt + 1, dept: dept };
       });
     });
   }
 
-  function renumberListSortIds(app, ids) {
-    var updates = ids.map(function (id, i) {
-      return { id: id, record: { list_sort: { value: String(i + 1) } } };
+  /**
+   * 新しい id 順に list_sort を合わせる。変化したインデックス範囲だけ PUT（全件 1..N 書き直しを避ける）。
+   * beforeRows: [{id, sort}, ...] 旧順。afterIds: 新順の id 配列。
+   */
+  function applyListSortOrder776(app, beforeRows, afterIds) {
+    var oldIndex = {};
+    var oldSort = {};
+    for (var i = 0; i < beforeRows.length; i++) {
+      oldIndex[beforeRows[i].id] = i;
+      oldSort[beforeRows[i].id] = beforeRows[i].sort;
+    }
+    var lo = Infinity;
+    var hi = -1;
+    for (var j = 0; j < afterIds.length; j++) {
+      var id = afterIds[j];
+      var oi = oldIndex[id];
+      if (oi == null || oi !== j) {
+        if (oi != null) {
+          lo = Math.min(lo, j, oi);
+          hi = Math.max(hi, j, oi);
+        } else {
+          lo = Math.min(lo, j);
+          hi = Math.max(hi, j);
+        }
+      }
+    }
+    if (lo === Infinity) return Promise.resolve({ updated: 0 });
+
+    // 範囲外がほぼ 1..N なら範囲内も index+1 で足りる。隙間がある場合は範囲の前後値から連番を振る
+    var updates = [];
+    var useDense = true;
+    for (var c = 0; c < beforeRows.length; c++) {
+      var s = beforeRows[c].sort;
+      if (!isFinite(s) || Math.round(s) !== s || s !== c + 1) {
+        useDense = false;
+        break;
+      }
+    }
+
+    if (useDense) {
+      for (var k = lo; k <= hi; k++) {
+        var wantD = String(k + 1);
+        var prevD = oldSort[afterIds[k]];
+        if (String(prevD) === wantD) continue;
+        updates.push({
+          id: afterIds[k],
+          record: { list_sort: { value: wantD } },
+        });
+      }
+    } else {
+      var start =
+        lo > 0 && isFinite(oldSort[afterIds[lo - 1]])
+          ? Math.floor(oldSort[afterIds[lo - 1]]) + 1
+          : 1;
+      var endNeighbor =
+        hi + 1 < afterIds.length && isFinite(oldSort[afterIds[hi + 1]])
+          ? Math.floor(oldSort[afterIds[hi + 1]])
+          : null;
+      var need = hi - lo + 1;
+      if (endNeighbor != null && start + need > endNeighbor) {
+        // 隙間不足 → 当該位置から末尾まで連番（全件より狭いことが多い）
+        hi = afterIds.length - 1;
+        start =
+          lo > 0 && isFinite(oldSort[afterIds[lo - 1]])
+            ? Math.floor(oldSort[afterIds[lo - 1]]) + 1
+            : 1;
+      }
+      for (var m = lo; m <= hi; m++) {
+        var wantG = String(start + (m - lo));
+        var prevG = oldSort[afterIds[m]];
+        if (String(prevG) === wantG) continue;
+        updates.push({
+          id: afterIds[m],
+          record: { list_sort: { value: wantG } },
+        });
+      }
+    }
+
+    return putListSortUpdates776(app, updates).then(function () {
+      return { updated: updates.length };
     });
+  }
+
+  function putListSortUpdates776(app, updates) {
+    if (!updates || !updates.length) return Promise.resolve();
     var chain = Promise.resolve();
     for (var b = 0; b < updates.length; b += 100) {
       (function (batch) {
@@ -1276,6 +1374,15 @@
       })(updates.slice(b, b + 100));
     }
     return chain;
+  }
+
+  /** 全件 1..N（値が変わった行だけ PUT）。部署ブロック差し替え等で使用 */
+  function renumberListSortIds(app, ids) {
+    var updates = ids.map(function (id, i) {
+      return { id: id, record: { list_sort: { value: String(i + 1) } } };
+    });
+    // 旧値不明のため全件 PUT になり得るが、バッチは共通化
+    return putListSortUpdates776(app, updates);
   }
 
   function fillSelect(sel, records, emptyLabel) {
@@ -2622,7 +2729,10 @@
         next.push(String(selfId));
       }
       // 部署外の全件順を維持しつつ、部署ブロックを差し替え
-      return fetchAllIdsOrdered776().then(function (allIds) {
+      return fetchAllIdsOrdered776().then(function (beforeRows) {
+        var allIds = beforeRows.map(function (r) {
+          return r.id;
+        });
         var inDept = {};
         for (var i = 0; i < next.length; i++) inDept[next[i]] = true;
         var rebuilt = [];
@@ -2641,7 +2751,7 @@
         if (!inserted) {
           for (var m = 0; m < next.length; m++) rebuilt.push(next[m]);
         }
-        return renumberListSortIds(app, rebuilt).then(function () {
+        return applyListSortOrder776(app, beforeRows, rebuilt).then(function () {
           var at = rebuilt.indexOf(String(selfId));
           return { at: at >= 0 ? at + 1 : rebuilt.length, total: rebuilt.length };
         });
@@ -2657,11 +2767,16 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id"],
+          fields: ["$id", "list_sort"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
-          for (var i = 0; i < rows.length; i++) all.push(String(rows[i].$id.value));
+          for (var i = 0; i < rows.length; i++) {
+            all.push({
+              id: String(rows[i].$id.value),
+              sort: Number(rows[i].list_sort && rows[i].list_sort.value),
+            });
+          }
           if (rows.length < 500) return all;
           return page(offset + 500);
         });
@@ -3069,14 +3184,7 @@
     var uiOpen = loadUiOpen();
     var queryBase = buildQuery(st);
     var recordsP = fetchRecordsByQuery(queryBase).then(function (recs) {
-      // 役職チップは query に載らないため、人数・Excel・印刷・集計も同一判定で絞る
-      if (st.titleRank === "lead" || st.titleRank === "member") {
-        return (recs || []).filter(function (r) {
-          var t = r && r.job_title && r.job_title.value;
-          return titleRank776(t) === st.titleRank;
-        });
-      }
-      return recs || [];
+      return filterRecordsByTitleRank776(recs, st.titleRank);
     });
 
     if (st.titleRank === "lead" || st.titleRank === "member") {

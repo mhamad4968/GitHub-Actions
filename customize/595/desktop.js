@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-22-595-preserve-primary-list-sort（兼務追加時も本務 list_sort を維持）
    * BUILD: 2026-08-22-595-roster-sync-fast（776同期: 全件renumber廃止・新規兼務は部署末尾整数・ミラーと並列）
    * BUILD: 2026-08-22-595-kenmu-list-sort-dept-end（新規兼務は776部署末尾・既存並び維持）
  * BUILD: 2026-08-22-595-cp-dept-auto-group（兼務: 所属名→所属グループ自動／680順はフォーム側）
@@ -33,7 +34,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-22-595-roster-sync-fast";
+  var BUILD = "2026-08-22-595-preserve-primary-list-sort";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -3647,7 +3648,8 @@
 
   /**
    * 595 1人 → 776 upsert（正社員/準社員のみ。以外・退職は776から削除）。
-   * list_sort: 本務=595.sort。兼務は既存行があれば維持、新規のみ当該部署の末尾（整数 max+1）。
+   * list_sort: 本務=既存776行があればその値を維持（兼務追加で本務が動かない）。新規本務のみ 595.sort。
+   * 兼務は既存行があれば維持、新規のみ当該部署の末尾（整数 max+1）。
    * 保存ごとの全件 renumber はしない（レスポンスのため。隙間は許容）。
    * emp_id は emp_id_ref へのコピーのみ。
    */
@@ -3756,7 +3758,24 @@
           maxByDept[maxList[mi].dept] = maxList[mi].max;
         }
 
-        var primarySort = isFinite(ownSort) && ownSort > 0 ? ownSort : 999999;
+        // 本務の表示順は名簿側を正とする（兼務追加のたびに 595.sort で上書きしない）
+        var primarySort;
+        if (primaryExist) {
+          var curPs = Number(
+            primaryExist.list_sort && primaryExist.list_sort.value
+          );
+          if (isFinite(curPs) && curPs > 0) {
+            primarySort = curPs;
+          } else if (isFinite(ownSort) && ownSort > 0) {
+            primarySort = ownSort;
+          } else {
+            primarySort = 999999;
+          }
+        } else if (isFinite(ownSort) && ownSort > 0) {
+          primarySort = ownSort;
+        } else {
+          primarySort = 999999;
+        }
 
         var desired = [];
         desired.push({
