@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-22 11:26 JST — 昼締め＋夜作業順（Excel兼務・並び・部室）を必読に追記。
 **次の1手**: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
 **レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: **`3313e8a1`** = `origin/main` — push 済
+**Git**: **`13f7e012`** = `origin/main` — push 済
 **closeStatus**: closed（昼区切り・夜継続）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**49**（`section_name` フォーム追加済）。
