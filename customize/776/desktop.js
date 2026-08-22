@@ -3,6 +3,14 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-agg-total-col（集計表に本務＋兼務の合計列）
+ * BUILD: 2026-08-22-776-fix-query-and（絞り込み＋$id in の and 欠落で GAIA_IL08 を修正）
+ * BUILD: 2026-08-22-776-agg-fix-tekko-dup（鉄構支店二重表示を解消）
+ * BUILD: 2026-08-22-776-agg-order-shinkansen（新幹線準備室をメンテ技術部下へ）
+ * BUILD: 2026-08-22-776-agg-honmu-kenmu（集計表を本務／兼務2列＋部署順）
+ * BUILD: 2026-08-22-776-agg-excel-labels（集計表部署をExcel表記寄せ・reform分割）
+ * BUILD: 2026-08-22-776-pager-dock（一覧下＋画面下追従のページ送り）
+ * BUILD: 2026-08-22-776-pager-list-sort（ページ送りを list_sort 範囲へ・query 不一致ループ回避）
  * BUILD: 2026-08-22-776-sort-after-save（並び適用を保存成功後へ・revision衝突回避）
  * BUILD: 2026-08-22-776-section-assign（部／室フィールド＋部追加モーダル＋保存時並び）
  * BUILD: 2026-08-22-776-pager-id-slice（ページ送りを$id分割方式に修正）
@@ -17,12 +25,15 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-sort-after-save";
+  var BUILD = "2026-08-22-776-agg-total-col";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
   var ORG_POP_ID = "jbis-776-org-popover";
   var PAGER_ID = "jbis-776-roster-pager";
+  var PAGER_BOTTOM_ID = "jbis-776-roster-pager-bottom";
+  var PAGER_FIXED_ID = "jbis-776-roster-pager-fixed";
+  var PAGER_PAD_STYLE_ID = "jbis-776-pager-pad-style";
   var SECTION_MODAL_ID = "jbis-776-section-modal";
   var SORT_MODAL_ID = "jbis-776-sort-insert-modal";
   var FC_SECTION = "section_name";
@@ -248,15 +259,47 @@
       .trim();
   }
 
+  /** order by の有無・空白差で navigate ループしないよう比較を緩める */
+  function stripOrderBy(q) {
+    return normalizeQuery(String(q || "").replace(/\s*order\s+by\s+.+$/i, ""));
+  }
+
+  function queriesEquivalent(a, b) {
+    var na = normalizeQuery(a);
+    var nb = normalizeQuery(b);
+    if (na === nb) return true;
+    if (stripOrderBy(a) === stripOrderBy(b)) return true;
+    var idRe = /\$id\s+in\s*\(([^)]*)\)/i;
+    var ma = String(a || "").match(idRe);
+    var mb = String(b || "").match(idRe);
+    if (ma && mb) {
+      var fa = ma[1].replace(/[\s"]/g, "");
+      var fb = mb[1].replace(/[\s"]/g, "");
+      if (fa && fa === fb) return true;
+    }
+    var rangeRe = /list_sort\s*>=\s*"?(\d+)"?\s*and\s*list_sort\s*<=\s*"?(\d+)"?/i;
+    var ra = String(a || "").match(rangeRe);
+    var rb = String(b || "").match(rangeRe);
+    if (ra && rb && ra[1] === rb[1] && ra[2] === rb[2]) {
+      return stripOrderBy(a).replace(rangeRe, "") === stripOrderBy(b).replace(rangeRe, "");
+    }
+    return false;
+  }
+
   function fetchFilteredIds(st) {
     var fp = filterFingerprint(st);
-    var cacheKey = "jbis776-idcache-v1";
+    var cacheKey = "jbis776-idcache-v2";
     try {
       var cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
-      if (cached && cached.fp === fp && Array.isArray(cached.ids)) {
+      if (cached && cached.fp === fp && cached.build === BUILD && Array.isArray(cached.ids)) {
         return Promise.resolve(cached.ids.map(String));
       }
     } catch (eCache) {
+      /* noop */
+    }
+    try {
+      sessionStorage.removeItem("jbis776-idcache-v1");
+    } catch (eOld) {
       /* noop */
     }
 
@@ -268,20 +311,32 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: where + "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id"],
+          fields: ["$id", "list_sort"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
           for (var i = 0; i < rows.length; i++) {
-            all.push(String(rows[i].$id.value));
+            all.push({
+              id: String(rows[i].$id.value),
+              sort: Number(rows[i].list_sort && rows[i].list_sort.value),
+            });
           }
           if (rows.length < 500) return all;
           return page(offset + 500);
         });
     }
-    return page(0).then(function (ids) {
+    return page(0).then(function (rows) {
+      var ids = rows.map(function (r) {
+        return r.id;
+      });
+      var sorts = rows.map(function (r) {
+        return r.sort;
+      });
       try {
-        sessionStorage.setItem(cacheKey, JSON.stringify({ fp: fp, ids: ids, t: Date.now() }));
+        sessionStorage.setItem(
+          cacheKey,
+          JSON.stringify({ fp: fp, build: BUILD, ids: ids, sorts: sorts, t: Date.now() }),
+        );
       } catch (eSave) {
         /* noop */
       }
@@ -289,7 +344,40 @@
     });
   }
 
-  function buildPagedQueryFromIds(ids, page, pageSize) {
+  function fetchFilteredSortMeta(st) {
+    var fp = filterFingerprint(st);
+    var cacheKey = "jbis776-idcache-v2";
+    try {
+      var cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+      if (
+        cached &&
+        cached.fp === fp &&
+        cached.build === BUILD &&
+        Array.isArray(cached.ids) &&
+        Array.isArray(cached.sorts) &&
+        cached.sorts.length === cached.ids.length
+      ) {
+        return Promise.resolve({ ids: cached.ids.map(String), sorts: cached.sorts.map(Number) });
+      }
+    } catch (eCache) {
+      /* noop */
+    }
+    return fetchFilteredIds(st).then(function (ids) {
+      try {
+        var cached2 = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+        if (cached2 && Array.isArray(cached2.sorts) && cached2.sorts.length === ids.length) {
+          return { ids: ids, sorts: cached2.sorts.map(Number) };
+        }
+      } catch (e2) {
+        /* noop */
+      }
+      return { ids: ids, sorts: ids.map(function () {
+        return NaN;
+      }) };
+    });
+  }
+
+  function buildPagedQueryFromIds(ids, page, pageSize, st, sorts) {
     var list = ids || [];
     var total = list.length;
     var ps = pageSize > 0 ? pageSize : 40;
@@ -298,18 +386,37 @@
     if (p > maxPage) p = maxPage;
     var start = (p - 1) * ps;
     var slice = list.slice(start, start + ps);
+    var where = buildWhere(st || {});
     var query;
     if (!slice.length) {
-      query = '$id = "0"';
+      // where は末尾スペースのみ（and 無し）→ $id 前に and 必須（欠落だと GAIA_IL08）
+      query = where ? where + 'and $id = "0"' : '$id = "0"';
+    } else if (!where) {
+      // 絞り込みなし: list_sort 連続番号で範囲指定（URL短・一覧で安定）
+      var sortSlice = (sorts || []).slice(start, start + ps).filter(function (n) {
+        return isFinite(n);
+      });
+      var lo;
+      var hi;
+      if (sortSlice.length === slice.length) {
+        lo = Math.min.apply(null, sortSlice);
+        hi = Math.max.apply(null, sortSlice);
+      } else {
+        lo = start + 1;
+        hi = start + slice.length;
+      }
+      query = "list_sort >= " + lo + " and list_sort <= " + hi;
     } else {
+      // 絞り込みあり: 該当 $id だけ（order by はビュー側 list_sort に任せる＝URL不一致ループ回避）
       query =
-        "$id in (" +
+        where +
+        "and $id in (" +
         slice
           .map(function (id) {
             return '"' + id + '"';
           })
           .join(",") +
-        ") order by list_sort asc, レコード番号 asc";
+        ")";
     }
     return {
       query: query,
@@ -332,8 +439,14 @@
       pageSize: st.pageSize || 40,
     };
     saveState(next);
-    return fetchFilteredIds(next).then(function (ids) {
-      var built = buildPagedQueryFromIds(ids, next.page, next.pageSize || 40);
+    return fetchFilteredSortMeta(next).then(function (meta) {
+      var built = buildPagedQueryFromIds(
+        meta.ids,
+        next.page,
+        next.pageSize || 40,
+        next,
+        meta.sorts,
+      );
       next.page = built.page;
       saveState(next);
       navigate(built.query);
@@ -367,6 +480,7 @@
     st.page = 1;
     try {
       sessionStorage.removeItem("jbis776-idcache-v1");
+      sessionStorage.removeItem("jbis776-idcache-v2");
     } catch (e) {
       /* noop */
     }
@@ -391,6 +505,7 @@
             "employee_no",
             "group_name",
             "dept_name",
+            "section_name",
             "user_name",
             "job_title",
             "mail",
@@ -1272,70 +1387,230 @@
   }
 
   /**
-   * 集計表: 拠点 / 部署 / 在籍数（拠点合計はブロック最終行）
-   * 本務のみ・人ベース（source_595_id DISTINCT）
+   * Excel「集計表」の部署列寄せ
+   * 例: 東北支店+管理部 → 東北支店管理部 / 仙台営業所 → 東北支店仙台営業所
+   */
+  function excelStyleAggDeptLabel(groupCode, deptName, sectionName) {
+    var d = String(deptName || "").trim() || "(未設定)";
+    var s = String(sectionName || "").trim();
+    if (/支店.+(部|室)/.test(d) || (/営業所$/.test(d) && /支店/.test(d))) {
+      return d;
+    }
+    if (s) {
+      // 部／室が部署名と同名／既に含まれる場合は連結しない（例: 鉄構支店＋鉄構支店）
+      if (s === d || d.indexOf(s) >= 0) return d;
+      if (/支店$/.test(d) || d === "リフォーム事業統括部") {
+        return d + s;
+      }
+      return d + s;
+    }
+    if (/営業所$|作業所$/.test(d)) {
+      if (groupCode === "tohoku") return "東北支店" + d;
+      if (groupCode === "kan-etsu") return "関越支店" + d;
+      if (groupCode === "tokyo") return "東京支店" + d;
+      if (groupCode === "tokai") return "東海支店" + d;
+      if (groupCode === "tekko") return "鉄構支店" + d;
+    }
+    if (d === "人事研修部付出向者") return "人事研修部付出向";
+    return d;
+  }
+
+  /** reform は Excel 同様に統括／首都圏／札幌へ分割表示 */
+  function aggHubKey(groupCode, deptName) {
+    if (groupCode !== "reform") return groupCode;
+    var d = String(deptName || "");
+    if (d.indexOf("札幌") === 0) return "reform-sapporo";
+    if (d.indexOf("首都圏") === 0) return "reform-shutoken";
+    return "reform-head";
+  }
+
+  var AGG_HUB_LABEL = {
+    honsya: "本社",
+    tohoku: "東北支店",
+    "kan-etsu": "関越支店",
+    tokyo: "東京支店",
+    tokai: "東海支店",
+    "reform-head": "リフォーム事業統括部",
+    "reform-shutoken": "首都圏支店",
+    "reform-sapporo": "札幌支店",
+    reform: "リフォーム事業統括部",
+    tekko: "鉄構支店",
+    wangan: "湾岸工事所",
+    bnp: "ブリッジニアプラス",
+  };
+
+  var AGG_HUB_ORDER = [
+    "honsya",
+    "tohoku",
+    "kan-etsu",
+    "tokyo",
+    "tokai",
+    "reform-head",
+    "reform-shutoken",
+    "reform-sapporo",
+    "tekko",
+    "wangan",
+    "bnp",
+  ];
+
+  /** 浜田指定の部署表示順（Excel風ラベル） */
+  var AGG_LABEL_ORDER = [
+    "役員室",
+    "顧問室",
+    "総務部",
+    "経理部",
+    "経営企画部",
+    "システム推進室",
+    "人事研修部",
+    "人事研修部付出向",
+    "人事研修部付出向者",
+    "安全推進部",
+    "施工推進部",
+    "メンテナンス技術部",
+    "メンテナンス技術部新幹線大規模改修工事準備室",
+    "塗装技術部",
+    "品質管理部",
+    "東北支店",
+    "東北支店管理部",
+    "東北支店安全部",
+    "東北支店秋田営業所",
+    "東北支店盛岡営業所",
+    "東北支店仙台営業所",
+    "東北支店工事部",
+    "東北支店技術部",
+    "関越支店",
+    "関越支店管理部",
+    "関越支店安全部",
+    "関越支店工事部",
+    "関越支店新潟営業所",
+    "関越支店長野営業所",
+    "関越支店高崎営業所",
+    "関越支店施工部",
+    "東京支店",
+    "東京支店施工支援部",
+    "東京支店安全部",
+    "東京支店施工部",
+    "東京支店橋りょうリペア部",
+    "東京支店水戸営業所",
+    "東京支店千葉営業所",
+    "東海支店",
+    "東海支店管理部",
+    "東海支店安全部",
+    "東海支店工事部",
+    "東海支店東京営業所",
+    "東海支店静岡営業所",
+    "東海支店名古屋営業所",
+    "東海支店関西営業所",
+    "リフォーム事業統括部",
+    "首都圏支店",
+    "首都圏支店工事支援部",
+    "首都圏支店安全部",
+    "首都圏支店第一工事部",
+    "首都圏支店第二工事部",
+    "首都圏支店第三工事部",
+    "札幌支店",
+    "札幌支店工事支援部",
+    "札幌支店安全部",
+    "札幌支店工事部",
+    "鉄構支店",
+    "鉄構支店管理部",
+    "鉄構支店安全部",
+    "鉄構支店工事部",
+    "湾岸工事所",
+    "ブリッジニアプラス",
+    "鎌ヶ谷作業所",
+  ];
+
+  function aggLabelSortIndex(label) {
+    var i = AGG_LABEL_ORDER.indexOf(label);
+    if (i >= 0) return i;
+    return 9000 + label.charCodeAt(0);
+  }
+
+  /**
+   * 集計表: 拠点 / 部署 / 本務 / 兼務 / 合計（合計＝本務＋兼務・拠点ブロック最終行＋総合計）
+   * 本務・兼務とも部署ラベル内で source_595_id DISTINCT（合計は列加算＝延べ）
    */
   function buildAggTableModel(records) {
-    var byGroupDept = {};
-    var seenPerson = {};
+    var byHub = {};
+    var seenPrimary = {};
+    var seenKenmu = {};
     for (var i = 0; i < records.length; i++) {
       var r = records[i];
-      if ((r.row_role && r.row_role.value) !== "本務") continue;
+      var role = (r.row_role && r.row_role.value) || "";
       var sid = String((r.source_595_id && r.source_595_id.value) || "");
-      if (!sid || seenPerson[sid]) continue;
-      seenPerson[sid] = true;
+      if (!sid) continue;
       var g = String((r.group_name && r.group_name.value) || "").trim() || "(未設定)";
       var d = String((r.dept_name && r.dept_name.value) || "").trim() || "(未設定)";
-      if (!byGroupDept[g]) byGroupDept[g] = {};
-      byGroupDept[g][d] = (byGroupDept[g][d] || 0) + 1;
+      var sec = String((r.section_name && r.section_name.value) || "").trim();
+      var hubKey = aggHubKey(g, d);
+      var label = excelStyleAggDeptLabel(g, d, sec);
+      if (!byHub[hubKey]) byHub[hubKey] = {};
+      if (!byHub[hubKey][label]) byHub[hubKey][label] = { primary: {}, kenmu: {} };
+      var cell = byHub[hubKey][label];
+      if (role === "本務") {
+        cell.primary[sid] = true;
+        seenPrimary[sid] = true;
+      } else if (role === "兼務") {
+        cell.kenmu[sid] = true;
+        seenKenmu[sid] = true;
+      }
     }
 
-    var deptOrder = {};
-    DEPT_MASTER_680.forEach(function (row, idx) {
-      deptOrder[row.group_name + "\0" + row.dept_name] = idx;
-    });
-
-    var groupKeys = GROUP_ORDER.slice();
-    Object.keys(byGroupDept).forEach(function (g) {
-      if (groupKeys.indexOf(g) === -1) groupKeys.push(g);
+    var hubKeys = AGG_HUB_ORDER.slice();
+    Object.keys(byHub).forEach(function (h) {
+      if (hubKeys.indexOf(h) === -1) hubKeys.push(h);
     });
 
     var rows = [];
-    var grand = 0;
-    groupKeys.forEach(function (g) {
-      var deptMap = byGroupDept[g];
+    var grandPrimary = 0;
+    var grandKenmu = 0;
+    hubKeys.forEach(function (h) {
+      var deptMap = byHub[h];
       if (!deptMap) return;
       var depts = Object.keys(deptMap).sort(function (a, b) {
-        var ia = deptOrder[g + "\0" + a];
-        var ib = deptOrder[g + "\0" + b];
-        if (ia == null && ib == null) return a.localeCompare(b, "ja");
-        if (ia == null) return 1;
-        if (ib == null) return -1;
-        return ia - ib;
+        return aggLabelSortIndex(a) - aggLabelSortIndex(b);
       });
-      var subtotal = 0;
+      var subP = 0;
+      var subK = 0;
       depts.forEach(function (d) {
-        subtotal += deptMap[d];
+        var p = Object.keys(deptMap[d].primary).length;
+        var k = Object.keys(deptMap[d].kenmu).length;
+        subP += p;
+        subK += k;
       });
-      grand += subtotal;
-      var hubLabel = GROUP_LABEL[g] || g;
+      grandPrimary += subP;
+      grandKenmu += subK;
+      var hubLabel = AGG_HUB_LABEL[h] || h;
       depts.forEach(function (d, di) {
+        var p = Object.keys(deptMap[d].primary).length;
+        var k = Object.keys(deptMap[d].kenmu).length;
         rows.push({
           hub: di === 0 ? hubLabel : "",
           dept: d,
-          count: deptMap[d],
+          primary: p,
+          kenmu: k,
+          total: p + k,
           isSubtotal: false,
         });
       });
-      // 拠点ブロック最終行に合計（部署列は「合計」のみ＝幅を食わない）
       rows.push({
         hub: "",
         dept: "合計",
-        count: subtotal,
+        primary: subP,
+        kenmu: subK,
+        total: subP + subK,
         isSubtotal: true,
       });
     });
-    return { rows: rows, grand: grand, people: Object.keys(seenPerson).length };
+    return {
+      rows: rows,
+      grandPrimary: grandPrimary,
+      grandKenmu: grandKenmu,
+      grandTotal: grandPrimary + grandKenmu,
+      peoplePrimary: Object.keys(seenPrimary).length,
+      peopleKenmu: Object.keys(seenKenmu).length,
+    };
   }
 
   function mountAggPanel(space, st, uiOpen, recordsPromise) {
@@ -1361,7 +1636,7 @@
     title.textContent = "部署の人数集計表";
     var titleSub = document.createElement("div");
     titleSub.style.cssText = "font-size:11px;color:#64748b;font-weight:600;";
-    titleSub.textContent = "本務・人ベース";
+    titleSub.textContent = "本務／兼務／合計（合計＝本務＋兼務）";
     titleRow.appendChild(title);
     titleRow.appendChild(titleSub);
     box.appendChild(titleRow);
@@ -1389,7 +1664,7 @@
     var metaHint = document.createElement("div");
     metaHint.style.cssText = "color:#94a3b8;font-size:11px;";
     metaHint.textContent =
-      "いまの絞り込み条件で集計。拠点＝部署グループ／在籍数＝本務人数。";
+      "いまの絞り込み条件で集計。拠点＝部署グループ／本務・兼務は部署ごとに別カウント。合計は本務＋兼務（延べ）。";
     meta.appendChild(metaHint);
     box.appendChild(meta);
 
@@ -1416,15 +1691,17 @@
           activeConditionLine(st) +
           " ｜ 該当件数: " +
           recs.length +
-          "件 ｜ 人数（本務） " +
-          countPeople(recs) +
-          "人 ｜ 総合計 " +
-          model.grand;
+          "件 ｜ 本務 " +
+          model.peoplePrimary +
+          "人 ｜ 兼務（延べ部署） " +
+          model.grandKenmu +
+          " ｜ 本務合計 " +
+          model.grandPrimary;
         host.innerHTML = "";
-        /* 列幅: 拠点 12em / 部署 22em / 在籍 5em */
-        var AGG_W_HUB = "12em";
+        /* 列幅: 拠点 11em / 部署 22em / 本務・兼務・合計 4.5em */
+        var AGG_W_HUB = "11em";
         var AGG_W_DEPT = "22em";
-        var AGG_W_CNT = "5em";
+        var AGG_W_CNT = "4.5em";
         var table = document.createElement("table");
         table.style.cssText =
           "border-collapse:separate;border-spacing:0;" +
@@ -1432,6 +1709,10 @@
           AGG_W_HUB +
           " + " +
           AGG_W_DEPT +
+          " + " +
+          AGG_W_CNT +
+          " + " +
+          AGG_W_CNT +
           " + " +
           AGG_W_CNT +
           ");" +
@@ -1442,7 +1723,9 @@
         var heads = [
           { label: "拠点", w: AGG_W_HUB, align: "left" },
           { label: "部署", w: AGG_W_DEPT, align: "left" },
-          { label: "在籍数", w: AGG_W_CNT, align: "right" },
+          { label: "本務", w: AGG_W_CNT, align: "right" },
+          { label: "兼務", w: AGG_W_CNT, align: "right" },
+          { label: "合計", w: AGG_W_CNT, align: "right" },
         ];
         heads.forEach(function (h) {
           var th = document.createElement("th");
@@ -1465,12 +1748,14 @@
         model.rows.forEach(function (row) {
           var tr = document.createElement("tr");
           var isHubStart = !row.isSubtotal && !!row.hub;
-          [row.hub, row.dept, row.count].forEach(function (v, vi) {
+          var vals = [row.hub, row.dept, row.primary, row.kenmu, row.total];
+          vals.forEach(function (v, vi) {
             var td = document.createElement("td");
             var text = v === "" || v == null ? "" : String(v);
             td.textContent = text;
             if (vi === 1 && text) td.title = text;
-            var colW = vi === 0 ? AGG_W_HUB : vi === 1 ? AGG_W_DEPT : AGG_W_CNT;
+            var colW =
+              vi === 0 ? AGG_W_HUB : vi === 1 ? AGG_W_DEPT : AGG_W_CNT;
             var base =
               "width:" +
               colW +
@@ -1478,13 +1763,13 @@
               colW +
               ";box-sizing:border-box;padding:6px 8px;" +
               "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" +
-              (vi === 2 ? "text-align:right;" : "text-align:left;");
+              (vi >= 2 ? "text-align:right;" : "text-align:left;");
             if (row.isSubtotal) {
               td.style.cssText =
                 base +
                 "border-top:1.5px solid #c4b5fd;border-bottom:1px solid #bbf7d0;" +
                 "background:#f0fdf4;font-weight:800;color:#166534;" +
-                (vi === 2 ? "font-size:14px;" : "");
+                (vi >= 2 ? "font-size:14px;" : "");
             } else if (isHubStart) {
               td.style.cssText =
                 base +
@@ -1494,13 +1779,13 @@
                 (vi === 0
                   ? "font-weight:800;color:#4c1d95;border-left:3px solid #a78bfa;"
                   : "border-left:none;color:#0f172a;") +
-                (vi === 2 ? "font-weight:700;" : "");
+                (vi >= 2 ? "font-weight:700;" : "");
             } else {
               td.style.cssText =
                 base +
                 "border-top:1px solid #f1f5f9;background:#fff;color:#334155;" +
                 (vi === 0 ? "border-left:3px solid transparent;" : "") +
-                (vi === 2 ? "font-weight:600;" : "");
+                (vi >= 2 ? "font-weight:600;" : "");
             }
             tr.appendChild(td);
           });
@@ -1516,16 +1801,21 @@
           "padding:8px;font-weight:800;letter-spacing:0.04em;" +
           "background:linear-gradient(90deg,#ede9fe,#ecfdf5);color:#1e1b4b;" +
           "border-top:2px solid #a78bfa;white-space:nowrap;";
-        var tdC = document.createElement("td");
-        tdC.textContent = String(model.grand);
-        tdC.style.cssText =
-          "padding:8px;text-align:right;font-weight:800;font-size:15px;" +
-          "background:linear-gradient(90deg,#ede9fe,#ecfdf5);color:#14532d;" +
-          "border-top:2px solid #a78bfa;white-space:nowrap;width:" +
-          AGG_W_CNT +
-          ";";
+        function mkFootTd(n) {
+          var td = document.createElement("td");
+          td.textContent = String(n);
+          td.style.cssText =
+            "padding:8px;text-align:right;font-weight:800;font-size:15px;" +
+            "background:linear-gradient(90deg,#ede9fe,#ecfdf5);color:#14532d;" +
+            "border-top:2px solid #a78bfa;white-space:nowrap;width:" +
+            AGG_W_CNT +
+            ";";
+          return td;
+        }
         fr.appendChild(tdL);
-        fr.appendChild(tdC);
+        fr.appendChild(mkFootTd(model.grandPrimary));
+        fr.appendChild(mkFootTd(model.grandKenmu));
+        fr.appendChild(mkFootTd(model.grandTotal));
         tfoot.appendChild(fr);
         table.appendChild(tfoot);
         host.appendChild(table);
@@ -1559,12 +1849,9 @@
     );
   }
 
-  function mountRosterPager(wrap, st, built) {
-    var old = document.getElementById(PAGER_ID);
-    if (old && old.parentNode) old.parentNode.removeChild(old);
-
+  function createRosterPagerBar(st, built, barId) {
     var bar = document.createElement("div");
-    bar.id = PAGER_ID;
+    bar.id = barId || PAGER_ID;
     bar.style.cssText =
       "display:flex;flex-wrap:wrap;gap:8px;align-items:center;" +
       "margin:0;padding:8px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;";
@@ -1578,6 +1865,10 @@
     var page = (built && built.page) || st.page || 1;
     var maxPage = (built && built.maxPage) || 1;
 
+    var labelEl = document.createElement("span");
+    labelEl.style.cssText = "font-size:12px;font-weight:700;color:#334155;margin-left:4px;";
+    labelEl.textContent = formatRosterPageLabel(built);
+
     function mk(label, targetPage, primary, disabled) {
       var b = document.createElement("button");
       b.type = "button";
@@ -1590,6 +1881,10 @@
       if (!disabled) {
         b.addEventListener("click", function () {
           labelEl.textContent = "移動中…";
+          var fixedLabel = document.querySelector(
+            "#" + PAGER_FIXED_ID + " [data-jbis-pager-label]",
+          );
+          if (fixedLabel) fixedLabel.textContent = "移動中…";
           goRosterPage(st, targetPage).catch(function (err) {
             console.warn("[jbis 776 pager]", err);
             labelEl.textContent = "ページ移動に失敗しました";
@@ -1600,16 +1895,118 @@
       return b;
     }
 
-    var labelEl = document.createElement("span");
-    labelEl.style.cssText = "font-size:12px;font-weight:700;color:#334155;margin-left:4px;";
-    labelEl.textContent = formatRosterPageLabel(built);
-
+    labelEl.setAttribute("data-jbis-pager-label", "1");
     bar.appendChild(mk("先頭", 1, false, page <= 1));
     bar.appendChild(mk("前のページ", page - 1, false, page <= 1));
     bar.appendChild(mk("次のページ", page + 1, true, page >= maxPage));
     bar.appendChild(mk("末尾", maxPage, false, page >= maxPage));
     bar.appendChild(labelEl);
+    return bar;
+  }
+
+  function removeElById(id) {
+    var el = document.getElementById(id);
+    if (el && el._jbisIo) {
+      try {
+        el._jbisIo.disconnect();
+      } catch (eDisc) {
+        /* noop */
+      }
+    }
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function ensurePagerBottomPad(on) {
+    var st = document.getElementById(PAGER_PAD_STYLE_ID);
+    if (!on) {
+      if (st && st.parentNode) st.parentNode.removeChild(st);
+      return;
+    }
+    if (!st) {
+      st = document.createElement("style");
+      st.id = PAGER_PAD_STYLE_ID;
+      document.head.appendChild(st);
+    }
+    st.textContent =
+      "body{padding-bottom:58px !important;}" +
+      ".gaia-argoui-app-index-pager,.ocean-ui-plugin-pager{margin-bottom:52px;}";
+  }
+
+  function findRosterListAnchor() {
+    return (
+      document.querySelector(".recordlist-gaia") ||
+      document.querySelector(".gaia-argoui-app-index-table") ||
+      document.querySelector(".gaia-argoui-app-index") ||
+      document.querySelector("#appmenu-index") ||
+      null
+    );
+  }
+
+  function mountRosterPager(wrap, st, built) {
+    removeElById(PAGER_ID);
+    if (!wrap) return;
+    var bar = createRosterPagerBar(st, built, PAGER_ID);
     wrap.appendChild(bar);
+  }
+
+  /** 一覧表の直下（スクロール末尾でも操作できる）＋画面下固定追従 */
+  function mountRosterPagerExtras(st, built) {
+    removeElById(PAGER_BOTTOM_ID);
+    removeElById(PAGER_FIXED_ID);
+    var maxPage = (built && built.maxPage) || 1;
+    if (maxPage <= 1) {
+      ensurePagerBottomPad(false);
+      return;
+    }
+
+    var anchor = findRosterListAnchor();
+    if (anchor && anchor.parentNode) {
+      var bottom = createRosterPagerBar(st, built, PAGER_BOTTOM_ID);
+      bottom.style.margin = "12px 0 16px";
+      if (anchor.nextSibling) {
+        anchor.parentNode.insertBefore(bottom, anchor.nextSibling);
+      } else {
+        anchor.parentNode.appendChild(bottom);
+      }
+    }
+
+    var dock = document.createElement("div");
+    dock.id = PAGER_FIXED_ID;
+    dock.setAttribute("role", "navigation");
+    dock.setAttribute("aria-label", "ページ送り（画面下）");
+    dock.style.cssText =
+      "position:fixed;left:0;right:0;bottom:0;z-index:10050;" +
+      "box-sizing:border-box;padding:8px 12px;" +
+      "background:rgba(255,255,255,.97);border-top:1px solid #94a3b8;" +
+      "box-shadow:0 -4px 16px rgba(15,23,42,.12);";
+    var inner = createRosterPagerBar(st, built, PAGER_FIXED_ID + "-inner");
+    inner.style.margin = "0 auto";
+    inner.style.maxWidth = "1100px";
+    inner.style.border = "none";
+    inner.style.background = "transparent";
+    dock.appendChild(inner);
+    document.body.appendChild(dock);
+    ensurePagerBottomPad(true);
+
+    // 上部ツールバーのページ送りが見えているときは固定バーを薄く（操作はどちらも可）
+    var topBar = document.getElementById(PAGER_ID);
+    if (topBar && typeof IntersectionObserver === "function") {
+      try {
+        var io = new IntersectionObserver(
+          function (entries) {
+            var e0 = entries && entries[0];
+            if (!e0) return;
+            dock.style.opacity = e0.isIntersecting ? "0.35" : "1";
+            dock.style.pointerEvents = e0.isIntersecting ? "none" : "auto";
+          },
+          { root: null, threshold: 0.2 },
+        );
+        io.observe(topBar);
+        dock._jbisIo = io;
+      } catch (eIo) {
+        /* noop */
+      }
+    }
   }
 
   function closeSectionModal() {
@@ -2326,6 +2723,7 @@
     wrap.appendChild(summaryRow);
 
     mountRosterPager(wrap, st, built || null);
+    mountRosterPagerExtras(st, built || null);
 
     var sub = document.createElement("div");
     sub.style.cssText =
@@ -2541,12 +2939,13 @@
           setTimeout(function () {
             try {
               sessionStorage.removeItem("jbis776-idcache-v1");
+              sessionStorage.removeItem("jbis776-idcache-v2");
             } catch (eCache) {
               /* noop */
             }
-            fetchFilteredIds(st)
-              .then(function (ids) {
-                var idx = ids.indexOf(String(m));
+            fetchFilteredSortMeta(st)
+              .then(function (meta) {
+                var idx = meta.ids.indexOf(String(m));
                 var ps = st.pageSize || 40;
                 var page = idx >= 0 ? Math.floor(idx / ps) + 1 : st.page || 1;
                 return goRosterPage(st, page);
@@ -2582,8 +2981,9 @@
       var space = getHeaderSpace();
       if (!space) return event;
       var st = loadState();
-      if (typeof event.size === "number" && event.size >= 10 && event.size <= 100) {
-        st.pageSize = event.size;
+      // event.size は「今画面に出ている件数」であり自前 pageSize と混同するとページ送りがずれるため同期しない
+      if (!st.pageSize || st.pageSize < 10) {
+        st.pageSize = 40;
         saveState(st);
       }
 
@@ -2594,15 +2994,21 @@
         curQ = "";
       }
 
-      // 自前ページ送り: フィルタ結果の $id を分割して query に載せる
-      fetchFilteredIds(st)
-        .then(function (ids) {
-          var built = buildPagedQueryFromIds(ids, st.page || 1, st.pageSize || 40);
+      // 自前ページ送り: 無フィルタは list_sort 範囲、フィルタ時は $id 分割
+      fetchFilteredSortMeta(st)
+        .then(function (meta) {
+          var built = buildPagedQueryFromIds(
+            meta.ids,
+            st.page || 1,
+            st.pageSize || 40,
+            st,
+            meta.sorts,
+          );
           if (st.page !== built.page) {
             st.page = built.page;
             saveState(st);
           }
-          if (normalizeQuery(curQ) !== normalizeQuery(built.query)) {
+          if (!queriesEquivalent(curQ, built.query)) {
             navigate(built.query);
             return;
           }
@@ -2611,6 +3017,10 @@
           mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
           applyIndexDeptSeparators(event.records);
           consumeScrollAfterReorder(st);
+          // 一覧DOM生成後に下ページ送りを再配置
+          setTimeout(function () {
+            mountRosterPagerExtras(st, built);
+          }, 0);
           setTimeout(function () {
             applyIndexDeptSeparators(event.records);
           }, 0);

@@ -18,6 +18,7 @@ const COLS = [
   'employee_no',
   'group_name',
   'dept_name',
+  'section_name', // 部署名の右隣（部／室）
   'user_name',
   'job_title',
   'mail',

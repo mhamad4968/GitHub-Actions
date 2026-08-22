@@ -1,21 +1,21 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-22 11:26 JST — 昼締め＋夜作業順（Excel兼務・並び・部室）を必読に追記。
-**次の1手**: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
-**レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: **`aab31b33`** = `origin/main` — push 済
-**closeStatus**: closed（昼区切り・夜継続）
+**最終更新**: 2026-08-22 18:00 JST — 夜①〜④＋集計合計列・query修正・部追加目視OK。改善候補洗い出し済。
+**次の1手**: `chat-sessions/2026-08-22-employee-roster-improvement-backlog.md` を浜田がやる／やらない判定。GO項目のみ実装。
+**レーン変更**: **595/776 社員名簿 OPEN（改善フェーズ検討）**。747/746 および閉済UXは再開しない。
+**Git**: 夜作業 commit 直後（本更新と同時）
+**closeStatus**: open（改善GO待ち。夜データ作業は完了）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
-**本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**49**（`section_name` フォーム追加済）。
-### 本日アクティブ（BUILD/rev — 2026-08-22 昼締め）
+**本日状態**: 776=`2026-08-22-776-agg-total-col` rev**61**。595 兼務役職に室長・室員追加済。S7 Excel削除は最終GOまで残置。
+### 本日アクティブ（BUILD/rev — 2026-08-22 夜）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **776** | `2026-08-22-776-sort-after-save` | **49** |
-| **595** | `2026-08-22-595-kenmu-list-sort-dept-end` | **149** |
+| **776** | `2026-08-22-776-agg-total-col` | **61** |
+| **595** | `2026-08-22-595-kenmu-list-sort-dept-end` | **149+** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 夜=最新Excel(C:\\tmp\\社員名簿…\\社員一覧表.xlsx 11:13更新)で兼務・並び・部室。削除は最終GOまで残置。
-**GO待ち**: なし（夜作業順は浜田指示済）。部／室のExcel列マッピングだけ曖昧なら1問。
+**継続メモ**: 夜必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md`／改善 `…-improvement-backlog.md`。Excelは `社員一覧表更新.xlsx`。
+**GO待ち**: 改善バックログの項目単位GO。S7 Excel削除は別途最終GO。
 **調査正本**: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`

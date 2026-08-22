@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-22-776-sort-after-save",
-      "fileKey": "7e313b6c-e1ac-467a-87e5-1ec2d7d721fe",
-      "revision": "49",
+      "build": "2026-08-22-776-agg-total-col",
+      "fileKey": "c7e6f891-3aca-4f7c-9d05-6e3f722f2eea",
+      "revision": "61",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T02:20:53.686Z",
+      "deployedAt": "2026-08-22T08:54:57.556Z",
       "note": null
     }
   }
