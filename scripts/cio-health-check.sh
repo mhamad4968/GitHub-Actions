@@ -135,6 +135,7 @@ else
 fi
 
 # 5. git status / branch（§51-6: SESSION-CLOCK.md は session:clock:set で毎セッション更新＝正常 dirty）
+#    pending/*.proposal.json は close-git が一時 untracked 扱い（cio-session-close-temp-paths）。WAKE でも WARN にしない。
 _git_porcelain() {
   if pwd | grep -qiE '^/mnt/[a-z]/'; then
     if command -v wslpath >/dev/null 2>&1 && command -v git.exe >/dev/null 2>&1; then
@@ -153,6 +154,7 @@ git_status_raw=$(_git_porcelain || true)
 git_status=$(echo "$git_status_raw" | awk '
   { f=$0; sub(/^[ MADRCU?!][ MADRCU?!] /, "", f);
     if (f == "chat-sessions/SESSION-CLOCK.md") next;
+    if (f ~ /^docs\/approved-changes\/pending/) next;
     if (f ~ /^_rebase-.*\.sh$/) next;
     print $0
   }')
