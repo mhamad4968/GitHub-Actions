@@ -290,11 +290,11 @@
       "note": null
     },
     "721": {
-      "build": "2026-08-23-jr-ipad-dash-p0-p1-ux",
-      "fileKey": "c5ecc74d-cdbd-4fdc-8313-85990fc2dbbf",
-      "revision": "16",
+      "build": "2026-08-23-jr-ipad-dash-p2-vux",
+      "fileKey": "35a408cf-880d-4886-9cda-fe5de4efacb5",
+      "revision": "17",
       "relPath": "customize/jr-ipad-dash/desktop.js",
-      "deployedAt": "2026-08-22T23:37:11.451Z",
+      "deployedAt": "2026-08-22T23:53:32.696Z",
       "note": null
     },
     "733": {

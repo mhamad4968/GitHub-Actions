@@ -81,3 +81,15 @@
 | 変更要約 | いまの条件＋該当件数／一覧印刷「該当 N 台」／ステータスチップ／一覧 Excel（画面同集合・Apple PW 含む・SheetJS bundle） |
 | 次 | **浜田目視** → OK なら reclosed ＋ P2 等は別検討 |
 | 目視結果 | **2026-08-23 浜田 OK** → `jr-ipad-ledger` **reclosed**。P2 は個別採否待ち |
+
+---
+
+## R61 addendum — 2026-08-23 P2-1 + A/B + V1–7（目視待ち）
+
+| 項目 | 内容 |
+|------|------|
+| SPEC | `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md` |
+| live 721 | BUILD=`2026-08-23-jr-ipad-dash-p2-vux` **rev 17** / fileKey `35a408cf-880d-4886-9cda-fe5de4efacb5` |
+| 変更要約 | 集計セル絞込・集計解除・端末名/Apple ID コピー・ステータス色・部署区切り・絞込2段・メタ「登録N台」・注意行・列幅 |
+| 見送り | P2-2、追加機能 C〜I |
+| 次 | **浜田目視** → OK なら reclosed |

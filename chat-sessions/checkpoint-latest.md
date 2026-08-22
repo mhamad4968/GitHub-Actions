@@ -1,29 +1,29 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-23 08:55 JST — **721 P2-1+A+B+V1-7**（jr-ipad **reopened**）
-**次の1手**: SPEC commit → customize 実装 → `deploy:721` → 浜田目視
-**レーン変更**: **`jr-ipad-ledger` reopened**（P2-1・A解除・Bコピー・V1-7）。P2-2/C-I 見送り。720 不触
-**Git**: 作業中
-**closeStatus**: **open**
-**制約**: 閉済8件＋jr-ipad **reopened**／688 heat外／677–679／712禁止／736不触／SKYSEA=案件外／emp_id不触／**720 schema不触**／**P2-2しない**
-**本日状態**: P0/P1 rev16 目視OK済。P2-VUX 着手。SPEC=`docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
+**最終更新**: 2026-08-23 09:00 JST — **721 P2-VUX deploy 済・浜田目視待ち**
+**次の1手**: [721](https://jbis-kintone.cybozu.com/k/721/) 目視（集計クリック・解除・コピー・V1–7）。OK 後 reclosed
+**レーン変更**: **`jr-ipad-ledger` reopened**（P2-1+A+B+V1-7）。P2-2/C-I 見送り
+**Git**: R63 commit 予定
+**closeStatus**: **open**（目視待ち）
+**制約**: 閉済8件＋jr-ipad **reopened**／688 heat外／677–679／712禁止／736不触／SKYSEA=案件外／emp_id不触／**720不触**／**P2-2しない**
+**本日状態**: 721 live BUILD=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-23）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **721** | `2026-08-23-jr-ipad-dash-p0-p1-ux` → P2-VUX 実装後更新 | **16** |
+| **721** | `2026-08-23-jr-ipad-dash-p2-vux` | **17** |
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: P2-2・C〜I は今回やらない。
-**GO待ち**: なし（実装中）。目視は deploy 後。
+**GO待ち**: **721 浜田目視**（P2-VUX）。
 **調査正本**: `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
 ## クローズ済み（`data/cio-project-closures.json` — reopen 中 1）
-業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=reopened(P2-VUX)** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
+業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=reopened(P2-VUX目視待ち)** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
 
 ## 保留・その他の制約
 | 状態 | 内容 |
