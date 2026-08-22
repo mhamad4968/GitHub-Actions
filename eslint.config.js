@@ -36,6 +36,8 @@ export default [
       "customize/jre-chub-account-dash/desktop.js",
       // 東海支店 iPad: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
       "customize/tokai-ipad-dash/desktop.js",
+      // 721 JR iPad: SheetJS + desktop.src.js → desktop.js（lint は src のみ）
+      "customize/jr-ipad-dash/desktop.js",
     ],
   },
   {
