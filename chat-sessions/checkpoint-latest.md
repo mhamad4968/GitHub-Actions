@@ -3,7 +3,7 @@
 **次の1手**: full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。
 **レーン変更**: **595/776 社員名簿 改善GOクローズ（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
 **Git**: **`bd66b21d`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: closing（day-close after-go）
+**closeStatus**: **closed**（day-close 完了・push 済）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。S7残置。
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
