@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-list-sort-label-hyojijun（一覧並び→表示順・条件文言）
  * BUILD: 2026-08-22-776-p0-toolbar-tight-top（①絞り込み上の余白を詰める）
  * BUILD: 2026-08-22-776-p0-toolbar-frames（P0: 絞込／状況／操作を枠分け・人数を状況帯へ）
  * BUILD: 2026-08-22-776-agg-total-col（集計表に本務＋兼務の合計列）
@@ -27,7 +28,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p0-toolbar-tight-top";
+  var BUILD = "2026-08-22-776-list-sort-label-hyojijun";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -1327,7 +1328,7 @@
             .join("・"),
       );
     }
-    parts.push("並び: 名簿順（list_sort↑）");
+    parts.push("並び: 表示順↑");
     return parts;
   }
 
