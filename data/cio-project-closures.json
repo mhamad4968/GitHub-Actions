@@ -102,12 +102,14 @@
       "id": "jr-ipad-ledger",
       "laneId": "jr-ipad-ledger",
       "label": "JRシステム用 iPad 管理台帳 ver.1",
-      "status": "closed-v1",
+      "status": "reopened",
       "closedAt": "2026-06-15",
+      "reopenedAt": "2026-08-23",
+      "reopenReason": "浜田GO: 721 P0（いまの条件+該当件数・一覧印刷件数）+P1（一覧Excel・ステータスチップ）。720/採番/連携は非目的。SPEC: docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md",
       "completionReport": "docs/reports/2026-06-15-jr-ipad-ledger-completion.md",
       "sessionCloseReport": "chat-sessions/SESSION-CLOSE-REPORT-20260615.txt",
       "kintoneAppsSection": "JRシステム用 iPad 管理台帳 ver.1（Space 34 — 720–721）",
-      "kintoneAppsStateMarker": "v1 完成",
+      "kintoneAppsStateMarker": "v1 完成 → P0/P1 UX reopen",
       "forbiddenNextTaskPatterns": [
         "JR iPad",
         "jr-ipad",
@@ -117,7 +119,7 @@
         "721",
         "JRシステム用iPad"
       ],
-      "note": "64台・一覧・2系統採番・集計アコーディオン・A4印刷・検索クリア。浜田目視 OK。Excel 運用終了（kintone 正本）。v2: 694連携・674連携等"
+      "note": "64台・一覧・2系統採番・集計アコーディオン・A4印刷・検索クリア。浜田目視 OK。Excel 運用終了（kintone 正本）。v2: 694連携・674連携等。2026-08-23: P0/P1 のみ再開（P2集計クリックは別GO）"
     },
     {
       "id": "vpn-account-ledger",

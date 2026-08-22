@@ -1,28 +1,29 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-22 19:11 JST — **S7 Excel削除 確認済**（xlsx なし・tmp フォルダ空→削除）。名簿レーン必須残なし。
-**次の1手**: 新規レーンのみ（項番 -0）。S7 完了。
-**レーン変更**: **595/776 社員名簿 改善GOクローズ＋S7完了（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
-**Git**: **`76fdd96a`** = `origin/main` — push 済
-**closeStatus**: **closed**（day-close 済・S7 追記）
-**制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
-**本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。**S7済**。
+**最終更新**: 2026-08-23 08:30 JST — **721 P0/P1 UX**（jr-ipad-ledger **reopened**）
+**次の1手**: SPEC commit → `customize/jr-ipad-dash` 実装 → `deploy:721` → 浜田目視
+**レーン変更**: **`jr-ipad-ledger` reopened**（浜田GO P0→P1）。720/採番/694・674連携/P2集計クリックは非目的。名簿・747/746 は再開しない。
+**Git**: 作業中（SPEC/closures 先行コミット予定）
+**closeStatus**: **open**（721 レーン作業中）
+**制約**: 閉済8件＋jr-ipad **reopened**／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触／**720 schema 不触**
+**本日状態**: 721 P0/P1 着手。SPEC=`docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md`
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-08-22 夜）
+### 本日アクティブ（BUILD/rev — 2026-08-23）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **721** | （P0/P1 実装後更新） | （deploy 後） |
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 夜必読更新済。正本Excelは削除済（kintone 595/776 が正本）。
-**GO待ち**: なし（名簿必須残クリア）。E2/E3/E5 等は見送り継続。
-**調査正本**: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`
+**継続メモ**: P2+その他改善は P0/P1 目視 OK 後に検討。
+**GO待ち**: なし（P0→P1 実装中）。目視は deploy 後。
+**調査正本**: `docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
-## クローズ済み（`data/cio-project-closures.json` — 9件）
-業務改善697–713 / Wi-Fi718–719 / JR iPad720–721 / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753** — **closed-v1**
+## クローズ済み（`data/cio-project-closures.json` — reopen 中 1）
+業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=reopened(P0/P1)** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
 
 ## 保留・その他の制約
 | 状態 | 内容 |
