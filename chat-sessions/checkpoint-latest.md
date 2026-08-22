@@ -1,29 +1,29 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-23 08:45 JST — **721 P0/P1 目視OK・reclosed**。P2 は浜田が項番選択後に再開
-**次の1手**: P2 候補を浜田が採否判断（説明済）。GO 項のみ SPEC→実装
-**レーン変更**: **`jr-ipad-ledger` reclosed**（P0/P1 目視OK）。P2 等は個別 GO 時のみ reopen
-**Git**: closures reclosed コミット予定
-**closeStatus**: **open**（セッション継続・P2 判断待ち）
-**制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触／**720 schema 不触**
-**本日状態**: 721 live BUILD=`2026-08-23-jr-ipad-dash-p0-p1-ux` rev**16**（目視OK）
+**最終更新**: 2026-08-23 08:55 JST — **721 P2-1+A+B+V1-7**（jr-ipad **reopened**）
+**次の1手**: SPEC commit → customize 実装 → `deploy:721` → 浜田目視
+**レーン変更**: **`jr-ipad-ledger` reopened**（P2-1・A解除・Bコピー・V1-7）。P2-2/C-I 見送り。720 不触
+**Git**: 作業中
+**closeStatus**: **open**
+**制約**: 閉済8件＋jr-ipad **reopened**／688 heat外／677–679／712禁止／736不触／SKYSEA=案件外／emp_id不触／**720 schema不触**／**P2-2しない**
+**本日状態**: P0/P1 rev16 目視OK済。P2-VUX 着手。SPEC=`docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-23）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **721** | `2026-08-23-jr-ipad-dash-p0-p1-ux` | **16** |
+| **721** | `2026-08-23-jr-ipad-dash-p0-p1-ux` → P2-VUX 実装後更新 | **16** |
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: P2-1/P2-2 および大規模 v2 は浜田採否待ち。
-**GO待ち**: **P2 採否**（説明後）。
-**調査正本**: `docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md`
+**継続メモ**: P2-2・C〜I は今回やらない。
+**GO待ち**: なし（実装中）。目視は deploy 後。
+**調査正本**: `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
-## クローズ済み（`data/cio-project-closures.json` — 9件）
-業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=closed-v1（P0/P1済）** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
+## クローズ済み（`data/cio-project-closures.json` — reopen 中 1）
+業務改善697–713 / Wi-Fi718–719 / **JR iPad720–721=reopened(P2-VUX)** / VPN733–734 / トータルネット737–738 / 複合機741–742 / **NAS748–749** / **ML750–751** / **Kintoneアカウント752–753**
 
 ## 保留・その他の制約
 | 状態 | 内容 |
