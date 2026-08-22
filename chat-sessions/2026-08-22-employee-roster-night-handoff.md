@@ -16,7 +16,7 @@
 
 | App | BUILD | rev（customize） | 備考 |
 |-----|-------|------------------|------|
-| **776** | `2026-08-22-776-sort-after-save` | **48** | 並びを **submit.success 後**に適用（revision 衝突修正） |
+| **776** | `2026-08-22-776-sort-after-save` | **49** | 並びを **submit.success 後**に適用（revision 衝突修正） |
 | **595** | `2026-08-22-595-kenmu-list-sort-dept-end` | **149** | 新規兼務→776 部署末尾。既存兼務の並び・`section_name` 維持 |
 
 フォーム: 776 に **`section_name`（部／室）** DROP_DOWN 追加済（管理部〜工事支援部 8択）。レイアウトは部署名行に配置。

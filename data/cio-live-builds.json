@@ -475,10 +475,10 @@
     },
     "776": {
       "build": "2026-08-22-776-sort-after-save",
-      "fileKey": "ff99844c-2ce0-4396-bf3b-9a6b8f72f188",
-      "revision": "48",
+      "fileKey": "7e313b6c-e1ac-467a-87e5-1ec2d7d721fe",
+      "revision": "49",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T02:12:57.868Z",
+      "deployedAt": "2026-08-22T02:20:53.686Z",
       "note": null
     }
   }
