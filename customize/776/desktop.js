@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-export-section-col（Excel/印刷に部／室列）
  * BUILD: 2026-08-22-776-list-sort-label-hyojijun（一覧並び→表示順・条件文言）
  * BUILD: 2026-08-22-776-p0-toolbar-tight-top（①絞り込み上の余白を詰める）
  * BUILD: 2026-08-22-776-p0-toolbar-frames（P0: 絞込／状況／操作を枠分け・人数を状況帯へ）
@@ -28,7 +29,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-list-sort-label-hyojijun";
+  var BUILD = "2026-08-22-776-export-section-col";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -131,6 +132,7 @@
     { code: "employee_no", label: "社員番号" },
     { code: "group_name", label: "部署グループ" },
     { code: "dept_name", label: "部署名" },
+    { code: "section_name", label: "部／室" },
     { code: "user_name", label: "社員名" },
     { code: "job_title", label: "役職" },
     { code: "mail", label: "メールアドレス" },
