@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-22 19:11 JST — **S7 Excel削除 確認済**（xlsx なし・tmp フォルダ空→削除）。名簿レーン必須残なし。
 **次の1手**: 新規レーンのみ（項番 -0）。S7 完了。
 **レーン変更**: **595/776 社員名簿 改善GOクローズ＋S7完了（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
-**Git**: **`6657155f`** = `origin/main` — push 済
+**Git**: **`2dab9754`** = `origin/main` — push 済
 **closeStatus**: **closed**（day-close 済・S7 追記）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。**S7済**。
