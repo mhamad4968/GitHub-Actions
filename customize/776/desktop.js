@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p0-toolbar-pullup（①上余白を負マージン＋親連鎖で確実に詰める）
  * BUILD: 2026-08-22-776-export-section-col（Excel/印刷に部／室列）
  * BUILD: 2026-08-22-776-list-sort-label-hyojijun（一覧並び→表示順・条件文言）
  * BUILD: 2026-08-22-776-p0-toolbar-tight-top（①絞り込み上の余白を詰める）
@@ -29,7 +30,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-export-section-col";
+  var BUILD = "2026-08-22-776-p0-toolbar-pullup";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -2552,32 +2553,48 @@
     if (old && old.parentNode) old.parentNode.removeChild(old);
     closeOrgPopover();
 
-    /* ヘッダスペース上余白を詰める（①の上の空き） */
-    if (space && space.style) {
-      space.style.marginTop = "0";
-      space.style.paddingTop = "0";
-      space.style.marginBottom = "0";
-      space.style.paddingBottom = "4px";
-    }
-    try {
-      var hsCssId = "jbis-776-header-space-tight";
-      if (!document.getElementById(hsCssId)) {
-        var hsCss = document.createElement("style");
-        hsCss.id = hsCssId;
-        hsCss.textContent =
-          ".gaia-argoui-app-infomenu + .gaia-argoui-app-toolbar," +
+    /* ①の上の空き: ヘッダスペース〜祖先の余白を潰し、ツールバーを上へ引き寄せる */
+    function tightenHeaderGap776(spaceEl) {
+      var el = spaceEl;
+      for (var i = 0; i < 8 && el && el.style; i++) {
+        el.style.marginTop = "0";
+        el.style.paddingTop = "0";
+        el.style.minHeight = "0";
+        if (i === 0) {
+          el.style.marginBottom = "0";
+          el.style.paddingBottom = "2px";
+        }
+        el = el.parentElement;
+      }
+      try {
+        var hsCssId = "jbis-776-header-space-tight";
+        var css =
+          /* kintone 一覧ヘッダ〜ヘッダメニューの下余白 */
+          ".gaia-argoui-app-toolbar{padding-bottom:0!important;margin-bottom:0!important;}" +
+          ".gaia-argoui-app-toolbar .gaia-argoui-app-menu{margin-bottom:0!important;}" +
           ".contents-actionmenu-gaia," +
+          ".ocean-ui-plugin-headerMenu," +
+          ".ocean-ui-plugin-headerMenu-content," +
+          ".gaia-argoui-app-showindex-toolbar-spacer," +
           "#header-space-element," +
-          ".gaia-argoui-app-showindex-toolbar-spacer{margin-top:0!important;padding-top:0!important;}" +
-          "div[id^='user-js-']{margin-top:0!important;}" +
+          "#header-menu-space{" +
+          "margin-top:0!important;padding-top:0!important;min-height:0!important;}" +
+          /* ツールバー本体をタイトルバー直下へ */
           "#" +
           WRAP_ID +
-          "{margin-top:0!important;}";
-        document.head.appendChild(hsCss);
+          "{margin-top:-18px!important;position:relative;z-index:2;}";
+        var hsCss = document.getElementById(hsCssId);
+        if (!hsCss) {
+          hsCss = document.createElement("style");
+          hsCss.id = hsCssId;
+          document.head.appendChild(hsCss);
+        }
+        hsCss.textContent = css;
+      } catch (eCss) {
+        /* noop */
       }
-    } catch (eCss) {
-      /* noop */
     }
+    tightenHeaderGap776(space);
 
     /* PC台帳（674）準拠の共通ボタン高さ */
     var BTN =
@@ -2594,7 +2611,7 @@
 
     function mkBand(title, borderColor, bg, opts) {
       var o = opts || {};
-      var pad = o.tightTop ? "6px 12px 10px" : "10px 12px 12px";
+      var pad = o.tightTop ? "4px 10px 8px" : "8px 12px 10px";
       var band = document.createElement("section");
       band.setAttribute("aria-label", title);
       band.style.cssText =
@@ -2604,27 +2621,39 @@
         borderColor +
         ";border-radius:10px;background:" +
         bg +
-        ";box-sizing:border-box;display:flex;flex-direction:column;gap:8px;";
-      var lab = document.createElement("div");
-      lab.textContent = title;
-      lab.style.cssText =
-        "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;" +
-        "text-transform:none;line-height:1;margin:0;";
-      band.appendChild(lab);
+        ";box-sizing:border-box;display:flex;flex-direction:column;gap:" +
+        (o.tightTop ? "6px" : "8px") +
+        ";";
+      if (!o.inlineTitle) {
+        var lab = document.createElement("div");
+        lab.textContent = title;
+        lab.style.cssText =
+          "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;" +
+          "text-transform:none;line-height:1;margin:0;";
+        band.appendChild(lab);
+      }
       return band;
     }
 
     var wrap = document.createElement("div");
     wrap.id = WRAP_ID;
     wrap.style.cssText =
-      "margin:0 0 8px;padding:0;border:none;background:transparent;" +
-      "display:flex;flex-direction:column;gap:8px;box-sizing:border-box;";
+      "margin:-18px 0 6px;padding:0;border:none;background:transparent;" +
+      "display:flex;flex-direction:column;gap:6px;box-sizing:border-box;";
 
-    /* —— 帯1: 絞り込み —— */
-    var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc", { tightTop: true });
+    /* —— 帯1: 絞り込み（見出しをチップと同じ行にして枠内上を詰める） —— */
+    var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc", {
+      tightTop: true,
+      inlineTitle: true,
+    });
     var chipRow = document.createElement("div");
     chipRow.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+      "display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;";
+    var filterTitle = document.createElement("span");
+    filterTitle.textContent = "① 絞り込み";
+    filterTitle.style.cssText =
+      "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;margin-right:4px;";
+    chipRow.appendChild(filterTitle);
 
     function mkChip(text, value) {
       var b = document.createElement("button");
