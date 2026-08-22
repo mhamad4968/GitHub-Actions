@@ -80,3 +80,4 @@
 | live 721 | BUILD=`2026-08-23-jr-ipad-dash-p0-p1-ux` **rev 16** / fileKey `c5ecc74d-cdbd-4fdc-8313-85990fc2dbbf` |
 | 変更要約 | いまの条件＋該当件数／一覧印刷「該当 N 台」／ステータスチップ／一覧 Excel（画面同集合・Apple PW 含む・SheetJS bundle） |
 | 次 | **浜田目視** → OK なら reclosed ＋ P2 等は別検討 |
+| 目視結果 | **2026-08-23 浜田 OK** → `jr-ipad-ledger` **reclosed**。P2 は個別採否待ち |
