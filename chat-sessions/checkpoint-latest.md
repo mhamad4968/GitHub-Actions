@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-22 11:26 JST — 昼締め＋夜作業順（Excel兼務・並び・部室）を必読に追記。
 **次の1手**: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
 **レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: **`f31c526e`** = `origin/main` — push 済
+**Git**: **`3313e8a1`** = `origin/main` — push 済
 **closeStatus**: closed（昼区切り・夜継続）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**49**（`section_name` フォーム追加済）。
@@ -50,6 +50,7 @@
 - closeStatus: **closed**（昼区切り。夜継続）
 
 
+
 ## 2026-08-21 夜
 
 ### 2026-08-21 夜締め（社員名簿 Phase1〜2）
@@ -58,6 +59,7 @@
 - live 776 BUILD=`2026-08-21-776-reform-dept-order` rev **38**
 - 浜田: 列幅・ヘッダ・reform順まで **OK** → 本日終わり
 - closeStatus: **closing**（day-close）
+
 
 
 ## 2026-08-21
@@ -75,35 +77,5 @@
 - closeStatus: **closed**（本レーン締め。day-close は今夜最終ならそのとき）
 
 
-## 2026-08-18
 
-### 2026-08-18 昼（674 M365・所属ピッカー・セッション締め）
-- 674 SKYSEA対応は **個人のみ**（フォーム必須解除・非個人は空）
-- M365 5/5 赤バナー廃止（内部上限維持）
-- 管理タブ **M365利用状況**（admin・初期=利用可・列「番号」）
-- 台帳 **所属ピッカー**（680 `sort_no`・レ点中は閉じない）→ 浜田目視 **OK**
-- live BUILD=`2026-08-18-674-org-picker-keep-open` rev **339**
-- 仕様: `docs/plans/2026-04-21-new-pc-ledger-spec.md` §4.6.4/§4.6.7/§4.8a-D、`docs/plans/2026-08-10-674-ui-hub-tabs-spec.md`
-- closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
-
-
-
-## 2026-08-16
-
-### 2026-08-16 朝（694/696 UX・セッション締め）
-- **694** Apple ID管理台帳: ツールバー3群・件数チップ・sticky・印刷機密1行 → BUILD=`2026-08-16-694-meta-count-chips` rev **29** → 目視 OK → **改善レーンクローズ**（運用継続）
-- **696** メールアドレス管理台帳: IDs 1–8 → BUILD=`2026-08-16-696-ui-print-polish` rev **15** → 目視 OK → **改善レーンクローズ**（運用継続・closures JSON に入れない）
-- 手順正本: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
-- 715 再開しない。次アプリは浜田指示
-- closeStatus: **closed**（朝セッション締め。day-close は今夜最終ならそのとき）
-
-### 2026-08-16 朝追記（Cursor JS/TS 除外）
-- 大フォルダ除外通知 → `jsconfig.json` 拡張。浜田再読み込み後、新通知なし
-- `.vscode/settings.json` は gitignore（ローカルのみ）
-- 694/696/715 再開しない。夜は浜田指示
-- closeStatus: **closed**（再締め。day-close は今夜）
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-21.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-22.md -->

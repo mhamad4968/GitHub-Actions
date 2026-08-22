@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-21 自動更新）】
-- 次の1手: 翌日 cold-start → 名簿続き（Excel突合・list_sort要否）。閉済UX再開しない。
-- checkpoint: 2026-08-21 21:39 JST — **夜セッション締め（社員名簿）**。day-close ①〜⑦進行中。
-- 進行中 plan: docs/plans/2026-08-21-employee-roster-kintone-spec.md
-- 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after commit
-  - fix(776): order reform depts 統括 then 札幌 then 首都圏
-  - chore(checkpoint): sync Git line after commit
+【今やってる主タスク（2026-08-22 反映・2026-08-22 WAKE同期）】
+- 本日レーン: cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え
+- checkpoint: 2026-08-22 11:26 JST — 昼締め＋夜作業順（Excel兼務・並び・部室）を必読に追記。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
