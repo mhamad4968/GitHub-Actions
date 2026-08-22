@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-22 11:15 JST — **昼セッション締め**（夜継続用）。776 revision衝突修正を緊急 deploy 済。
 **次の1手**: cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。
 **レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: （close-git 後に更新）
+**Git**: **`c4d5fe8d`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: closed（昼区切り・夜継続）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**48**（`section_name` フォーム追加済）。
