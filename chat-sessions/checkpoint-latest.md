@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-22 19:05 JST — 名簿不具合修正（本務並び維持・並び替え高速化）浜田OK。夕反省GO反映。day-close after-go 中。
 **次の1手**: full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。
 **レーン変更**: **595/776 社員名簿 改善GOクローズ（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
-**Git**: main ahead origin（close-git で push）。
+**Git**: **`bd66b21d`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: closing（day-close after-go）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
 **本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。S7残置。
