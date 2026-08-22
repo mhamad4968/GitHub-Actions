@@ -68,3 +68,15 @@
 
 - 浜田 **GO** + checkpoint「次の1手」更新 + `data/cio-project-closures.json` 解除
 - v2 候補（スコープ外）: Apple ID 694 連携・PC 台帳 674 連携・集計セルクリック絞込 等
+
+---
+
+## R61 addendum — 2026-08-23 P0/P1 UX（目視待ち）
+
+| 項目 | 内容 |
+|------|------|
+| SPEC | `docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md` |
+| レーン | `jr-ipad-ledger` → **reopened**（P0/P1 のみ。720 schema / 採番 / 連携 / P2 は非目的） |
+| live 721 | BUILD=`2026-08-23-jr-ipad-dash-p0-p1-ux` **rev 16** / fileKey `c5ecc74d-cdbd-4fdc-8313-85990fc2dbbf` |
+| 変更要約 | いまの条件＋該当件数／一覧印刷「該当 N 台」／ステータスチップ／一覧 Excel（画面同集合・Apple PW 含む・SheetJS bundle） |
+| 次 | **浜田目視** → OK なら reclosed ＋ P2 等は別検討 |

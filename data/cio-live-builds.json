@@ -290,11 +290,11 @@
       "note": null
     },
     "721": {
-      "build": "2026-08-03-jr-ipad-dash-print-filter-surf",
-      "fileKey": "d0b5bd65-1c20-4844-a484-9dafc45333bc",
-      "revision": "15",
+      "build": "2026-08-23-jr-ipad-dash-p0-p1-ux",
+      "fileKey": "c5ecc74d-cdbd-4fdc-8313-85990fc2dbbf",
+      "revision": "16",
       "relPath": "customize/jr-ipad-dash/desktop.js",
-      "deployedAt": "2026-08-03T10:08:51.642Z",
+      "deployedAt": "2026-08-22T23:37:11.451Z",
       "note": null
     },
     "733": {
