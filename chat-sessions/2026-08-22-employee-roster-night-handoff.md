@@ -5,13 +5,13 @@
 > SPEC: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`  
 > **改善候補（未実装）**: `chat-sessions/2026-08-22-employee-roster-improvement-backlog.md`
 
-## 次の1手（2026-08-22 18:00 JST）
+## 次の1手（2026-08-22 18:47 JST — 改善レーン浜田すべてOK）
 
-1. 改善バックログを浜田が **やる／やらない／後回し**  
-2. GO 項目だけ実装（過剰スコープ禁止）  
+1. **改善GOクローズ**（E1・P0/P1・関越施工部順・595同期高速化まで目視OK。E2/E5ほか見送り）  
+2. 日終わりなら session close-git  
 3. **S7** Excel削除は最終 GO まで残置  
 
-### 夜セッション進捗（最終）— データ①〜④＋UI **完了**
+### 夜セッション進捗（最終）— データ①〜④＋UI＋改善 **完了（浜田OK）**
 
 | # | 内容 | 状態 |
 |---|------|------|
@@ -20,18 +20,20 @@
 | ③ | `section_name` Excel登録 | **済**（選択肢追加・更新・並び不変） |
 | ④ | 漏れ点検＋本務dept/title突合 | **済**（leak 0） |
 | UI | 集計表（本務／兼務／合計）・鉄構二重解消・部／室から鉄構支店削除・キーワード GAIA_IL08（and欠落）修正・部追加目視 | **済（浜田OK）** |
+| 改善 | P0枠／役職色／E1役職フィルタ／関越施工部を工事部下／595保存→776同期高速化 | **済（浜田すべてOK）** |
+| 見送り | E2 キーワード部／室・E3印刷太字・E5兼バッジほか | **今回見送り** |
 
 - **正本Excel**: `C:\tmp\社員名簿（正社員・準社員）\社員一覧表更新.xlsx`（部／室列あり）  
-- **live 776**: BUILD `2026-08-22-776-agg-total-col` rev **61**  
-- **live 595**: BUILD `2026-08-22-595-kenmu-list-sort-dept-end`（室長・室員 cp_title 追加済）  
+- **live 776**: BUILD `2026-08-22-776-agg-kanetsu-seko-under-koji` rev **73**  
+- **live 595**: BUILD `2026-08-22-595-roster-sync-fast` rev **151**  
 - スクリプト: `employee-roster-apply-kenmu-from-excel.mjs` ほか夜一式  
 
-## live BUILD（夜締め時点）
+## live BUILD（改善クローズ時点）
 
 | App | BUILD | rev | 備考 |
 |-----|-------|-----|------|
-| **776** | `2026-08-22-776-agg-total-col` | **61** | 集計合計列・query and 修正含む |
-| **595** | `2026-08-22-595-kenmu-list-sort-dept-end` | （昼+室長室員） | 新規兼務→部署末尾 |
+| **776** | `2026-08-22-776-agg-kanetsu-seko-under-koji` | **73** | E1・関越施工部順含む |
+| **595** | `2026-08-22-595-roster-sync-fast` | **151** | 保存時フルrenumber廃止 |
 
 ## 本日（昼）完了 — 再開しない／壊さない
 
