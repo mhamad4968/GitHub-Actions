@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p1-title-rank-fix（常務・監査役を役職者に・役職列ヘッダ照合で部長漏れ修正）
  * BUILD: 2026-08-22-776-p1-read-title-rank（P1: 集計二重表示整理・兼務色トーン・役職ランク強調）
  * BUILD: 2026-08-22-776-p0-toolbar-pullup2（①上余白をさらに詰める・帯間隔縮小）
  * BUILD: 2026-08-22-776-p0-toolbar-pullup（①上余白を負マージン＋親連鎖で確実に詰める）
@@ -32,7 +33,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p1-read-title-rank";
+  var BUILD = "2026-08-22-776-p1-title-rank-fix";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -701,20 +702,37 @@
       "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}";
   }
 
-  /** 役職文字列 → lead（部長級以上） / member（部員等） / other */
+  /** 役職文字列 → lead（役職者） / member（部員等） / other */
   function titleRank776(title) {
     var t = String(title || "").trim();
     if (!t) return "other";
-    if (/部員|室員|所員|一般|スタッフ/.test(t)) return "member";
+    // 役職者を先に判定（「○○部員」以外の部長・室長等を取りこぼさない）
     if (
-      /社長|副社長|役員|顧問|支店長|副支店長|部長|室長|所長|統括|本部長|工事本部長|執行役員/.test(
-        t,
-      )
+      /社長|副社長|専務|常務|執行役員|取締役|監査役|相談役|理事|役員|顧問/.test(t) ||
+      /支店長|副支店長|部長|副部長|室長|副室長|所長|副所長|統括|本部長|工事本部長/.test(t) ||
+      /課長|主任|係長|マネージャー|次長/.test(t)
     ) {
       return "lead";
     }
-    if (/課長|主任|係長|マネージャー|次長/.test(t)) return "lead";
+    if (/部員|室員|所員|一般|スタッフ/.test(t)) return "member";
     return "other";
+  }
+
+  /** 一覧ヘッダから「役職」列の td インデックスを返す（見つからなければ -1） */
+  function findJobTitleColIndex776() {
+    var tables = document.querySelectorAll(
+      ".recordlist-gaia, .gaia-argoui-app-index-table, .ocean-ui-app-index-table, table.recordlist-gaia",
+    );
+    for (var t = 0; t < tables.length; t++) {
+      var ths = tables[t].querySelectorAll("thead th, tr th");
+      for (var h = 0; h < ths.length; h++) {
+        var lab = String(ths[h].textContent || "")
+          .replace(/\s|\u3000/g, "")
+          .trim();
+        if (lab === "役職") return h;
+      }
+    }
+    return -1;
   }
 
   function applyTitleRankStyles(records) {
@@ -728,6 +746,7 @@
       if (!id) continue;
       byId[id] = cell(r, "job_title");
     }
+    var colIdx = findJobTitleColIndex776();
     var dataIdx = 0;
     for (var ti = 0; ti < trs.length; ti++) {
       var tr = trs[ti];
@@ -749,18 +768,29 @@
       if (!rid && !title) continue;
       var rank = titleRank776(title);
       var tds = tr.querySelectorAll("td");
-      var titleNorm = String(title || "").replace(/\s|\u3000/g, "");
       for (var c = 0; c < tds.length; c++) {
-        var td = tds[c];
-        td.classList.remove("jbis-776-title-lead", "jbis-776-title-member");
-        var tv = String(td.textContent || "")
-          .replace(/\s|\u3000/g, "")
-          .trim();
-        if (!titleNorm || tv !== titleNorm) continue;
-        if (rank === "lead") td.classList.add("jbis-776-title-lead");
-        else if (rank === "member") td.classList.add("jbis-776-title-member");
-        break;
+        tds[c].classList.remove("jbis-776-title-lead", "jbis-776-title-member");
       }
+      var targetTd = null;
+      if (colIdx >= 0 && colIdx < tds.length) {
+        targetTd = tds[colIdx];
+      } else {
+        // フォールバック: セル文字が役職と一致／含む
+        var titleNorm = String(title || "").replace(/\s|\u3000/g, "");
+        for (var c2 = 0; c2 < tds.length; c2++) {
+          var tv = String(tds[c2].textContent || "")
+            .replace(/\s|\u3000/g, "")
+            .trim();
+          if (!titleNorm || !tv) continue;
+          if (tv === titleNorm || tv.indexOf(titleNorm) !== -1 || titleNorm.indexOf(tv) !== -1) {
+            targetTd = tds[c2];
+            break;
+          }
+        }
+      }
+      if (!targetTd) continue;
+      if (rank === "lead") targetTd.classList.add("jbis-776-title-lead");
+      else if (rank === "member") targetTd.classList.add("jbis-776-title-member");
     }
   }
 
