@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-22-776-p0-toolbar-pullup2",
-      "fileKey": "7f65dfc1-2001-4b3f-80f0-3907cd50efa4",
-      "revision": "68",
+      "build": "2026-08-22-776-p1-read-title-rank",
+      "fileKey": "4cefc42e-aa4c-4a85-8085-88367735a654",
+      "revision": "69",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T09:21:49.668Z",
+      "deployedAt": "2026-08-22T09:26:09.030Z",
       "note": null
     }
   }

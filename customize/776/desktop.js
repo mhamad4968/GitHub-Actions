@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p1-read-title-rank（P1: 集計二重表示整理・兼務色トーン・役職ランク強調）
  * BUILD: 2026-08-22-776-p0-toolbar-pullup2（①上余白をさらに詰める・帯間隔縮小）
  * BUILD: 2026-08-22-776-p0-toolbar-pullup（①上余白を負マージン＋親連鎖で確実に詰める）
  * BUILD: 2026-08-22-776-export-section-col（Excel/印刷に部／室列）
@@ -31,7 +32,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p0-toolbar-pullup2";
+  var BUILD = "2026-08-22-776-p1-read-title-rank";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -667,32 +668,100 @@
       style.id = DEPT_SEP_STYLE_ID;
       document.head.appendChild(style);
     }
-    /* 薄紫の区切り線＋薄緑の交互背景 */
+    /* 部署区切り＝薄線／交互＝ごく薄い緑／兼務＝薄いオレンジ左線（主張しすぎない） */
     style.textContent =
       ".jbis-776-dept-sep > td," +
       ".jbis-776-dept-sep > th{" +
-      "border-top:1.5px solid #c4b5fd !important;" +
-      "box-shadow:inset 0 1px 0 rgba(196,181,253,0.45);}" +
+      "border-top:1px solid #c4b5fd !important;}" +
       ".jbis-776-dept-alt > td," +
       ".jbis-776-dept-alt > th{" +
-      "background-color:#f0fdf4 !important;}" +
+      "background-color:#f8faf8 !important;}" +
       ".jbis-776-kenmu > td," +
       ".jbis-776-kenmu > th," +
       ".jbis-776-kenmu.jbis-776-dept-alt > td," +
       ".jbis-776-kenmu.jbis-776-dept-alt > th{" +
-      "background-color:#ffedd5 !important;" +
+      "background-color:#fff7ed !important;" +
       "color:#9a3412 !important;" +
-      "box-shadow:inset 1px 0 0 #ea580c;}" +
+      "box-shadow:inset 2px 0 0 #fb923c;}" +
       ".jbis-776-kenmu a," +
       ".jbis-776-kenmu a:link," +
       ".jbis-776-kenmu a:visited{" +
       "color:#9a3412 !important;}" +
+      /* 役職ランク: セルのみ強調（行全体は塗らない） */
+      "td.jbis-776-title-lead{" +
+      "font-weight:800!important;color:#1e3a8a!important;" +
+      "background-color:#eef2ff!important;}" +
+      "td.jbis-776-title-member{" +
+      "font-weight:500!important;color:#64748b!important;}" +
       ".jbis-776-scroll-flash > td," +
       ".jbis-776-scroll-flash > th{" +
       "outline:2px solid #ea580c !important;" +
       "outline-offset:-2px;" +
       "animation:jbis776Flash 1.6s ease-in-out 2;}" +
       "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}";
+  }
+
+  /** 役職文字列 → lead（部長級以上） / member（部員等） / other */
+  function titleRank776(title) {
+    var t = String(title || "").trim();
+    if (!t) return "other";
+    if (/部員|室員|所員|一般|スタッフ/.test(t)) return "member";
+    if (
+      /社長|副社長|役員|顧問|支店長|副支店長|部長|室長|所長|統括|本部長|工事本部長|執行役員/.test(
+        t,
+      )
+    ) {
+      return "lead";
+    }
+    if (/課長|主任|係長|マネージャー|次長/.test(t)) return "lead";
+    return "other";
+  }
+
+  function applyTitleRankStyles(records) {
+    ensureDeptSepStyle();
+    var trs = listIndexRows();
+    if (!trs || !trs.length || !records || !records.length) return;
+    var byId = {};
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      var id = r && r.$id && r.$id.value != null ? String(r.$id.value) : "";
+      if (!id) continue;
+      byId[id] = cell(r, "job_title");
+    }
+    var dataIdx = 0;
+    for (var ti = 0; ti < trs.length; ti++) {
+      var tr = trs[ti];
+      if (tr.querySelector("th")) continue;
+      var rid = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
+      if (!rid && dataIdx < records.length) {
+        rid =
+          records[dataIdx].$id && records[dataIdx].$id.value != null
+            ? String(records[dataIdx].$id.value)
+            : "";
+      }
+      var title =
+        rid && byId[rid] != null
+          ? byId[rid]
+          : dataIdx < records.length
+            ? cell(records[dataIdx], "job_title")
+            : "";
+      dataIdx += 1;
+      if (!rid && !title) continue;
+      var rank = titleRank776(title);
+      var tds = tr.querySelectorAll("td");
+      var titleNorm = String(title || "").replace(/\s|\u3000/g, "");
+      for (var c = 0; c < tds.length; c++) {
+        var td = tds[c];
+        td.classList.remove("jbis-776-title-lead", "jbis-776-title-member");
+        var tv = String(td.textContent || "")
+          .replace(/\s|\u3000/g, "")
+          .trim();
+        if (!titleNorm || tv !== titleNorm) continue;
+        if (rank === "lead") td.classList.add("jbis-776-title-lead");
+        else if (rank === "member") td.classList.add("jbis-776-title-member");
+        break;
+      }
+    }
   }
 
   function listIndexRows() {
@@ -938,6 +1007,7 @@
       dataIdx += 1;
     }
     applyKenmuRowColors(records);
+    applyTitleRankStyles(records);
   }
 
   function escapeHtml(s) {
@@ -1650,28 +1720,16 @@
 
     var meta = document.createElement("div");
     meta.style.cssText =
-      "display:flex;flex-direction:column;gap:6px;padding:10px 12px;" +
+      "display:flex;flex-direction:column;gap:4px;padding:8px 10px;" +
       "background:#f8fafc;border:1px solid #e8ecf4;border-radius:8px;font-size:12px;color:#334155;";
     var metaCount = document.createElement("div");
     metaCount.style.cssText = "font-weight:800;color:#0f172a;font-size:13px;";
     metaCount.textContent = "件数取得中…";
     meta.appendChild(metaCount);
-    var metaCond = document.createElement("div");
-    metaCond.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:6px 10px;line-height:1.4;color:#475569;";
-    filterDetailLines(st).forEach(function (line) {
-      var chip = document.createElement("span");
-      chip.textContent = line;
-      chip.style.cssText =
-        "display:inline-block;padding:3px 8px;border-radius:999px;" +
-        "background:#fff;border:1px solid #e2e8f0;font-size:11px;color:#475569;";
-      metaCond.appendChild(chip);
-    });
-    meta.appendChild(metaCond);
     var metaHint = document.createElement("div");
     metaHint.style.cssText = "color:#94a3b8;font-size:11px;";
     metaHint.textContent =
-      "いまの絞り込み条件で集計。拠点＝部署グループ／本務・兼務は部署ごとに別カウント。合計は本務＋兼務（延べ）。";
+      "上部「② いまの条件・件数」の絞り込みで集計（条件の再掲はしません）。合計＝本務＋兼務（延べ）。";
     meta.appendChild(metaHint);
     box.appendChild(meta);
 
@@ -1695,15 +1753,18 @@
       .then(function (recs) {
         var model = buildAggTableModel(recs);
         metaCount.textContent =
-          activeConditionLine(st) +
-          " ｜ 該当件数: " +
+          "該当 " +
           recs.length +
           "件 ｜ 本務 " +
           model.peoplePrimary +
-          "人 ｜ 兼務（延べ部署） " +
+          "人 ｜ 兼務（延べ） " +
           model.grandKenmu +
-          " ｜ 本務合計 " +
-          model.grandPrimary;
+          " ｜ 表の本務計 " +
+          model.grandPrimary +
+          " ／ 兼務計 " +
+          model.grandKenmu +
+          " ／ 合計 " +
+          model.grandTotal;
         host.innerHTML = "";
         /* 列幅: 拠点 11em / 部署 22em / 本務・兼務・合計 4.5em */
         var AGG_W_HUB = "11em";
