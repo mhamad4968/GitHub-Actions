@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p0-toolbar-pullup2（①上余白をさらに詰める・帯間隔縮小）
  * BUILD: 2026-08-22-776-p0-toolbar-pullup（①上余白を負マージン＋親連鎖で確実に詰める）
  * BUILD: 2026-08-22-776-export-section-col（Excel/印刷に部／室列）
  * BUILD: 2026-08-22-776-list-sort-label-hyojijun（一覧並び→表示順・条件文言）
@@ -30,7 +31,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-p0-toolbar-pullup";
+  var BUILD = "2026-08-22-776-p0-toolbar-pullup2";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -2582,7 +2583,7 @@
           /* ツールバー本体をタイトルバー直下へ */
           "#" +
           WRAP_ID +
-          "{margin-top:-18px!important;position:relative;z-index:2;}";
+          "{margin-top:-28px!important;position:relative;z-index:2;}";
         var hsCss = document.getElementById(hsCssId);
         if (!hsCss) {
           hsCss = document.createElement("style");
@@ -2611,7 +2612,7 @@
 
     function mkBand(title, borderColor, bg, opts) {
       var o = opts || {};
-      var pad = o.tightTop ? "4px 10px 8px" : "8px 12px 10px";
+      var pad = o.tightTop ? "2px 8px 6px" : "6px 10px 8px";
       var band = document.createElement("section");
       band.setAttribute("aria-label", title);
       band.style.cssText =
@@ -2619,10 +2620,10 @@
         pad +
         ";border:1.5px solid " +
         borderColor +
-        ";border-radius:10px;background:" +
+        ";border-radius:8px;background:" +
         bg +
         ";box-sizing:border-box;display:flex;flex-direction:column;gap:" +
-        (o.tightTop ? "6px" : "8px") +
+        (o.tightTop ? "4px" : "6px") +
         ";";
       if (!o.inlineTitle) {
         var lab = document.createElement("div");
@@ -2638,8 +2639,8 @@
     var wrap = document.createElement("div");
     wrap.id = WRAP_ID;
     wrap.style.cssText =
-      "margin:-18px 0 6px;padding:0;border:none;background:transparent;" +
-      "display:flex;flex-direction:column;gap:6px;box-sizing:border-box;";
+      "margin:-28px 0 4px;padding:0;border:none;background:transparent;" +
+      "display:flex;flex-direction:column;gap:4px;box-sizing:border-box;";
 
     /* —— 帯1: 絞り込み（見出しをチップと同じ行にして枠内上を詰める） —— */
     var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc", {
