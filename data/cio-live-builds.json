@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-08-22-595-kenmu-list-sort-dept-end",
-      "fileKey": "c91eb436-7fc4-4329-8e6a-f7e51c132314",
-      "revision": "149",
+      "build": "2026-08-22-595-roster-sync-fast",
+      "fileKey": "483c289a-aead-4848-8995-4f7d8fab880d",
+      "revision": "151",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-21T22:59:17.086Z",
+      "deployedAt": "2026-08-22T09:15:42.966Z",
       "note": null
     },
     "627": {

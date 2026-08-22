@@ -3,6 +3,7 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-08-22-595-roster-sync-fast（776同期: 全件renumber廃止・新規兼務は部署末尾整数・ミラーと並列）
    * BUILD: 2026-08-22-595-kenmu-list-sort-dept-end（新規兼務は776部署末尾・既存並び維持）
  * BUILD: 2026-08-22-595-cp-dept-auto-group（兼務: 所属名→所属グループ自動／680順はフォーム側）
    * BUILD: 2026-08-21-595-sync-roster-776-on-save（保存成功: 1人単位で776名簿 upsert）
@@ -32,7 +33,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-22-595-kenmu-list-sort-dept-end";
+  var BUILD = "2026-08-22-595-roster-sync-fast";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -3547,6 +3548,10 @@
     return String(Math.round(x * 1000) / 1000);
   }
 
+  /**
+   * 全件 list_sort を 1..N に振り直す（重い）。通常の保存同期では呼ばない。
+   * 隙間埋めが必要なメンテ時のみ手動／一括用に残置。
+   */
   function renumberRoster776ListSortInt595() {
     var all = [];
     function page(offset) {
@@ -3642,7 +3647,8 @@
 
   /**
    * 595 1人 → 776 upsert（正社員/準社員のみ。以外・退職は776から削除）。
-   * list_sort: 本務=595.sort。兼務は既存行があれば維持、新規のみ当該部署の末尾。
+   * list_sort: 本務=595.sort。兼務は既存行があれば維持、新規のみ当該部署の末尾（整数 max+1）。
+   * 保存ごとの全件 renumber はしない（レスポンスのため。隙間は許容）。
    * emp_id は emp_id_ref へのコピーのみ。
    */
   function syncRoster776OneFrom595(record) {
@@ -3659,9 +3665,8 @@
         var delIds = existing.map(function (r) {
           return r.$id.value;
         });
-        return delete776Records595(delIds).then(function () {
-          return renumberRoster776ListSortInt595();
-        });
+        // 削除のみ。全件振り直しはしない（隙間可）
+        return delete776Records595(delIds);
       }
 
       var ownSort = Number(scalarFrom595(record, FC595_SORT));
@@ -3718,20 +3723,29 @@
         return r.$id.value;
       });
 
-      var deptSet = {};
-      deptSet[primaryDept] = true;
-      for (var i = 0; i < cpRows.length; i++) {
-        var cpv = cpRows[i] && cpRows[i].value ? cpRows[i].value : {};
-        var cd =
-          cpv[FC595_CP_DEPT] && cpv[FC595_CP_DEPT].value != null
-            ? String(cpv[FC595_CP_DEPT].value).trim()
+      // 新規兼務スロットが必要な部署だけ max を取る（毎回全所属 GET しない）
+      var needMaxDepts = {};
+      for (var nj = 0; nj < cpRows.length; nj++) {
+        var njRow = cpRows[nj];
+        var njv = njRow && njRow.value ? njRow.value : {};
+        var njDept =
+          njv[FC595_CP_DEPT] && njv[FC595_CP_DEPT].value != null
+            ? String(njv[FC595_CP_DEPT].value).trim()
             : "";
-        if (cd) deptSet[cd] = true;
+        var njTitle =
+          njv[FC595_CP_TITLE] && njv[FC595_CP_TITLE].value != null
+            ? String(njv[FC595_CP_TITLE].value).trim()
+            : "";
+        if (!njDept && !njTitle) continue;
+        var njKey = njDept + "|" + njTitle;
+        if (!(sortPool[njKey] && sortPool[njKey].length) && njDept) {
+          needMaxDepts[njDept] = true;
+        }
       }
-      var deptList = Object.keys(deptSet).filter(Boolean);
+      var needMaxList = Object.keys(needMaxDepts);
 
       return Promise.all(
-        deptList.map(function (d) {
+        needMaxList.map(function (d) {
           return fetchDept776MaxListSort595(d, excludeKenmuIds).then(function (mx) {
             return { dept: d, max: mx };
           });
@@ -3741,7 +3755,6 @@
         for (var mi = 0; mi < maxList.length; mi++) {
           maxByDept[maxList[mi].dept] = maxList[mi].max;
         }
-        var newSlotByDept = {};
 
         var primarySort = isFinite(ownSort) && ownSort > 0 ? ownSort : 999999;
 
@@ -3769,11 +3782,10 @@
             ls = sortPool[poolKey].shift();
             sec = (sectionPool[poolKey] && sectionPool[poolKey].shift()) || "";
           } else {
-            if (!newSlotByDept[cDept]) newSlotByDept[cDept] = 0;
-            newSlotByDept[cDept] += 1;
             var base = Number(maxByDept[cDept]);
             if (!isFinite(base) || base < 0) base = 0;
-            ls = base + 0.1 * newSlotByDept[cDept];
+            ls = Math.floor(base) + 1;
+            maxByDept[cDept] = ls;
           }
           desired.push({
             key: "兼務|" + cDept + "|" + cTitle + "|" + ci,
@@ -3815,14 +3827,12 @@
           for (var di = 1; di < desired.length; di++) {
             toAdd.push(desired[di].record);
           }
-          var addP = !toAdd.length
-            ? Promise.resolve()
-            : kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
-                app: APP_ROSTER_776,
-                records: toAdd,
-              });
-          return addP.then(function () {
-            return renumberRoster776ListSortInt595();
+          if (!toAdd.length) {
+            return;
+          }
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
+            app: APP_ROSTER_776,
+            records: toAdd,
           });
         });
       });
@@ -3831,25 +3841,25 @@
 
   function run595DownstreamSync(record) {
     var emp = scalarFrom595(record, FC595_EMP).trim();
-    var chain;
+    var mirrorP;
     if (emp === EMP_RETIRED) {
-      chain = retire674PcsFrom595(record);
+      mirrorP = retire674PcsFrom595(record);
     } else {
-      chain = sync674MirrorFrom595(record).then(function () {
+      mirrorP = sync674MirrorFrom595(record).then(function () {
         return syncSoftwareLedgerMirrorFrom595(record).then(function () {
           return syncStorageMediaLedgerMirrorFrom595(record);
         });
       });
     }
-    return chain.then(function () {
-      return syncRoster776OneFrom595(record).catch(function (eRoster) {
-        console.error("[jbis 595 roster-776]", eRoster);
-        window.alert(
-          "社員マスタは保存されましたが、社員名簿（776）への反映に失敗しました。権限を確認し、必要なら再度保存してください。" +
-            (eRoster && eRoster.message ? "\n" + eRoster.message : "")
-        );
-      });
+    var rosterP = syncRoster776OneFrom595(record).catch(function (eRoster) {
+      console.error("[jbis 595 roster-776]", eRoster);
+      window.alert(
+        "社員マスタは保存されましたが、社員名簿（776）への反映に失敗しました。権限を確認し、必要なら再度保存してください。" +
+          (eRoster && eRoster.message ? "\n" + eRoster.message : "")
+      );
     });
+    // 名簿同期を台帳ミラーと並列（保存完了待ち時間を短縮）
+    return Promise.all([mirrorP, rosterP]);
   }
 
   var submitBefore = [
