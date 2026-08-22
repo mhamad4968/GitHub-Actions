@@ -6092,3 +6092,23 @@ npm run cio:morning:ready
 **話したこと**: Space48 社員名簿。595 兼務 DROP_DOWN 化・776 同期／list_sort／絞り込み・Excel印刷・件数。集計表（拠点/部署/在籍・拠点合計最終行）・PC台帳型いまの条件/該当件数・ツールバー高さ揃え・部署区切り薄紫緑・reform 所属順（統括→札幌→首都圏）。浜田目視で列幅・ヘッダ調整済。Excelは移行OKまで残置。
 
 ---
+
+### 2026-08-22 昼締め（社員名簿 UI・部／室・revision衝突修正 → 夜継続）
+
+**要約**: 776 兼務色・部署末尾・ページ送り（$id分割）目視OK。部／室フィールド（`section_name`）＋「部追加」一括＋個別保存時並びを実装。保存時に並びRESTが revision 衝突 → `2026-08-22-776-sort-after-save` で success 後適用に修正し緊急 deploy（4h超 SKIP・浜田GO）。595は新規兼務を部署末尾・既存並び/section維持。
+
+**次の1手**: cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → ハードリロード後に保存OK目視 → 部追加/部／室の残り確認。
+
+**Git**: （close-git 後に更新）
+
+**BUILD**: 776=`2026-08-22-776-sort-after-save` rev**48** / 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**
+
+**GO待ち**: 776 保存衝突修正の目視
+
+**触らない**: emp_id／閉済UX／688／677-679／736／712／SKYSEA remote／Excel削除（最終GOまで）
+
+**次セッションへの 1 行**: Start from `2026-08-22-employee-roster-night-handoff.md`; verify save OK after sort-after-save; do NOT touch emp_id.
+
+**話したこと**: 部／室は776のみ固定マスタ・本務兼務両方可・一括は並び聞かず・個別保存で前/後ろ・595兼務追加は部署末尾。
+
+---

@@ -6,7 +6,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCheckpointMandatoryRead } from './cio-checkpoint-mandatory-read.mjs';
-import { repairCheckpointBootstrapBlock } from './cio-handoff-template.mjs';
+import {
+  repairCheckpointBootstrapBlock,
+  validateCheckpointFreezeZone,
+} from './cio-handoff-template.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const live = validateCheckpointMandatoryRead(repoRoot);
@@ -74,5 +77,66 @@ assert.ok(rep.repaired && rep.filled.includes('minChars-pad'), `expected minChar
 const after = validateCheckpointMandatoryRead(crlfTmp);
 assert.equal(after.ok, true, `after CRLF repair: ${after.issues.join('; ')}`);
 assert.ok(after.preambleChars >= 2800);
+
+// 必須見出しが日付セクションより後ろに落ちたケース（夜締め CRLF 前置の再発）
+const hoistTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cp-hoist-'));
+const hoistCp = path.join(hoistTmp, 'chat-sessions/checkpoint-latest.md');
+const hoistData = path.join(hoistTmp, 'data/cio-handoff-template.json');
+const hoistTplDir = path.join(hoistTmp, 'chat-sessions/templates');
+fs.mkdirSync(path.dirname(hoistCp), { recursive: true });
+fs.mkdirSync(path.dirname(hoistData), { recursive: true });
+fs.mkdirSync(hoistTplDir, { recursive: true });
+fs.copyFileSync(path.join(repoRoot, 'data/cio-handoff-template.json'), hoistData);
+for (const f of [
+  'checkpoint-freeze-zone.template.md',
+  'handoff-log-block.template.md',
+  'HANDOFF-HUMAN-block.template.txt',
+]) {
+  fs.copyFileSync(
+    path.join(repoRoot, 'chat-sessions/templates', f),
+    path.join(hoistTplDir, f),
+  );
+}
+const broken = [
+  '# 復元チェックポイント（最新）',
+  '**最終更新**: 2026-08-22 JST',
+  '**次の1手**: hoist regression',
+  '**Git**: `deadbeef`',
+  '## セッション切替後の自律復元',
+  'mandatory-read-gate.mjs verify:session-close-git-warn npm run session:bootstrap',
+  '## 2026-08-21 夜',
+  '- night history wrongly before closed',
+  '## クローズ済み（`data/cio-project-closures.json` — 9件）',
+  'closed-v1 list',
+  '## 保留・その他の制約',
+  '| 状態 | 内容 |',
+  '| **688** | heat外 |',
+  '## 2026-08-21',
+  '- morning',
+].join('\n');
+fs.writeFileSync(hoistCp, broken.replace(/\n/g, '\r\n'), 'utf8');
+const beforeHoist = validateCheckpointFreezeZone(hoistTmp);
+assert.equal(beforeHoist.ok, false, 'broken fixture must fail freeze validate');
+assert.ok(
+  beforeHoist.issues.some((i) => i.includes('クローズ済み') || i.includes('保留')),
+  `expected missing heading issues, got: ${beforeHoist.issues.join('; ')}`,
+);
+const hoistRep = repairCheckpointBootstrapBlock(hoistTmp);
+assert.equal(hoistRep.ok, true);
+assert.ok(
+  hoistRep.filled.some((f) => f.startsWith('hoist:## クローズ済み')),
+  `expected hoist closed, got ${hoistRep.filled.join(',')}`,
+);
+assert.ok(
+  hoistRep.filled.some((f) => f.startsWith('hoist:## 保留')),
+  `expected hoist hold, got ${hoistRep.filled.join(',')}`,
+);
+const afterHoist = validateCheckpointFreezeZone(hoistTmp);
+assert.equal(afterHoist.ok, true, `after hoist: ${afterHoist.issues.join('; ')}`);
+const repairedText = fs.readFileSync(hoistCp, 'utf8');
+const dated = repairedText.search(/^## \d{4}-\d{2}-\d{2}/m);
+const head = dated < 0 ? repairedText : repairedText.slice(0, dated);
+assert.ok(head.includes('## クローズ済み'), 'closed must be in preamble');
+assert.ok(head.includes('## 保留・その他の制約'), 'hold must be in preamble');
 
 console.log('[verify:cio-checkpoint-mandatory-read] OK');

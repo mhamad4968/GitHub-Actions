@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-21T12:52:51.702Z",
-  "gitHead": "8ea7d80b",
-  "gitStatus": "## main...origin/main [ahead 33]",
-  "nextTask": "cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。",
+  "exportedAt": "2026-08-22T02:16:08.126Z",
+  "gitHead": "01d95bd0",
+  "gitStatus": "## main...origin/main",
+  "nextTask": "cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=8ea7d80b | 次=cold-start → 社員名簿続き（Excel突合・list_sort要否）→ 浜田目視。閉済UX再開しない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=01d95bd0 | 次=cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-08-21T12:52:52.150Z",
+  "validatedAt": "2026-08-22T02:16:08.787Z",
   "crosscheckOk": true
 }

@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-08-21-595-sync-roster-776-on-save",
-      "fileKey": "0b65d4f0-4054-433c-b703-46d607dad729",
-      "revision": "140",
+      "build": "2026-08-22-595-kenmu-list-sort-dept-end",
+      "fileKey": "c91eb436-7fc4-4329-8e6a-f7e51c132314",
+      "revision": "149",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-21T11:40:00.207Z",
+      "deployedAt": "2026-08-21T22:59:17.086Z",
       "note": null
     },
     "627": {
@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-21-776-reform-dept-order",
-      "fileKey": "d25a547f-ab47-4c36-8842-3e16fe1f9096",
-      "revision": "38",
+      "build": "2026-08-22-776-sort-after-save",
+      "fileKey": "ff99844c-2ce0-4396-bf3b-9a6b8f72f188",
+      "revision": "48",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-21T12:37:26.540Z",
+      "deployedAt": "2026-08-22T02:12:57.868Z",
       "note": null
     }
   }

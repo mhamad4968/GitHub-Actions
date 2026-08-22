@@ -1,5 +1,5 @@
 【Desktop 控え · META チャーター】
-生成: 2026-08-21 JST — npm run constitution:sync-meta-charters-desktop
+生成: 2026-08-22 JST — npm run constitution:sync-meta-charters-desktop
 正本: docs/constitution/28-ceo-go-phases-charter.md
 ※ AGENTS.md 非置換 · 矛盾時はリポ正本を優先
 # CEO GO 段階分離 — チャーター（2026-07-11 · META · Round-3 R3-1）

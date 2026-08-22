@@ -3,20 +3,43 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-sort-after-save（並び適用を保存成功後へ・revision衝突回避）
+ * BUILD: 2026-08-22-776-section-assign（部／室フィールド＋部追加モーダル＋保存時並び）
+ * BUILD: 2026-08-22-776-pager-id-slice（ページ送りを$id分割方式に修正）
+ * BUILD: 2026-08-22-776-pager-thin-border（名簿ページ送り＋左帯1px）
+ * BUILD: 2026-08-22-776-kenmu-color-v4（兼務左帯を細線化）
+ * BUILD: 2026-08-22-776-kenmu-color-v3（兼務色を全行同一・部署ストライプ非適用）
+ * BUILD: 2026-08-22-776-kenmu-color-v2（兼務行: 背景強化＋左帯＋文字色）
+ * BUILD: 2026-08-22-776-kenmu-color-reorder-scroll（兼務行色／部署末尾／再読込スクロール）
  * BUILD: 2026-08-21-776-reform-dept-order（reform所属順: 統括→札幌→首都圏）
  * BUILD: 2026-08-21-776-agg-th-larger（集計表ヘッダ文字を大きく）
  * BUILD: 2026-08-21-776-agg-col-mid2（集計表の列幅をさらに少し広く）
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-21-776-reform-dept-order";
+  var BUILD = "2026-08-22-776-sort-after-save";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
   var ORG_POP_ID = "jbis-776-org-popover";
+  var PAGER_ID = "jbis-776-roster-pager";
+  var SECTION_MODAL_ID = "jbis-776-section-modal";
+  var SORT_MODAL_ID = "jbis-776-sort-insert-modal";
+  var FC_SECTION = "section_name";
+  var SECTION_OPTIONS = [
+    "管理部",
+    "施工部",
+    "工事部",
+    "安全部",
+    "システム推進室",
+    "橋りょうリペア部",
+    "施工支援部",
+    "工事支援部",
+  ];
   var DEPT_SEP_STYLE_ID = "jbis-776-dept-sep-style";
   var STORAGE_KEY = "jbis776-index-state-v1";
   var UI_OPEN_KEY = "jbis776-ui-open-v1";
+  var SCROLL_AFTER_REORDER_KEY = "jbis776-scroll-after-reorder-v1";
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
   var APP_ID = null;
@@ -124,7 +147,7 @@
   }
 
   function defaultState() {
-    return { cat: "all", kw: "", depts: [], groups: [] };
+    return { cat: "all", kw: "", depts: [], groups: [], page: 1, pageSize: 40 };
   }
 
   function loadState() {
@@ -132,11 +155,18 @@
       var raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return defaultState();
       var o = JSON.parse(raw);
+      var pageSize = Number(o.pageSize);
+      if (!isFinite(pageSize) || pageSize < 10) pageSize = 40;
+      if (pageSize > 100) pageSize = 100;
+      var page = Number(o.page);
+      if (!isFinite(page) || page < 1) page = 1;
       return {
         cat: o.cat === "seishain" || o.cat === "junshain" || o.cat === "all" ? o.cat : "all",
         kw: String(o.kw || ""),
         depts: Array.isArray(o.depts) ? o.depts.map(String) : [],
         groups: Array.isArray(o.groups) ? o.groups.map(String) : [],
+        page: page,
+        pageSize: pageSize,
       };
     } catch (e) {
       return defaultState();
@@ -151,7 +181,16 @@
     }
   }
 
-  function buildQuery(st) {
+  function filterFingerprint(st) {
+    return JSON.stringify({
+      cat: st.cat || "all",
+      kw: String(st.kw || "").trim(),
+      depts: (st.depts || []).slice().sort(),
+      groups: (st.groups || []).slice().sort(),
+    });
+  }
+
+  function buildWhere(st) {
     var parts = [];
     if (st.cat === "seishain") {
       parts.push('employment_category in ("' + escapeForQuery(CAT_SEISHAIN) + '")');
@@ -195,8 +234,111 @@
           '")',
       );
     }
-    var where = parts.length ? parts.join(" and ") + " " : "";
-    return where + "order by list_sort asc, レコード番号 asc";
+    return parts.length ? parts.join(" and ") + " " : "";
+  }
+
+  function buildQuery(st) {
+    return buildWhere(st) + "order by list_sort asc, レコード番号 asc";
+  }
+
+  function normalizeQuery(q) {
+    return String(q || "")
+      .replace(/\+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function fetchFilteredIds(st) {
+    var fp = filterFingerprint(st);
+    var cacheKey = "jbis776-idcache-v1";
+    try {
+      var cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+      if (cached && cached.fp === fp && Array.isArray(cached.ids)) {
+        return Promise.resolve(cached.ids.map(String));
+      }
+    } catch (eCache) {
+      /* noop */
+    }
+
+    var app = getAppId();
+    var all = [];
+    var where = buildWhere(st);
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: app,
+          query: where + "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) {
+            all.push(String(rows[i].$id.value));
+          }
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0).then(function (ids) {
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify({ fp: fp, ids: ids, t: Date.now() }));
+      } catch (eSave) {
+        /* noop */
+      }
+      return ids;
+    });
+  }
+
+  function buildPagedQueryFromIds(ids, page, pageSize) {
+    var list = ids || [];
+    var total = list.length;
+    var ps = pageSize > 0 ? pageSize : 40;
+    var maxPage = Math.max(1, Math.ceil(total / ps) || 1);
+    var p = page > 0 ? page : 1;
+    if (p > maxPage) p = maxPage;
+    var start = (p - 1) * ps;
+    var slice = list.slice(start, start + ps);
+    var query;
+    if (!slice.length) {
+      query = '$id = "0"';
+    } else {
+      query =
+        "$id in (" +
+        slice
+          .map(function (id) {
+            return '"' + id + '"';
+          })
+          .join(",") +
+        ") order by list_sort asc, レコード番号 asc";
+    }
+    return {
+      query: query,
+      page: p,
+      maxPage: maxPage,
+      total: total,
+      from: slice.length ? start + 1 : 0,
+      to: slice.length ? start + slice.length : 0,
+      shown: slice.length,
+    };
+  }
+
+  function goRosterPage(st, page) {
+    var next = {
+      cat: st.cat,
+      kw: st.kw,
+      depts: st.depts,
+      groups: st.groups,
+      page: page > 0 ? page : 1,
+      pageSize: st.pageSize || 40,
+    };
+    saveState(next);
+    return fetchFilteredIds(next).then(function (ids) {
+      var built = buildPagedQueryFromIds(ids, next.page, next.pageSize || 40);
+      next.page = built.page;
+      saveState(next);
+      navigate(built.query);
+      return built;
+    });
   }
 
   function navigate(queryStr) {
@@ -222,8 +364,17 @@
   }
 
   function applyAndReload(st) {
+    st.page = 1;
+    try {
+      sessionStorage.removeItem("jbis776-idcache-v1");
+    } catch (e) {
+      /* noop */
+    }
     saveState(st);
-    navigate(buildQuery(st));
+    goRosterPage(st, 1).catch(function (err) {
+      console.warn("[jbis 776 page]", err);
+      navigate(buildQuery(st));
+    });
   }
 
   function fetchRecordsByQuery(queryBase) {
@@ -402,26 +553,244 @@
       "box-shadow:inset 0 1px 0 rgba(196,181,253,0.45);}" +
       ".jbis-776-dept-alt > td," +
       ".jbis-776-dept-alt > th{" +
-      "background-color:#f0fdf4 !important;}";
+      "background-color:#f0fdf4 !important;}" +
+      ".jbis-776-kenmu > td," +
+      ".jbis-776-kenmu > th," +
+      ".jbis-776-kenmu.jbis-776-dept-alt > td," +
+      ".jbis-776-kenmu.jbis-776-dept-alt > th{" +
+      "background-color:#ffedd5 !important;" +
+      "color:#9a3412 !important;" +
+      "box-shadow:inset 1px 0 0 #ea580c;}" +
+      ".jbis-776-kenmu a," +
+      ".jbis-776-kenmu a:link," +
+      ".jbis-776-kenmu a:visited{" +
+      "color:#9a3412 !important;}" +
+      ".jbis-776-scroll-flash > td," +
+      ".jbis-776-scroll-flash > th{" +
+      "outline:2px solid #ea580c !important;" +
+      "outline-offset:-2px;" +
+      "animation:jbis776Flash 1.6s ease-in-out 2;}" +
+      "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}";
   }
 
-  function applyIndexDeptSeparators(records) {
-    if (!records || !records.length) return;
-    ensureDeptSepStyle();
+  function listIndexRows() {
     var selectors = [
       ".recordlist-gaia tbody tr",
       ".gaia-argoui-app-index-table tbody tr",
       "table.recordlist-gaia tbody tr",
       ".ocean-ui-app-index-table tbody tr",
     ];
-    var trs = null;
     for (var s = 0; s < selectors.length; s++) {
       var found = document.querySelectorAll(selectors[s]);
-      if (found && found.length) {
-        trs = found;
-        break;
+      if (found && found.length) return found;
+    }
+    return null;
+  }
+
+  function recordIdFromIndexTr(tr) {
+    if (!tr) return "";
+    var a = tr.querySelector('a[href*="record="]');
+    if (!a) return "";
+    var m = String(a.getAttribute("href") || "").match(/record=(\d+)/);
+    return m ? m[1] : "";
+  }
+
+  function applyKenmuRowColors(records) {
+    ensureDeptSepStyle();
+    var trs = listIndexRows();
+    if (!trs || !trs.length) return;
+    var roleById = {};
+    if (records && records.length) {
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        var id = r && r.$id && r.$id.value != null ? String(r.$id.value) : "";
+        if (!id) continue;
+        roleById[id] = cell(r, "row_role");
       }
     }
+    var needFetch = [];
+    var dataIdx = 0;
+    for (var ti = 0; ti < trs.length; ti++) {
+      var tr = trs[ti];
+      if (tr.querySelector("th")) continue;
+      var rid = recordIdFromIndexTr(tr);
+      if (!rid && records && dataIdx < records.length) {
+        rid =
+          records[dataIdx].$id && records[dataIdx].$id.value != null
+            ? String(records[dataIdx].$id.value)
+            : "";
+      }
+      dataIdx += 1;
+      if (!rid) continue;
+      tr.setAttribute("data-jbis-rid", rid);
+      if (roleById[rid] == null || roleById[rid] === "") {
+        needFetch.push(rid);
+      } else if (roleById[rid] === "兼務") {
+        tr.classList.add("jbis-776-kenmu");
+      } else {
+        tr.classList.remove("jbis-776-kenmu");
+      }
+    }
+    if (!needFetch.length) return;
+    var uniq = [];
+    var seen = {};
+    for (var n = 0; n < needFetch.length; n++) {
+      if (seen[needFetch[n]]) continue;
+      seen[needFetch[n]] = true;
+      uniq.push(needFetch[n]);
+    }
+    var chunks = [];
+    for (var c = 0; c < uniq.length; c += 100) {
+      chunks.push(uniq.slice(c, c + 100));
+    }
+    var chain = Promise.resolve({});
+    chunks.forEach(function (ids) {
+      chain = chain.then(function (acc) {
+        var q =
+          "$id in (" +
+          ids
+            .map(function (id) {
+              return '"' + id + '"';
+            })
+            .join(",") +
+          ") limit 100";
+        return kintone
+          .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+            app: getAppId(),
+            query: q,
+            fields: ["$id", "row_role"],
+          })
+          .then(function (resp) {
+            var rows = resp.records || [];
+            for (var i = 0; i < rows.length; i++) {
+              acc[String(rows[i].$id.value)] = cell(rows[i], "row_role");
+            }
+            return acc;
+          });
+      });
+    });
+    chain
+      .then(function (acc) {
+        var trs2 = listIndexRows();
+        if (!trs2) return;
+        for (var i = 0; i < trs2.length; i++) {
+          var tr2 = trs2[i];
+          var id2 = tr2.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr2);
+          if (!id2) continue;
+          if (acc[id2] === "兼務") tr2.classList.add("jbis-776-kenmu");
+          else tr2.classList.remove("jbis-776-kenmu");
+        }
+      })
+      .catch(function (e) {
+        console.warn("[jbis 776 kenmu color]", e);
+      });
+  }
+
+  function rememberScrollAfterReorder(payload) {
+    try {
+      sessionStorage.setItem(
+        SCROLL_AFTER_REORDER_KEY,
+        JSON.stringify({
+          id: String(payload.id || ""),
+          name: String(payload.name || ""),
+          at: payload.at || null,
+          t: Date.now(),
+          triedKw: false,
+        }),
+      );
+    } catch (e) {
+      /* noop */
+    }
+  }
+
+  function consumeScrollAfterReorder(st) {
+    var raw = null;
+    try {
+      raw = sessionStorage.getItem(SCROLL_AFTER_REORDER_KEY);
+    } catch (e) {
+      return;
+    }
+    if (!raw) return;
+    var info = null;
+    try {
+      info = JSON.parse(raw);
+    } catch (e2) {
+      try {
+        sessionStorage.removeItem(SCROLL_AFTER_REORDER_KEY);
+      } catch (e3) {
+        /* noop */
+      }
+      return;
+    }
+    if (!info || !info.id || Date.now() - Number(info.t || 0) > 120000) {
+      try {
+        sessionStorage.removeItem(SCROLL_AFTER_REORDER_KEY);
+      } catch (e4) {
+        /* noop */
+      }
+      return;
+    }
+
+    function clearKey() {
+      try {
+        sessionStorage.removeItem(SCROLL_AFTER_REORDER_KEY);
+      } catch (e5) {
+        /* noop */
+      }
+    }
+
+    function tryScroll(attempt) {
+      var trs = listIndexRows();
+      var target = null;
+      if (trs) {
+        for (var i = 0; i < trs.length; i++) {
+          var id = trs[i].getAttribute("data-jbis-rid") || recordIdFromIndexTr(trs[i]);
+          if (String(id) === String(info.id)) {
+            target = trs[i];
+            break;
+          }
+        }
+      }
+      if (target) {
+        target.classList.add("jbis-776-scroll-flash");
+        try {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (eScroll) {
+          target.scrollIntoView(true);
+        }
+        clearKey();
+        return;
+      }
+      if (attempt < 8) {
+        setTimeout(function () {
+          tryScroll(attempt + 1);
+        }, 200);
+        return;
+      }
+      // 別ページにある場合: 氏名で1回だけ絞り込み再読込
+      if (!info.triedKw && info.name && st) {
+        info.triedKw = true;
+        try {
+          sessionStorage.setItem(SCROLL_AFTER_REORDER_KEY, JSON.stringify(info));
+        } catch (e6) {
+          /* noop */
+        }
+        st.kw = String(info.name).replace(/\s|　/g, "");
+        applyAndReload(st);
+        return;
+      }
+      clearKey();
+    }
+
+    setTimeout(function () {
+      tryScroll(0);
+    }, 150);
+  }
+
+  function applyIndexDeptSeparators(records) {
+    if (!records || !records.length) return;
+    ensureDeptSepStyle();
+    var trs = listIndexRows();
     if (!trs || !trs.length) return;
 
     var prevDept = null;
@@ -429,9 +798,14 @@
     var dataIdx = 0;
     for (var i = 0; i < trs.length; i++) {
       var tr = trs[i];
-      tr.classList.remove("jbis-776-dept-sep", "jbis-776-dept-alt");
+      tr.classList.remove("jbis-776-dept-sep", "jbis-776-dept-alt", "jbis-776-kenmu");
       if (tr.querySelector("th")) continue;
       if (dataIdx >= records.length) break;
+      var rid =
+        records[dataIdx].$id && records[dataIdx].$id.value != null
+          ? String(records[dataIdx].$id.value)
+          : "";
+      if (rid) tr.setAttribute("data-jbis-rid", rid);
       var dept = cell(records[dataIdx], "dept_name");
       if (dept !== prevDept) {
         if (prevDept != null) tr.classList.add("jbis-776-dept-sep");
@@ -441,6 +815,7 @@
       if (blockIdx % 2 === 1) tr.classList.add("jbis-776-dept-alt");
       dataIdx += 1;
     }
+    applyKenmuRowColors(records);
   }
 
   function escapeHtml(s) {
@@ -521,24 +896,85 @@
       if (insertAt < 0) insertAt = 0;
       if (insertAt > ids.length) insertAt = ids.length;
       ids.splice(insertAt, 0, String(moverId));
-      var updates = ids.map(function (id, i) {
-        return { id: id, record: { list_sort: { value: String(i + 1) } } };
-      });
-      var chain = Promise.resolve();
-      for (var b = 0; b < updates.length; b += 100) {
-        (function (batch) {
-          chain = chain.then(function () {
-            return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
-              app: app,
-              records: batch,
-            });
-          });
-        })(updates.slice(b, b + 100));
-      }
-      return chain.then(function () {
+      return renumberListSortIds(app, ids).then(function () {
         return { total: ids.length, at: insertAt + 1 };
       });
     });
+  }
+
+  /** 基準の人と同じ部署ブロックの末尾へ（「下に置く」が部署内末尾にならない問題の修正） */
+  function placeMoverAtDeptEnd(moverId, anchorId) {
+    var app = getAppId();
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: app,
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id", "dept_name"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) {
+            all.push({
+              id: String(rows[i].$id.value),
+              dept: cell(rows[i], "dept_name"),
+            });
+          }
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0).then(function (rows) {
+      var ids = rows.map(function (r) {
+        return r.id;
+      });
+      var from = ids.indexOf(String(moverId));
+      var anchor = ids.indexOf(String(anchorId));
+      if (from < 0) return Promise.reject(new Error("動かす人が一覧にありません"));
+      if (anchor < 0) return Promise.reject(new Error("基準の人が一覧にありません"));
+      var dept = rows[anchor].dept;
+      if (!dept) return Promise.reject(new Error("基準の人の部署名が空です"));
+
+      ids.splice(from, 1);
+      // 削除後の「その部署の最後の index」を探す
+      var lastDept = -1;
+      for (var i = 0; i < ids.length; i++) {
+        var row = null;
+        for (var j = 0; j < rows.length; j++) {
+          if (rows[j].id === ids[i]) {
+            row = rows[j];
+            break;
+          }
+        }
+        if (row && row.dept === dept) lastDept = i;
+      }
+      var insertAt = lastDept < 0 ? ids.length : lastDept + 1;
+      if (insertAt < 0) insertAt = 0;
+      if (insertAt > ids.length) insertAt = ids.length;
+      ids.splice(insertAt, 0, String(moverId));
+      return renumberListSortIds(app, ids).then(function () {
+        return { total: ids.length, at: insertAt + 1, dept: dept };
+      });
+    });
+  }
+
+  function renumberListSortIds(app, ids) {
+    var updates = ids.map(function (id, i) {
+      return { id: id, record: { list_sort: { value: String(i + 1) } } };
+    });
+    var chain = Promise.resolve();
+    for (var b = 0; b < updates.length; b += 100) {
+      (function (batch) {
+        chain = chain.then(function () {
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+            app: app,
+            records: batch,
+          });
+        });
+      })(updates.slice(b, b + 100));
+    }
+    return chain;
   }
 
   function fillSelect(sel, records, emptyLabel) {
@@ -1103,7 +1539,613 @@
       });
   }
 
-  function mountToolbar(space, st) {
+  function formatRosterPageLabel(built) {
+    if (!built) return "表示 —";
+    var tot = built.total;
+    var totText = isFinite(tot) ? String(tot) : "…";
+    if (!built.shown) return "表示 — / " + totText + " 件";
+    return (
+      "表示 " +
+      built.from +
+      "–" +
+      built.to +
+      " / " +
+      totText +
+      " 件（" +
+      built.page +
+      "/" +
+      built.maxPage +
+      "ページ）"
+    );
+  }
+
+  function mountRosterPager(wrap, st, built) {
+    var old = document.getElementById(PAGER_ID);
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    var bar = document.createElement("div");
+    bar.id = PAGER_ID;
+    bar.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px;align-items:center;" +
+      "margin:0;padding:8px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;";
+
+    var BTN =
+      "box-sizing:border-box;height:30px;padding:0 12px;border-radius:6px;" +
+      "font-size:12px;font-weight:700;cursor:pointer;" +
+      "display:inline-flex;align-items:center;justify-content:center;" +
+      "border:1px solid #94a3b8;background:#fff;color:#0f172a;";
+
+    var page = (built && built.page) || st.page || 1;
+    var maxPage = (built && built.maxPage) || 1;
+
+    function mk(label, targetPage, primary, disabled) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.disabled = !!disabled;
+      b.style.cssText =
+        BTN +
+        (primary ? "border-color:#0f766e;background:#0f766e;color:#fff;" : "") +
+        (disabled ? "opacity:0.45;cursor:not-allowed;" : "");
+      if (!disabled) {
+        b.addEventListener("click", function () {
+          labelEl.textContent = "移動中…";
+          goRosterPage(st, targetPage).catch(function (err) {
+            console.warn("[jbis 776 pager]", err);
+            labelEl.textContent = "ページ移動に失敗しました";
+            labelEl.style.color = "#b91c1c";
+          });
+        });
+      }
+      return b;
+    }
+
+    var labelEl = document.createElement("span");
+    labelEl.style.cssText = "font-size:12px;font-weight:700;color:#334155;margin-left:4px;";
+    labelEl.textContent = formatRosterPageLabel(built);
+
+    bar.appendChild(mk("先頭", 1, false, page <= 1));
+    bar.appendChild(mk("前のページ", page - 1, false, page <= 1));
+    bar.appendChild(mk("次のページ", page + 1, true, page >= maxPage));
+    bar.appendChild(mk("末尾", maxPage, false, page >= maxPage));
+    bar.appendChild(labelEl);
+    wrap.appendChild(bar);
+  }
+
+  function closeSectionModal() {
+    var el = document.getElementById(SECTION_MODAL_ID);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function fetchRosterMembersByGroup(groupCode) {
+    var g = String(groupCode || "").trim();
+    if (!g) return Promise.resolve([]);
+    var app = getAppId();
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: app,
+          query:
+            'group_name = "' +
+            escapeForQuery(g) +
+            '" order by list_sort asc, レコード番号 asc limit 500 offset ' +
+            offset,
+          fields: [
+            "$id",
+            "user_name",
+            "dept_name",
+            "job_title",
+            "row_role",
+            "section_name",
+            "list_sort",
+          ],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          all = all.concat(rows);
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function putSectionNameForIds(ids, sectionValue) {
+    if (!ids || !ids.length) return Promise.resolve();
+    var app = getAppId();
+    var updates = ids.map(function (id) {
+      return {
+        id: String(id),
+        record: { section_name: { value: sectionValue || "" } },
+      };
+    });
+    var chain = Promise.resolve();
+    for (var b = 0; b < updates.length; b += 100) {
+      (function (batch) {
+        chain = chain.then(function () {
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+            app: app,
+            records: batch,
+          });
+        });
+      })(updates.slice(b, b + 100));
+    }
+    return chain;
+  }
+
+  function openSectionAssignModal() {
+    closeSectionModal();
+    var overlay = document.createElement("div");
+    overlay.id = SECTION_MODAL_ID;
+    overlay.style.cssText =
+      "position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.45);" +
+      "display:flex;align-items:center;justify-content:center;padding:16px;";
+
+    var panel = document.createElement("div");
+    panel.style.cssText =
+      "width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;" +
+      "border-radius:10px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.25);";
+
+    var h = document.createElement("div");
+    h.style.cssText = "font-size:16px;font-weight:800;color:#0f172a;margin:0 0 8px;";
+    h.textContent = "部／室の設定";
+    panel.appendChild(h);
+
+    var note = document.createElement("div");
+    note.style.cssText = "font-size:12px;color:#64748b;margin:0 0 12px;line-height:1.5;";
+    note.textContent =
+      "所属グループの名簿から対象を選び、部／室を付けます（1人でも複数でも可）。並びは変更しません。並びは一覧の「並び替え」か、個別編集の保存時に設定してください。";
+    panel.appendChild(note);
+
+    var form = document.createElement("div");
+    form.style.cssText = "display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px;";
+
+    function mkLabel(text, el) {
+      var wrap = document.createElement("label");
+      wrap.style.cssText = "display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#334155;";
+      wrap.appendChild(document.createTextNode(text));
+      wrap.appendChild(el);
+      return wrap;
+    }
+
+    var secSel = document.createElement("select");
+    secSel.style.cssText = "height:32px;min-width:180px;border:1px solid #94a3b8;border-radius:6px;padding:0 8px;";
+    var opt0 = document.createElement("option");
+    opt0.value = "";
+    opt0.textContent = "（未設定＝クリア）";
+    secSel.appendChild(opt0);
+    for (var si = 0; si < SECTION_OPTIONS.length; si++) {
+      var o = document.createElement("option");
+      o.value = SECTION_OPTIONS[si];
+      o.textContent = SECTION_OPTIONS[si];
+      secSel.appendChild(o);
+    }
+
+    var groupSel = document.createElement("select");
+    groupSel.style.cssText = "height:32px;min-width:200px;border:1px solid #94a3b8;border-radius:6px;padding:0 8px;";
+    var g0 = document.createElement("option");
+    g0.value = "";
+    g0.textContent = "所属グループを選択";
+    groupSel.appendChild(g0);
+    Object.keys(GROUP_LABEL).forEach(function (code) {
+      var go = document.createElement("option");
+      go.value = code;
+      go.textContent = GROUP_LABEL[code] + "（" + code + "）";
+      groupSel.appendChild(go);
+    });
+
+    form.appendChild(mkLabel("部／室", secSel));
+    form.appendChild(mkLabel("所属グループ", groupSel));
+    panel.appendChild(form);
+
+    var listWrap = document.createElement("div");
+    listWrap.style.cssText =
+      "border:1px solid #e2e8f0;border-radius:8px;max-height:360px;overflow:auto;padding:8px;background:#f8fafc;";
+    listWrap.textContent = "所属グループを選ぶと名簿が出ます。";
+    panel.appendChild(listWrap);
+
+    var status = document.createElement("div");
+    status.style.cssText = "margin:10px 0 0;font-size:12px;color:#64748b;min-height:1.2em;";
+    panel.appendChild(status);
+
+    var actions = document.createElement("div");
+    actions.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-top:12px;";
+    var btnCancel = document.createElement("button");
+    btnCancel.type = "button";
+    btnCancel.textContent = "閉じる";
+    btnCancel.style.cssText =
+      "height:32px;padding:0 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-weight:700;cursor:pointer;";
+    var btnApply = document.createElement("button");
+    btnApply.type = "button";
+    btnApply.textContent = "選択した人に反映";
+    btnApply.style.cssText =
+      "height:32px;padding:0 14px;border-radius:6px;border:none;background:#0f766e;color:#fff;font-weight:700;cursor:pointer;";
+    actions.appendChild(btnCancel);
+    actions.appendChild(btnApply);
+    panel.appendChild(actions);
+
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    btnCancel.addEventListener("click", closeSectionModal);
+    overlay.addEventListener("click", function (ev) {
+      if (ev.target === overlay) closeSectionModal();
+    });
+
+    var currentRows = [];
+
+    function renderList(rows) {
+      currentRows = rows || [];
+      listWrap.innerHTML = "";
+      if (!currentRows.length) {
+        listWrap.textContent = "該当する名簿がありません。";
+        return;
+      }
+      var head = document.createElement("div");
+      head.style.cssText = "display:flex;gap:8px;align-items:center;margin-bottom:8px;";
+      var all = document.createElement("button");
+      all.type = "button";
+      all.textContent = "全選択";
+      all.style.cssText =
+        "height:28px;padding:0 10px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-size:12px;font-weight:700;cursor:pointer;";
+      var none = document.createElement("button");
+      none.type = "button";
+      none.textContent = "全解除";
+      none.style.cssText = all.style.cssText;
+      head.appendChild(all);
+      head.appendChild(none);
+      listWrap.appendChild(head);
+
+      for (var i = 0; i < currentRows.length; i++) {
+        var r = currentRows[i];
+        var id = String(r.$id.value);
+        var lab = document.createElement("label");
+        lab.style.cssText =
+          "display:flex;gap:8px;align-items:flex-start;padding:6px 4px;border-bottom:1px solid #e2e8f0;" +
+          "font-size:13px;color:#0f172a;cursor:pointer;";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = id;
+        cb.setAttribute("data-jbis-sec-id", id);
+        var span = document.createElement("span");
+        var sec = cell(r, "section_name") || "—";
+        span.innerHTML =
+          "<strong>" +
+          escapeHtml(cell(r, "user_name")) +
+          "</strong>　" +
+          escapeHtml(cell(r, "dept_name")) +
+          " / " +
+          escapeHtml(cell(r, "job_title") || "—") +
+          "　[" +
+          escapeHtml(cell(r, "row_role") || "") +
+          "]　現: " +
+          escapeHtml(sec);
+        lab.appendChild(cb);
+        lab.appendChild(span);
+        listWrap.appendChild(lab);
+      }
+
+      all.addEventListener("click", function () {
+        var boxes = listWrap.querySelectorAll("input[type=checkbox]");
+        for (var bi = 0; bi < boxes.length; bi++) boxes[bi].checked = true;
+      });
+      none.addEventListener("click", function () {
+        var boxes2 = listWrap.querySelectorAll("input[type=checkbox]");
+        for (var bj = 0; bj < boxes2.length; bj++) boxes2[bj].checked = false;
+      });
+    }
+
+    groupSel.addEventListener("change", function () {
+      var g = groupSel.value;
+      if (!g) {
+        listWrap.textContent = "所属グループを選ぶと名簿が出ます。";
+        return;
+      }
+      listWrap.textContent = "読込中…";
+      fetchRosterMembersByGroup(g)
+        .then(renderList)
+        .catch(function (err) {
+          console.warn("[jbis 776 section]", err);
+          listWrap.textContent = "名簿の取得に失敗しました。";
+        });
+    });
+
+    btnApply.addEventListener("click", function () {
+      var boxes = listWrap.querySelectorAll("input[type=checkbox]:checked");
+      var ids = [];
+      for (var i = 0; i < boxes.length; i++) ids.push(boxes[i].value);
+      if (!ids.length) {
+        status.textContent = "対象を1人以上選んでください。";
+        status.style.color = "#b45309";
+        return;
+      }
+      var sec = secSel.value;
+      btnApply.disabled = true;
+      status.textContent = "反映中…";
+      status.style.color = "#64748b";
+      putSectionNameForIds(ids, sec)
+        .then(function () {
+          status.textContent =
+            ids.length + "件に「" + (sec || "未設定") + "」を反映しました。並びは変えていません。";
+          status.style.color = "#047857";
+          btnApply.disabled = false;
+          if (groupSel.value) {
+            return fetchRosterMembersByGroup(groupSel.value).then(renderList);
+          }
+        })
+        .catch(function (err) {
+          console.warn("[jbis 776 section put]", err);
+          status.textContent = "反映失敗: " + ((err && err.message) || "権限を確認");
+          status.style.color = "#b91c1c";
+          btnApply.disabled = false;
+        });
+    });
+  }
+
+  function closeSortModal() {
+    var el = document.getElementById(SORT_MODAL_ID);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function fetchDeptPeers776(dept, selfId) {
+    var d = String(dept || "").trim();
+    if (!d) return Promise.resolve([]);
+    var app = getAppId();
+    return kintone
+      .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+        app: app,
+        query:
+          'dept_name = "' +
+          escapeForQuery(d) +
+          '" order by list_sort asc, レコード番号 asc limit 500',
+        fields: ["$id", "user_name", "job_title", "row_role", "list_sort", "section_name"],
+      })
+      .then(function (resp) {
+        var rows = resp.records || [];
+        return rows.filter(function (r) {
+          return String(r.$id.value) !== String(selfId || "");
+        });
+      });
+  }
+
+  function openRelativeSortPicker776(dept, peers) {
+    return new Promise(function (resolve, reject) {
+      closeSortModal();
+      var overlay = document.createElement("div");
+      overlay.id = SORT_MODAL_ID;
+      overlay.style.cssText =
+        "position:fixed;inset:0;z-index:10001;background:rgba(15,23,42,.45);" +
+        "display:flex;align-items:center;justify-content:center;padding:16px;";
+      var panel = document.createElement("div");
+      panel.style.cssText =
+        "width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;" +
+        "border-radius:10px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.25);";
+      var h = document.createElement("div");
+      h.style.cssText = "font-size:16px;font-weight:800;margin:0 0 8px;";
+      h.textContent = "一覧の並び位置";
+      panel.appendChild(h);
+      var note = document.createElement("div");
+      note.style.cssText = "font-size:12px;color:#64748b;margin:0 0 10px;";
+      note.textContent = "部署「" + dept + "」内で、誰の前／後ろに置くかを選んでください。";
+      panel.appendChild(note);
+
+      var placeSel = document.createElement("select");
+      placeSel.style.cssText =
+        "width:100%;height:34px;border:1px solid #94a3b8;border-radius:6px;margin-bottom:10px;padding:0 8px;";
+      [
+        { v: "end", t: "部署の末尾" },
+        { v: "start", t: "部署の先頭" },
+      ].forEach(function (x) {
+        var o = document.createElement("option");
+        o.value = x.v;
+        o.textContent = x.t;
+        placeSel.appendChild(o);
+      });
+      for (var i = 0; i < peers.length; i++) {
+        var p = peers[i];
+        var oAbove = document.createElement("option");
+        oAbove.value = "above:" + p.$id.value;
+        oAbove.textContent =
+          "「" +
+          cell(p, "user_name") +
+          "」の前（" +
+          (cell(p, "job_title") || cell(p, "row_role") || "") +
+          "）";
+        placeSel.appendChild(oAbove);
+        var oBelow = document.createElement("option");
+        oBelow.value = "below:" + p.$id.value;
+        oBelow.textContent =
+          "「" +
+          cell(p, "user_name") +
+          "」の後ろ（" +
+          (cell(p, "job_title") || cell(p, "row_role") || "") +
+          "）";
+        placeSel.appendChild(oBelow);
+      }
+      panel.appendChild(placeSel);
+
+      var actions = document.createElement("div");
+      actions.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-top:12px;";
+      var btnCancel = document.createElement("button");
+      btnCancel.type = "button";
+      btnCancel.textContent = "キャンセル";
+      btnCancel.style.cssText =
+        "height:32px;padding:0 14px;border-radius:6px;border:1px solid #94a3b8;background:#fff;font-weight:700;cursor:pointer;";
+      var btnOk = document.createElement("button");
+      btnOk.type = "button";
+      btnOk.textContent = "この位置で保存";
+      btnOk.style.cssText =
+        "height:32px;padding:0 14px;border-radius:6px;border:none;background:#0f766e;color:#fff;font-weight:700;cursor:pointer;";
+      actions.appendChild(btnCancel);
+      actions.appendChild(btnOk);
+      panel.appendChild(actions);
+      overlay.appendChild(panel);
+      document.body.appendChild(overlay);
+
+      function done(val) {
+        closeSortModal();
+        resolve(val);
+      }
+      btnCancel.addEventListener("click", function () {
+        reject({ cancelled: true });
+        closeSortModal();
+      });
+      overlay.addEventListener("click", function (ev) {
+        if (ev.target === overlay) {
+          reject({ cancelled: true });
+          closeSortModal();
+        }
+      });
+      btnOk.addEventListener("click", function () {
+        done(placeSel.value || "end");
+      });
+    });
+  }
+
+  function applyChosenSort776(selfId, dept, choice) {
+    var app = getAppId();
+    return fetchDeptPeers776(dept, null).then(function (allInDept) {
+      var ids = allInDept.map(function (r) {
+        return String(r.$id.value);
+      });
+      // self がまだ部署クエリに含まれない新規の場合もある
+      if (ids.indexOf(String(selfId)) < 0) ids.push(String(selfId));
+      ids = ids.filter(function (id, idx, arr) {
+        return arr.indexOf(id) === idx;
+      });
+      // 現順から self を外して挿入
+      var without = ids.filter(function (id) {
+        return id !== String(selfId);
+      });
+      var next = without.slice();
+      if (choice === "start") {
+        next.unshift(String(selfId));
+      } else if (choice === "end") {
+        next.push(String(selfId));
+      } else if (String(choice).indexOf("above:") === 0) {
+        var aid = String(choice).slice(6);
+        var ai = next.indexOf(aid);
+        if (ai < 0) next.push(String(selfId));
+        else next.splice(ai, 0, String(selfId));
+      } else if (String(choice).indexOf("below:") === 0) {
+        var bid = String(choice).slice(6);
+        var bi = next.indexOf(bid);
+        if (bi < 0) next.push(String(selfId));
+        else next.splice(bi + 1, 0, String(selfId));
+      } else {
+        next.push(String(selfId));
+      }
+      // 部署外の全件順を維持しつつ、部署ブロックを差し替え
+      return fetchAllIdsOrdered776().then(function (allIds) {
+        var inDept = {};
+        for (var i = 0; i < next.length; i++) inDept[next[i]] = true;
+        var rebuilt = [];
+        var inserted = false;
+        for (var j = 0; j < allIds.length; j++) {
+          var id = allIds[j];
+          if (inDept[id]) {
+            if (!inserted) {
+              for (var k = 0; k < next.length; k++) rebuilt.push(next[k]);
+              inserted = true;
+            }
+            continue;
+          }
+          rebuilt.push(id);
+        }
+        if (!inserted) {
+          for (var m = 0; m < next.length; m++) rebuilt.push(next[m]);
+        }
+        return renumberListSortIds(app, rebuilt).then(function () {
+          var at = rebuilt.indexOf(String(selfId));
+          return { at: at >= 0 ? at + 1 : rebuilt.length, total: rebuilt.length };
+        });
+      });
+    });
+  }
+
+  function fetchAllIdsOrdered776() {
+    var app = getAppId();
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: app,
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) all.push(String(rows[i].$id.value));
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function applyListSortOnSubmit776(event) {
+    var rec = event.record;
+    if (!rec) return event;
+    var dept = cell(rec, "dept_name").trim();
+    var section = cell(rec, FC_SECTION).trim();
+    var selfId = rec.$id && rec.$id.value != null ? String(rec.$id.value) : "";
+    var isCreate = !selfId;
+    var orig = window.__jbis776EditOrig || null;
+    var deptChanged = !orig || String(orig.dept || "") !== dept;
+    var sectionChanged = !orig || String(orig.section || "") !== section;
+    if (!isCreate && !deptChanged && !sectionChanged) {
+      return event;
+    }
+    if (!dept) {
+      window.alert("部署名を先に入力してください。");
+      return false;
+    }
+    // 並びの REST 更新は submit 中にやると revision 衝突する → 選択だけ保持し success 後に適用
+    return fetchDeptPeers776(dept, selfId)
+      .then(function (peers) {
+        return openRelativeSortPicker776(dept, peers).then(function (choice) {
+          window.__jbis776PendingSort = {
+            id: selfId || null,
+            dept: dept,
+            choice: choice,
+          };
+          return event;
+        });
+      })
+      .catch(function (err) {
+        if (err && err.cancelled) return false;
+        console.warn("[jbis 776 sort submit]", err);
+        window.alert("並び位置の設定に失敗しました: " + ((err && err.message) || ""));
+        return false;
+      });
+  }
+
+  function runPendingSortAfterSave776(event) {
+    var pending = window.__jbis776PendingSort;
+    window.__jbis776PendingSort = null;
+    if (!pending || !pending.choice) return event;
+    var rid =
+      pending.id ||
+      (event.recordId != null ? String(event.recordId) : "") ||
+      (event.record && event.record.$id && event.record.$id.value != null
+        ? String(event.record.$id.value)
+        : "");
+    if (!rid) return event;
+    return applyChosenSort776(rid, pending.dept, pending.choice)
+      .then(function () {
+        return event;
+      })
+      .catch(function (err) {
+        console.warn("[jbis 776 sort after save]", err);
+        window.alert(
+          "レコードは保存されましたが、並び位置の反映に失敗しました。一覧の「並び替え」で調整してください。"
+        );
+        return event;
+      });
+  }
+
+  function mountToolbar(space, st, built) {
     var old = document.getElementById(WRAP_ID);
     if (old && old.parentNode) old.parentNode.removeChild(old);
     closeOrgPopover();
@@ -1214,6 +2256,16 @@
     });
     row.appendChild(btnOrg);
 
+    var btnSection = document.createElement("button");
+    btnSection.type = "button";
+    btnSection.textContent = "部追加";
+    btnSection.setAttribute("aria-label", "部／室を個別・一括で設定");
+    btnSection.style.cssText = BTN_SEC;
+    btnSection.addEventListener("click", function () {
+      openSectionAssignModal();
+    });
+    row.appendChild(btnSection);
+
     var btnReorder = document.createElement("button");
     btnReorder.type = "button";
     btnReorder.textContent = "並び替え";
@@ -1272,6 +2324,8 @@
     summaryRow.appendChild(activeSummary);
     summaryRow.appendChild(matchCountEl);
     wrap.appendChild(summaryRow);
+
+    mountRosterPager(wrap, st, built || null);
 
     var sub = document.createElement("div");
     sub.style.cssText =
@@ -1352,7 +2406,7 @@
 
     var title = document.createElement("div");
     title.style.cssText = "font-weight:700;color:#0f172a;font-size:13px;";
-    title.textContent = "並び替え（名前検索 → 基準の上／下）";
+    title.textContent = "並び替え（名前検索 → 基準の上／下／部署末尾）";
     box.appendChild(title);
 
     function mkRow(labelText) {
@@ -1393,12 +2447,26 @@
     status.style.cssText = "font-size:12px;color:#64748b;";
     status.textContent = "必要なときだけ開いて使います";
 
-    function mkAction(text, place) {
+    function selectedLabel(sel) {
+      var opt = sel.options[sel.selectedIndex];
+      if (!opt || !opt.value) return "";
+      var t = String(opt.textContent || "");
+      var slash = t.indexOf("／");
+      return slash >= 0 ? t.slice(0, slash).trim() : t.trim();
+    }
+
+    function mkAction(text, place, tone) {
       var b = document.createElement("button");
       b.type = "button";
       b.textContent = text;
+      var bg = tone === "amber" ? "#c2410c" : "#0f766e";
+      var bd = tone === "amber" ? "#9a3412" : "#0f766e";
       b.style.cssText =
-        "padding:7px 14px;font-size:13px;border:1px solid #0f766e;border-radius:6px;background:#0f766e;color:#fff;cursor:pointer;font-weight:600;";
+        "padding:7px 14px;font-size:13px;border:1px solid " +
+        bd +
+        ";border-radius:6px;background:" +
+        bg +
+        ";color:#fff;cursor:pointer;font-weight:600;";
       b.addEventListener("click", function () {
         runPlace(place);
       });
@@ -1406,8 +2474,10 @@
     }
     var btnAbove = mkAction("基準の上に置く", "above");
     var btnBelow = mkAction("基準の下に置く", "below");
+    var btnDeptEnd = mkAction("基準の部署の末尾へ", "dept-end", "amber");
     actions.appendChild(btnAbove);
     actions.appendChild(btnBelow);
+    actions.appendChild(btnDeptEnd);
     actions.appendChild(status);
     box.appendChild(actions);
 
@@ -1453,20 +2523,48 @@
       status.style.color = "#64748b";
       btnAbove.disabled = true;
       btnBelow.disabled = true;
-      placeMoverRelative(m, a, place)
+      btnDeptEnd.disabled = true;
+      var moverName = selectedLabel(mover.sel);
+      var job =
+        place === "dept-end"
+          ? placeMoverAtDeptEnd(m, a)
+          : placeMoverRelative(m, a, place);
+      job
         .then(function (res) {
-          status.textContent = "完了（順 " + res.at + "）。再読込…";
+          var msg =
+            place === "dept-end"
+              ? "完了（" + (res.dept || "部署") + " 末尾・順 " + res.at + "）。再読込…"
+              : "完了（順 " + res.at + "）。再読込…";
+          status.textContent = msg;
           status.style.color = "#047857";
+          rememberScrollAfterReorder({ id: m, name: moverName, at: res.at });
           setTimeout(function () {
-            navigate(buildQuery(st));
-          }, 400);
+            try {
+              sessionStorage.removeItem("jbis776-idcache-v1");
+            } catch (eCache) {
+              /* noop */
+            }
+            fetchFilteredIds(st)
+              .then(function (ids) {
+                var idx = ids.indexOf(String(m));
+                var ps = st.pageSize || 40;
+                var page = idx >= 0 ? Math.floor(idx / ps) + 1 : st.page || 1;
+                return goRosterPage(st, page);
+              })
+              .catch(function (err) {
+                console.warn("[jbis 776 reorder reload]", err);
+                navigate(buildQuery(st));
+              });
+          }, 350);
         })
         .catch(function (err) {
           console.warn("[jbis 776 reorder]", err);
-          status.textContent = "並び替え失敗（権限を確認）";
+          status.textContent =
+            "並び替え失敗: " + ((err && err.message) || "権限を確認");
           status.style.color = "#b91c1c";
           btnAbove.disabled = false;
           btnBelow.disabled = false;
+          btnDeptEnd.disabled = false;
         });
     }
 
@@ -1484,36 +2582,81 @@
       var space = getHeaderSpace();
       if (!space) return event;
       var st = loadState();
-      var wantQ = buildQuery(st);
+      if (typeof event.size === "number" && event.size >= 10 && event.size <= 100) {
+        st.pageSize = event.size;
+        saveState(st);
+      }
+
       var curQ = "";
       try {
         curQ = new URL(window.location.href).searchParams.get("query") || "";
       } catch (eUrl) {
         curQ = "";
       }
-      var needNav =
-        String(curQ).replace(/\s+/g, " ").trim() !==
-        String(wantQ).replace(/\s+/g, " ").trim();
-      if (
-        needNav &&
-        (st.cat !== "all" || st.kw || (st.depts && st.depts.length) || (st.groups && st.groups.length))
-      ) {
-        navigate(wantQ);
-        return event;
-      }
-      var tb = mountToolbar(space, st);
-      mountReorder(space, st, tb.uiOpen);
-      mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
-      applyIndexDeptSeparators(event.records);
-      setTimeout(function () {
-        applyIndexDeptSeparators(event.records);
-      }, 0);
-      setTimeout(function () {
-        applyIndexDeptSeparators(event.records);
-      }, 300);
+
+      // 自前ページ送り: フィルタ結果の $id を分割して query に載せる
+      fetchFilteredIds(st)
+        .then(function (ids) {
+          var built = buildPagedQueryFromIds(ids, st.page || 1, st.pageSize || 40);
+          if (st.page !== built.page) {
+            st.page = built.page;
+            saveState(st);
+          }
+          if (normalizeQuery(curQ) !== normalizeQuery(built.query)) {
+            navigate(built.query);
+            return;
+          }
+          var tb = mountToolbar(space, st, built);
+          mountReorder(space, st, tb.uiOpen);
+          mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
+          applyIndexDeptSeparators(event.records);
+          consumeScrollAfterReorder(st);
+          setTimeout(function () {
+            applyIndexDeptSeparators(event.records);
+          }, 0);
+          setTimeout(function () {
+            applyIndexDeptSeparators(event.records);
+          }, 300);
+        })
+        .catch(function (err) {
+          console.warn("[jbis 776 page sync]", err);
+          var tb2 = mountToolbar(space, st, null);
+          mountReorder(space, st, tb2.uiOpen);
+          mountAggPanel(space, st, tb2.uiOpen, tb2.recordsP);
+          applyIndexDeptSeparators(event.records);
+        });
     } catch (e) {
       console.warn("[jbis 776 index]", e);
     }
     return event;
   });
+
+  kintone.events.on(["app.record.create.show", "app.record.edit.show"], function (event) {
+    try {
+      window.__jbis776EditOrig = {
+        dept: cell(event.record, "dept_name").trim(),
+        section: cell(event.record, FC_SECTION).trim(),
+      };
+      if (event.type.indexOf("create") >= 0) {
+        window.__jbis776EditOrig = { dept: "", section: "" };
+      }
+    } catch (eShow) {
+      window.__jbis776EditOrig = { dept: "", section: "" };
+    }
+    return event;
+  });
+
+  kintone.events.on(
+    ["app.record.create.submit", "app.record.edit.submit"],
+    function (event) {
+      return applyListSortOnSubmit776(event);
+    }
+  );
+
+  kintone.events.on(
+    ["app.record.create.submit.success", "app.record.edit.submit.success"],
+    function (event) {
+      return runPendingSortAfterSave776(event);
+    }
+  );
 })();

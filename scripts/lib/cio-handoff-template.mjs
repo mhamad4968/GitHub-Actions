@@ -261,9 +261,59 @@ function ensureFreezeZoneMinChars(preamble, root) {
 }
 
 /**
+ * 凍結ゾーン必須見出しが preamble に無いとき、rollup（日付履歴側）から引き上げる。
+ * 夜締め stamp が CRLF で日付見出しを取り逃し `## YYYY-MM-DD 夜` を前置すると、
+ * ## クローズ済み / ## 保留 がゾーン外へ落ちる再発を防ぐ（2026-08-22）。
+ * @returns {{ preamble: string, rollup: string, filled: string[] }}
+ */
+function ensureFreezeRequiredHeadings(preamble, rollup, root) {
+  const manifest = loadHandoffTemplate(root);
+  const required = (manifest.freezeZone?.requiredHeadings || []).filter(
+    (h) => h !== '## セッション切替後の自律復元',
+  );
+  const filled = [];
+  let nextPreamble = toLf(preamble).replace(/\n+$/g, '');
+  let nextRollup = toLf(rollup || '');
+
+  const stubs = {
+    '## クローズ済み':
+      '## クローズ済み（`data/cio-project-closures.json` — 無断 v1 再開禁止）\n（要確認 — auto-repair stub）\n',
+    '## 保留・その他の制約':
+      '## 保留・その他の制約\n| 状態 | 内容 |\n|------|------|\n| （要確認） | auto-repair stub |\n',
+  };
+
+  for (const heading of required) {
+    if (nextPreamble.includes(heading)) continue;
+
+    // rollup 内の該当 ## ブロックを切り出し（次の ## 直前まで）
+    const re = new RegExp(
+      `(^|\\n)(${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^\\n]*\\n[\\s\\S]*?)(?=\\n## |$)`,
+    );
+    const m = nextRollup.match(re);
+    let block = m ? m[2].replace(/\n+$/g, '') + '\n' : stubs[heading] || `${heading}\n（auto-repair）\n`;
+    if (m) {
+      nextRollup = nextRollup.replace(m[0], m[1] || '');
+      filled.push(`hoist:${heading}`);
+    } else {
+      filled.push(`stub:${heading}`);
+    }
+
+    const bootHeading = '## セッション切替後の自律復元';
+    const bootIdx = nextPreamble.indexOf(bootHeading);
+    nextPreamble =
+      bootIdx >= 0
+        ? `${nextPreamble.slice(0, bootIdx).trimEnd()}\n\n${block}\n${nextPreamble.slice(bootIdx)}`
+        : `${nextPreamble.trimEnd()}\n\n${block}`;
+  }
+
+  return { preamble: nextPreamble, rollup: nextRollup, filled };
+}
+
+/**
  * checkpoint 凍結ゾーン末尾の bootstrap ブロックをテンプレ正本で復元
  * （手動 CLOSE で mandatory-read-gate 行削除 → preamble 2800字 NG 再発防止 / S2）
  * 加えて minChars 未満なら推奨フィールド挿入（bootstrap 既存でも実行 / 2026-07-30）
+ * 加えて requiredHeadings（クローズ済み／保留）が preamble 外なら hoist（2026-08-22）
  * @returns {{ ok: boolean, repaired: boolean, filled: string[], reason?: string }}
  */
 export function repairCheckpointBootstrapBlock(root, { dryRun = false } = {}) {
@@ -274,8 +324,13 @@ export function repairCheckpointBootstrapBlock(root, { dryRun = false } = {}) {
   const full = toLf(fs.readFileSync(cpPath, 'utf8'));
   const rollSplit = full.split(/^## \d{4}-\d{2}-\d{2}/m);
   let preamble = rollSplit[0];
-  const rollup = rollSplit.length > 1 ? full.slice(preamble.length) : '';
+  let rollup = rollSplit.length > 1 ? full.slice(preamble.length) : '';
   const filled = [];
+
+  const hoisted = ensureFreezeRequiredHeadings(preamble, rollup, root);
+  preamble = hoisted.preamble;
+  rollup = hoisted.rollup;
+  filled.push(...hoisted.filled);
 
   const needsBootRepair =
     !preamble.includes('## セッション切替後の自律復元') ||
