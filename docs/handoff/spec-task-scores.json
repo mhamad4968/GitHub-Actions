@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-22T10:06:43.203Z",
+  "scoredAt": "2026-08-22T21:49:46.850Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
+  "topTask": "新規レーンのみ（項番 -0）。S7 完了。",
   "topTaskKind": "work",
-  "topWorkTask": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
+  "topWorkTask": "新規レーンのみ（項番 -0）。S7 完了。",
   "tasks": [
     {
-      "id": "checkpoint:full_CLOSE_完了後は新規レーン_or_S7_のみ（項番_-0）。",
-      "text": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
+      "id": "checkpoint:新規レーンのみ（項番_-0）。S7_完了。",
+      "text": "新規レーンのみ（項番 -0）。S7 完了。",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,

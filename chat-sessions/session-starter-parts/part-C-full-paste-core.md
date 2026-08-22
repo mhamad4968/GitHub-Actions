@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-22 自動更新）】
-- 次の1手: 日終わりなら `cio:session:close-git`／次回は S7 または新規レーンのみ（E2等は見送り継続）。
-- checkpoint: 2026-08-22 18:47 JST — 名簿改善フェーズ **浜田すべてOK**（E1・関越施工部順ほか）。残り改善は見送り。S7 Excel削除は最終GOまで残置。
-- 進行中 plan: docs/plans/2026-08-21-employee-roster-kintone-spec.md
-- 当日コミット (上位 3):
-  - docs: close employee roster improvement lane (Hamada OK)
-  - fix(776): put 関越支店施工部 under 工事部 in agg order
-  - feat(776): E1 title filter chips (all / lead / member)
+【今やってる主タスク（2026-08-22 反映・2026-08-23 WAKE同期）】
+- 本日レーン: 新規レーンのみ（項番 -0）。S7 完了。
+- checkpoint: 2026-08-22 19:11 JST — **S7 Excel削除 確認済**（xlsx なし・tmp フォルダ空→削除）。名簿レーン必須残なし。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
