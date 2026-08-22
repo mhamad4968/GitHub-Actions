@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-22 19:05 JST — 名簿不具合修正（本務並び維持・並び替え高速化）浜田OK。夕反省GO反映。day-close after-go 中。
-**次の1手**: full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。
-**レーン変更**: **595/776 社員名簿 改善GOクローズ（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
-**Git**: **`bd66b21d`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: **closed**（day-close 完了・push 済）
+**最終更新**: 2026-08-22 19:11 JST — **S7 Excel削除 確認済**（xlsx なし・tmp フォルダ空→削除）。名簿レーン必須残なし。
+**次の1手**: 新規レーンのみ（項番 -0）。S7 完了。
+**レーン変更**: **595/776 社員名簿 改善GOクローズ＋S7完了（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
+**Git**: day-close push 済。本更新を追記 commit。
+**closeStatus**: **closed**（day-close 済・S7 追記）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
-**本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。S7残置。
+**本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。**S7済**。
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-22 夜）
 | App | BUILD | rev |
@@ -15,8 +15,8 @@
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 夜必読更新済 `…-night-handoff.md`。Excelは `社員一覧表更新.xlsx`。
-**GO待ち**: **S7 Excel削除のみ**（最終GO）。E2/E3/E5 等は見送り。
+**継続メモ**: 夜必読更新済。正本Excelは削除済（kintone 595/776 が正本）。
+**GO待ち**: なし（名簿必須残クリア）。E2/E3/E5 等は見送り継続。
 **調査正本**: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
