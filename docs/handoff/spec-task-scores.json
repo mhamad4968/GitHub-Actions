@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-22T07:16:21.727Z",
+  "scoredAt": "2026-08-22T10:06:43.203Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
+  "topTask": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
   "topTaskKind": "work",
-  "topWorkTask": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
+  "topWorkTask": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
   "tasks": [
     {
-      "id": "checkpoint:cold-start_→_必読_chat-sessions/2026-08-22",
-      "text": "cold-start → 必読 chat-sessions/2026-08-22-employee-roster-night-handoff.md → ①最新Excel突合(兼務) ②list_sort=Excel役職順 ③section_name登録 ④漏れ・UI/集計整え",
+      "id": "checkpoint:full_CLOSE_完了後は新規レーン_or_S7_のみ（項番_-0）。",
+      "text": "full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,

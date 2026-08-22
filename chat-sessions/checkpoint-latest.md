@@ -1,16 +1,17 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-22 18:47 JST — 名簿改善フェーズ **浜田すべてOK**（E1・関越施工部順ほか）。残り改善は見送り。S7 Excel削除は最終GOまで残置。
-**次の1手**: 日終わりなら `cio:session:close-git`／次回は S7 または新規レーンのみ（E2等は見送り継続）。
+**最終更新**: 2026-08-22 19:05 JST — 名簿不具合修正（本務並び維持・並び替え高速化）浜田OK。夕反省GO反映。day-close after-go 中。
+**次の1手**: full CLOSE 完了後は新規レーン or S7 のみ（項番 -0）。
 **レーン変更**: **595/776 社員名簿 改善GOクローズ（運用継続・closures JSON 不触）**。747/746 および閉済UXは再開しない。
-**Git**: main ahead origin（push未依頼）。最終 commit 含 E1・関越集計順。
-**closeStatus**: **closed**（改善レーン目視OK。セッション日終わりは別途 close-git）
+**Git**: main ahead origin（close-git で push）。
+**closeStatus**: closing（day-close after-go）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
-**本日状態**: 776=`2026-08-22-776-agg-kanetsu-seko-under-koji` rev**73**。595=`2026-08-22-595-roster-sync-fast` rev**151**。E5/E2ほか見送り。S7残置。
+**本日状態**: 776=`2026-08-22-776-reorder-range-put` rev**75**。595=`2026-08-22-595-preserve-primary-list-sort` rev**152**。S7残置。
+**674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-22 夜）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **776** | `2026-08-22-776-agg-kanetsu-seko-under-koji` | **73** |
-| **595** | `2026-08-22-595-roster-sync-fast` | **151** |
+| **776** | `2026-08-22-776-reorder-range-put` | **75** |
+| **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
