@@ -704,7 +704,7 @@
   }
 
   function consumeScrollAfterReorder(st) {
-    var raw = null;
+    var raw;
     try {
       raw = sessionStorage.getItem(SCROLL_AFTER_REORDER_KEY);
     } catch (e) {
@@ -775,7 +775,7 @@
         } catch (e6) {
           /* noop */
         }
-        st.kw = String(info.name).replace(/\s|　/g, "");
+        st.kw = String(info.name).replace(/\s|\u3000/g, "");
         applyAndReload(st);
         return;
       }
