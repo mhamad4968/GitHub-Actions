@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-08-22-776-p0-toolbar-frames（P0: 絞込／状況／操作を枠分け・人数を状況帯へ）
  * BUILD: 2026-08-22-776-agg-total-col（集計表に本務＋兼務の合計列）
  * BUILD: 2026-08-22-776-fix-query-and（絞り込み＋$id in の and 欠落で GAIA_IL08 を修正）
  * BUILD: 2026-08-22-776-agg-fix-tekko-dup（鉄構支店二重表示を解消）
@@ -25,7 +26,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-agg-total-col";
+  var BUILD = "2026-08-22-776-p0-toolbar-frames";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -2560,12 +2561,32 @@
       "border:2px solid #c2410c;background:#fff7ed;color:#9a3412;font-weight:800;" +
       "box-shadow:0 1px 0 rgba(194,65,12,.15);padding:0 14px;";
 
+    function mkBand(title, borderColor, bg) {
+      var band = document.createElement("section");
+      band.setAttribute("aria-label", title);
+      band.style.cssText =
+        "margin:0;padding:10px 12px 12px;border:1.5px solid " +
+        borderColor +
+        ";border-radius:10px;background:" +
+        bg +
+        ";box-sizing:border-box;display:flex;flex-direction:column;gap:8px;";
+      var lab = document.createElement("div");
+      lab.textContent = title;
+      lab.style.cssText =
+        "font-size:11px;font-weight:800;letter-spacing:0.06em;color:#475569;" +
+        "text-transform:none;line-height:1;";
+      band.appendChild(lab);
+      return band;
+    }
+
     var wrap = document.createElement("div");
     wrap.id = WRAP_ID;
     wrap.style.cssText =
-      "margin:0 0 10px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;" +
-      "display:flex;flex-direction:column;gap:8px;box-sizing:border-box;";
+      "margin:0 0 12px;padding:0;border:none;background:transparent;" +
+      "display:flex;flex-direction:column;gap:10px;box-sizing:border-box;";
 
+    /* —— 帯1: 絞り込み —— */
+    var bandFilter = mkBand("① 絞り込み", "#94a3b8", "#f8fafc");
     var chipRow = document.createElement("div");
     chipRow.style.cssText =
       "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
@@ -2595,10 +2616,10 @@
     chipRow.appendChild(mkChip("正社員", "seishain"));
     chipRow.appendChild(mkChip("準社員", "junshain"));
     chipRow.appendChild(mkChip("すべて", "all"));
-    wrap.appendChild(chipRow);
+    bandFilter.appendChild(chipRow);
 
-    var row = document.createElement("div");
-    row.style.cssText =
+    var filterRow = document.createElement("div");
+    filterRow.style.cssText =
       "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
 
     var kwInput = document.createElement("input");
@@ -2608,7 +2629,7 @@
     kwInput.style.cssText =
       "box-sizing:border-box;height:32px;min-width:220px;flex:1;max-width:420px;" +
       "padding:0 10px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;background:#fff;";
-    row.appendChild(kwInput);
+    filterRow.appendChild(kwInput);
 
     var btnGo = document.createElement("button");
     btnGo.type = "button";
@@ -2625,7 +2646,7 @@
         runSearch();
       }
     });
-    row.appendChild(btnGo);
+    filterRow.appendChild(btnGo);
 
     var btnOrg = document.createElement("button");
     btnOrg.type = "button";
@@ -2651,7 +2672,68 @@
         applyAndReload(st);
       });
     });
-    row.appendChild(btnOrg);
+    filterRow.appendChild(btnOrg);
+
+    var btnClr = document.createElement("button");
+    btnClr.type = "button";
+    btnClr.textContent = "条件クリア";
+    btnClr.setAttribute("aria-label", "検索条件をすべてクリア");
+    btnClr.style.cssText = BTN_CLR;
+    btnClr.addEventListener("click", function () {
+      applyAndReload(defaultState());
+    });
+    filterRow.appendChild(btnClr);
+    bandFilter.appendChild(filterRow);
+    wrap.appendChild(bandFilter);
+
+    /* —— 帯2: 状況（いまの条件＋件数＋人数） —— */
+    var bandStatus = mkBand("② いまの条件・件数", "#a78bfa", "#faf8ff");
+    var summaryRow = document.createElement("div");
+    summaryRow.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;";
+
+    var activeSummary = document.createElement("div");
+    activeSummary.setAttribute("aria-live", "polite");
+    activeSummary.style.cssText =
+      "flex:1;min-width:200px;margin:0;padding:10px 12px;border-radius:8px;" +
+      "border:1px solid #c4b5fd;background:#fff;" +
+      "font-size:13px;font-weight:700;color:#0f172a;line-height:1.5;";
+    activeSummary.textContent = activeConditionLine(st);
+
+    var matchCountEl = document.createElement("div");
+    matchCountEl.setAttribute("aria-live", "polite");
+    matchCountEl.style.cssText =
+      "flex:0 0 auto;margin:0;padding:10px 14px;border-radius:8px;" +
+      "border:1px solid #c4b5fd;background:#fff;" +
+      "font-size:14px;font-weight:800;color:#0f172a;line-height:1.5;white-space:nowrap;" +
+      "display:flex;align-items:center;";
+    matchCountEl.textContent = "該当件数: …";
+
+    var peopleEl = document.createElement("div");
+    peopleEl.setAttribute("aria-live", "polite");
+    peopleEl.style.cssText =
+      "flex:0 0 auto;margin:0;padding:10px 14px;border-radius:8px;" +
+      "border:1px solid #86efac;background:#f0fdf4;" +
+      "font-size:14px;font-weight:800;color:#14532d;line-height:1.5;white-space:nowrap;" +
+      "display:flex;align-items:center;";
+    peopleEl.textContent = "人数（本務）…";
+
+    summaryRow.appendChild(activeSummary);
+    summaryRow.appendChild(matchCountEl);
+    summaryRow.appendChild(peopleEl);
+    bandStatus.appendChild(summaryRow);
+
+    var conf = document.createElement("div");
+    conf.style.cssText = "color:#991b1b;font-size:11px;font-weight:600;";
+    conf.textContent = "【機密】Excel・印刷は社内管理目的";
+    bandStatus.appendChild(conf);
+    wrap.appendChild(bandStatus);
+
+    /* —— 帯3: 副操作 —— */
+    var bandActions = mkBand("③ 操作（部追加・並び・集計・出力）", "#7dd3fc", "#f0f9ff");
+    var actionRow = document.createElement("div");
+    actionRow.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
 
     var btnSection = document.createElement("button");
     btnSection.type = "button";
@@ -2661,82 +2743,42 @@
     btnSection.addEventListener("click", function () {
       openSectionAssignModal();
     });
-    row.appendChild(btnSection);
+    actionRow.appendChild(btnSection);
 
     var btnReorder = document.createElement("button");
     btnReorder.type = "button";
     btnReorder.textContent = "並び替え";
     btnReorder.style.cssText = BTN_SEC;
-    row.appendChild(btnReorder);
+    actionRow.appendChild(btnReorder);
 
     var btnAgg = document.createElement("button");
     btnAgg.type = "button";
     btnAgg.textContent = "集計表";
     btnAgg.style.cssText = BTN_SEC;
-    row.appendChild(btnAgg);
+    actionRow.appendChild(btnAgg);
 
     var btnExcel = document.createElement("button");
     btnExcel.type = "button";
     btnExcel.textContent = "Excel";
     btnExcel.style.cssText = BTN_SKY;
+    actionRow.appendChild(btnExcel);
+
     var btnPrint = document.createElement("button");
     btnPrint.type = "button";
     btnPrint.textContent = "印刷";
     btnPrint.style.cssText = BTN_PRI;
-    var btnClr = document.createElement("button");
-    btnClr.type = "button";
-    btnClr.textContent = "条件クリア";
-    btnClr.setAttribute("aria-label", "検索条件をすべてクリア");
-    btnClr.style.cssText = BTN_CLR;
-    btnClr.addEventListener("click", function () {
-      applyAndReload(defaultState());
-    });
-    row.appendChild(btnExcel);
-    row.appendChild(btnPrint);
-    row.appendChild(btnClr);
+    actionRow.appendChild(btnPrint);
 
     var buildEl = document.createElement("span");
     buildEl.style.cssText =
       "margin-left:auto;color:#94a3b8;font-size:11px;align-self:center;";
     buildEl.textContent = BUILD;
-    row.appendChild(buildEl);
-    wrap.appendChild(row);
-
-    /* PC台帳型: いまの条件 ＋ 該当件数 */
-    var summaryRow = document.createElement("div");
-    summaryRow.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:8px 12px;align-items:stretch;";
-    var activeSummary = document.createElement("div");
-    activeSummary.setAttribute("aria-live", "polite");
-    activeSummary.style.cssText =
-      "flex:1;min-width:220px;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" +
-      "font-size:13px;font-weight:700;color:#0f172a;line-height:1.5;";
-    activeSummary.textContent = activeConditionLine(st);
-    var matchCountEl = document.createElement("div");
-    matchCountEl.setAttribute("aria-live", "polite");
-    matchCountEl.style.cssText =
-      "flex:0 0 auto;margin:0;padding:10px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;" +
-      "font-size:14px;font-weight:800;color:#0f172a;line-height:1.5;white-space:nowrap;";
-    matchCountEl.textContent = "該当件数: …";
-    summaryRow.appendChild(activeSummary);
-    summaryRow.appendChild(matchCountEl);
-    wrap.appendChild(summaryRow);
+    actionRow.appendChild(buildEl);
+    bandActions.appendChild(actionRow);
+    wrap.appendChild(bandActions);
 
     mountRosterPager(wrap, st, built || null);
     mountRosterPagerExtras(st, built || null);
-
-    var sub = document.createElement("div");
-    sub.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:12px;color:#334155;";
-    var peopleEl = document.createElement("span");
-    peopleEl.style.cssText = "font-weight:700;color:#475569;";
-    peopleEl.textContent = "人数（本務）…";
-    var conf = document.createElement("span");
-    conf.style.cssText = "color:#991b1b;font-size:11px;";
-    conf.textContent = "【機密】Excel・印刷は社内管理目的";
-    sub.appendChild(peopleEl);
-    sub.appendChild(conf);
-    wrap.appendChild(sub);
 
     if (space.firstChild) space.insertBefore(wrap, space.firstChild);
     else space.appendChild(wrap);
@@ -2768,6 +2810,8 @@
         console.warn("[jbis 776 count]", err);
         peopleEl.textContent = "人数（本務） —";
         peopleEl.style.color = "#b91c1c";
+        peopleEl.style.borderColor = "#fca5a5";
+        peopleEl.style.background = "#fef2f2";
       });
 
     btnReorder.addEventListener("click", function () {
