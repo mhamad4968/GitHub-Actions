@@ -2,14 +2,14 @@
 **最終更新**: 2026-08-22 11:15 JST — **昼セッション締め**（夜継続用）。776 revision衝突修正を緊急 deploy 済。
 **次の1手**: cold-start → 必読 `chat-sessions/2026-08-22-employee-roster-night-handoff.md` → 浜田に保存OK確認 → 部追加／部／室目視残り。
 **レーン変更**: **595/776 社員名簿 OPEN 継続**。747/746 および閉済UXは再開しない。
-**Git**: **`4358858e`** = `origin/main` — push 済
+**Git**: **`cf089b3c`** = `origin/main` — push 済
 **closeStatus**: closed（昼区切り・夜継続）
 **制約**: 閉済9件／688 heat外／677–679／712 deploy禁止／736不触／SKYSEA=案件外／emp_id 不触
-**本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**48**（`section_name` フォーム追加済）。
+**本日状態**: 595=`2026-08-22-595-kenmu-list-sort-dept-end` rev**149**。776=`2026-08-22-776-sort-after-save` rev**49**（`section_name` フォーム追加済）。
 ### 本日アクティブ（BUILD/rev — 2026-08-22 昼締め）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **776** | `2026-08-22-776-sort-after-save` | **48** |
+| **776** | `2026-08-22-776-sort-after-save` | **49** |
 | **595** | `2026-08-22-595-kenmu-list-sort-dept-end` | **149** |
 | **747** | `2026-08-21-jre-chub-account-dash-v9-ux-dept680` | **15** |
 | **746** | `2026-08-21-jre-chub-account-db-block-v2-strong` | **9** |
