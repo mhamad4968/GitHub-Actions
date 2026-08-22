@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-22-776-p1-title-rank-fix",
-      "fileKey": "ba908ea6-2b2c-4ed7-a709-92102dbf3209",
-      "revision": "70",
+      "build": "2026-08-22-776-p1-title-over-kenmu",
+      "fileKey": "be672bc9-4794-471e-a875-977d4ffd46ed",
+      "revision": "71",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T09:30:18.059Z",
+      "deployedAt": "2026-08-22T09:36:53.682Z",
       "note": null
     }
   }
