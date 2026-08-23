@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-23-683-special-mark-on-date",
-      "fileKey": "db113079-4a73-4648-9b23-d93a0c9ca3c2",
-      "revision": "114",
+      "build": "2026-08-23-683-taiou-mark-on-date",
+      "fileKey": "3840c3e8-1c73-4ce5-acbc-2b8650aecda8",
+      "revision": "115",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-23T00:41:21.905Z",
+      "deployedAt": "2026-08-23T00:42:35.691Z",
       "note": null
     },
     "686": {

@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-23-683-special-mark-on-date';
+  const BUILD = '2026-08-23-683-taiou-mark-on-date';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1576,14 +1576,15 @@
     return '特別対応なし';
   }
 
-  /** 日付セル末尾の特別対応マーク（件数列には付けない） */
+  /** 日付セル末尾の対応マーク（件数列には付けない） */
   function appendSpecialDateMark(cell) {
     const mark = document.createElement('span');
-    mark.textContent = ' ★';
-    mark.title = '特別対応（土日祝に対応あり）';
-    mark.setAttribute('aria-label', '特別対応');
+    mark.textContent = ' 対応';
+    mark.title = '土日祝に対応あり';
+    mark.setAttribute('aria-label', '対応');
     mark.style.cssText =
-      'color:#b45309;font-weight:700;margin-left:2px;letter-spacing:0;';
+      'display:inline-block;margin-left:4px;padding:0 5px;font-size:10px;font-weight:700;' +
+      'color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;vertical-align:middle;';
     cell.appendChild(mark);
   }
 
@@ -2023,7 +2024,7 @@
     splitLine.style.lineHeight = '1.4';
     splitLine.style.opacity = '0.92';
     splitLine.textContent =
-      '平日件数合計 ' + wd + ' 件 ／ 土日祝（特別対応）件数合計 ' + sp + ' 件';
+      '平日件数合計 ' + wd + ' 件 ／ 土日祝（対応）件数合計 ' + sp + ' 件';
     wrap.appendChild(splitLine);
 
     return wrap;
