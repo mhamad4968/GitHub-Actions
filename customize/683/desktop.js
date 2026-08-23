@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-23-683-taiou-mark-on-date';
+  const BUILD = '2026-08-23-683-doyou-shukujitsu-taiou-label';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1544,8 +1544,16 @@
 
   function extractSpecialSectionFromMonthSummary(text) {
     if (!text) return '';
-    const marker = '【特別対応（土日祝）】';
-    const idx = String(text).indexOf(marker);
+    const markers = ['【土・日・祝日対応】', '【特別対応（土日祝）】'];
+    let idx = -1;
+    let marker = '';
+    for (let i = 0; i < markers.length; i += 1) {
+      const j = String(text).indexOf(markers[i]);
+      if (j >= 0 && (idx < 0 || j < idx)) {
+        idx = j;
+        marker = markers[i];
+      }
+    }
     if (idx < 0) return '';
     let rest = String(text).slice(idx + marker.length);
     const nextSec = rest.search(/\n【[^\n]+】/);
@@ -1563,8 +1571,8 @@
       if (!isSpecialResponseDay(ymd, dt)) continue;
       parts.push(formatYmdSlashWday(ymd) + ' ' + dt + '件');
     }
-    if (parts.length === 0) return '特別対応なし';
-    return truncateOneLine('土日祝対応: ' + parts.join('、'), cap);
+    if (parts.length === 0) return '土・日・祝日対応なし';
+    return truncateOneLine('土・日・祝日対応: ' + parts.join('、'), cap);
   }
 
   function resolvePrintSpecialText(ym, dim, byDay, monthSummaryText) {
@@ -1573,7 +1581,7 @@
     if (ym && dim && byDay) {
       return buildSpecialDaysOneLiner(ym, dim, byDay, 120);
     }
-    return '特別対応なし';
+    return '土・日・祝日対応なし';
   }
 
   /** 日付セル末尾の対応マーク（件数列には付けない） */
@@ -2848,10 +2856,10 @@
     spBox.className = 'us683-print-special us683-print-block';
     var spLabel = document.createElement('div');
     spLabel.className = 'us683-print-special-label';
-    spLabel.textContent = '【特別対応（土日祝）】';
+    spLabel.textContent = '【土・日・祝日対応】';
     spBox.appendChild(spLabel);
     var spBody = document.createElement('div');
-    spBody.textContent = specialPrintText || '特別対応なし';
+    spBody.textContent = specialPrintText || '土・日・祝日対応なし';
     spBox.appendChild(spBody);
     p1inner.appendChild(spBox);
 
