@@ -11,7 +11,7 @@ npm run cio:ops:frame
 
 金曜 usage / 週次 env:enhance / 月次パック / **個人資産月次（15日前後）** を印刷する。破っても失敗にしない。
 
-個人資産（NISA等）は `when: nisa-monthly`（JST 13〜17日が「今日の枠」）。正本 `docs/personal/nisa-ops.md`。朝ブリーフィングにも同期間だけ節が出る。
+個人資産（NISA等）は `when: nisa-monthly`（JST 13〜17日が「今日の枠」）。**浜田・CIOにとっては必須**（`hamadaRequired`）。正本 `docs/personal/nisa-ops.md`。朝ブリーフィングにも同期間だけ節が出る。cold-start の機械ゲートにはしない（黙スキップは禁止・延期は明示）。
 
 ## 2. 監査1枚
 

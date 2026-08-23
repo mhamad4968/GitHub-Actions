@@ -16,15 +16,15 @@ export function isNisaMonthlyReminderDue(dayOfMonth) {
 }
 
 export function nisaMonthlyOpsFrameLabel() {
-  return '個人資産月次（NISA／ラップ／iDeCo）— スクショ→増額相談 · docs/personal/nisa-ops.md';
+  return '【必須】個人資産月次（NISA／ラップ／iDeCo）— スクショ→増額相談 · docs/personal/nisa-ops.md';
 }
 
 /** morning-prep 用セクション（due のときだけ呼ぶ） */
 export function nisaMonthlyMorningSection() {
   return [
-    '## 0a2. 📣 個人資産月次（NISA／ラップ／iDeCo）',
+    '## 0a2. 📣 【必須】個人資産月次（NISA／ラップ／iDeCo）',
     '',
-    '> **リマインダのみ**（ゲートではない）。業務レーンの項番 -0 が勝つ。',
+    '> **必須リマインダ**（cold-start を落とすゲートではない）。13〜17日のセッションでは CIO が必ず取り上げる。黙スキップ禁止。延期は浜田明示＋次回日。',
     '',
     '- 時期: **毎月15日前後**（本節は 13〜17 日にだけ出る）',
     '- 浜田: 証券の資産状況スクショを貼る（NISA必須・ラップ／iDeCo任意）',

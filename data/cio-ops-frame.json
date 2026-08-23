@@ -41,10 +41,12 @@
     {
       "id": "nisa-monthly-personal",
       "when": "nisa-monthly",
-      "label": "個人資産月次（NISA／ラップ／iDeCo）スクショ→増額相談",
+      "label": "【必須】個人資産月次（NISA／ラップ／iDeCo）スクショ→増額相談",
       "npm": [],
       "skill": "nisa-monthly-ops",
-      "canonical": "docs/personal/nisa-ops.md"
+      "canonical": "docs/personal/nisa-ops.md",
+      "hamadaRequired": true,
+      "note": "CIO義務として必須。cold-startゲート化はしない。延期は浜田明示のみ"
     }
   ]
 }
