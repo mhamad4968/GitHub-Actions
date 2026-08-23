@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-23 反映・2026-08-23 WAKE同期）】
-- 本日レーン: 夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談
+【今やってる主タスク（2026-08-23 自動更新）】
+- 次の1手: 夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談
 - checkpoint: 2026-08-23 09:55 JST — **セッション締め（full CLOSE）**。721＋682/683 本日レーン完了。SPEC/R63/実装コミット突合OK
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
-- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
+- 進行中 plan: docs/plans/2026-08-23-user-support-682-683-ux-spec.md
+- 当日コミット (上位 3):
+  - chore(checkpoint): sync Git line after commit
+  - docs(personal): treat NISA monthly review as mandatory for CIO
+  - feat(ops): remind personal NISA review around the 15th

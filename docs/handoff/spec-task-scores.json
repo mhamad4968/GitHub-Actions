@@ -1,18 +1,18 @@
 {
-  "scoredAt": "2026-08-23T08:12:16.042Z",
+  "scoredAt": "2026-08-23T09:39:07.673Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談",
+  "topTask": "項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭",
   "topTaskKind": "constraint",
   "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:夜は_**NISA運用方針の相談**（別レーン・項番_-0）。本日完了レーンの追",
-      "text": "夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談",
+      "id": "checkpoint:項番_-0（浜田指示）。**個人資産月次は_9/13–17_必須**（`docs",
+      "text": "項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭",
       "source": "checkpoint",
       "kind": "constraint",
       "difficulty": 2,
-      "tokens": "中",
-      "tokenScore": 2,
+      "tokens": "低",
+      "tokenScore": 1,
       "impact": 5,
       "priority": 0,
       "status": "pending"
