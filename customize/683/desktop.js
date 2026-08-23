@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-02-683-print-page2-break-v24';
+  const BUILD = '2026-08-23-683-special-weekend-ux';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -234,6 +234,57 @@
 
   function isJpHolidayYmd(ymd) {
     return JP_HOLIDAY_YMD[ymd] === true;
+  }
+
+  function isHolidayYmd(ymd) {
+    return isJpHolidayYmd(ymd);
+  }
+
+  function isWeekendYmd(ymd) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+    if (!m) return false;
+    const nw = jstWeekdayNarrowJa(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10));
+    return nw === '土' || nw === '日';
+  }
+
+  /** 土曜・日曜・祝日（`JP_HOLIDAY_YMD`） */
+  function isSpecialCalendarYmd(ymd) {
+    return isWeekendYmd(ymd) || isHolidayYmd(ymd);
+  }
+
+  /** 特別対応日 = 土日祝かつ day_total > 0 */
+  function isSpecialResponseDay(ymd, dayTotal) {
+    return isSpecialCalendarYmd(ymd) && Number(dayTotal) > 0;
+  }
+
+  function computeMonthWeekdaySpecialTotals(ym, dim, byDay) {
+    let weekday = 0;
+    let special = 0;
+    for (let d = 1; d <= dim; d += 1) {
+      const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
+      const x = byDay && byDay[ymd];
+      const dt = x && x.dt != null ? x.dt : 0;
+      if (isSpecialCalendarYmd(ymd)) {
+        special += dt;
+      } else {
+        weekday += dt;
+      }
+    }
+    return { weekday: weekday, special: special };
+  }
+
+  function weekBlockHasSpecialResponse(ym, byDay, wi) {
+    const ranges = weekBlockRangesSunSatInMonth(ym);
+    if (wi < 0 || wi >= ranges.length) return false;
+    const d0 = ranges[wi][0];
+    const d1 = ranges[wi][1];
+    for (let d = d0; d <= d1; d += 1) {
+      const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
+      const x = byDay && byDay[ymd];
+      const dt = x && x.dt != null ? x.dt : 0;
+      if (isSpecialResponseDay(ymd, dt)) return true;
+    }
+    return false;
   }
 
   /** 土・日・祝（静的表に入っている暦日のみ）を茶系とする判定 */
@@ -1326,7 +1377,15 @@
       if (!lab) continue;
       const spec = formatWeekBlockLabel(ym, wi);
       const total = sumDayTotalInWeekBlock(ym, byDay, wi);
-      lab.textContent = formatWeekBlockLabelWithCount(spec, total);
+      const text = formatWeekBlockLabelWithCount(spec, total);
+      if (weekBlockHasSpecialResponse(ym, byDay, wi)) {
+        lab.innerHTML =
+          text +
+          ' <span class="user683-week-special-badge" style="display:inline-block;margin-left:4px;padding:1px 6px;' +
+          'font-size:10px;font-weight:700;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;">土日対応あり</span>';
+      } else {
+        lab.textContent = text;
+      }
     }
   }
 
@@ -1481,6 +1540,49 @@
   function truncateOneLine(s, max) {
     if (s.length <= max) return s;
     return s.slice(0, max - 1) + '…';
+  }
+
+  function extractSpecialSectionFromMonthSummary(text) {
+    if (!text) return '';
+    const marker = '【特別対応（土日祝）】';
+    const idx = String(text).indexOf(marker);
+    if (idx < 0) return '';
+    let rest = String(text).slice(idx + marker.length);
+    const nextSec = rest.search(/\n【[^\n]+】/);
+    const body = nextSec >= 0 ? rest.slice(0, nextSec) : rest;
+    return normalizeSummaryWhitespace(body);
+  }
+
+  function buildSpecialDaysOneLiner(ym, dim, byDay, maxLen) {
+    const cap = maxLen != null ? maxLen : 120;
+    const parts = [];
+    for (let d = 1; d <= dim; d += 1) {
+      const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
+      const x = byDay && byDay[ymd];
+      const dt = x && x.dt != null ? x.dt : 0;
+      if (!isSpecialResponseDay(ymd, dt)) continue;
+      parts.push(formatYmdSlashWday(ymd) + ' ' + dt + '件');
+    }
+    if (parts.length === 0) return '特別対応なし';
+    return truncateOneLine('土日祝対応: ' + parts.join('、'), cap);
+  }
+
+  function resolvePrintSpecialText(ym, dim, byDay, monthSummaryText) {
+    const extracted = extractSpecialSectionFromMonthSummary(monthSummaryText);
+    if (extracted) return extracted;
+    if (ym && dim && byDay) {
+      return buildSpecialDaysOneLiner(ym, dim, byDay, 120);
+    }
+    return '特別対応なし';
+  }
+
+  function appendSpecialBadge(cell) {
+    const badge = document.createElement('span');
+    badge.textContent = '特別';
+    badge.style.cssText =
+      'display:inline-block;margin-left:4px;padding:0 4px;font-size:10px;font-weight:700;' +
+      'color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;vertical-align:middle;';
+    cell.appendChild(badge);
   }
 
   /**
@@ -1852,34 +1954,37 @@
     return wrap;
   }
 
-  function buildHeroEl(ym, curTotal, prevHasRecords, prevTotal) {
+  function buildHeroEl(ym, curTotal, prevHasRecords, prevTotal, splitTotals) {
     const wrap = document.createElement('div');
     wrap.id = 'user683-hero';
     wrap.style.cssText =
-      'padding:22px 24px 28px;background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);color:#fff;border-radius:8px;margin:10px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18);text-align:center;';
+      'padding:16px 20px 18px;background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);color:#fff;' +
+      'border-radius:8px;margin:8px 12px;box-shadow:0 1px 8px rgba(0,0,0,.15);text-align:center;';
     wrap.setAttribute('data-us683-cur-total', String(curTotal));
     wrap.setAttribute('data-us683-prev-total', String(prevHasRecords ? prevTotal : ''));
     wrap.setAttribute('data-us683-prev-has', prevHasRecords ? '1' : '0');
 
     const line1 = document.createElement('div');
-    line1.style.fontSize = '28px';
+    line1.style.fontSize = '26px';
     line1.style.fontWeight = '800';
-    line1.style.lineHeight = '1.35';
+    line1.style.lineHeight = '1.25';
+    line1.style.letterSpacing = '0.02em';
     line1.textContent = ym.y + '年' + ym.m + '月のサポート案件合計：' + curTotal + ' 件';
     wrap.appendChild(line1);
 
     const mom = document.createElement('div');
-    mom.style.marginTop = '18px';
-    mom.style.fontSize = '26px';
-    mom.style.fontWeight = '800';
-    mom.style.lineHeight = '1.45';
+    mom.style.marginTop = '10px';
+    mom.style.fontSize = '17px';
+    mom.style.fontWeight = '700';
+    mom.style.lineHeight = '1.35';
+    mom.style.opacity = '0.95';
     if (!prevHasRecords) {
-      mom.innerHTML = '前月比: <span style="opacity:.9;font-weight:800;">—（前月にデータなし）</span>';
+      mom.innerHTML = '前月比: <span style="opacity:.9;font-weight:700;">—（前月にデータなし）</span>';
     } else {
       const delta = curTotal - prevTotal;
       if (delta > 0) {
         mom.innerHTML =
-          '前月比: 先月より <span style="color:#fecaca;font-weight:800;">+' +
+          '前月比: 先月より <span style="color:#fecaca;font-weight:700;">+' +
           delta +
           ' 件増加</span>（先月 ' +
           prevTotal +
@@ -1888,7 +1993,7 @@
           ' 件）';
       } else if (delta < 0) {
         mom.innerHTML =
-          '前月比: 先月より <span style="color:#93c5fd;font-weight:800;">−' +
+          '前月比: 先月より <span style="color:#93c5fd;font-weight:700;">−' +
           Math.abs(delta) +
           ' 件減少</span>（先月 ' +
           prevTotal +
@@ -1897,12 +2002,27 @@
           ' 件）';
       } else {
         mom.innerHTML =
-          '前月比: <span style="opacity:.92;font-weight:800;">先月と同数</span>（先月・当月とも ' +
+          '前月比: <span style="opacity:.92;font-weight:700;">先月と同数</span>（先月・当月とも ' +
           curTotal +
           ' 件）';
       }
     }
     wrap.appendChild(mom);
+
+    const wd = splitTotals && splitTotals.weekday != null ? splitTotals.weekday : 0;
+    const sp = splitTotals && splitTotals.special != null ? splitTotals.special : 0;
+    wrap.setAttribute('data-us683-split-weekday', String(wd));
+    wrap.setAttribute('data-us683-split-special', String(sp));
+    const splitLine = document.createElement('div');
+    splitLine.className = 'user683-hero-split';
+    splitLine.style.marginTop = '12px';
+    splitLine.style.fontSize = '14px';
+    splitLine.style.fontWeight = '600';
+    splitLine.style.lineHeight = '1.4';
+    splitLine.style.opacity = '0.92';
+    splitLine.textContent =
+      '平日件数合計 ' + wd + ' 件 ／ 土日祝（特別対応）件数合計 ' + sp + ' 件';
+    wrap.appendChild(splitLine);
 
     return wrap;
   }
@@ -1960,6 +2080,10 @@
     for (let d = 1; d <= dim; d += 1) {
       const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
       const tr = document.createElement('tr');
+      const isCalSpecial = isSpecialCalendarYmd(ymd);
+      if (isCalSpecial) {
+        tr.style.background = '#faf6f1';
+      }
       const cellDate = document.createElement('td');
       cellDate.style.padding = '5px 4px 5px 6px';
       cellDate.style.border = '1px solid #ddd';
@@ -1967,14 +2091,17 @@
       cellDate.style.overflow = 'visible';
       cellDate.style.verticalAlign = 'top';
       cellDate.title = '';
-      cellDate.textContent = formatYmdSlashWday(ymd);
-      cellDate.style.color = jstBrownCalendarYmd(ymd)
-        ? COLOR_DAY_LABEL_WEEKEND_HOLIDAY
-        : COLOR_DAY_LABEL_WEEKDAY;
+      const x = byDay[ymd];
+      const dayDt = x && x.dt != null ? x.dt : 0;
+      const isFuture = ymd > today;
+      if (!isFuture && isSpecialResponseDay(ymd, dayDt)) {
+        cellDate.textContent = '【特】' + formatYmdSlashWday(ymd);
+      } else {
+        cellDate.textContent = formatYmdSlashWday(ymd);
+      }
+      cellDate.style.color = isCalSpecial ? COLOR_DAY_LABEL_WEEKEND_HOLIDAY : COLOR_DAY_LABEL_WEEKDAY;
       tr.appendChild(cellDate);
 
-      const x = byDay[ymd];
-      const isFuture = ymd > today;
       const dtTd = document.createElement('td');
       dtTd.style.textAlign = 'right';
       dtTd.style.border = '1px solid #ddd';
@@ -1999,6 +2126,9 @@
         bodyTd.style.color = '#666';
       } else {
         dtTd.textContent = String(x.dt);
+        if (isSpecialResponseDay(ymd, x.dt)) {
+          appendSpecialBadge(dtTd);
+        }
         const fullLine = daySummaryLineRaw(x);
         const summaryLine = formatDaySummaryForTable(x);
         const hasText = Boolean(fullLine);
@@ -2199,6 +2329,8 @@
   }
 
   var USER683_PRINT_AFTERPRINT_BOUND = false;
+  /** 印刷報告用 — 直近ダッシュ読込の暦月・byDay（特別対応短枠のフォールバック用） */
+  var USER683_DASH_CTX = null;
 
   function ensureUser683PrintReportStyles() {
     var id = 'user683-print-report-style';
@@ -2257,12 +2389,16 @@
       '.us683-print-page1 .us683-print-h2{font-size:10pt;font-weight:700;margin:0;border-bottom:1px solid #222;padding-bottom:2px;}' +
       '.us683-print-page1 .us683-print-h2.us683-print-h2-month{font-size:11pt;font-weight:800;margin:0;}' +
       '.us683-print-page1 .us683-print-month-summary{white-space:pre-wrap;border:2px solid #222;padding:8px 10px;min-height:2.4em;background:#fafafa;font-size:11pt;font-weight:600;line-height:1.45;overflow:visible;}' +
+      '.us683-print-special{border:1px solid #666;padding:4px 8px;margin:0;font-size:9.5pt;line-height:1.35;' +
+      'max-height:4.2em;overflow:hidden;background:#fffbf0;flex:0 0 auto;white-space:pre-wrap;}' +
+      '.us683-print-special-label{font-size:9pt;font-weight:700;margin-bottom:2px;}' +
       '.us683-print-hero-wrap{border:1px solid #333;border-radius:2px;padding:3px!important;margin:0!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner{background:transparent!important;color:#000!important;' +
       'box-shadow:none!important;text-align:left!important;padding:0!important;margin:0!important;border-radius:0!important;}' +
       '.us683-print-hero-inner>div{padding:2px 4px!important;margin:0!important;box-shadow:none!important;border-radius:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(1){font-size:12pt!important;line-height:1.15!important;font-weight:800!important;margin:0!important;}' +
       '.us683-print-hero-inner>div>div:nth-child(2){display:none!important;}' +
+      '.us683-print-hero-inner>div>div:nth-child(3){display:none!important;}' +
       '.us683-print-hero-wrap .us683-print-hero-inner *{color:#000!important;background:transparent!important;}' +
       /* グラフ帯: セクション間隔は sheet-inner の gap に任せる */
       '.us683-print-chart-full{flex:1.4 1 0%!important;min-height:0!important;width:100%!important;' +
@@ -2702,6 +2838,24 @@
     }
     p1inner.appendChild(ms);
 
+    var ctx = USER683_DASH_CTX;
+    var specialPrintText = resolvePrintSpecialText(
+      ctx && ctx.ym,
+      ctx && ctx.dim,
+      ctx && ctx.byDay,
+      summaryText,
+    );
+    var spBox = document.createElement('div');
+    spBox.className = 'us683-print-special us683-print-block';
+    var spLabel = document.createElement('div');
+    spLabel.className = 'us683-print-special-label';
+    spLabel.textContent = '【特別対応（土日祝）】';
+    spBox.appendChild(spLabel);
+    var spBody = document.createElement('div');
+    spBody.textContent = specialPrintText || '特別対応なし';
+    spBox.appendChild(spBody);
+    p1inner.appendChild(spBox);
+
     function addChartCol(parentCol, title, hostId) {
       var h2 = document.createElement('h2');
       h2.className = 'us683-print-h2';
@@ -3024,10 +3178,12 @@
         const prevHasRecords = prev.recordCount > 0;
         const prevTotal = prev.sum;
 
-        heroHost.innerHTML = '';
-        heroHost.appendChild(buildHeroEl(ym, curTotal, prevHasRecords, prevTotal));
-
         const byDay = aggregate683ByYmd(monthRec);
+        const splitTotals = computeMonthWeekdaySpecialTotals(ym, range.dim, byDay);
+        USER683_DASH_CTX = { ym: ym, dim: range.dim, byDay: byDay, split: splitTotals };
+
+        heroHost.innerHTML = '';
+        heroHost.appendChild(buildHeroEl(ym, curTotal, prevHasRecords, prevTotal, splitTotals));
 
         const dayLabels = [];
         const dayVals = [];

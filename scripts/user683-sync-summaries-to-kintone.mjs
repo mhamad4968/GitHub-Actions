@@ -36,12 +36,13 @@ const FC_PM_TEXT = 'pm_correspondence';
 const RELAY_DAY_CORPUS_MAX_LEN = 3200;
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const CLAUDE_PROMPT_WEEK =
-  '以下は社内ユーザサポートの週次対応メモの抜粋です。当社の会計年度は**4月末が期末・5月が期首**（暦月のみの比較だけで終わらせず、必要ならその週が会計年度のどの位置かに触れてよい。コーパスに無い「21日締め」等の変形会計月は捏造しない）。週内に**年末年始・ゴールデンウィーク・秋分の日前後の連休（いわゆるシルバーウィーク）**など稼働日が少ない期間が含まれる場合は、件数・負荷の変動をその文脈で読むこと。日本語で、箇条書き3点以内・合計200字以内で要約してください。コーパスに無い数値は書かないこと。**対応件数やメモが1日・少数件でも、コーパスに書かれた内容は必ず1行以上で要約すること。空欄で返さないこと。**余計な前置きは不要。\n\n';
+  '以下は社内ユーザサポートの週次対応メモの抜粋です。当社の会計年度は**4月末が期末・5月が期首**（暦月のみの比較だけで終わらせず、必要ならその週が会計年度のどの位置かに触れてよい。コーパスに無い「21日締め」等の変形会計月は捏造しない）。週内に**年末年始・ゴールデンウィーク・秋分の日前後の連休（いわゆるシルバーウィーク）**など稼働日が少ない期間が含まれる場合は、件数・負荷の変動をその文脈で読むこと。コーパス行頭の**[特別対応・…]**は土日祝に実際に対応した内容（本来は不要だが特別に行った対応）である。平日業務と同列に書かず、該当があれば要約の1点で区別して触れよ。件数0の土日祝は特別扱いしない。日本語で、箇条書き3点以内・合計200字以内で要約してください。コーパスに無い数値は書かないこと。**対応件数やメモが1日・少数件でも、コーパスに書かれた内容は必ず1行以上で要約すること。空欄で返さないこと。**余計な前置きは不要。\n\n';
 const CLAUDE_PROMPT_MONTH =
-  '【前月の月次要約】と【当月の対応メモ抜粋】が続きます。当社の会計年度は**4月末が期末・5月が期首**（必要ならその暦月が会計年度上どの位置かに一言触れてよい。コーパスに無い変形会計カレンダーは捏造しない）。当月のコーパスに**年末年始・ゴールデンウィーク・秋分の日前後の連休（シルバーウィーク）**など大型休暇が含まれる場合は、稼働日減による件数・相談量の変動をコーパスに根拠がある範囲で言及すること（根拠が無いときは断定しない）。日本語で次の形式で出力してください（全体350字程度・必ず完結した文で終える）:\n' +
+  '【前月の月次要約】と【当月の対応メモ抜粋】が続きます。当社の会計年度は**4月末が期末・5月が期首**（必要ならその暦月が会計年度上どの位置かに一言触れてよい。コーパスに無い変形会計カレンダーは捏造しない）。当月のコーパスに**年末年始・ゴールデンウィーク・秋分の日前後の連休（シルバーウィーク）**など大型休暇が含まれる場合は、稼働日減による件数・相談量の変動をコーパスに根拠がある範囲で言及すること（根拠が無いときは断定しない）。コーパス行頭の**[特別対応・…]**は土日祝に実際に対応した内容（本来は不要だが特別に行った対応）である。平日と同列の通常業務として書くな。日本語で次の形式で出力してください（全体420字程度・必ず完結した文で終える）:\n' +
   '【先月対比】1〜2文。必ず「先月の…に対し、当月は…」の対比形。件数・相談内容・負荷の変化を書く（コーパス/前月要約に無い数値は書かない）。\n' +
   '【当月の要点】箇条書き3点以内\n' +
-  '前月要約が空または「要約キャッシュなし」のときは、先頭行を「【先月対比】前月要約なし（初月または未取得）」とし、その後【当月の要点】を書くこと。余計な前置きは不要。\n\n';
+  '【特別対応（土日祝）】1〜3文で具体例（例: 土曜に…）。該当が無ければ「特別対応なし」。コーパスに無い内容は書かない。\n' +
+  '前月要約が空または「要約キャッシュなし」のときは、先頭行を「【先月対比】前月要約なし（初月または未取得）」とし、その後【当月の要点】【特別対応（土日祝）】を書くこと。余計な前置きは不要。\n\n';
 const ANTHROPIC_MODEL = (process.env.ANTHROPIC_MODEL || 'claude-opus-4-7').trim();
 const CLAUDE_MS = Number(process.env.USER683_CLAUDE_TIMEOUT_MS || 120000);
 
@@ -157,6 +158,36 @@ function formatYmdShortWday(isoYmd) {
   return m[1] + '/' + mo + '/' + day + '(' + wd + ')';
 }
 
+/** 683 customize と同趣旨の祝日（未収載は土日のみ特別判定） */
+const JP_HOLIDAY_YMD = new Set(
+  (
+    '2025-01-01,2025-01-13,2025-02-11,2025-02-23,2025-02-24,2025-03-20,2025-04-29,2025-05-03,2025-05-04,2025-05-05,2025-05-06,' +
+    '2025-07-21,2025-08-11,2025-09-15,2025-09-23,2025-10-13,2025-11-03,2025-11-24,2025-12-23,' +
+    '2026-01-01,2026-01-12,2026-02-11,2026-02-23,2026-03-20,2026-04-29,2026-05-03,2026-05-04,2026-05-05,2026-05-06,' +
+    '2026-07-20,2026-08-11,2026-09-21,2026-09-22,2026-09-23,2026-10-12,2026-11-03,2026-11-23,2026-12-23'
+  ).split(','),
+);
+
+function isWeekendOrHolidayYmd(isoYmd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoYmd);
+  if (!m) return false;
+  if (JP_HOLIDAY_YMD.has(isoYmd)) return true;
+  const wd = new Date(jstYmdToUtcNoonMs(Number(m[1]), Number(m[2]), Number(m[3]))).getUTCDay();
+  return wd === 0 || wd === 6;
+}
+
+function corpusLinePrefix(ymd, dayTotal) {
+  if (!(Number(dayTotal) > 0) || !isWeekendOrHolidayYmd(ymd)) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  const wd = m
+    ? new Intl.DateTimeFormat('ja-JP', {
+        timeZone: 'Asia/Tokyo',
+        weekday: 'short',
+      }).format(new Date(jstYmdToUtcNoonMs(Number(m[1]), Number(m[2]), Number(m[3]))))
+    : '';
+  return '[特別対応・' + wd + '] ';
+}
+
 function normalizeSummaryWhitespace(s) {
   return String(s)
     .replace(/\r\n/g, '\n')
@@ -228,7 +259,9 @@ function collectCorpusForDayRange(ym, dim, d0, d1, byDay) {
   for (let d = d0; d <= hi; d += 1) {
     const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
     const x = byDay[ymd];
-    if (x && x.relayLine) parts.push(formatYmdShortWday(ymd) + ': ' + x.relayLine);
+    if (x && x.relayLine) {
+      parts.push(corpusLinePrefix(ymd, x.dt) + formatYmdShortWday(ymd) + ': ' + x.relayLine);
+    }
   }
   return parts.join('\n');
 }
@@ -247,7 +280,9 @@ function buildRelayPayload(ym, dim, byDay) {
   for (let d = 1; d <= dim; d += 1) {
     const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
     const x = byDay[ymd];
-    if (x && x.relayLine) monthParts.push(formatYmdShortWday(ymd) + ': ' + x.relayLine);
+    if (x && x.relayLine) {
+      monthParts.push(corpusLinePrefix(ymd, x.dt) + formatYmdShortWday(ymd) + ': ' + x.relayLine);
+    }
   }
   return { weeks, month: { label: ym.y + '年' + ym.m + '月', corpus: monthParts.join('\n') } };
 }

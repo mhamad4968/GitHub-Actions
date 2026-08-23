@@ -13,7 +13,8 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-05-12-682-hide-rolling7m-dashboard683';
+  const BUILD = '2026-08-23-682-quick-create-a6';
+  const APP_ID = 682;
   /**
    * **true**: 682 一覧ヘッダ・レポート画面に 7 暦月 REST 棒を表示。
    * **false**: 非表示（月次傾向は **[683 ダッシュ](https://jbis-kintone.cybozu.com/k/683/)** で閲覧・**2026-05-12 CEO 重要確認**）。
@@ -77,6 +78,30 @@
     return y + '-' + mo + '-' + d;
   }
 
+  /** JST の「翌日」を YYYY-MM-DD（当日の翌日・暦上） */
+  function tomorrowJstYmd() {
+    const t = todayJstYmd();
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t);
+    if (!m) return t;
+    const utcNoon = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0) + 86400000;
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date(utcNoon));
+    const y = parts.find(function (p) {
+      return p.type === 'year';
+    }).value;
+    const mo = parts.find(function (p) {
+      return p.type === 'month';
+    }).value;
+    const d = parts.find(function (p) {
+      return p.type === 'day';
+    }).value;
+    return y + '-' + mo + '-' + d;
+  }
+
   /** ISO YYYY-MM-DD → 表示用 yyyy/mm/dd(曜)（ja-JP・JST） */
   function formatYmdSlashWday(isoYmd) {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoYmd);
@@ -105,6 +130,178 @@
       const iso = String(v).slice(0, 10);
       els[i].textContent = formatYmdSlashWday(iso);
     }
+  }
+
+  function injectIndexZeroStylesOnce() {
+    if (document.getElementById('us682-index-zero-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'us682-index-zero-styles';
+    style.textContent =
+      'tr.us682-row-zero > td { background-color: #fffbeb !important; }' +
+      '.recordlist-gaia tr.us682-row-zero > td { background-color: #fffbeb !important; }' +
+      '.us682-day-zero-ok { color: #6b7280 !important; background-color: #f0fdf4 !important; }';
+    document.head.appendChild(style);
+  }
+
+  /** A2: day_total=0 の行背景と、空本文＋件数0の「0確定」セル */
+  function styleIndexRowsZeroState(event) {
+    injectIndexZeroStylesOnce();
+    const recs = event.records;
+    if (!recs || !recs.length) return;
+    const dayTotalEls = kintone.app.getFieldElements(FC_DAY_TOTAL);
+    if (!dayTotalEls || !dayTotalEls.length) return;
+    const n = Math.min(recs.length, dayTotalEls.length);
+    for (let i = 0; i < n; i += 1) {
+      const rec = recs[i];
+      const amText = getText(rec, FC_AM_TEXT).trim();
+      const pmText = getText(rec, FC_PM_TEXT).trim();
+      const amCount =
+        rec[FC_AM] && rec[FC_AM].value != null ? String(rec[FC_AM].value).trim() : '';
+      const pmCount =
+        rec[FC_PM] && rec[FC_PM].value != null ? String(rec[FC_PM].value).trim() : '';
+      let dayTotal = 0;
+      const dtCell = rec[FC_DAY_TOTAL];
+      if (dtCell && dtCell.value != null && String(dtCell.value).trim() !== '') {
+        dayTotal = Number(dtCell.value);
+        if (!Number.isFinite(dayTotal)) dayTotal = 0;
+      }
+      const row = dayTotalEls[i].closest('tr');
+      if (row) row.classList.remove('us682-row-zero');
+      dayTotalEls[i].classList.remove('us682-day-zero-ok');
+      if (dayTotal === 0) {
+        if (row) row.classList.add('us682-row-zero');
+        if (
+          amText === '' &&
+          pmText === '' &&
+          (amCount === '' || amCount === '0') &&
+          (pmCount === '' || pmCount === '0')
+        ) {
+          dayTotalEls[i].classList.add('us682-day-zero-ok');
+        }
+      }
+    }
+  }
+
+  function injectFormUxStylesOnce() {
+    if (document.getElementById('us682-form-ux-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'us682-form-ux-styles';
+    style.textContent =
+      '.us682-correspondence-wide textarea,' +
+      ' .us682-correspondence-wide .input-text-cybozu {' +
+      ' min-height: 180px !important; width: 100% !important; box-sizing: border-box; }' +
+      ' .us682-count-muted .control-value-gaia,' +
+      ' .us682-count-muted input,' +
+      ' .us682-count-muted .input-number-cybozu {' +
+      ' font-size: 12px !important; opacity: 0.85; }';
+    document.head.appendChild(style);
+  }
+
+  /** A3: 対応内容を広く、件数表示を小さく */
+  function applyFormFieldUx682() {
+    injectFormUxStylesOnce();
+    [FC_AM_TEXT, FC_PM_TEXT].forEach(function (code) {
+      const el = kintone.app.record.getFieldElement(code);
+      if (el) el.classList.add('us682-correspondence-wide');
+    });
+    [FC_AM, FC_PM].forEach(function (code) {
+      const el = kintone.app.record.getFieldElement(code);
+      if (el) el.classList.add('us682-count-muted');
+    });
+  }
+
+  function navigateToEdit682(recordId) {
+    location.href = '/k/' + APP_ID + '/show?record=' + recordId + '#mode=edit';
+  }
+
+  /** A6: 対象日のレコードを取得または作成し編集画面へ */
+  function ensureRecordForYmd(ymd) {
+    const query = FC_DATE + ' = "' + ymd + '"';
+    return kintone
+      .api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+        app: String(APP_ID),
+        query: query,
+        fields: ['$id'],
+        limit: 1,
+      })
+      .then(function (resp) {
+        const recs = resp.records || [];
+        if (recs.length > 0 && recs[0].$id && recs[0].$id.value != null) {
+          alert(
+            '記録日「' +
+              formatYmdSlashWday(ymd) +
+              '」のレコードは既にあります。編集画面を開きます。',
+          );
+          navigateToEdit682(recs[0].$id.value);
+          return;
+        }
+        return kintone
+          .api(kintone.api.url('/k/v1/record.json', true), 'POST', {
+            app: String(APP_ID),
+            record: {
+              [FC_DATE]: { value: ymd },
+              [FC_AM]: { value: '0' },
+              [FC_PM]: { value: '0' },
+              [FC_AM_TEXT]: { value: '' },
+              [FC_PM_TEXT]: { value: '' },
+            },
+          })
+          .then(function (postResp) {
+            if (postResp && postResp.id != null) {
+              navigateToEdit682(postResp.id);
+            } else {
+              alert('レコードを作成しましたが、編集画面を開けませんでした。一覧から開いてください。');
+            }
+          });
+      })
+      .catch(function (e) {
+        console.error(BUILD, e);
+        alert(
+          'レコードの作成または取得に失敗しました。通信状態を確認のうえ、再試行してください。',
+        );
+      });
+  }
+
+  /** A1: 既存レコードのみ編集画面へ（無ければ案内） */
+  function openRecordForYmdIfExists(ymd) {
+    const query = FC_DATE + ' = "' + ymd + '"';
+    return kintone
+      .api(kintone.api.url('/k/v1/records.json', true), 'GET', {
+        app: String(APP_ID),
+        query: query,
+        fields: ['$id'],
+        limit: 1,
+      })
+      .then(function (resp) {
+        const recs = resp.records || [];
+        if (recs.length === 0 || !recs[0].$id || recs[0].$id.value == null) {
+          alert(
+            '記録日「' +
+              formatYmdSlashWday(ymd) +
+              '」は未作成です。「昨日を作成」「今日を作成」などの作成ボタンから追加してください。',
+          );
+          return;
+        }
+        navigateToEdit682(recs[0].$id.value);
+      })
+      .catch(function (e) {
+        console.error(BUILD, e);
+        alert('レコードの取得に失敗しました。通信状態を確認のうえ、再試行してください。');
+      });
+  }
+
+  function makeHeaderQuickBtn(label, onClick, compact) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.className = 'kintoneplugin-button-normal';
+    btn.style.cursor = 'pointer';
+    if (compact) {
+      btn.style.fontSize = '12px';
+      btn.style.padding = '4px 8px';
+    }
+    btn.onclick = onClick;
+    return btn;
   }
 
   /** 詳細: 対応日を yyyy/mm/dd(曜) で表示（実値は変更しない） */
@@ -675,10 +872,60 @@
     };
     tool.appendChild(resetBtn);
 
+    const quickRow = document.createElement('div');
+    quickRow.style.display = 'flex';
+    quickRow.style.alignItems = 'center';
+    quickRow.style.flexWrap = 'wrap';
+    quickRow.style.gap = '8px';
+    quickRow.style.margin = '4px 12px 8px';
+    quickRow.style.fontSize = '13px';
+
+    quickRow.appendChild(
+      makeHeaderQuickBtn('昨日を作成', function () {
+        ensureRecordForYmd(yesterdayJstYmd());
+      }),
+    );
+    quickRow.appendChild(
+      makeHeaderQuickBtn('今日を作成', function () {
+        ensureRecordForYmd(todayJstYmd());
+      }),
+    );
+    quickRow.appendChild(
+      makeHeaderQuickBtn('翌日を作成', function () {
+        ensureRecordForYmd(tomorrowJstYmd());
+      }),
+    );
+
+    const openSep = document.createElement('span');
+    openSep.style.color = '#888';
+    openSep.style.margin = '0 2px';
+    openSep.textContent = '|';
+    quickRow.appendChild(openSep);
+
+    quickRow.appendChild(
+      makeHeaderQuickBtn(
+        '昨日を開く',
+        function () {
+          openRecordForYmdIfExists(yesterdayJstYmd());
+        },
+        true,
+      ),
+    );
+    quickRow.appendChild(
+      makeHeaderQuickBtn(
+        '今日を開く',
+        function () {
+          openRecordForYmdIfExists(todayJstYmd());
+        },
+        true,
+      ),
+    );
+
     const msgHost = document.createElement('div');
     msgHost.id = 'user-support682-dash-messages';
 
     root.appendChild(tool);
+    root.appendChild(quickRow);
     root.appendChild(msgHost);
     /** @type {HTMLElement | null} */
     var rollHost = null;
@@ -852,6 +1099,9 @@
         ensureRecordDateOnCreate(rec);
       }
       syncRecordDateHelperOnForm(rec);
+      if (Number(kintone.app.getId()) === APP_ID) {
+        applyFormFieldUx682();
+      }
     } catch (e) {
       console.error(BUILD, e);
     }
@@ -926,6 +1176,7 @@
         return event;
       }
       formatRecordDateOnIndex(event);
+      styleIndexRowsZeroState(event);
       refreshIndexMonthDashboard(app);
     } catch (e) {
       console.error(BUILD, e);
