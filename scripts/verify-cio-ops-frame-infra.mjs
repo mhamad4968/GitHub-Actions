@@ -46,6 +46,16 @@ function main() {
     console.error('[verify:cio-ops-frame-infra] NG neta rule missing in template');
     process.exit(1);
   }
+  const nisaItem = (frame.items || []).find((i) => i.id === 'nisa-monthly-personal');
+  if (!nisaItem || nisaItem.when !== 'nisa-monthly') {
+    console.error('[verify:cio-ops-frame-infra] NG nisa-monthly-personal missing');
+    process.exit(1);
+  }
+  const rem = path.join(root, 'scripts/lib/personal-nisa-reminder.mjs');
+  if (!fs.existsSync(rem)) {
+    console.error('[verify:cio-ops-frame-infra] NG personal-nisa-reminder.mjs missing');
+    process.exit(1);
+  }
   console.log('[verify:cio-ops-frame-infra] OK');
 }
 

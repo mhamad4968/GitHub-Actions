@@ -11,6 +11,8 @@ description: >
 ## いつ使う
 
 - **毎月15日前後**のセッション（CIOが自発声かけ）
+- 朝ブリーフィングに「0a2. 個人資産月次」が出ている日
+- `npm run cio:ops:frame` で nisa が「今日の枠」の日
 - 浜田が「NISA見て」「積立額どうする」と言ったとき
 - 方針メモ `docs/personal/nisa-ops.md` を更新するとき
 

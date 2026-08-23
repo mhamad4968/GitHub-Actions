@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isNisaMonthlyReminderDue, nisaMonthlyOpsFrameLabel } from './lib/personal-nisa-reminder.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'data/cio-ops-frame.json'), 'utf8'));
@@ -21,6 +22,12 @@ function due(item, { dow, day }) {
   if (item.when === 'friday') return dow === 5;
   if (item.when === 'weekly') return dow === 1 || dow === 5;
   if (item.when === 'monthly') return day <= 10;
+  if (item.when === 'around-day') {
+    const target = Number(item.day ?? 15);
+    const window = Number(item.window ?? 2);
+    return day >= target - window && day <= target + window;
+  }
+  if (item.when === 'nisa-monthly') return isNisaMonthlyReminderDue(day);
   return false;
 }
 
@@ -34,7 +41,9 @@ function main() {
   ];
   for (const item of manifest.items || []) {
     const mark = due(item, now) ? '今日の枠' : '枠（必須ではない）';
-    lines.push(`- [${mark}] ${item.label}${item.npm?.length ? ` — \`npm run ${item.npm[0]}\`` : ''}`);
+    const label =
+      item.id === 'nisa-monthly-personal' ? nisaMonthlyOpsFrameLabel() : item.label;
+    lines.push(`- [${mark}] ${label}${item.npm?.length ? ` — \`npm run ${item.npm[0]}\`` : ''}`);
   }
   lines.push('', '本日の本題は浜田指示。枠を崩してよい。');
   const text = `${lines.join('\n')}\n`;

@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-13",
+  "version": "2026-08-23",
   "note": "枠のリマインダ。杓子定規にしない。項番 -0 が勝つ。skip しても失敗にしない。",
   "itemZeroWins": true,
   "skipAllowed": true,
@@ -37,6 +37,14 @@
       "label": "月次は下書きパックまで。ネタは浜田渡し。出ないときだけ相談",
       "npm": ["cio:keiei:draft-pack"],
       "runbook": "docs/runbooks/keiei-kaigi-security-report.md"
+    },
+    {
+      "id": "nisa-monthly-personal",
+      "when": "nisa-monthly",
+      "label": "個人資産月次（NISA／ラップ／iDeCo）スクショ→増額相談",
+      "npm": [],
+      "skill": "nisa-monthly-ops",
+      "canonical": "docs/personal/nisa-ops.md"
     }
   ]
 }

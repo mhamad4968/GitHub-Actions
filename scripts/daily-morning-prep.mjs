@@ -34,6 +34,10 @@ import {
   runRepoShellCmd,
 } from './lib/repo-node-env.mjs';
 import { runMorningPrepRag } from './lib/morning-prep-rag.mjs';
+import {
+  isNisaMonthlyReminderDue,
+  nisaMonthlyMorningSection,
+} from './lib/personal-nisa-reminder.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -227,6 +231,16 @@ if (creditWarn) {
 }
 sections.push('---');
 sections.push('');
+
+// 0a2. 個人資産月次（13〜17日のみ・リマインダ）
+{
+  const dayNum = Number(today.iso.slice(8, 10));
+  if (isNisaMonthlyReminderDue(dayNum)) {
+    sections.push(nisaMonthlyMorningSection());
+    sections.push('---');
+    sections.push('');
+  }
+}
 
 // 0b. §55 セーフモード + 前日 autonomy スキャン（E1 + E2 / 2026-04-25 浜田承認バッチ）
 sections.push('## 0b. §55 セーフモード・前日自律ログ');
