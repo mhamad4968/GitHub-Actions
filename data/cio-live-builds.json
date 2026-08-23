@@ -58,11 +58,11 @@
       "note": null
     },
     "682": {
-      "build": "2026-08-23-682-quick-create-a6",
-      "fileKey": "8e583565-f4e6-4c1f-ad96-c5d9e75b627a",
-      "revision": "29",
+      "build": "2026-08-23-682-banner-label-clarify",
+      "fileKey": "73e244d3-9e08-4c1a-b925-5e905e9a4918",
+      "revision": "30",
       "relPath": "customize/682/desktop.js",
-      "deployedAt": "2026-08-23T00:29:45.186Z",
+      "deployedAt": "2026-08-23T00:37:17.307Z",
       "note": null
     },
     "683": {

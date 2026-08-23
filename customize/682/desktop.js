@@ -13,7 +13,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-23-682-quick-create-a6';
+  const BUILD = '2026-08-23-682-banner-label-clarify';
   const APP_ID = 682;
   /**
    * **true**: 682 一覧ヘッダ・レポート画面に 7 暦月 REST 棒を表示。
@@ -830,7 +830,7 @@
     tool.style.fontSize = '13px';
 
     const lab = document.createElement('span');
-    lab.textContent = '欠日・重複の対象月（JST）: ';
+    lab.textContent = '欠日・同一日の重複確認: ';
     tool.appendChild(lab);
 
     const prevBtn = document.createElement('button');
