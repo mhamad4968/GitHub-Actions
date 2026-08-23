@@ -58,19 +58,19 @@
       "note": null
     },
     "682": {
-      "build": "2026-05-12-682-hide-rolling7m-dashboard683",
-      "fileKey": "c183e358-0f6a-4d1c-ad70-cfb4543197e6",
-      "revision": "24",
+      "build": "2026-08-23-682-quick-create-a6",
+      "fileKey": "8e583565-f4e6-4c1f-ad96-c5d9e75b627a",
+      "revision": "29",
       "relPath": "customize/682/desktop.js",
-      "deployedAt": "2026-05-16T10:47:16.371Z",
+      "deployedAt": "2026-08-23T00:29:45.186Z",
       "note": null
     },
     "683": {
-      "build": "2026-08-02-683-print-page2-break-v24",
-      "fileKey": "6a991120-c5a6-4afa-ac15-85d11662c5e8",
-      "revision": "112",
+      "build": "2026-08-23-683-special-weekend-ux",
+      "fileKey": "bf7a3671-48e3-4bfe-ac0f-3757d52d4eb3",
+      "revision": "113",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-02T10:16:47.304Z",
+      "deployedAt": "2026-08-23T00:29:49.866Z",
       "note": null
     },
     "686": {
