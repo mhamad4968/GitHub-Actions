@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-23-683-special-weekend-ux",
-      "fileKey": "bf7a3671-48e3-4bfe-ac0f-3757d52d4eb3",
-      "revision": "113",
+      "build": "2026-08-23-683-special-mark-on-date",
+      "fileKey": "db113079-4a73-4648-9b23-d93a0c9ca3c2",
+      "revision": "114",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-23T00:29:49.866Z",
+      "deployedAt": "2026-08-23T00:41:21.905Z",
       "note": null
     },
     "686": {

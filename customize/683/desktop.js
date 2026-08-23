@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-23-683-special-weekend-ux';
+  const BUILD = '2026-08-23-683-special-mark-on-date';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1576,13 +1576,15 @@
     return '特別対応なし';
   }
 
-  function appendSpecialBadge(cell) {
-    const badge = document.createElement('span');
-    badge.textContent = '特別';
-    badge.style.cssText =
-      'display:inline-block;margin-left:4px;padding:0 4px;font-size:10px;font-weight:700;' +
-      'color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;vertical-align:middle;';
-    cell.appendChild(badge);
+  /** 日付セル末尾の特別対応マーク（件数列には付けない） */
+  function appendSpecialDateMark(cell) {
+    const mark = document.createElement('span');
+    mark.textContent = ' ★';
+    mark.title = '特別対応（土日祝に対応あり）';
+    mark.setAttribute('aria-label', '特別対応');
+    mark.style.cssText =
+      'color:#b45309;font-weight:700;margin-left:2px;letter-spacing:0;';
+    cell.appendChild(mark);
   }
 
   /**
@@ -2094,10 +2096,9 @@
       const x = byDay[ymd];
       const dayDt = x && x.dt != null ? x.dt : 0;
       const isFuture = ymd > today;
+      cellDate.textContent = formatYmdSlashWday(ymd);
       if (!isFuture && isSpecialResponseDay(ymd, dayDt)) {
-        cellDate.textContent = '【特】' + formatYmdSlashWday(ymd);
-      } else {
-        cellDate.textContent = formatYmdSlashWday(ymd);
+        appendSpecialDateMark(cellDate);
       }
       cellDate.style.color = isCalSpecial ? COLOR_DAY_LABEL_WEEKEND_HOLIDAY : COLOR_DAY_LABEL_WEEKDAY;
       tr.appendChild(cellDate);
@@ -2126,9 +2127,6 @@
         bodyTd.style.color = '#666';
       } else {
         dtTd.textContent = String(x.dt);
-        if (isSpecialResponseDay(ymd, x.dt)) {
-          appendSpecialBadge(dtTd);
-        }
         const fullLine = daySummaryLineRaw(x);
         const summaryLine = formatDaySummaryForTable(x);
         const hasText = Boolean(fullLine);
