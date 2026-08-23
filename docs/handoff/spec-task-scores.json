@@ -1,15 +1,15 @@
 {
-  "scoredAt": "2026-08-22T21:49:46.850Z",
+  "scoredAt": "2026-08-23T00:56:06.517Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "新規レーンのみ（項番 -0）。S7 完了。",
-  "topTaskKind": "work",
-  "topWorkTask": "新規レーンのみ（項番 -0）。S7 完了。",
+  "topTask": "夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談",
+  "topTaskKind": "constraint",
+  "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:新規レーンのみ（項番_-0）。S7_完了。",
-      "text": "新規レーンのみ（項番 -0）。S7 完了。",
+      "id": "checkpoint:夜は_**NISA運用方針の相談**（別レーン・項番_-0）。本日完了レーンの追",
+      "text": "夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談",
       "source": "checkpoint",
-      "kind": "work",
+      "kind": "constraint",
       "difficulty": 2,
       "tokens": "中",
       "tokenScore": 2,

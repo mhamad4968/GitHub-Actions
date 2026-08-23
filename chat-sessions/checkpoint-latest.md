@@ -1,11 +1,11 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-23 09:47 JST — **682/683 UX 目視OK**。月報AI文言は来月頭の生成時に再調整（土・日・祝対応の具体）
-**次の1手**: 新規レーンのみ（項番 -0）。682/683 追加は明示GOまで。月報は来月頭生成後に相談
-**レーン変更**: ユーザサポート 682/683 UX 完了（目視OK）。721 閉済維持
-**Git**: push 済（直近 683 見出し改名含む）
-**closeStatus**: **open**（セッション継続可・本レーン完了）
-**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721再開は明示GOまで
-**本日状態**: 682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**
+**最終更新**: 2026-08-23 09:55 JST — **セッション締め（full CLOSE）**。721＋682/683 本日レーン完了。SPEC/R63/実装コミット突合OK
+**次の1手**: 夜は **NISA運用方針の相談**（別レーン・項番 -0）。本日完了レーンの追加改修は明示GOまで着手しない。月報AIは来月頭生成後に相談
+**レーン変更**: 朝〜昼の業務レーン終了 → 夜 NISA 相談予定（コード作業なし想定）
+**Git**: close-git 再実行中（締め後に HEAD 反映）
+**closeStatus**: **closed**（2026-08-23 昼セッション full CLOSE）
+**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683再開は明示GOまで
+**本日状態**: 682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-08-23）
 | App | BUILD | rev |
@@ -16,9 +16,9 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 月次要約は来月頭生成。そのとき【土・日・祝日対応】に「どんな対応があったか」まで書くようプロンプト／出力を相談調整。
-**GO待ち**: なし（682/683完了）。次レーンは浜田指示待ち。
-**調査正本**: `docs/plans/2026-08-23-user-support-682-683-ux-spec.md`
+**継続メモ**: 月次要約は来月頭生成。そのとき【土・日・祝日対応】に「どんな対応があったか」まで書くようプロンプト／出力を相談調整。eslint pending `docs/approved-changes/pending/2026-08-23-V1-eslint.proposal.json` は未採択・コミットしない。
+**GO待ち**: なし（業務レーン完了）。次は夜 NISA 相談 or 新規業務は浜田指示。
+**調査正本**: `docs/plans/2026-08-23-user-support-682-683-ux-spec.md` / `docs/plans/2026-08-23-jr-ipad-721-p0-p1-ux-spec.md` / `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
