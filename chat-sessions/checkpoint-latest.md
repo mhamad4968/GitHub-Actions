@@ -1,24 +1,25 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-23 18:40 JST — **夜セッション full CLOSE**。NISA運用開始（メモ＋Skill＋月次必須リマインダ）。夕反省改善案全GO実装済
+**最終更新**: 2026-08-24 18:50 JST — **full CLOSE**。696 モーダル誤クローズ修正＋695 首都圏支店-協力会社27件登録。夕反省全GO実装済
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
-**レーン変更**: 夜 NISA 相談・運用整備完了 → 次回は新規指示待ち
-**Git**: **`7442e3ce`** = `origin/main` — push 済
-**closeStatus**: **closed**（2026-08-23 夜セッション full CLOSE）
+**レーン変更**: 696 バグ修正＋メール追記完了 → 次回は新規指示待ち
+**Git**: **`7442e3ce`** = `origin/main` — push 済（close-git で更新）
+**closeStatus**: **closed**（2026-08-24 full CLOSE）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683再開は明示GOまで
-**本日状態**: 682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: 696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-08-23）
+### 本日アクティブ（BUILD/rev — 2026-08-24）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **696** | `2026-08-24-696-modal-keep-open` | **18** |
 | **682** | `2026-08-23-682-banner-label-clarify` | **30** |
 | **683** | `2026-08-23-683-doyou-shukujitsu-taiou-label` | **116** |
 | **721** | `2026-08-23-jr-ipad-dash-p2-vux` | **17** |
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 個人資産正本 `docs/personal/nisa-ops.md`／Skill `nisa-monthly-ops`。NISA月1万据置。ラップ／iDeCo当面据置。eslint pending 未採択・コミットしない。月次要約は来月頭。
+**継続メモ**: 個人資産正本 `docs/personal/nisa-ops.md`／Skill `nisa-monthly-ops`。NISA月1万据置。ラップ／iDeCo当面据置。eslint pending 未採択・コミットしない。月次要約は来月頭。695 追記は `shared-mail:append:xlsx`
 **GO待ち**: なし
-**調査正本**: `docs/personal/nisa-ops.md` / `docs/plans/2026-08-23-user-support-682-683-ux-spec.md` / `docs/plans/2026-08-23-jr-ipad-721-p2-vux-spec.md`
+**調査正本**: `docs/personal/nisa-ops.md` / `docs/runbooks/shared-mail-append-xlsx.md` / `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 

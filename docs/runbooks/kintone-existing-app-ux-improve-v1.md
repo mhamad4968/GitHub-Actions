@@ -46,9 +46,13 @@
 | 3 | Composer | `customize/**` のみ。APP_DB はハードコードを維持（bundle で 0 にしない） |
 | 4 | Kimi | レビュー。file が読めないときは think で代替し、CIO がコードで誤 BLOCK を却下する |
 | 5 | CIO | `cio:preflight:<app> -- --note "…" --with-git-diff-line` → `deploy:<app>` |
-| 6 | CIO | R63: 同一セッションで customize + `kintone-apps.md` + `data/cio-live-builds.json` を commit。`rag:mirror:canonical-docs` |
+| 6 | CIO | R63: **`npm run rag:mirror:canonical-docs` を先に実行** → customize + `kintone-apps.md` + `.rag/extra-docs/kintone-apps.md` + `data/cio-live-builds.json` を **同一 commit**（正本だけ stage すると pre-commit 拒否・#R1） |
 | 7 | 浜田 | **Ctrl+F5** 目視のみ（npm は依頼しない） |
 | 8 | CIO | OK ならレーンクローズ + **当該 SPEC の改定履歴** + checkpoint。NG は同一セッションで直して再 deploy |
+
+### 2.1 フォームモーダル（#D1 · 2026-08-24）
+
+新規登録・編集など **入力フォームのモーダル**は **`closeOnBackdrop: false`**（背景クリックで閉じない）。廃止/削除の短い確認だけ背景閉じ可。datalist 選択のすり抜けで入力が消える再発防止（696 `2026-08-24-696-modal-keep-open`）。
 
 694 の効いた型（転用時はアプリの既存 UI を壊さない）:
 

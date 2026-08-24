@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * 共有メール — Excel → データアプリ REST 一括 POST
+ * 共有メール — Excel → データアプリ REST 一括 POST（**初期投入専用**）
  * 正本: docs/plans/2026-06-06-shared-mail-kintone-spec.md
+ * **追記**（既存あり・max legacy 継続）は `npm run shared-mail:append:xlsx`（docs/runbooks/shared-mail-append-xlsx.md）
  *
  *   npm run shared-mail:migrate:xlsx -- --dry-run
  *   npm run shared-mail:migrate:xlsx -- --apply
