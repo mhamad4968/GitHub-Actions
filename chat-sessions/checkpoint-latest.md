@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-24 18:50 JST — **full CLOSE**。696 モーダル誤クローズ修正＋695 首都圏支店-協力会社27件登録。夕反省全GO実装済
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
 **レーン変更**: 696 バグ修正＋メール追記完了 → 次回は新規指示待ち
-**Git**: **`7442e3ce`** = `origin/main` — push 済（close-git で更新）
+**Git**: **`a45b5872`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: **closed**（2026-08-24 full CLOSE）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683再開は明示GOまで
 **本日状態**: 696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
