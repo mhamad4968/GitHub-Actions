@@ -2,7 +2,7 @@
   "use strict";
 
   /** メールアドレス管理台帳 — 695 REST CRUD */
-  var BUILD = "2026-08-16-696-ui-print-polish";
+  var BUILD = "2026-08-24-696-modal-keep-open";
 
   var APP_DB = 695;
   var MAIL_DOMAIN = "@j-bis.co.jp";
@@ -799,14 +799,22 @@
     if (el) el.remove();
   }
 
-  function openModal(title, bodyHtml, buttons) {
+  function openModal(title, bodyHtml, buttons, options) {
     closeModal();
+    options = options || {};
+    var closeOnBackdrop = !!options.closeOnBackdrop;
     var bg = document.createElement("div");
     bg.id = "smd-modal-root";
     bg.className = "smd-modal-bg";
     var box = document.createElement("div");
     box.className = "smd-modal";
     box.innerHTML = "<h3>" + esc(title) + "</h3>" + bodyHtml;
+    box.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+    });
+    box.addEventListener("mousedown", function (ev) {
+      ev.stopPropagation();
+    });
     var actions = document.createElement("div");
     actions.className = "smd-modal-actions";
     buttons.forEach(function (b) {
@@ -822,9 +830,11 @@
     });
     box.appendChild(actions);
     bg.appendChild(box);
-    bg.addEventListener("click", function (ev) {
-      if (ev.target === bg) closeModal();
-    });
+    if (closeOnBackdrop) {
+      bg.addEventListener("click", function (ev) {
+        if (ev.target === bg) closeModal();
+      });
+    }
     document.body.appendChild(bg);
     return box;
   }
@@ -882,7 +892,20 @@
 
   function openNewModal() {
     var pw = buildNewPassword();
+    var initialPw = pw;
     var deptOptions = collectDepartmentOptions();
+    function isNewFormDirty() {
+      var dept = (document.getElementById("smd-new-dept") || {}).value.trim();
+      var name = (document.getElementById("smd-new-name") || {}).value.trim();
+      var mail = String((document.getElementById("smd-new-mail") || {}).value || "").trim();
+      var note = (document.getElementById("smd-new-note") || {}).value.trim();
+      var usage = (document.getElementById("smd-new-usage") || {}).value || USAGE_DEFAULT;
+      var pwVal = (document.getElementById("smd-new-pw") || {}).value.trim();
+      if (dept || name || mail || note) return true;
+      if (usage !== USAGE_DEFAULT) return true;
+      if (pwVal && pwVal !== initialPw) return true;
+      return false;
+    }
     var box = openModal(
       "新規登録",
       usageSelectHtml("smd-new-usage", USAGE_DEFAULT) +
@@ -900,7 +923,13 @@
         '<label>メモ<textarea id="smd-new-note" rows="2"></textarea></label>' +
         departmentDatalistHtml(deptOptions),
       [
-        { label: "キャンセル" },
+        {
+          label: "キャンセル",
+          onClick: function (close) {
+            if (isNewFormDirty() && !window.confirm("入力内容が破棄されます。閉じますか？")) return;
+            close();
+          },
+        },
         {
           label: "登録",
           primary: true,
@@ -949,6 +978,7 @@
           },
         },
       ],
+      { closeOnBackdrop: false },
     );
     wireDisplayNameLabel(box, "smd-new-usage", "smd-new-name-wrap");
     var mailInput = box.querySelector("#smd-new-mail");
@@ -973,6 +1003,23 @@
   function openEditModal(row) {
     var usage = row.usage_type || USAGE_DEFAULT;
     var deptOptions = collectDepartmentOptions(row.department);
+    function isEditFormDirty() {
+      var usageVal = (document.getElementById("smd-edit-usage") || {}).value || USAGE_DEFAULT;
+      var dept = (document.getElementById("smd-edit-dept") || {}).value.trim();
+      var name = (document.getElementById("smd-edit-name") || {}).value.trim();
+      var mail = String((document.getElementById("smd-edit-mail") || {}).value || "")
+        .trim()
+        .toLowerCase();
+      var pwVal = (document.getElementById("smd-edit-pw") || {}).value.trim();
+      var note = (document.getElementById("smd-edit-note") || {}).value || "";
+      if (usageVal !== usage) return true;
+      if (dept !== String(row.department || "").trim()) return true;
+      if (name !== String(row.mailbox_display_name || "").trim()) return true;
+      if (mail !== String(row.mail_address || "").trim().toLowerCase()) return true;
+      if (pwVal !== String(row.password || "").trim()) return true;
+      if (note !== String(row.note || "")) return true;
+      return false;
+    }
     var box = openModal(
       "編集 — No." + row.legacy_no,
       usageSelectHtml("smd-edit-usage", usage) +
@@ -993,7 +1040,13 @@
         "</textarea></label>" +
         departmentDatalistHtml(deptOptions),
       [
-        { label: "キャンセル" },
+        {
+          label: "キャンセル",
+          onClick: function (close) {
+            if (isEditFormDirty() && !window.confirm("入力内容が破棄されます。閉じますか？")) return;
+            close();
+          },
+        },
         {
           label: "保存",
           primary: true,
@@ -1061,6 +1114,7 @@
           },
         },
       ],
+      { closeOnBackdrop: false },
     );
     wireDisplayNameLabel(box, "smd-edit-usage", "smd-edit-name-wrap");
     var mailInput = box.querySelector("#smd-edit-mail");
@@ -1111,6 +1165,7 @@
           },
         },
       ],
+      { closeOnBackdrop: true },
     );
   }
 
@@ -1138,6 +1193,7 @@
           },
         },
       ],
+      { closeOnBackdrop: true },
     );
   }
 
