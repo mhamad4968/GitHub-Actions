@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-24T09:17:27.232Z",
-  "gitHead": "a335d595",
+  "exportedAt": "2026-08-24T09:20:02.710Z",
+  "gitHead": "6029d7b4",
   "gitStatus": "## main...origin/main",
   "nextTask": "項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=a335d595 | 次=項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=6029d7b4 | 次=項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
