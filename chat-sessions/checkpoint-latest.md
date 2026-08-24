@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-23 18:40 JST — **夜セッション full CLOSE**。NISA運用開始（メモ＋Skill＋月次必須リマインダ）。夕反省改善案全GO実装済
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
 **レーン変更**: 夜 NISA 相談・運用整備完了 → 次回は新規指示待ち
-**Git**: **`a335d595`** = `origin/main` — push 済
+**Git**: **`af5c3b04`** = `origin/main` — push 済
 **closeStatus**: **closed**（2026-08-23 夜セッション full CLOSE）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683再開は明示GOまで
 **本日状態**: 682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
