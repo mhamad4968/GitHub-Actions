@@ -13,6 +13,7 @@
  * heal --commit の直後に wake すると tip が進み Git が grandparent（#D-CLOSE-02 NG）。
  * amend / force-push 禁止（#S-R44-SKIP-01）。
  * Phase 5e2（early wake 前）は **--force-stamp** 必須: off-by-one no-op のまま 5f すると tip^2 で D-CHKPT-02。
+ * stamp 済み・regression OK でも worktree dirty なら `--commit` で commit する（2026-08-24: stamp→後追い commit 隙間）。
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -39,6 +40,12 @@ function git(args, opts = {}) {
   };
 }
 
+/** stamp 済みでも worktree が HEAD と違うとき --commit で落とせるようにする（WAKE stamp→後追い commit 隙間） */
+function checkpointWorktreeDirty() {
+  const st = git(['status', '--porcelain', '--', CHECKPOINT_REL]);
+  return Boolean(st.ok && st.out.trim());
+}
+
 function main() {
   const checkOnly = process.argv.includes('--check');
   const forceStamp = process.argv.includes('--force-stamp');
@@ -61,6 +68,13 @@ function main() {
   }
 
   // Phase 5e2: off-by-one でも HEAD へ寄せてから early wake（tip^2 防止）
+  let heal = {
+    healed: Boolean(forceStamp),
+    before,
+    hash: readCheckpointGitHead(root),
+    reason: forceStamp ? 'force-stamp' : undefined,
+  };
+
   if (forceStamp) {
     const hash =
       target === 'origin' ? git(['rev-parse', '--short', 'origin/main']).out || gitShortHead(root) : gitShortHead(root);
@@ -69,30 +83,50 @@ function main() {
       process.exit(1);
     }
     if (before === hash) {
-      console.log(`[cio:checkpoint:git-heal] OK force-stamp no-op cp=${before} (== HEAD)`);
-      process.exit(0);
+      if (doCommit && checkpointWorktreeDirty()) {
+        console.log(
+          `[cio:checkpoint:git-heal] force-stamp hash OK; committing dirty worktree cp=${before}`,
+        );
+        heal = { healed: true, before, hash: before, reason: 'dirty-commit-only' };
+        // fall through to commit
+      } else {
+        console.log(`[cio:checkpoint:git-heal] OK force-stamp no-op cp=${before} (== HEAD)`);
+        process.exit(0);
+      }
+    } else {
+      const changed = updateCheckpointGitHead(root, { hash, suffix: 'push 済' });
+      if (!changed) {
+        console.error('[cio:checkpoint:git-heal] NG force-stamp write failed');
+        process.exit(1);
+      }
+      console.log(
+        `[cio:checkpoint:git-heal] force-stamped \`${before || '(none)'}\` → \`${hash}\` (worktree · pre-early-wake)`,
+      );
+      heal = { healed: true, before, hash, reason: 'force-stamp' };
+      if (!doCommit) {
+        process.exit(0);
+      }
+      // fall through to commit path with already-stamped worktree
     }
-    const changed = updateCheckpointGitHead(root, { hash, suffix: 'push 済' });
-    if (!changed) {
-      console.error('[cio:checkpoint:git-heal] NG force-stamp write failed');
-      process.exit(1);
-    }
-    console.log(
-      `[cio:checkpoint:git-heal] force-stamped \`${before || '(none)'}\` → \`${hash}\` (worktree · pre-early-wake)`,
-    );
-    if (!doCommit) {
-      process.exit(0);
-    }
-    // fall through to commit path with already-stamped worktree
   } else if (reg.ok) {
-    console.log(
-      `[cio:checkpoint:git-heal] OK no-op cp=${before || '(none)'} reason=${reg.offByOne ? 'off-by-one' : 'fresh'}`,
-    );
-    process.exit(0);
-  }
-
-  let heal = { healed: Boolean(forceStamp), before, hash: readCheckpointGitHead(root), reason: forceStamp ? 'force-stamp' : undefined };
-  if (!forceStamp) {
+    if (doCommit && checkpointWorktreeDirty()) {
+      console.log(
+        `[cio:checkpoint:git-heal] regression OK; committing dirty worktree cp=${before || '(none)'} reason=${reg.offByOne ? 'off-by-one' : 'fresh'}`,
+      );
+      heal = {
+        healed: true,
+        before,
+        hash: readCheckpointGitHead(root),
+        reason: 'dirty-commit-only',
+      };
+      // fall through to commit
+    } else {
+      console.log(
+        `[cio:checkpoint:git-heal] OK no-op cp=${before || '(none)'} reason=${reg.offByOne ? 'off-by-one' : 'fresh'}`,
+      );
+      process.exit(0);
+    }
+  } else if (!forceStamp) {
     heal = healCheckpointGitWorktree(root, { target, suffix: 'push 済' });
     if (!heal.healed) {
       console.error(`[cio:checkpoint:git-heal] NG stamp failed reason=${heal.reason}`);
