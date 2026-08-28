@@ -12,6 +12,8 @@ export const WAKE_HANDOFF_ALLOWLIST = Object.freeze([
   'docs/handoff/spec-task-scores.json',
   'docs/knowledge/debug-tips.md',
   'chat-sessions/checkpoint-latest.md',
+  // #S-HANDOFF-WAKE-01 — repair-latest が末尾「次の1手」を checkpoint 同期しても allowlist 漏れで B1 残件化するのを防ぐ
+  'chat-sessions/handoff-log.md',
   // #S-KNOW-WAKE-01 — Phase 5d knowledge-wake stamp の digest を WAKE commit に同梱（偽陽性残件防止）
   'chat-sessions/knowledge-wake-latest.md',
   'chat-sessions/desktop-ai-emergency-read-pack/28-CONSTITUTION-GENRE-MAP.txt',
