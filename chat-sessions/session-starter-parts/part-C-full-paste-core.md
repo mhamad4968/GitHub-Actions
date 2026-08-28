@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-24 自動更新）】
-- 次の1手: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
-- checkpoint: 2026-08-23 18:40 JST — **夜セッション full CLOSE**。NISA運用開始（メモ＋Skill＋月次必須リマインダ）。夕反省改善案全GO実装済
-- 進行中 plan: docs/plans/2026-08-23-user-support-682-683-ux-spec.md
-- 当日コミット (上位 3):
-  - chore(checkpoint): sync Git line after commit
-  - fix(696): keep new/edit modal open until Cancel or save
-  - fix(checkpoint): commit dirty worktree when heal --commit after stamp
+【今やってる主タスク（2026-08-24 反映・2026-08-29 WAKE同期）】
+- 本日レーン: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
+- checkpoint: 2026-08-24 18:50 JST — **full CLOSE**。696 モーダル誤クローズ修正＋695 首都圏支店-協力会社27件登録。夕反省全GO実装済
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
