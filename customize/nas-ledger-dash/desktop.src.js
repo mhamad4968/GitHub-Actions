@@ -3,7 +3,7 @@
   /* global NAS_ORG_MASTER, NAS_LOCATION_MASTER */
 
   /** NAS管理台帳 — 742/719 型 Excel 風一覧 + REST CRUD + 印刷 + xlsx */
-  var BUILD = "2026-06-29-nas-ledger-list-hostname-v3";
+  var BUILD = "2026-08-29-749-ux-toolbar-copy-pill-print";
   var STATUS_NONE = "－";
   var EMPTY_MARK = "－";
   var PURCHASE_VENDORS = ["大塚商会", "富士フィルム", "KDDI", "その他"];
@@ -75,6 +75,8 @@
     { key: "install_place", label: "設置先" },
     { key: "ip_address", label: "IP" },
     { key: "hostname", label: "ホスト名" },
+    { key: "admin_id", label: "管理者ID" },
+    { key: "admin_password", label: "パスワード" },
     { key: "os_type", label: "OS種類" },
     { key: "manufacturer", label: "メーカー" },
     { key: "model_name", label: "機種名" },
@@ -283,6 +285,121 @@
     return page();
   }
 
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+    } catch (e) {
+      return Promise.reject(e);
+    }
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function copyCell(text, display, title) {
+    var t = String(text || "").trim();
+    if (!t || t === "-") return '<span class="nasl-none">' + esc(EMPTY_MARK) + "</span>";
+    return (
+      '<span class="nasl-copy" data-copy="' +
+      esc(t) +
+      '" title="' +
+      esc(title || "クリックでコピー") +
+      '">' +
+      esc(display != null ? display : t) +
+      "</span>"
+    );
+  }
+
+  function computeRecordCounts() {
+    var active = 0;
+    var kept = 0;
+    var none = 0;
+    state.records.forEach(function (r) {
+      if (r.status === "有効") active++;
+      else if (r.status === "保管") kept++;
+      else if (r.status === STATUS_NONE) none++;
+    });
+    return { active: active, kept: kept, none: none };
+  }
+
+  function metaStatChip(kind, label, count, zeroWhenEmpty) {
+    var zeroCls = zeroWhenEmpty && count === 0 ? " nasl-meta-stat--zero" : "";
+    return (
+      '<span class="nasl-meta-stat nasl-meta-stat--' +
+      kind +
+      zeroCls +
+      '">' +
+      '<span class="nasl-meta-stat-label">' +
+      label +
+      "</span>" +
+      '<span class="nasl-meta-stat-val"><span class="nasl-meta-stat-num">' +
+      esc(String(count)) +
+      '</span><span class="nasl-meta-stat-unit">件</span></span></span>'
+    );
+  }
+
+  function statusPillHtml(status) {
+    var s = status || "有効";
+    var cls = "nasl-status-pill--active";
+    if (s === "保管") cls = "nasl-status-pill--kept";
+    else if (s === "廃棄") cls = "nasl-status-pill--retired";
+    else if (s === STATUS_NONE || s === "－") cls = "nasl-status-pill--none";
+    return '<span class="nasl-status-pill ' + cls + '">' + esc(s) + "</span>";
+  }
+
+  function rowStatusClass(row) {
+    var s = row.status;
+    if (s === STATUS_NONE || s === "－") return "nasl-row-none";
+    if (s === "廃棄") return "nasl-row-retired";
+    if (s === "保管") return "nasl-row-kept";
+    return "";
+  }
+
+  function updateMetaBar(filteredCount) {
+    var meta = document.getElementById("nasl-meta");
+    if (!meta) return;
+    var counts = computeRecordCounts();
+    meta.innerHTML =
+      metaStatChip("all", "全件", state.records.length, false) +
+      metaStatChip("active", "有効", counts.active, true) +
+      metaStatChip("kept", "保管", counts.kept, true) +
+      metaStatChip("none", "設備なし", counts.none, true) +
+      '<span class="nasl-filtered-count">表示 ' +
+      esc(String(filteredCount)) +
+      "</span>" +
+      '<span class="nasl-build">BUILD ' +
+      esc(BUILD) +
+      "</span>";
+  }
+
+  function bindCopyClicks(wrap) {
+    if (!wrap || wrap._naslCopyBound) return;
+    wrap._naslCopyBound = true;
+    wrap.addEventListener("click", function (ev) {
+      var el = ev.target.closest(".nasl-copy");
+      if (!el) return;
+      ev.preventDefault();
+      var text = el.getAttribute("data-copy") || "";
+      var origTitle = el.getAttribute("title") || "";
+      copyText(text)
+        .then(function () {
+          el.setAttribute("title", "コピーしました");
+          setTimeout(function () {
+            el.setAttribute("title", origTitle);
+          }, 1500);
+        })
+        .catch(function () {
+          alert("コピーに失敗しました");
+        });
+    });
+  }
+
   function injectCss() {
     if (document.getElementById("nasl-dash-css")) return;
     var st = document.createElement("style");
@@ -290,18 +407,61 @@
     st.textContent =
       ".gaia-argoui-app-index-recordlist,.recordlist-gaia,.recordlist-norecord-gaia,.contents-gaia .recordlist-header-gaia,.gaia-argoui-app-index-pager{display:none!important;}" +
       ".nasl-root{font-family:Segoe UI,Meiryo,sans-serif;padding:8px 12px 24px;max-width:100%;}" +
-      ".nasl-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}" +
-      ".nasl-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px;padding:10px 14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;}" +
+      ".nasl-toolbar{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:stretch;margin-bottom:10px;}" +
+      ".nasl-toolbar-group{display:flex;flex-direction:column;min-width:0;margin:0;padding:8px 10px;" +
+      "border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}" +
+      ".nasl-toolbar-group-inner{display:flex;flex:1;flex-wrap:wrap;align-items:center;gap:8px;}" +
+      ".nasl-toolbar-group legend{font-size:11px;color:#64748b;padding:0 4px;font-weight:600;}" +
+      ".nasl-toolbar-group--a{background:#f8fafc;}" +
+      ".nasl-toolbar-group--b{background:#f1f5f9;}" +
+      ".nasl-toolbar-group--c{background:#faf5ff;}" +
+      ".nasl-toolbar-group-inner > button{box-sizing:border-box;height:36px;min-height:36px;padding:0 16px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;}" +
+      ".nasl-toolbar-group-inner input[type=search]{box-sizing:border-box;height:36px;min-height:36px;padding:0 10px;border:1px solid #94a3b8;border-radius:6px;font-size:13px;line-height:1;background:#fff;min-width:220px;max-width:360px;}" +
+      ".nasl-meta-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:12px;padding:16px 20px;" +
+      "background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:2px solid #3b82f6;border-radius:12px;" +
+      "box-shadow:0 2px 8px rgba(59,130,246,.15);}" +
+      ".nasl-meta-stat{display:inline-flex;flex-direction:column;align-items:center;padding:6px 12px;" +
+      "border-radius:10px;min-width:72px;white-space:nowrap;background:#fff;border:1px solid;" +
+      "box-shadow:0 1px 3px rgba(15,23,42,.06);}" +
+      ".nasl-meta-stat-label{font-size:11px;font-weight:600;line-height:1.2;margin-bottom:2px;}" +
+      ".nasl-meta-stat-val{display:flex;align-items:baseline;gap:2px;line-height:1;}" +
+      ".nasl-meta-stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';}" +
+      ".nasl-meta-stat-unit{font-size:11px;font-weight:600;}" +
+      ".nasl-meta-stat--all{background:#fff;border-color:#cbd5e1;color:#475569;}" +
+      ".nasl-meta-stat--all .nasl-meta-stat-label{color:#64748b;}" +
+      ".nasl-meta-stat--active{background:#dcfce7;border-color:#86efac;color:#166534;}" +
+      ".nasl-meta-stat--active .nasl-meta-stat-label{color:#166534;}" +
+      ".nasl-meta-stat--kept{background:#fef9c3;border-color:#fde047;color:#854d0e;}" +
+      ".nasl-meta-stat--kept .nasl-meta-stat-label{color:#854d0e;}" +
+      ".nasl-meta-stat--none{background:#f1f5f9;border-color:#cbd5e1;color:#64748b;}" +
+      ".nasl-meta-stat--none .nasl-meta-stat-label{color:#64748b;}" +
+      ".nasl-meta-stat--zero{opacity:.55;}" +
+      ".nasl-filtered-count{font-size:12px;color:#475569;font-weight:600;}" +
+      ".nasl-build{font-size:11px;color:#64748b;margin-left:auto;}" +
       ".nasl-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;}" +
       ".nasl-filter-label{font-size:12px;color:#475569;min-width:48px;}" +
       ".nasl-chip{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;}" +
       ".nasl-chip-active{background:#1e40af;color:#fff;border-color:#1e40af;}" +
-      ".nasl-table-wrap{overflow:auto;max-height:calc(100vh - 360px);border:1px solid #cbd5e1;border-radius:6px;}" +
-      ".nasl-table{border-collapse:collapse;width:100%;font-size:12px;min-width:1200px;}" +
+      ".nasl-table-wrap{overflow:auto;max-height:calc(100vh - 380px);border:1px solid #cbd5e1;border-radius:6px;}" +
+      ".nasl-table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;min-width:1200px;}" +
       ".nasl-table th,.nasl-table td{border:1px solid #e2e8f0;padding:4px 6px;vertical-align:middle;}" +
-      ".nasl-table th{background:#f1f5f9;position:sticky;top:0;z-index:1;}" +
+      ".nasl-table th{background:#f1f5f9;position:sticky;top:0;z-index:2;box-shadow:0 1px 0 #e2e8f0;}" +
       ".nasl-col-org{width:17em;max-width:17em;min-width:17em;white-space:normal;line-height:1.35;}" +
       ".nasl-col-branch{width:17em;max-width:17em;min-width:17em;white-space:normal;line-height:1.35;}" +
+      ".nasl-status-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}" +
+      ".nasl-status-pill--active{background:#dcfce7;color:#166534;border:1px solid #86efac;}" +
+      ".nasl-status-pill--kept{background:#fef9c3;color:#854d0e;border:1px solid #fde047;}" +
+      ".nasl-status-pill--retired{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;}" +
+      ".nasl-status-pill--none{background:#f8fafc;color:#94a3b8;border:1px solid #e2e8f0;}" +
+      ".nasl-table tr.nasl-row-kept{background:#fefce8;}" +
+      ".nasl-table tr.nasl-row-retired{background:#e2e8f0;color:#64748b;}" +
+      ".nasl-table tr.nasl-row-retired td{color:#64748b;}" +
+      ".nasl-table tr.nasl-row-none{background:#f8fafc;color:#94a3b8;}" +
+      ".nasl-table tr.nasl-row-none td{color:#94a3b8;}" +
+      ".nasl-table tr.nasl-row-retired.nasl-row-dtype-prod,.nasl-table tr.nasl-row-retired.nasl-row-dtype-backup," +
+      ".nasl-table tr.nasl-row-none.nasl-row-dtype-prod,.nasl-table tr.nasl-row-none.nasl-row-dtype-backup{background:inherit;color:inherit;}" +
+      ".nasl-copy{cursor:pointer;font-family:Consolas,Monaco,monospace;font-size:11px;}" +
+      ".nasl-copy:hover{text-decoration:underline;color:#0369a1;}" +
       ".nasl-actions button{margin:0 2px;padding:2px 6px;font-size:11px;}" +
       ".nasl-none{color:#64748b;font-style:italic;}" +
       ".nasl-modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:10000;display:flex;align-items:center;justify-content:center;}" +
@@ -370,14 +530,22 @@
     if (el) el.remove();
   }
 
-  function openModal(title, bodyHtml, buttons) {
+  function openModal(title, bodyHtml, buttons, options) {
     closeModal();
+    options = options || {};
+    var closeOnBackdrop = options.closeOnBackdrop === true;
     var bg = document.createElement("div");
     bg.id = "nasl-modal-root";
     bg.className = "nasl-modal-bg";
     var box = document.createElement("div");
     box.className = "nasl-modal";
     box.innerHTML = "<h3>" + esc(title) + "</h3>" + bodyHtml;
+    box.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+    });
+    box.addEventListener("mousedown", function (ev) {
+      ev.stopPropagation();
+    });
     var actions = document.createElement("div");
     actions.className = "nasl-modal-actions";
     buttons.forEach(function (b) {
@@ -393,9 +561,11 @@
     });
     box.appendChild(actions);
     bg.appendChild(box);
-    bg.addEventListener("click", function (ev) {
-      if (ev.target === bg) closeModal();
-    });
+    if (closeOnBackdrop) {
+      bg.addEventListener("click", function (ev) {
+        if (ev.target === bg) closeModal();
+      });
+    }
     document.body.appendChild(bg);
     return box;
   }
@@ -651,64 +821,74 @@
   }
 
   function openNewModal() {
-    var box = openModal("新規NAS", formFieldsHtml(null, true), [
-      { label: "キャンセル" },
-      {
-        label: "登録",
-        primary: true,
-        onClick: function (close) {
-          var row;
-          try {
-            row = readForm(null, true);
-          } catch (e) {
-            alert(e.message || e);
-            return;
-          }
-          apiPost("/k/v1/record.json", { app: APP_DB, record: toKintoneRecord(row) })
-            .then(function () {
-              close();
-              reloadRecords();
-            })
-            .catch(function (e) {
-              alert("登録失敗: " + (e.message || e));
-            });
+    var box = openModal(
+      "新規NAS",
+      formFieldsHtml(null, true),
+      [
+        { label: "キャンセル" },
+        {
+          label: "登録",
+          primary: true,
+          onClick: function (close) {
+            var row;
+            try {
+              row = readForm(null, true);
+            } catch (e) {
+              alert(e.message || e);
+              return;
+            }
+            apiPost("/k/v1/record.json", { app: APP_DB, record: toKintoneRecord(row) })
+              .then(function () {
+                close();
+                reloadRecords();
+              })
+              .catch(function (e) {
+                alert("登録失敗: " + (e.message || e));
+              });
+          },
         },
-      },
-    ]);
+      ],
+      { closeOnBackdrop: false },
+    );
     wirePurchaseVendorToggle(box);
   }
 
   function openEditModal(row) {
     var title = "編集 — " + (row.branch_name || row.model_name || row.org_name);
-    var box = openModal(title, formFieldsHtml(row, false), [
-      { label: "キャンセル" },
-      {
-        label: "保存",
-        primary: true,
-        onClick: function (close) {
-          var updated;
-          try {
-            updated = readForm(row, false);
-          } catch (e) {
-            alert(e.message || e);
-            return;
-          }
-          apiPut("/k/v1/record.json", {
-            app: APP_DB,
-            id: Number(updated.id),
-            revision: Number(updated.revision),
-            record: toKintoneRecord(updated),
-          })
-            .then(function () {
-              close();
-              reloadRecords();
+    var box = openModal(
+      title,
+      formFieldsHtml(row, false),
+      [
+        { label: "キャンセル" },
+        {
+          label: "保存",
+          primary: true,
+          onClick: function (close) {
+            var updated;
+            try {
+              updated = readForm(row, false);
+            } catch (e) {
+              alert(e.message || e);
+              return;
+            }
+            apiPut("/k/v1/record.json", {
+              app: APP_DB,
+              id: Number(updated.id),
+              revision: Number(updated.revision),
+              record: toKintoneRecord(updated),
             })
-            .catch(function (e) {
-              alert("保存失敗: " + (e.message || e));
-            });
+              .then(function () {
+                close();
+                reloadRecords();
+              })
+              .catch(function (e) {
+                alert("保存失敗: " + (e.message || e));
+              });
+          },
         },
-      },
-    ]);
+      ],
+      { closeOnBackdrop: false },
+    );
     wirePurchaseVendorToggle(box);
   }
 
@@ -739,6 +919,7 @@
           },
         },
       ],
+      { closeOnBackdrop: true },
     );
   }
 
@@ -749,7 +930,11 @@
   }
 
   function listCellHtml(row, key) {
+    if (key === "status") return statusPillHtml(row.status);
     if (key === "purchase_vendor") return displayCell(effectivePurchaseVendor(row));
+    if (key === "ip_address" || key === "hostname" || key === "admin_id" || key === "admin_password") {
+      return copyCell(row[key]);
+    }
     return displayCell(row[key]);
   }
 
@@ -835,8 +1020,11 @@
       "</tr>";
     var tbody = rows
       .map(function (row) {
+        var rowCls = rowStatusClass(row);
         return (
-          '<tr data-id="' +
+          '<tr class="' +
+          esc(rowCls) +
+          '" data-id="' +
           esc(row.id) +
           '"><td class="nasl-actions">' +
           '<button type="button" class="nasl-btn-edit">編集</button> ' +
@@ -874,8 +1062,7 @@
       });
     });
     renderFilterChips();
-    var meta = document.getElementById("nasl-count");
-    if (meta) meta.textContent = "表示 " + rows.length + " / 全 " + state.records.length + " 件";
+    updateMetaBar(rows.length);
   }
 
   function reloadRecords() {
@@ -923,6 +1110,7 @@
       "<h1>" +
       esc(title) +
       "</h1>" +
+      '<div class="naslpr-notice" role="note"><p>本紙は機密性の高い内容を含みます。</p></div>' +
       '<p class="naslpr-meta">出力日: ' +
       esc(todayJstYmd()) +
       "　BUILD: " +
@@ -940,11 +1128,13 @@
     return (
       ".naslpr-page{font-family:Meiryo,Segoe UI,sans-serif;padding:12px;}" +
       ".naslpr-page h1{font-size:16pt;margin:0 0 8px;}" +
+      ".naslpr-notice{margin:6px 0 0;padding:0;}" +
+      ".naslpr-notice p{margin:0;font-size:11px;font-weight:600;color:#64748b;line-height:1.5;}" +
       ".naslpr-meta{font-size:10pt;color:#475569;margin:0 0 12px;}" +
       ".naslpr-table{border-collapse:collapse;width:100%;font-size:9pt;}" +
       ".naslpr-table th,.naslpr-table td{border:1px solid #334155;padding:4px 5px;vertical-align:top;word-break:break-all;}" +
       ".naslpr-table th{background:#e2e8f0;}" +
-      "@media print{@page{size:A4 landscape;margin:8mm;}}"
+      "@media print{@page{size:A4 landscape;margin:8mm;}.naslpr-notice p{font-size:11pt;}}"
     );
   }
 
@@ -1004,18 +1194,25 @@
   function buildUi(host) {
     host.innerHTML =
       '<div class="nasl-root">' +
-      '<div class="nasl-meta">' +
-      '<span id="nasl-count">—</span>' +
-      '<button type="button" id="nasl-new" class="kintoneplugin-button-dialog-ok" style="margin-left:auto">新規登録</button>' +
-      "</div>" +
       '<div class="nasl-toolbar">' +
-      '<input type="search" id="nasl-search" placeholder="キーワード検索（組織・拠点・IP・ホスト名・機種名・備考）" style="min-width:280px;padding:6px;">' +
+      '<fieldset class="nasl-toolbar-group nasl-toolbar-group--a">' +
+      "<legend>登録</legend>" +
+      '<div class="nasl-toolbar-group-inner">' +
+      '<button type="button" id="nasl-new" class="kintoneplugin-button-dialog-ok">新規登録</button>' +
+      "</div></fieldset>" +
+      '<fieldset class="nasl-toolbar-group nasl-toolbar-group--b">' +
+      "<legend>検索</legend>" +
+      '<div class="nasl-toolbar-group-inner">' +
+      '<input type="search" id="nasl-search" placeholder="キーワード検索（組織・拠点・IP・ホスト名・機種名・備考）">' +
+      "</div></fieldset>" +
+      '<fieldset class="nasl-toolbar-group nasl-toolbar-group--c">' +
+      "<legend>出力</legend>" +
+      '<div class="nasl-toolbar-group-inner">' +
       '<button type="button" id="nasl-print-list" class="kintoneplugin-button-normal">一覧印刷</button>' +
       '<button type="button" id="nasl-xlsx" class="kintoneplugin-button-normal">Excel出力</button>' +
-      '<span style="font-size:11px;color:#64748b;margin-left:8px">BUILD ' +
-      esc(BUILD) +
-      "</span>" +
+      "</div></fieldset>" +
       "</div>" +
+      '<div id="nasl-meta" class="nasl-meta-bar"></div>' +
       '<div id="nasl-filters-status" class="nasl-filters"></div>' +
       '<div id="nasl-filters-dtype" class="nasl-filters"></div>' +
       '<div id="nasl-filters-org" class="nasl-filters"></div>' +
@@ -1029,6 +1226,7 @@
       state.search = ev.target.value;
       renderTable();
     });
+    bindCopyClicks(document.getElementById("nasl-table-wrap"));
   }
 
   kintone.events.on("app.record.index.show", function (event) {
