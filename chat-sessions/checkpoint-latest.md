@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-29 09:22 JST — **749 UX 改善レーンクローズ**（1–8＋一覧 ID/PW コピー）。浜田目視 OK。`closures JSON 不触（UXレーンのみ・closed-v1 維持）`
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
 **レーン変更**: 749 UX 改善レーンクローズ → 次回は新規指示待ち（749 追加改修は明示GOまで再開しない）
-**Git**: **`62547201`** = `origin/main` — push 済（本締め commit で更新）
+**Git**: **`4672b8b6`** = `origin/main` — push 済
 **closeStatus**: **closed**（2026-08-29 UXレーン。セッション day-close は別途）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで
 **本日状態**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
