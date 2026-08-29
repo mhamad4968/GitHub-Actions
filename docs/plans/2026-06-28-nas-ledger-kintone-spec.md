@@ -1,13 +1,14 @@
 # NAS管理台帳 — kintone 仕様書（SPEC）
 
 > **起票**: 2026-06-28 (日)  
-> **状態**: **v1 完成 — CLOSED**（浜田目視 OK **2026-06-28**）  
+> **状態**: **v1 完成 — CLOSED**（浜田目視 OK **2026-06-28**）／**UX 改善レーンクローズ**（浜田目視 OK **2026-08-29**・`closures JSON 不触（UXレーンのみ・closed-v1 維持）`）  
 > **App ID**: **748**（DB）/ **749**（台帳） — `scripts/data/nas-ledger-app-ids.json`  
 > **配置**: [Space 48](https://jbis-kintone.cybozu.com/k/#/space/48) **thread 52**（API 作成時必須。運用上 Space 48 専用台帳）  
-> **完成報告**: `docs/reports/2026-06-28-nas-ledger-completion.md`
-> **UI 参照**: [複合機管理台帳 742](https://jbis-kintone.cybozu.com/k/742/) / [719](https://jbis-kintone.cybozu.com/k/719/) 型（一覧表 + REST で DB 書込）・権限は [734](https://jbis-kintone.cybozu.com/k/734/) 型  
+> **完成報告**: `docs/reports/2026-06-28-nas-ledger-completion.md`  
+> **Live（749）**: BUILD=`2026-08-29-749-ux-toolbar-copy-pill-print` · rev **18** · fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`  
+> **UI 参照**: [複合機管理台帳 742](https://jbis-kintone.cybozu.com/k/742/) / [719](https://jbis-kintone.cybozu.com/k/719/) 型（一覧表 + REST で DB 書込）・権限は [734](https://jbis-kintone.cybozu.com/k/734/) 型 · UX は [694](https://jbis-kintone.cybozu.com/k/694/) / [696](https://jbis-kintone.cybozu.com/k/696/) 改善パック準拠  
 > **機械分析（秘匿マスク）**: `docs/plans/tmp-nas-xlsx-structure.json`  
-> **移行元 Excel**: `C:\tmp\NAS管理台帳\NAS一覧.xlsx`（シート **NAS一覧**・ヘッダ **8 行目**・データ **20 件**）
+> **移行元 Excel**: `C:\tmp\NAS管理台帳\NAS一覧.xlsx`（シート **NAS一覧**・ヘッダ **8 行目**・データ **20 件**） — **削除済**
 
 ---
 
@@ -222,12 +223,30 @@ Space 48（スレッドなし）
 
 | 種別 | 内容 |
 |------|------|
-| **一覧印刷** | 現在の絞込結果。**パスワードのみ除外**（742 Q20 型） |
+| **一覧印刷** | 現在の絞込結果。**パスワードのみ除外**（表示は「（一覧印刷のため非表示）」） |
+| **機密注意** | 印刷面のみ「本紙は機密性の高い内容を含みます。」（**画面には出さない**） |
 | 実装 | `window.print()` + `@media print` |
 
 ### 7.4 xlsx 出力
 
 - **734 型**: 現在の絞込結果を xlsx ダウンロード（**PW 含む** — 当部署内部 export）。
+
+### 7.5 UX 改善パック（2026-08-29・確定）
+
+正本手順: `docs/runbooks/kintone-existing-app-ux-improve-v1.md`。実装: `customize/nas-ledger-dash/desktop.src.js`。
+
+| # | 項目 | 仕様 |
+|---|------|------|
+| 1 | ツールバー枠 | fieldset＋legend（登録 / 検索 / 出力）。印刷を単独で右端へ飛ばさない |
+| 2 | sticky | `border-collapse:separate; border-spacing:0` · th sticky |
+| 3 | コピー | 一覧の **IP・ホスト名・管理者ID・パスワード** をクリックでコピー |
+| 4 | 件数チップ | **全件**（絞込非依存）＋有効／保管／設備なし＋「表示 N」 |
+| 5 | 行色 | 保管＝薄黄 · 廃棄／設備なし＝薄灰（設備なし・廃棄が種別ティントに勝つ） |
+| 6 | 状態ピル | 有効／保管／廃棄／－ を色付きピル |
+| 7 | モーダル | 新規・編集は **背景クリックで閉じない**。削除確認のみ背景閉じ可 |
+| 8 | 印刷機密 | §7.3 のとおり印刷面のみ |
+
+**レーン**: 改善レーンクローズ済。追加改修は浜田明示 GO まで着手しない。`data/cio-project-closures.json` は **不触**（closed-v1 維持）。
 
 ---
 
@@ -238,10 +257,13 @@ Space 48（スレッドなし）
 - **Space 48 メンバー全員**が台帳で CRUD（734 型）。
 - 管理コンソール PW を含むため **Space 48 外には公開しない**。
 
-### 8.2 一覧での PW
+### 8.2 一覧・印刷・xlsx での PW
 
-- 一覧画面・一覧印刷では **パスワード除外**。
-- xlsx export では **含む**（Excel 運用同等・当部署内部）。
+| 面 | PW |
+|----|-----|
+| **一覧画面** | **表示する**（クリックコピー可 · **2026-08-29 浜田GO**） |
+| **一覧印刷** | **除外**（非表示文言） |
+| **xlsx** | **含む**（Excel 運用同等・当部署内部） |
 
 ### 8.3 移行ログ
 
@@ -371,4 +393,4 @@ npm run nas-ledger:migrate:xlsx -- --apply
 | 2026-06-28 | **v1 完成** — 購入日/購入先追加・表示 **－** 統一・浜田目視 OK・BUILD `2026-06-28-nas-ledger-dash-v1` |
 | 2026-06-28 | **Excel 完全削除** — 浜田報告・§9.4 完遂・kintone のみ正本 |
 | 2026-06-28 | **712 リンク** — Space 48 ポータルへ追加済（浜田手動） |
-| 2026-08-29 | **UX 改善レーン** — 1–8（ツールバー/sticky/コピー/件数チップ/行色/ピル/モーダル保持/印刷機密）＋一覧に管理者ID・PW列。BUILD `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18**。closures JSON 不触（closed-v1 維持） |
+| 2026-08-29 | **UX 改善レーンクローズ** — §7.1/§7.5/§8.2 確定。1–8＋一覧 ID/PW 列・コピー。浜田目視 OK。BUILD `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18**。`closures JSON 不触（UXレーンのみ・closed-v1 維持）` |

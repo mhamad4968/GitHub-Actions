@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-24 反映・2026-08-29 WAKE同期）】
+【今やってる主タスク（2026-08-29 反映）】
 - 本日レーン: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
-- checkpoint: 2026-08-24 18:50 JST — **full CLOSE**。696 モーダル誤クローズ修正＋695 首都圏支店-協力会社27件登録。夕反省全GO実装済
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- checkpoint: 2026-08-29 09:22 JST — **749 UX 改善レーンクローズ**。浜田目視 OK。`closures JSON 不触（UXレーンのみ・closed-v1 維持）`
+- 正本: `chat-sessions/checkpoint-latest.md` · NAS SPEC `docs/plans/2026-06-28-nas-ledger-kintone-spec.md` §7.5
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）＋749 UX再開は明示GOまで
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）

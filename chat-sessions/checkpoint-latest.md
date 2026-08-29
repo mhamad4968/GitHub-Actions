@@ -1,15 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-24 18:50 JST — **full CLOSE**。696 モーダル誤クローズ修正＋695 首都圏支店-協力会社27件登録。夕反省全GO実装済
+**最終更新**: 2026-08-29 09:22 JST — **749 UX 改善レーンクローズ**（1–8＋一覧 ID/PW コピー）。浜田目視 OK。`closures JSON 不触（UXレーンのみ・closed-v1 維持）`
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
-**レーン変更**: 696 バグ修正＋メール追記完了 → 次回は新規指示待ち
-**Git**: **`6fc9fcc3`** = `origin/main` — push 済
-**closeStatus**: **closed**（2026-08-24 full CLOSE）
-**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683再開は明示GOまで
-**本日状態**: 696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**レーン変更**: 749 UX 改善レーンクローズ → 次回は新規指示待ち（749 追加改修は明示GOまで再開しない）
+**Git**: **`62547201`** = `origin/main` — push 済（本締め commit で更新）
+**closeStatus**: **closed**（2026-08-29 UXレーン。セッション day-close は別途）
+**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで
+**本日状態**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-08-24）
+### 本日アクティブ（BUILD/rev — 2026-08-29）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
 | **682** | `2026-08-23-682-banner-label-clarify` | **30** |
 | **683** | `2026-08-23-683-doyou-shukujitsu-taiou-label` | **116** |
@@ -17,7 +18,7 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 個人資産正本 `docs/personal/nisa-ops.md`／Skill `nisa-monthly-ops`。NISA月1万据置。ラップ／iDeCo当面据置。eslint pending 未採択・コミットしない。月次要約は来月頭。695 追記は `shared-mail:append:xlsx`
+**継続メモ**: 個人資産正本 `docs/personal/nisa-ops.md`／Skill `nisa-monthly-ops`。NISA月1万据置。ラップ／iDeCo当面据置。eslint pending 未採択・コミットしない。月次要約は来月頭。695 追記は `shared-mail:append:xlsx`。NAS SPEC `docs/plans/2026-06-28-nas-ledger-kintone-spec.md` §7.5
 **GO待ち**: なし
 **調査正本**: `docs/personal/nisa-ops.md` / `docs/runbooks/shared-mail-append-xlsx.md` / `docs/runbooks/kintone-existing-app-ux-improve-v1.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
@@ -43,6 +44,14 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-08-29
+
+### 2026-08-29 朝（749 UX 改善レーンクローズ）
+- 浜田目視 **OK**（1–8＋一覧 IP/管理者ID/PW コピー）
+- live **749** `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18** / fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`
+- SPEC §7.5 / §8.2 更新 · `closures JSON 不触（UXレーンのみ・closed-v1 維持）`
+- closeStatus: **closed**（UXレーン。day-close は別途）
+
 ## 2026-08-22 夜
 
 ### 2026-08-22 夜締め（名簿データ①〜④＋改善GOクローズ）
