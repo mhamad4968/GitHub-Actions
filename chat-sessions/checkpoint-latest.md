@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-29 10:35 JST — **朝セッション締め（実行予算v2 マスタ G0）**。実装なし。夜は契約工種・内訳・総括項目名。
 **次の1手**: 夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須
 **レーン変更**: 749 UX クローズ済。実行予算 v2 は **G0 のみ**（実装は明示 GO）。夜=コード表系＋項目名
-**Git**: **`e6748122`** = `origin/main` — push 済
+**Git**: **`72e15661`** = `origin/main` — push 済
 **closeStatus**: **closed**（朝セッション区切り。day-close は今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／756実装はGOまで禁止
 **本日状態**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
