@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-29T00:24:30.171Z",
-  "gitHead": "b77ab721",
+  "exportedAt": "2026-08-29T01:34:45.384Z",
+  "gitHead": "7de1a192",
   "gitStatus": "## main...origin/main",
-  "nextTask": "項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭",
+  "nextTask": "夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=b77ab721 | 次=項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=7de1a192 | 次=夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-08-29T01:34:53.790Z",
+  "crosscheckOk": true
 }
