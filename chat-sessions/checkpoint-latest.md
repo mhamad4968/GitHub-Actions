@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-29 10:35 JST — **朝セッション締め（実行予算v2 マスタ G0）**。実装なし。夜は契約工種・内訳・総括項目名。
 **次の1手**: 夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須
 **レーン変更**: 749 UX クローズ済。実行予算 v2 は **G0 のみ**（実装は明示 GO）。夜=コード表系＋項目名
-**Git**: **`72e15661`** = `origin/main` — push 済
+**Git**: **`e6f254cf`** = `origin/main` — push 済
 **closeStatus**: **closed**（朝セッション区切り。day-close は今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／756実装はGOまで禁止
 **本日状態**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -53,6 +53,7 @@
 - closeStatus: **closed**（UXレーン。day-close は別途）
 
 
+
 ## 2026-08-29
 
 ### 2026-08-29 朝締め（実行予算 v2 マスタ G0）
@@ -68,6 +69,7 @@
 - live **749** `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18** / fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`
 - SPEC §7.5 / §8.2 更新 · `closures JSON 不触（UXレーンのみ・closed-v1 維持）`
 - closeStatus: **closed**（UXレーン。day-close は別途）
+
 
 ## 2026-08-22 夜
 
@@ -86,31 +88,5 @@
 
 
 
-## 2026-08-21 夜
 
-### 2026-08-21 夜締め（社員名簿 Phase1〜2）
-- 595: 兼務 ST DROP_DOWN（dept/group/title）
-- 776: キーワード／所属複数／件数／Excel+印刷／集計表／PC台帳型「いまの条件」「該当件数」／ツールバー揃え／部署区切り薄紫緑／reform順
-- live 776 BUILD=`2026-08-21-776-reform-dept-order` rev **38**
-- 浜田: 列幅・ヘッダ・reform順まで **OK** → 本日終わり
-- closeStatus: **closing**（day-close）
-
-
-
-## 2026-08-21
-
-### 2026-08-21 朝締め（747/746完了＋社員名簿を夜へ）
-- 747/746 §19 浜田OK・レーンクローズ済
-- 社員名簿: 合意・調査・Excel受領まで。SPEC未。夜必読 `chat-sessions/2026-08-21-employee-roster-night-handoff.md`
-- closeStatus: **closed**（朝セッション）
-
-### 2026-08-21 朝（747/746 §19 UX・データ健全化・レーンクローズ）
-- SPEC §19 → commit/push → 746 強ロック + データ（2999クリア・部署680正）+ 747 UX v9
-- live **747** `2026-08-21-jre-chub-account-dash-v9-ux-dept680` rev **15** / **746** `…db-block-v2-strong` rev **9**
-- 浜田目視 **OK** → **改善レーンクローズ**（運用継続・closures JSON 不触）
-- 閉済 UX（694/696/715/734/751）再開しない
-- closeStatus: **closed**（本レーン締め。day-close は今夜最終ならそのとき）
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-22.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-29.md -->
