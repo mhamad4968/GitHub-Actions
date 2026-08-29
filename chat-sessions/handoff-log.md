@@ -6222,7 +6222,7 @@ npm run cio:morning:ready
 
 **次の1手**: 項番 -0（浜田指示）。**個人資産月次は 9/13–17 必須**（`docs/personal/nisa-ops.md`）。業務レーン再開は明示GOまでしない。月報AIは来月頭
 
-**Git**: （本締め commit 後）
+**Git**: `b77ab721` — push 済（SPEC+checkpoint。tip `cc5a6e9c`）
 
 **BUILD**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print`@18
 
