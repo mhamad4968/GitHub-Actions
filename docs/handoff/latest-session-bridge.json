@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-30T09:47:54.509Z",
-  "gitHead": "821458ed",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-08-30T09:47:59.575Z",
+  "gitHead": "c6c2eb0a",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=821458ed | 次=浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=c6c2eb0a | 次=浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-08-30T09:47:55.040Z",
+  "validatedAt": "2026-08-30T09:48:00.003Z",
   "crosscheckOk": true
 }
