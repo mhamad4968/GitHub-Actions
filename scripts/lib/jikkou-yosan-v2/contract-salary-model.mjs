@@ -8,14 +8,26 @@ import {
 import { createRowKey } from "./keys.mjs";
 import { allowedOperations } from "./lock.mjs";
 
-// §7.1a / D-29: common unit dropdown shared by 請負・原価・給与.
+// G0 U1: 単位はマスタ整理「単位」列を正本（Excel表記）。`－`は残す。
 export const COMMON_UNITS = Object.freeze([
-  "㎡",
   "式",
+  "橋",
   "回",
-  "人",
-  "日",
+  "泊",
   "箇月",
+  "日",
+  "缶",
+  "枚",
+  "人",
+  "着",
+  "台",
+  "％",
+  "m2",
+  "掛m2",
+  "m3",
+  "ｍ",
+  "㎞",
+  "㎏",
   "－",
 ]);
 export const CONTRACT_SECTIONS = Object.freeze(["施工", "保安"]);

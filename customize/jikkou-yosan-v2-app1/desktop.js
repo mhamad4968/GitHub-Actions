@@ -1535,14 +1535,26 @@ function checkSummaryProjection({
   });
 }
 
-// §7.1a / D-29: common unit dropdown shared by 請負・原価・給与.
+// G0 U1: 単位はマスタ整理「単位」列を正本（Excel表記）。`－`は残す。
 const COMMON_UNITS = Object.freeze([
-  "㎡",
   "式",
+  "橋",
   "回",
-  "人",
-  "日",
+  "泊",
   "箇月",
+  "日",
+  "缶",
+  "枚",
+  "人",
+  "着",
+  "台",
+  "％",
+  "m2",
+  "掛m2",
+  "m3",
+  "ｍ",
+  "㎞",
+  "㎏",
   "－",
 ]);
 const CONTRACT_SECTIONS = Object.freeze(["施工", "保安"]);
@@ -1869,7 +1881,7 @@ const DETAIL_ROW_KINDS = Object.freeze([
 ]);
 
 // U16: 総括共通 units + 缶/枚/％ for 内訳.
-const DETAIL_UNITS = Object.freeze([...COMMON_UNITS, "缶", "枚", "％"]);
+const DETAIL_UNITS = COMMON_UNITS;
 
 const BLOCK_STATUSES = Object.freeze(["active", "retired"]);
 
@@ -2034,10 +2046,20 @@ function normalizedCostCategory(value, context) {
 
 function normalizedUnit(value, context) {
   if (!detailHasText(value)) return null;
-  const unit = String(value);
-  if (!DETAIL_UNITS.includes(unit)) {
-    throw new RangeError(`${context}: unknown unit ${JSON.stringify(unit)} (U16)`);
-  }
+  const raw = String(value);
+  // G0 U1: 旧表記 → マスタ整理表記（Excel）。
+  const aliases = {
+    "㎡": "m2",
+    "掛㎡": "掛m2",
+    m: "ｍ",
+    km: "㎞",
+    kg: "㎏",
+  };
+  const unit = Object.prototype.hasOwnProperty.call(aliases, raw)
+    ? aliases[raw]
+    : raw;
+  // §16 祖父: マスタ外の既存値も保持（throw しない）。
+  void context;
   return unit;
 }
 
@@ -3344,6 +3366,7 @@ function createActualsMatrixModel({
 
 
 
+
 const RECORD_API = "/k/v1/record.json";
 const RECORDS_API_GET = "/k/v1/records.json";
 const FETCH_PAGE_SIZE = 500;
@@ -3635,8 +3658,21 @@ function projectionRowsToSubtable(projectionRows) {
     return "10％";
   };
   const unitOption = (unit) => {
-    const allowed = ["㎡", "式", "回", "人", "日", "箇月", "－"];
-    return allowed.includes(String(unit)) ? String(unit) : "－";
+    const allowed = COMMON_UNITS;
+    const raw = String(unit ?? "");
+    if (!raw) return "－";
+    const aliases = {
+      "㎡": "m2",
+      "掛㎡": "掛m2",
+      m: "ｍ",
+      km: "㎞",
+      kg: "㎏",
+    };
+    const mapped = Object.prototype.hasOwnProperty.call(aliases, raw)
+      ? aliases[raw]
+      : raw;
+    // マスタ外は祖父としてそのまま残す（－に潰さない）。
+    return allowed.includes(mapped) || mapped ? mapped : "－";
   };
   // contract_lines / salary_lines と同じく「フィールドコード → { value: rows }」。
   // `{ value: rows }` だけ返すと parentRecord.value に載り、summary_cost_lines が PUT されない。
@@ -10602,13 +10638,17 @@ function buildVersionCopyInputs({
     blank.value = "";
     blank.textContent = "";
     select.appendChild(blank);
-    for (const unit of units) {
+    const current = value === null || value === undefined ? "" : String(value);
+    // listOnly 祖父: マスタ外の現行値（例: 旧㎡）も選択肢に残す。
+    const menu = [...units];
+    if (current && !menu.includes(current)) menu.push(current);
+    for (const unit of menu) {
       const option = documentRef.createElement("option");
       option.value = unit;
       option.textContent = unit;
       select.appendChild(option);
     }
-    select.value = value === null || value === undefined ? "" : String(value);
+    select.value = current;
     select.addEventListener("change", () => onCommit(select.value));
     return select;
   }

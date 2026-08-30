@@ -25,7 +25,7 @@ export const DETAIL_ROW_KINDS = Object.freeze([
 ]);
 
 // U16: 総括共通 units + 缶/枚/％ for 内訳.
-export const DETAIL_UNITS = Object.freeze([...COMMON_UNITS, "缶", "枚", "％"]);
+export const DETAIL_UNITS = COMMON_UNITS;
 
 export const BLOCK_STATUSES = Object.freeze(["active", "retired"]);
 
@@ -190,10 +190,20 @@ function normalizedCostCategory(value, context) {
 
 function normalizedUnit(value, context) {
   if (!detailHasText(value)) return null;
-  const unit = String(value);
-  if (!DETAIL_UNITS.includes(unit)) {
-    throw new RangeError(`${context}: unknown unit ${JSON.stringify(unit)} (U16)`);
-  }
+  const raw = String(value);
+  // G0 U1: 旧表記 → マスタ整理表記（Excel）。
+  const aliases = {
+    "㎡": "m2",
+    "掛㎡": "掛m2",
+    m: "ｍ",
+    km: "㎞",
+    kg: "㎏",
+  };
+  const unit = Object.prototype.hasOwnProperty.call(aliases, raw)
+    ? aliases[raw]
+    : raw;
+  // §16 祖父: マスタ外の既存値も保持（throw しない）。
+  void context;
   return unit;
 }
 

@@ -18,6 +18,7 @@ import {
   monthStartDate,
   normalizeMonth,
 } from "./actuals-matrix.mjs";
+import { COMMON_UNITS } from "./contract-salary-model.mjs";
 import { assertAllowedAppId } from "./guard.mjs";
 import {
   createBudgetVersionId,
@@ -320,8 +321,21 @@ export function projectionRowsToSubtable(projectionRows) {
     return "10％";
   };
   const unitOption = (unit) => {
-    const allowed = ["㎡", "式", "回", "人", "日", "箇月", "－"];
-    return allowed.includes(String(unit)) ? String(unit) : "－";
+    const allowed = COMMON_UNITS;
+    const raw = String(unit ?? "");
+    if (!raw) return "－";
+    const aliases = {
+      "㎡": "m2",
+      "掛㎡": "掛m2",
+      m: "ｍ",
+      km: "㎞",
+      kg: "㎏",
+    };
+    const mapped = Object.prototype.hasOwnProperty.call(aliases, raw)
+      ? aliases[raw]
+      : raw;
+    // マスタ外は祖父としてそのまま残す（－に潰さない）。
+    return allowed.includes(mapped) || mapped ? mapped : "－";
   };
   // contract_lines / salary_lines と同じく「フィールドコード → { value: rows }」。
   // `{ value: rows }` だけ返すと parentRecord.value に載り、summary_cost_lines が PUT されない。

@@ -6070,13 +6070,17 @@
     blank.value = "";
     blank.textContent = "";
     select.appendChild(blank);
-    for (const unit of units) {
+    const current = value === null || value === undefined ? "" : String(value);
+    // listOnly 祖父: マスタ外の現行値（例: 旧㎡）も選択肢に残す。
+    const menu = [...units];
+    if (current && !menu.includes(current)) menu.push(current);
+    for (const unit of menu) {
       const option = documentRef.createElement("option");
       option.value = unit;
       option.textContent = unit;
       select.appendChild(option);
     }
-    select.value = value === null || value === undefined ? "" : String(value);
+    select.value = current;
     select.addEventListener("change", () => onCommit(select.value));
     return select;
   }

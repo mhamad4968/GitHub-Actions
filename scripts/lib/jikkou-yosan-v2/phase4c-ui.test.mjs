@@ -65,16 +65,25 @@ test("row_kind / unit / status catalogs match the App2 field catalog (§2, U16)"
     "block_total",
   ]);
   assert.deepEqual(DETAIL_UNITS, [
-    "㎡",
     "式",
+    "橋",
     "回",
-    "人",
-    "日",
+    "泊",
     "箇月",
-    "－",
+    "日",
     "缶",
     "枚",
+    "人",
+    "着",
+    "台",
     "％",
+    "m2",
+    "掛m2",
+    "m3",
+    "ｍ",
+    "㎞",
+    "㎏",
+    "－",
   ]);
   assert.deepEqual(BLOCK_STATUSES, ["active", "retired"]);
   assert.deepEqual(BLOCK_FOOTER_KINDS, [
@@ -166,10 +175,9 @@ test("detail amounts follow P-22 ROUND: 数量×単価 and ％=単価×数量÷1
   });
   // 10001*5.5/100 = 550.055 → 550
   assert.equal(model.snapshot().blocks[0].detailRows[1].amount, "550");
-  assert.throws(
-    () => model.updateDetailRow(blockId, rowKey, { unit: "ダース" }),
-    /unknown unit/,
-  );
+  // §16 祖父: マスタ外の既存単位も保持（UI はマスタのみ選択可）。
+  model.updateDetailRow(blockId, rowKey, { unit: "ダース" });
+  assert.equal(model.snapshot().blocks[0].detailRows[0].unit, "ダース");
 });
 
 test("U25/R-11/R-12 totals: 諸経費=明細×10%(自動), 法定福利費=労務費明細合計(自動), 小計=明細+諸経費, 計=小計+法定福利費", () => {

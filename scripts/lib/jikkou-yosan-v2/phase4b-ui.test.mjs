@@ -102,7 +102,27 @@ test("contract line without 契約工種 shows blank amount and is excluded from
 });
 
 test("common units dropdown and salary defaults follow D-29/X7", () => {
-  assert.deepEqual(COMMON_UNITS, ["㎡", "式", "回", "人", "日", "箇月", "－"]);
+  assert.deepEqual(COMMON_UNITS, [
+    "式",
+    "橋",
+    "回",
+    "泊",
+    "箇月",
+    "日",
+    "缶",
+    "枚",
+    "人",
+    "着",
+    "台",
+    "％",
+    "m2",
+    "掛m2",
+    "m3",
+    "ｍ",
+    "㎞",
+    "㎏",
+    "－",
+  ]);
   assert.deepEqual(CONTRACT_SECTIONS, ["施工", "保安"]);
   assert.equal(SALARY_DEFAULT_UNIT, "箇月");
   assert.equal(SALARY_TAX_DISPLAY, "－");

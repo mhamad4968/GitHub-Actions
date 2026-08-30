@@ -56,8 +56,28 @@ const CLI_PATH = path.join(__dirname, "..", "..", "jikkou-yosan-v2-create-apps.m
 const BACKFILL_STUB_PATH = path.join(__dirname, "..", "..", "jikkou-yosan-v2-backfill.mjs");
 const PACKAGE_JSON_PATH = path.join(__dirname, "..", "..", "..", "package.json");
 
-const COMMON_UNITS = ["㎡", "式", "回", "人", "日", "箇月", "－"];
-const DETAIL_UNITS = [...COMMON_UNITS, "缶", "枚", "％"];
+const COMMON_UNITS = [
+  "式",
+  "橋",
+  "回",
+  "泊",
+  "箇月",
+  "日",
+  "缶",
+  "枚",
+  "人",
+  "着",
+  "台",
+  "％",
+  "m2",
+  "掛m2",
+  "m3",
+  "ｍ",
+  "㎞",
+  "㎏",
+  "－",
+];
+const DETAIL_UNITS = [...COMMON_UNITS];
 
 function optionKeysInIndexOrder(field) {
   return Object.values(field.options)
