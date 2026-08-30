@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-08-30T02:33:56.295Z",
-  "gitHead": "a6685ee2",
-  "gitStatus": "## main...origin/main",
+  "exportedAt": "2026-08-30T02:34:04.164Z",
+  "gitHead": "ab26108f",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=a6685ee2 | 次=夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=ab26108f | 次=夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-08-30T02:33:56.955Z",
+  "validatedAt": "2026-08-30T02:34:04.554Z",
   "crosscheckOk": true
 }
