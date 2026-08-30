@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-30T07:54:58.031Z",
+  "scoredAt": "2026-08-30T09:47:54.077Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+  "topTask": "浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須",
   "topTaskKind": "work",
-  "topWorkTask": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+  "topWorkTask": "浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須",
   "tasks": [
     {
-      "id": "checkpoint:夜_cold-start_後_`chat-sessions/2026-08-30",
-      "text": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+      "id": "checkpoint:浜田の実装合図_→_G0_**§15＋§16**_の_**S0**（既存値スキャ",
+      "text": "浜田の実装合図 → G0 **§15＋§16** の **S0**（既存値スキャン）。個人資産月次は 9/13–17 必須",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,
