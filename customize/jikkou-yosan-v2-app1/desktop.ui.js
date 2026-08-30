@@ -2839,17 +2839,19 @@
     }
     // listOnly: 候補の有無に関わらず手入力不可（▼選択のみ）。候補ゼロ時も自由入力させない。
     const listOnlySelect = Boolean(opts.listOnly);
-    // 空クリア: listOnly 既定は可（材料等）。hideClearWhenSet かつ現行値ありなら「▼／空」を出さない。
+    // #R1: listOnly＋値ありは既定で空クリアを隠す。明示 allowClear:true のときだけ「▼／空」。
+    const hideClearWhenSet =
+      opts.hideClearWhenSet === true ||
+      (listOnlySelect && opts.allowClear !== true && opts.hideClearWhenSet !== false);
     const allowClear =
-      opts.allowClear !== false &&
-      !(opts.hideClearWhenSet && stored.trim());
+      opts.allowClear === true ||
+      !(hideClearWhenSet && stored.trim());
     if (listOnlySelect) {
       input.readOnly = true;
       input.removeAttribute("list");
       input.classList.add("jy2-combo-readonly");
       input.title = input.title || "リストから選択してください（▼）";
       wrap.classList.add("jy2-combo-list-only");
-      // 任意クリア用（材料・費目など空欄可）。設定済み＋hideClearWhenSet は ▼ のみ。
       blank.textContent = allowClear ? "▼／空" : "▼";
       blank.value = "";
     }
@@ -8321,7 +8323,7 @@
                 summary_material_name: value,
               });
             },
-            { listOnly: true },
+            { listOnly: true, allowClear: true },
           ),
         );
       } else if (editable) {
@@ -9034,6 +9036,7 @@
                 displayDitto: name3ShowDitto,
                 revealValue: prevName3 || row.name3,
                 listOnly: true,
+                allowClear: true,
                 allowDitto: Boolean(prevName3),
               },
             )

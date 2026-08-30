@@ -160,6 +160,7 @@
     "jikkou-yosan:v2-phase2:test": "node --test scripts/lib/jikkou-yosan-v2/phase2.test.mjs",
     "jikkou-yosan:v2-phase3:test": "node --test scripts/lib/jikkou-yosan-v2/phase3.test.mjs",
     "jikkou-yosan:v2-build-desktop": "node scripts/jikkou-yosan-v2-build-desktop.mjs",
+    "jikkou-yosan:v2-verify-master-lists": "node scripts/jikkou-yosan-v2-verify-master-lists.mjs",
     "jikkou-yosan:v2-sync-code-table-cost-category": "node scripts/jikkou-yosan-v2-sync-code-table-cost-category.mjs",
     "jikkou-yosan:v2-sync-code-table-name-hierarchy": "node scripts/jikkou-yosan-v2-sync-code-table-name-hierarchy.mjs",
     "verify:jikkou-name-lists-excel": "node scripts/verify-jikkou-name-lists-excel.mjs",
