@@ -1358,6 +1358,8 @@ function regenerateSummaryCostLines(
         summary_work_type_code: block.workTypeCode ?? "",
         summary_work_type_name: block.workTypeName ?? "",
         summary_line_type: block.lineType ?? previous.summary_line_type ?? "",
+        summary_material_name:
+          previous.summary_material_name ?? "",
         summary_unit: uniform ? block.unit : SUMMARY_MIXED_UNIT,
         summary_qty: uniform ? block.quantity : "1",
         summary_unit_price: uniform
@@ -1550,6 +1552,7 @@ const SALARY_TAX_DISPLAY = "－";
 
 const CONTRACT_EDITABLE_FIELDS = Object.freeze([
   "workName",
+  "workDesc",
   "unit",
   "quantity",
   "unitPrice",
@@ -1624,6 +1627,7 @@ function createContractSalaryModel({
       rowKey: createRowKey(uuidFactory),
       section,
       workName: null,
+      workDesc: null,
       unit: null,
       quantity: null,
       unitPrice: null,
@@ -1654,6 +1658,7 @@ function createContractSalaryModel({
       rowKey: hasText(line.rowKey) ? line.rowKey : createRowKey(uuidFactory),
       section: line.section,
       workName: normalizedOptional(line.workName),
+      workDesc: normalizedOptional(line.workDesc),
       unit: normalizedOptional(line.unit),
       quantity: normalizedOptional(line.quantity),
       unitPrice: normalizedOptional(line.unitPrice),
@@ -1883,10 +1888,14 @@ const BLOCK_FOOTER_LABELS = Object.freeze({
   legal_welfare: "法定福利費",
   block_total: "計",
 });
-// C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11、法定福利費(legal_welfare)は
-// R-12 で自動確定したため手入力から除外(読取専用)。各種保険料(insurance)のみ手入力
-// （R-13 CONFIRMED 2026-07-29: 計算式なし・手入力のみ）。
-const MANUAL_FOOTER_KINDS = Object.freeze(["insurance"]);
+// G0 §7.2: 各種保険料は固定フッタから外す（明細として追加）。手入力フッタは無し。
+const MANUAL_FOOTER_KINDS = Object.freeze([]);
+
+// G0 §7.1: 施工ブロックのみ UI に出すフッタ（保険料行なし）。
+function footerKindsForCostCategory(costCategory) {
+  if (costCategory !== "施工") return [];
+  return Object.freeze(["overhead", "subtotal", "legal_welfare", "block_total"]);
+}
 
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
 const LEGAL_WELFARE_NAME1 = "労務費";
@@ -2170,15 +2179,23 @@ function createDetailBlockModel({
     return numbers;
   }
 
-  // U25: 小計 = 明細金額計 + 諸経費 + 各種保険料; 計 = 小計 + 法定福利費.
-  // R-11: 諸経費は自動 = ROUND(明細金額合計 × 10%, 0)。明細金額が無ければ空欄。
-  // R-12: 法定福利費は自動 = 費目「労務費」の明細金額合計。対象が無ければ空欄。
-  // 手入力の各種保険料が空なら 0 扱い(表示は空白のまま)。
+  // U25 / G0 §7.1: 施工のみ 小計=明細+諸経費、計=小計+法定福利費（保険料固定行なし）。
+  // 保安・区分未入力は明細合計のみ。R-11/R-12 は施工のみ。
   function computedTotals(block) {
     const detailAmounts = block.detailRows
       .map((row) => detailRowAmount(row))
       .filter((amount) => amount !== null);
-    const overheadBase = detailAmounts.length ? sum(detailAmounts) : null;
+    const detailSum = detailAmounts.length ? sum(detailAmounts) : null;
+    if (block.costCategory !== "施工") {
+      return {
+        subtotal: detailSum,
+        total: detailSum ?? "0",
+        overhead: null,
+        overheadBase: null,
+        legalWelfare: null,
+      };
+    }
+    const overheadBase = detailAmounts.length ? detailSum : null;
     const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
     const laborAmounts = block.detailRows
       .map((row, rowIndex) => ({
@@ -2194,7 +2211,7 @@ function createDetailBlockModel({
       ...blockTotals({
         detailAmounts,
         overhead,
-        insurance: block.footer.insurance.amount,
+        insurance: null,
         legalWelfare,
       }),
       overhead,
@@ -3504,6 +3521,7 @@ function summarySnapshotToSubtables(summarySnapshot) {
           contract_row_key: TEXT(line.rowKey),
           contract_section: TEXT(line.section),
           contract_work_name: TEXT(line.workName ?? ""),
+          contract_work_desc: TEXT(line.workDesc ?? ""),
           contract_unit: TEXT(line.unit ?? ""),
           contract_qty: TEXT(line.quantity ?? ""),
           contract_unit_price: TEXT(line.unitPrice ?? ""),
@@ -3557,6 +3575,7 @@ function app1RecordToSummaryLines(record) {
       rowKey: cell(row, "contract_row_key"),
       section: inferSection(cell(row, "contract_section"), workName),
       workName,
+      workDesc: cell(row, "contract_work_desc"),
       unit: cell(row, "contract_unit"),
       quantity: cell(row, "contract_qty"),
       unitPrice: cell(row, "contract_unit_price"),
@@ -3590,6 +3609,7 @@ function app1RecordToProjectionPreviousLines(record) {
     summary_stable_block_id: cell(row, "summary_stable_block_id").trim(),
     summary_work_type_code: cell(row, "summary_work_type_code").trim(),
     summary_line_type: cell(row, "summary_line_type"),
+    summary_material_name: cell(row, "summary_material_name"),
     summary_calc_basis: cell(row, "summary_calc_basis"),
     summary_note: cell(row, "summary_note"),
   }));
@@ -3630,6 +3650,7 @@ function projectionRowsToSubtable(projectionRows) {
           summary_work_type_code: TEXT(line.summary_work_type_code ?? ""),
           summary_work_type_name: TEXT(line.summary_work_type_name ?? ""),
           summary_line_type: TEXT(line.summary_line_type ?? ""),
+          summary_material_name: TEXT(line.summary_material_name ?? ""),
           summary_unit: TEXT(unitOption(line.summary_unit)),
           summary_qty: TEXT(line.summary_qty ?? ""),
           summary_unit_price: TEXT(line.summary_unit_price ?? ""),
@@ -5186,6 +5207,45 @@ function buildVersionCopyInputs({
     return String(workTypeName || "")
       .trim()
       .replace(/^（塗）/, "");
+  }
+
+  // G0 §8.1: 表示のみ（塗）接頭辞。保存値はそのまま、未付与マスタ名にだけ付ける。
+  function jy2DisplayWorkTypeName(name) {
+    const n = String(name || "").trim();
+    if (!n) return "";
+    return n.startsWith("（塗）") ? n : `（塗）${n}`;
+  }
+
+  // §16.1 listOnly 祖父: マスタ ∪ {現行値（非空・マスタ外）}。
+  function jy2ListOnlyChoices(master, currentValue) {
+    const merged = [];
+    for (const item of master || []) {
+      const text = String(item || "").trim();
+      if (text && !merged.includes(text)) merged.push(text);
+    }
+    const current = String(currentValue || "").trim();
+    if (current && !merged.includes(current)) merged.push(current);
+    return merged;
+  }
+
+  function jy2ContractWorkChoices(section, currentValue) {
+    const master = JY2_CONTRACT_WORK_MASTER[section] || [];
+    return jy2ListOnlyChoices(master, currentValue);
+  }
+
+  function jy2UsesMaterialList(himoku, typeName) {
+    const himokuKey = String(himoku || "").trim();
+    const typeKey = String(typeName || "").trim();
+    return himokuKey === "材料費" && JY2_MATERIAL_LIST_TYPES.includes(typeKey);
+  }
+
+  function jy2MaterialChoices(currentValue) {
+    return jy2ListOnlyChoices(JY2_MATERIAL_MASTER, currentValue);
+  }
+
+  function jy2SummaryUsesMaterialList(lineType) {
+    const typeKey = String(lineType || "").trim();
+    return typeKey === "塗料" || typeKey === "その他材料";
   }
   function jy2CostMgmtFrameNameMatches(blockName, frame) {
     if (!frame) return false;
@@ -7457,6 +7517,52 @@ function buildVersionCopyInputs({
     "ニシオワークサポート",
   ]);
 
+  // G0 §6.2 / §16.1: 請負 契約工種マスタ（帯別）。新規行はマスタのみ、既存値は祖父。
+  const JY2_CONTRACT_WORK_MASTER = Object.freeze({
+    施工: Object.freeze([
+      "橋桁修繕工",
+      "塗替塗装工",
+      "足場工",
+      "中止補償",
+    ]),
+    保安: Object.freeze([
+      "線閉責任者",
+      "工事安全専任管理者",
+      "工事管理者(保)",
+      "列車見張員",
+      "交通整理員",
+      "誘導員",
+      "検電接地",
+      "その他保安費",
+    ]),
+  });
+
+  // G0 §9.1: 外注費の種別メニュー（5件）。
+  const JY2_GAICHU_TYPE_MENU = Object.freeze([
+    "材料費",
+    "労務費",
+    "仮設機械経費",
+    "現場経費",
+    "その他費用",
+  ]);
+
+  // G0 §10.1: 材料費×(塗料|その他材料) の listOnly マスタ（データマスタ 材料種類 sample）。
+  const JY2_MATERIAL_LIST_TYPES = Object.freeze([
+    "塗料",
+    "その他材料",
+    "その他材料費",
+  ]);
+  const JY2_MATERIAL_MASTER = Object.freeze([
+    "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 赤さび",
+    "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 ｸﾞﾚｰ",
+    "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 青緑、淡",
+    "厚膜型ﾎﾟﾘｳﾚﾀﾝ樹脂塗料 青緑系",
+    "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-8.5",
+    "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-7",
+    "塗料用シンナー",
+    "エポキシシンナー",
+  ]);
+
   // @JY2_NAME_HIERARCHY_BEGIN
   const JY2_NAME_HIERARCHY = Object.freeze({
   "source": "C:/tmp/実行予算ver2/内訳で使うコード表.xlsx",
@@ -7469,13 +7575,12 @@ function buildVersionCopyInputs({
   },
   "constructionHimokuMenu": [
     "材料費",
-    "労務費",
     "外注費",
-    "工具･機械使用料",
+    "労務費",
+    "仮設機械経費",
     "現場経費",
-    "諸経費",
-    "法定福利費",
-    "予備費"
+    "その他費用",
+    "外注労務費"
   ],
   "constructionRule": "sectionA=施工費 かつ Excel費目=外注費のみ（契約工事型）",
   "workTypeNameOrder": [
@@ -10246,6 +10351,7 @@ function buildVersionCopyInputs({
   function jy2TypesForHimoku(entry, himoku) {
     const key = String(himoku || "").trim();
     if (!key) return [];
+    if (key === "外注費") return [...JY2_GAICHU_TYPE_MENU];
     const local =
       entry && entry.typesByHimoku && Array.isArray(entry.typesByHimoku[key])
         ? entry.typesByHimoku[key]
@@ -10371,14 +10477,31 @@ function buildVersionCopyInputs({
     if (entry) {
       // システム工種あり → 費目はその工種（工事系は説明文メニュー込み）。
       // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
-      name1 = jy2HimokuChoicesForEntry(entry);
-      name2 = selectedHimoku ? jy2TypesForHimoku(entry, selectedHimoku) : [];
-      name3 = jy2DefinitionsForType(selectedType, selectedHimoku, entry);
+      name1 = jy2ListOnlyChoices(
+        jy2HimokuChoicesForEntry(entry),
+        selectedHimoku || (row && row.name1),
+      );
+      name2 = selectedHimoku
+        ? jy2ListOnlyChoices(
+            jy2TypesForHimoku(entry, selectedHimoku),
+            selectedType || (row && row.name2),
+          )
+        : [];
+      name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
+        ? jy2MaterialChoices(row && row.name3)
+        : jy2DefinitionsForType(selectedType, selectedHimoku, entry);
     } else {
       // 工種空（R-05）: 費目は全候補。種別は費目選択後。
-      name1 = [...himokuAll];
-      name2 = selectedHimoku ? jy2TypesForHimoku(null, selectedHimoku) : [];
-      name3 = jy2DefinitionsForType(selectedType, selectedHimoku, null);
+      name1 = jy2ListOnlyChoices(himokuAll, selectedHimoku || (row && row.name1));
+      name2 = selectedHimoku
+        ? jy2ListOnlyChoices(
+            jy2TypesForHimoku(null, selectedHimoku),
+            selectedType || (row && row.name2),
+          )
+        : [];
+      name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
+        ? jy2MaterialChoices(row && row.name3)
+        : jy2DefinitionsForType(selectedType, selectedHimoku, null);
     }
     return {
       profile: entry
@@ -11543,6 +11666,7 @@ function buildVersionCopyInputs({
       "summary_work_type_code",
       "summary_work_type_name",
       "summary_line_type",
+      "summary_material_name",
       "summary_unit",
       "summary_qty",
       "summary_unit_price",
@@ -12056,7 +12180,8 @@ function buildVersionCopyInputs({
     body.appendChild(
       jy2HeadRow(documentRef, [
         "区分",
-        "契約工種（入力）",
+        "契約工種（選択）",
+        "工種説明（入力）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -12075,7 +12200,7 @@ function buildVersionCopyInputs({
       const bandRow = documentRef.createElement("tr");
       bandRow.className = "jy2-band-row";
       const bandHead = jy2Cell(documentRef, "th", "", section);
-      bandHead.colSpan = 8;
+      bandHead.colSpan = 9;
       bandRow.appendChild(bandHead);
       const bandAction = jy2Cell(documentRef, "th", "", "");
       if (editable) {
@@ -12100,7 +12225,17 @@ function buildVersionCopyInputs({
         if (editable) {
           const workName = jy2Cell(documentRef, "td", "", "");
           workName.appendChild(
-            jy2TextInput(documentRef, line.workName, commit("workName")),
+            jy2ComboInput(
+              documentRef,
+              line.workName,
+              jy2ContractWorkChoices(section, line.workName),
+              commit("workName"),
+              { listOnly: true },
+            ),
+          );
+          const workDesc = jy2Cell(documentRef, "td", "", "");
+          workDesc.appendChild(
+            jy2TextInput(documentRef, line.workDesc, commit("workDesc")),
           );
           const unit = jy2Cell(documentRef, "td", "", "");
           unit.appendChild(jy2UnitSelect(documentRef, line.unit, commit("unit")));
@@ -12123,7 +12258,7 @@ function buildVersionCopyInputs({
           jy2MarkIncompleteIfAnchor(unitPrice, anchor, line.unitPrice);
           const note = jy2Cell(documentRef, "td", "", "");
           note.appendChild(jy2TextInput(documentRef, line.note, commit("note")));
-          row.append(workName, unit, quantity, unitPrice);
+          row.append(workName, workDesc, unit, quantity, unitPrice);
           row.appendChild(
             jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
           );
@@ -12153,6 +12288,7 @@ function buildVersionCopyInputs({
           row.appendChild(action);
         } else {
           row.appendChild(jy2Cell(documentRef, "td", "", line.workName));
+          row.appendChild(jy2Cell(documentRef, "td", "", line.workDesc));
           row.appendChild(jy2Cell(documentRef, "td", "", line.unit));
           row.appendChild(jy2Cell(documentRef, "td", "jy2-num", line.quantity));
           row.appendChild(
@@ -12173,7 +12309,7 @@ function buildVersionCopyInputs({
       const totalRow = documentRef.createElement("tr");
       totalRow.className = "jy2-total-row";
       const totalLabel = jy2Cell(documentRef, "td", "", `${section}計`);
-      totalLabel.colSpan = 5;
+      totalLabel.colSpan = 6;
       totalRow.appendChild(totalLabel);
       totalRow.appendChild(
         jy2Cell(
@@ -12364,6 +12500,7 @@ function buildVersionCopyInputs({
         "工種番号（自動）",
         "システム工種（自動）",
         "種別（入力）",
+        "材料（入力）",
         "単位（自動）",
         "数量（自動）",
         "単価（自動）",
@@ -12379,7 +12516,7 @@ function buildVersionCopyInputs({
         "jy2-empty",
         "内訳ブロックなし（内訳タブで追加すると自動反映されます）",
       );
-      emptyCell.colSpan = 10;
+      emptyCell.colSpan = 11;
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
     }
@@ -12411,7 +12548,12 @@ function buildVersionCopyInputs({
         jy2Cell(documentRef, "td", "", line.summary_work_type_code),
       );
       row.appendChild(
-        jy2Cell(documentRef, "td", "", line.summary_work_type_name),
+        jy2Cell(
+          documentRef,
+          "td",
+          "",
+          jy2DisplayWorkTypeName(line.summary_work_type_name),
+        ),
       );
       const typeCell = jy2Cell(documentRef, "td", "", "");
       if (editable) {
@@ -12426,6 +12568,31 @@ function buildVersionCopyInputs({
         typeCell.textContent = line.summary_line_type || "";
       }
       row.appendChild(typeCell);
+      const materialCell = jy2Cell(documentRef, "td", "", "");
+      const materialListOnly = jy2SummaryUsesMaterialList(line.summary_line_type);
+      if (editable && materialListOnly) {
+        materialCell.appendChild(
+          jy2ComboInput(
+            documentRef,
+            line.summary_material_name,
+            jy2MaterialChoices(line.summary_material_name),
+            (value) => {
+              onManualPatch(line.summary_stable_block_id, {
+                summary_material_name: value,
+              });
+            },
+            { listOnly: true },
+          ),
+        );
+      } else if (editable) {
+        materialCell.classList.add("jy2-readonly");
+        materialCell.textContent = "";
+      } else {
+        materialCell.textContent = materialListOnly
+          ? line.summary_material_name || ""
+          : "";
+      }
+      row.appendChild(materialCell);
       row.appendChild(jy2Cell(documentRef, "td", "", line.summary_unit));
       row.appendChild(jy2Cell(documentRef, "td", "jy2-num", line.summary_qty));
       row.appendChild(
@@ -12465,7 +12632,7 @@ function buildVersionCopyInputs({
         const totalRow = documentRef.createElement("tr");
         totalRow.className = "jy2-total-row";
         const totalLabel = jy2Cell(documentRef, "td", "", label);
-        totalLabel.colSpan = 8;
+        totalLabel.colSpan = 9;
         totalRow.appendChild(totalLabel);
         totalRow.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
@@ -12969,7 +13136,7 @@ function buildVersionCopyInputs({
           "",
           [
             block.workTypeCode,
-            block.workTypeName,
+            jy2DisplayWorkTypeName(block.workTypeName),
             block.costCategory,
             block.vendorName,
           ]
@@ -12987,7 +13154,7 @@ function buildVersionCopyInputs({
       jy2HeadRow(documentRef, [
         "費目（選択）",
         "種別（選択）",
-        "詳細（入力）",
+        "詳細／材料（入力）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -13072,8 +13239,9 @@ function buildVersionCopyInputs({
         label: prevName2,
         kind: "種別",
       };
+      const name3UsesMaterialList = jy2UsesMaterialList(resolvedName1, resolvedName2);
       if (blockEditable) {
-        // U4: 費目/種別（補助）＝リストのみ（打鍵候補は維持）。定義及び品名＝手入力＋候補（全角カナ正規化）。
+        // U4: 費目/種別（補助）＝リストのみ（打鍵候補は維持）。材料費×塗料等は材料 listOnly。
         const name1 = jy2Cell(documentRef, "td", "", "");
         const name1Ctrl = jy2ComboInput(
           documentRef,
@@ -13113,18 +13281,31 @@ function buildVersionCopyInputs({
         }
         tr.appendChild(name2);
         const name3 = jy2Cell(documentRef, "td", "", "");
-        const name3Ctrl = jy2ComboInput(
-          documentRef,
-          row.name3,
-          rowSuggest.name3,
-          (value) => commit("name3")(jy2ToFullWidthKana(value)),
-          {
-            fullTitle: true,
-            displayDitto: name3ShowDitto,
-            revealValue: prevName3 || row.name3,
-            allowDitto: Boolean(prevName3),
-          },
-        );
+        const name3Ctrl = name3UsesMaterialList
+          ? jy2ComboInput(
+              documentRef,
+              row.name3,
+              rowSuggest.name3,
+              (value) => commit("name3")(jy2ToFullWidthKana(value)),
+              {
+                displayDitto: name3ShowDitto,
+                revealValue: prevName3 || row.name3,
+                listOnly: true,
+                allowDitto: Boolean(prevName3),
+              },
+            )
+          : jy2ComboInput(
+              documentRef,
+              row.name3,
+              rowSuggest.name3,
+              (value) => commit("name3")(jy2ToFullWidthKana(value)),
+              {
+                fullTitle: true,
+                displayDitto: name3ShowDitto,
+                revealValue: prevName3 || row.name3,
+                allowDitto: Boolean(prevName3),
+              },
+            );
         name3Ctrl.dataset.jy2Field = "name3";
         name3.appendChild(name3Ctrl);
         tr.appendChild(name3);
@@ -13286,9 +13467,8 @@ function buildVersionCopyInputs({
       body.appendChild(addRow);
     }
 
-    // U20 fixed footer: 諸経費 → 各種保険料 → 小計 → 法定福利費 → 計.
-    // Manual amounts may stay blank (counted as 0 in totals = U25).
-    for (const kind of BLOCK_FOOTER_KINDS) {
+    // G0 §7.1: 施工のみ 諸経費→小計→法定福利費→計（保険料固定行なし）。保安はフッタ無し。
+    for (const kind of footerKindsForCostCategory(block.costCategory)) {
       const footerRow = block.footer[kind];
       const tr = documentRef.createElement("tr");
       tr.className =
@@ -17186,6 +17366,7 @@ function buildVersionCopyInputs({
       const manual = {
         summary_stable_block_id: id,
         summary_line_type: line.summary_line_type ?? "",
+        summary_material_name: line.summary_material_name ?? "",
         summary_calc_basis: line.summary_calc_basis ?? "",
         summary_note: line.summary_note ?? "",
         summary_tax_rate: line.summary_tax_rate ?? "",
@@ -17208,6 +17389,7 @@ function buildVersionCopyInputs({
       byId.set(id, {
         summary_stable_block_id: id,
         summary_line_type: match.summary_line_type,
+        summary_material_name: match.summary_material_name ?? "",
         summary_calc_basis: match.summary_calc_basis,
         summary_note: match.summary_note,
         summary_tax_rate: match.summary_tax_rate ?? "",
@@ -17223,6 +17405,7 @@ function buildVersionCopyInputs({
         const prev = byId.get(id) || {
           summary_stable_block_id: id,
           summary_line_type: "",
+          summary_material_name: "",
           summary_calc_basis: "",
           summary_note: "",
           summary_tax_rate: "",

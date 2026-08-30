@@ -125,6 +125,8 @@ export function regenerateSummaryCostLines(
         summary_work_type_code: block.workTypeCode ?? "",
         summary_work_type_name: block.workTypeName ?? "",
         summary_line_type: block.lineType ?? previous.summary_line_type ?? "",
+        summary_material_name:
+          previous.summary_material_name ?? "",
         summary_unit: uniform ? block.unit : SUMMARY_MIXED_UNIT,
         summary_qty: uniform ? block.quantity : "1",
         summary_unit_price: uniform

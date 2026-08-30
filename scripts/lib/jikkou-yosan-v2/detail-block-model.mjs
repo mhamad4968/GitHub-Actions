@@ -44,10 +44,14 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
   legal_welfare: "法定福利費",
   block_total: "計",
 });
-// C-U16: 手入力のフッタ金額。諸経費(overhead)は R-11、法定福利費(legal_welfare)は
-// R-12 で自動確定したため手入力から除外(読取専用)。各種保険料(insurance)のみ手入力
-// （R-13 CONFIRMED 2026-07-29: 計算式なし・手入力のみ）。
-export const MANUAL_FOOTER_KINDS = Object.freeze(["insurance"]);
+// G0 §7.2: 各種保険料は固定フッタから外す（明細として追加）。手入力フッタは無し。
+export const MANUAL_FOOTER_KINDS = Object.freeze([]);
+
+// G0 §7.1: 施工ブロックのみ UI に出すフッタ（保険料行なし）。
+export function footerKindsForCostCategory(costCategory) {
+  if (costCategory !== "施工") return [];
+  return Object.freeze(["overhead", "subtotal", "legal_welfare", "block_total"]);
+}
 
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
 export const LEGAL_WELFARE_NAME1 = "労務費";
@@ -331,15 +335,23 @@ export function createDetailBlockModel({
     return numbers;
   }
 
-  // U25: 小計 = 明細金額計 + 諸経費 + 各種保険料; 計 = 小計 + 法定福利費.
-  // R-11: 諸経費は自動 = ROUND(明細金額合計 × 10%, 0)。明細金額が無ければ空欄。
-  // R-12: 法定福利費は自動 = 費目「労務費」の明細金額合計。対象が無ければ空欄。
-  // 手入力の各種保険料が空なら 0 扱い(表示は空白のまま)。
+  // U25 / G0 §7.1: 施工のみ 小計=明細+諸経費、計=小計+法定福利費（保険料固定行なし）。
+  // 保安・区分未入力は明細合計のみ。R-11/R-12 は施工のみ。
   function computedTotals(block) {
     const detailAmounts = block.detailRows
       .map((row) => detailRowAmount(row))
       .filter((amount) => amount !== null);
-    const overheadBase = detailAmounts.length ? sum(detailAmounts) : null;
+    const detailSum = detailAmounts.length ? sum(detailAmounts) : null;
+    if (block.costCategory !== "施工") {
+      return {
+        subtotal: detailSum,
+        total: detailSum ?? "0",
+        overhead: null,
+        overheadBase: null,
+        legalWelfare: null,
+      };
+    }
+    const overheadBase = detailAmounts.length ? detailSum : null;
     const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
     const laborAmounts = block.detailRows
       .map((row, rowIndex) => ({
@@ -355,7 +367,7 @@ export function createDetailBlockModel({
       ...blockTotals({
         detailAmounts,
         overhead,
-        insurance: block.footer.insurance.amount,
+        insurance: null,
         legalWelfare,
       }),
       overhead,

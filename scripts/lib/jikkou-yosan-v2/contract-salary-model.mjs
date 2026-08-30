@@ -25,6 +25,7 @@ export const SALARY_TAX_DISPLAY = "－";
 
 const CONTRACT_EDITABLE_FIELDS = Object.freeze([
   "workName",
+  "workDesc",
   "unit",
   "quantity",
   "unitPrice",
@@ -99,6 +100,7 @@ export function createContractSalaryModel({
       rowKey: createRowKey(uuidFactory),
       section,
       workName: null,
+      workDesc: null,
       unit: null,
       quantity: null,
       unitPrice: null,
@@ -129,6 +131,7 @@ export function createContractSalaryModel({
       rowKey: hasText(line.rowKey) ? line.rowKey : createRowKey(uuidFactory),
       section: line.section,
       workName: normalizedOptional(line.workName),
+      workDesc: normalizedOptional(line.workDesc),
       unit: normalizedOptional(line.unit),
       quantity: normalizedOptional(line.quantity),
       unitPrice: normalizedOptional(line.unitPrice),
