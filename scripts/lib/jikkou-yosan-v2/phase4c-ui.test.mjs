@@ -848,7 +848,7 @@ test("U36 取引先もリストのみ（候補は打鍵で絞り込み・リス�
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(
     source,
-    /jy2ComboInput\(\s*documentRef,\s*block\.vendorName,\s*suggest\.vendors,\s*commitHeader\("vendorName"\),\s*\{ listOnly: true \}/,
+    /jy2ComboInput\(\s*documentRef,\s*block\.vendorName,\s*suggest\.vendors,\s*commitHeader\("vendorName"\),\s*\{ listOnly: true(?:, hideClearWhenSet: true)? \}/,
   );
   assert.match(source, /jy2-combo-miss/);
   assert.match(source, /リストにありません/);

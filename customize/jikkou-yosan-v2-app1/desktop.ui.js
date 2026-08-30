@@ -6214,7 +6214,10 @@
     }
     const entry = jy2ResolveNameHierarchy(block || {});
     const selectedHimoku = row && row.name1 ? String(row.name1).trim() : "";
-    const selectedType = row && row.name2 ? String(row.name2).trim() : "";
+    const rawType = row && row.name2 != null ? String(row.name2).trim() : "";
+    // 〃／空は祖父に使わない（上段種別の漏洩防止）。
+    const grandfatherType =
+      rawType && !jy2IsDitto(rawType) ? rawType : "";
 
     let name1;
     let name2;
@@ -6229,12 +6232,12 @@
       name2 = selectedHimoku
         ? jy2ListOnlyChoices(
             jy2TypesForHimoku(entry, selectedHimoku),
-            selectedType || (row && row.name2),
+            grandfatherType,
           )
         : [];
       // 材料種類マスタ対象のみ list。それ以外の詳細は手入力（コード表定義候補は出さない）。
-      name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
-        ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
+      name3 = jy2UsesMaterialList(selectedHimoku, grandfatherType)
+        ? jy2MaterialChoices(row && row.name3, selectedHimoku, grandfatherType)
         : [];
     } else {
       // 工種空（R-05）: 費目もマスタ7件のみ。種別は費目選択後。
@@ -6245,11 +6248,11 @@
       name2 = selectedHimoku
         ? jy2ListOnlyChoices(
             jy2TypesForHimoku(null, selectedHimoku),
-            selectedType || (row && row.name2),
+            grandfatherType,
           )
         : [];
-      name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
-        ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
+      name3 = jy2UsesMaterialList(selectedHimoku, grandfatherType)
+        ? jy2MaterialChoices(row && row.name3, selectedHimoku, grandfatherType)
         : [];
     }
     return {
@@ -8951,7 +8954,8 @@
       const rowSuggest = jy2CollectDetailSuggestions(null, block, {
         ...row,
         name1: resolvedName1,
-        name2: resolvedName2,
+        // name2 は raw のまま渡す。〃解決値を祖父にすると
+        // 上段の「塗料」等が仮設機械経費など別費目の種別候補へ混入する。
       });
       const dashTypeFixed = jy2HimokuUsesDashType(
         jy2ResolveNameHierarchy(block),
