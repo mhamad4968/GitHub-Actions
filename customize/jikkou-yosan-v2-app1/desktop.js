@@ -10326,17 +10326,16 @@ function buildVersionCopyInputs({
     return null;
   }
 
+  function jy2HimokuMasterMenu() {
+    // G0 §7: 内訳費目の正本はマスタ整理7件のみ。
+    return [...(JY2_NAME_HIERARCHY.constructionHimokuMenu || [])];
+  }
+
   function jy2HimokuChoicesForEntry(entry) {
-    if (!entry) return [];
-    // sync 済み himoku に工事系メニューが含まれる。順序は constructionHimokuMenu 優先。
-    const menu = JY2_NAME_HIERARCHY.constructionHimokuMenu || [];
-    const fromEntry = Array.isArray(entry.himoku) ? entry.himoku : [];
-    if (!entry.constructionMenu) return [...fromEntry];
-    const merged = [];
-    for (const h of [...menu, ...fromEntry]) {
-      if (h && !merged.includes(h)) merged.push(h);
-    }
-    return merged;
+    // entry の有無に関わらず7件固定。コード表 himoku／allHimoku は混ぜない。
+    // （旧: constructionMenu 時に entry.himoku をマージ → 7件超の原因）
+    void entry;
+    return jy2HimokuMasterMenu();
   }
 
   function jy2HimokuDefaultForBlock(block) {
@@ -10532,7 +10531,6 @@ function buildVersionCopyInputs({
     // 五十音ソートはしない（依頼者：リスト順＝コード表順）。
     const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
     const entry = jy2ResolveNameHierarchy(block || {});
-    const himokuAll = JY2_NAME_HIERARCHY.allHimoku || [];
     const selectedHimoku = row && row.name1 ? String(row.name1).trim() : "";
     const selectedType = row && row.name2 ? String(row.name2).trim() : "";
 
@@ -10540,7 +10538,7 @@ function buildVersionCopyInputs({
     let name2;
     let name3;
     if (entry) {
-      // システム工種あり → 費目はその工種（工事系は説明文メニュー込み）。
+      // システム工種あり → 費目は G0 マスタ7件（＋現行値の祖父）。
       // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
       name1 = jy2ListOnlyChoices(
         jy2HimokuChoicesForEntry(entry),
@@ -10556,8 +10554,11 @@ function buildVersionCopyInputs({
         ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
         : jy2DefinitionsForType(selectedType, selectedHimoku, entry);
     } else {
-      // 工種空（R-05）: 費目は全候補。種別は費目選択後。
-      name1 = jy2ListOnlyChoices(himokuAll, selectedHimoku || (row && row.name1));
+      // 工種空（R-05）: 費目もマスタ7件のみ。種別は費目選択後。
+      name1 = jy2ListOnlyChoices(
+        jy2HimokuMasterMenu(),
+        selectedHimoku || (row && row.name1),
+      );
       name2 = selectedHimoku
         ? jy2ListOnlyChoices(
             jy2TypesForHimoku(null, selectedHimoku),
