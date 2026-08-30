@@ -2,7 +2,7 @@
 **最終更新**: 2026-08-30 11:27 JST — **朝セッション締め**。仕様のみ。コードなし。実装は **今夜（カレンダーの夜・別チャット）**。
 **次の1手**: 夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須
 **レーン変更**: 実行予算 756 は **今夜 §15 全部実装**（朝の4hで測らない。スライスA／別画面は廃案）。工事原価管理はタブ非表示のみ
-**Git**: **`ab26108f`** = `origin/main` — push 済（R44 parent）
+**Git**: **`0f7c6b07`** = `origin/main` — push 済
 **closeStatus**: **closed**（朝セッション区切り。day-close は今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**
 **本日状態**: 749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -53,6 +53,7 @@
 - 朝の4hで今夜を測らない。浜田が言ったことは聞き直さない
 - closeStatus: **closed**（朝区切り。day-close は今夜最終）
 
+
 ## 2026-08-29
 
 ### 2026-08-29 朝（749 UX 改善レーンクローズ）
@@ -60,6 +61,7 @@
 - live **749** `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18** / fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`
 - SPEC §7.5 / §8.2 更新 · `closures JSON 不触（UXレーンのみ・closed-v1 維持）`
 - closeStatus: **closed**（UXレーン。day-close は別途）
+
 
 
 
@@ -80,22 +82,5 @@
 - closeStatus: **closed**（UXレーン。day-close は別途）
 
 
-## 2026-08-22 夜
 
-### 2026-08-22 夜締め（名簿データ①〜④＋改善GOクローズ）
-- 浜田: **すべてOK**／E2・E5ほか **今回見送り**／S7 Excel削除は最終GOまで残置
-- live **776** `2026-08-22-776-agg-kanetsu-seko-under-koji` rev **73** / **595** `…roster-sync-fast` rev **151**
-- closeStatus: **closed**（改善レーン。日終わり close-git は別途）
-
-### 2026-08-22 昼締め（名簿 UI＋部／室＋revision衝突修正）
-- **夜必読**: `chat-sessions/2026-08-22-employee-roster-night-handoff.md`
-- 776: 兼務色／部署末尾／スクロール／ページ送り（`$id`分割）目視OK
-- 776: `section_name` 追加・「部追加」・保存時並びUI
-- **バグ**: 保存時 revision 衝突 → `sort-after-save` で success 後適用に修正・緊急 deploy（4h超 SKIP）
-- 595: 新規兼務→部署末尾／既存並び・section 維持
-- closeStatus: **closed**（昼区切り。夜継続）
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-29.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-30.md -->
