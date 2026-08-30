@@ -8828,7 +8828,7 @@
           block.vendorName,
           suggest.vendors,
           commitHeader("vendorName"),
-          { listOnly: true },
+          { listOnly: true, hideClearWhenSet: true },
         ),
       );
       headerField("取引先（選択）", vendorWrap);
