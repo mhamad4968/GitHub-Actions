@@ -704,16 +704,44 @@
   function jy2UsesMaterialList(himoku, typeName) {
     const himokuKey = String(himoku || "").trim();
     const typeKey = String(typeName || "").trim();
+    // 費目そのものが「その他材料費」（Excel 平坦枠）でも材料 listOnly。
+    if (himokuKey === "その他材料費") return true;
     return himokuKey === "材料費" && JY2_MATERIAL_LIST_TYPES.includes(typeKey);
   }
 
-  function jy2MaterialChoices(currentValue) {
-    return jy2ListOnlyChoices(JY2_MATERIAL_MASTER, currentValue);
+  function jy2IsOtherMaterialKind(himoku, typeName) {
+    const himokuKey = String(himoku || "").trim();
+    const typeKey = String(typeName || "").trim();
+    return (
+      himokuKey === "その他材料費" ||
+      typeKey === "その他材料" ||
+      typeKey === "その他材料費"
+    );
+  }
+
+  function jy2MaterialChoices(currentValue, himoku, typeName) {
+    let master = JY2_MATERIAL_MASTER;
+    if (jy2IsOtherMaterialKind(himoku, typeName)) {
+      const fromDefs =
+        (JY2_NAME_HIERARCHY.definitionsByType &&
+          JY2_NAME_HIERARCHY.definitionsByType["その他材料費"]) ||
+        [];
+      master = [];
+      for (const item of [...JY2_OTHER_MATERIAL_MASTER, ...fromDefs]) {
+        const text = String(item || "").trim();
+        if (text && !master.includes(text)) master.push(text);
+      }
+    }
+    return jy2ListOnlyChoices(master, currentValue);
   }
 
   function jy2SummaryUsesMaterialList(lineType) {
     const typeKey = String(lineType || "").trim();
-    return typeKey === "塗料" || typeKey === "その他材料";
+    return (
+      typeKey === "塗料" ||
+      typeKey === "その他材料" ||
+      typeKey === "その他材料費"
+    );
   }
   function jy2CostMgmtFrameNameMatches(blockName, frame) {
     if (!frame) return false;
@@ -3014,7 +3042,8 @@
     "その他費用",
   ]);
 
-  // G0 §10.1: 材料費×(塗料|その他材料) の listOnly マスタ（データマスタ 材料種類 sample）。
+  // G0 §10.1: 材料費×(塗料|その他材料) の listOnly。
+  // 種別「その他材料費」は塗料マスタではなくシール等（Excel／コード表）を使う。
   const JY2_MATERIAL_LIST_TYPES = Object.freeze([
     "塗料",
     "その他材料",
@@ -3029,6 +3058,10 @@
     "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-7",
     "塗料用シンナー",
     "エポキシシンナー",
+  ]);
+  const JY2_OTHER_MATERIAL_MASTER = Object.freeze([
+    "塗装記録表示シール",
+    "桁番号表示シール",
   ]);
 
   // @JY2_NAME_HIERARCHY_BEGIN
@@ -5956,7 +5989,7 @@
           )
         : [];
       name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
-        ? jy2MaterialChoices(row && row.name3)
+        ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
         : jy2DefinitionsForType(selectedType, selectedHimoku, entry);
     } else {
       // 工種空（R-05）: 費目は全候補。種別は費目選択後。
@@ -5968,7 +6001,7 @@
           )
         : [];
       name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
-        ? jy2MaterialChoices(row && row.name3)
+        ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
         : jy2DefinitionsForType(selectedType, selectedHimoku, null);
     }
     return {
@@ -8047,7 +8080,11 @@
           jy2ComboInput(
             documentRef,
             line.summary_material_name,
-            jy2MaterialChoices(line.summary_material_name),
+            jy2MaterialChoices(
+              line.summary_material_name,
+              null,
+              line.summary_line_type,
+            ),
             (value) => {
               onManualPatch(line.summary_stable_block_id, {
                 summary_material_name: value,
