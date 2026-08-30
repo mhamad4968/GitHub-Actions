@@ -720,18 +720,10 @@
   }
 
   function jy2MaterialChoices(currentValue, himoku, typeName) {
-    let master = JY2_MATERIAL_MASTER;
-    if (jy2IsOtherMaterialKind(himoku, typeName)) {
-      const fromDefs =
-        (JY2_NAME_HIERARCHY.definitionsByType &&
-          JY2_NAME_HIERARCHY.definitionsByType["その他材料費"]) ||
-        [];
-      master = [];
-      for (const item of [...JY2_OTHER_MATERIAL_MASTER, ...fromDefs]) {
-        const text = String(item || "").trim();
-        if (text && !master.includes(text)) master.push(text);
-      }
-    }
+    // その他材料系: Excel 実名マスタのみ。コード表の「〜など」は候補に出さない。
+    const master = jy2IsOtherMaterialKind(himoku, typeName)
+      ? JY2_OTHER_MATERIAL_MASTER
+      : JY2_MATERIAL_MASTER;
     return jy2ListOnlyChoices(master, currentValue);
   }
 
