@@ -2845,14 +2845,17 @@
       dlOpt.value = text;
       datalist.appendChild(dlOpt);
     }
-    // listOnly + 候補あり: 表示は input、変更は▼のみ（手入力でリスト外を足せない）。
-    const listOnlySelect = Boolean(opts.listOnly) && seen.size > 0;
+    // listOnly: 候補の有無に関わらず手入力不可（▼選択のみ）。候補ゼロ時も自由入力させない。
+    const listOnlySelect = Boolean(opts.listOnly);
     if (listOnlySelect) {
       input.readOnly = true;
       input.removeAttribute("list");
       input.classList.add("jy2-combo-readonly");
       input.title = input.title || "リストから選択してください（▼）";
       wrap.classList.add("jy2-combo-list-only");
+      // 任意クリア用（材料・費目など空欄可）
+      blank.textContent = "▼／空";
+      blank.value = "";
     }
     if ([...seen].every((t) => t === JY2_DITTO_MARK) && !useDittoDisplay && seen.size === 0) {
       select.disabled = true;
@@ -2953,9 +2956,19 @@
     }
     select.addEventListener("change", () => {
       const picked = select.value;
-      if (!picked) return;
       revealed = true;
       clearMiss();
+      // listOnly: 空選択＝クリア（材料などは任意）
+      if (!picked) {
+        if (listOnlySelect) {
+          input.value = useDittoDisplay ? "" : "";
+          lastCommitted = "";
+          onCommit("");
+          if (useDittoDisplay) input.value = "";
+          select.selectedIndex = 0;
+        }
+        return;
+      }
       input.value = picked;
       lastCommitted = picked;
       if (fullTitle) syncFullTitle();
@@ -8032,7 +8045,7 @@
         "工種番号（自動）",
         "システム工種（自動）",
         "種別（入力）",
-        "材料（入力）",
+        "材料（選択）",
         "単位（自動）",
         "数量（自動）",
         "単価（自動）",
@@ -8690,7 +8703,7 @@
       jy2HeadRow(documentRef, [
         "費目（選択）",
         "種別（選択）",
-        "詳細／材料（入力）",
+        "詳細（入力）／材料（選択）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -8821,7 +8834,7 @@
           ? jy2ComboInput(
               documentRef,
               row.name3,
-              rowSuggest.name3,
+              jy2MaterialChoices(row.name3, resolvedName1, resolvedName2),
               (value) => commit("name3")(jy2ToFullWidthKana(value)),
               {
                 displayDitto: name3ShowDitto,

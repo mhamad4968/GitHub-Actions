@@ -792,13 +792,13 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2-hf-tag-select/);
   assert.match(source, /費目（選択）/);
   assert.match(source, /種別（選択）/);
-  assert.match(source, /詳細／材料（入力）/);
+  assert.match(source, /詳細（入力）／材料（選択）/);
   assert.match(source, /契約工種（選択）/);
   assert.match(source, /工種説明（入力）/);
   assert.match(source, /footerKindsForCostCategory/);
   assert.match(source, /JY2_GAICHU_TYPE_MENU/);
   assert.match(source, /jy2DisplayWorkTypeName/);
-  assert.match(source, /材料（入力）/);
+  assert.match(source, /材料（選択）/);
   assert.match(
     source,
     /const anchor =\s*[\s\S]*?jy2HasText\(row\.name1\)[\s\S]*?jy2HasText\(row\.name2\)/,

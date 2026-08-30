@@ -35,7 +35,7 @@ const checks = [
   ['諸経費根拠文言', /明細金額合計 ×\$\{footerRow\.ratePercent\}%/],
   ['費目列ラベル', /費目（選択）/],
   ['種別列ラベル', /種別（選択）/],
-  ['詳細列ラベル', /詳細／材料（入力）/],
+  ['詳細列ラベル', /詳細（入力）／材料（選択）/],
   ['コード表階層マスタ', /JY2_NAME_HIERARCHY/],
   ['費目自動セット', /jy2ApplyHimokuDefaultToDetails/],
   ['工事系費目メニュー', /constructionHimokuMenu/],
