@@ -7606,6 +7606,17 @@ function buildVersionCopyInputs({
     "その他費用",
   ]);
 
+  // G0 §9: 材料費の種別＝マスタ整理「内訳」列（コード表の「〜費など」は正本にしない）。
+  const JY2_MATERIAL_TYPE_MENU = Object.freeze([
+    "塗料",
+    "鋼材",
+    "二次製品",
+    "生コンクリート･石材",
+    "ＡＳ合材",
+    "鋼製製品･ゴム製品等",
+    "その他材料",
+  ]);
+
   // G0 §10.1: 材料費×(塗料|その他材料) の listOnly。
   // 種別「その他材料費」は塗料マスタではなくシール等（Excel／コード表）を使う。
   const JY2_MATERIAL_LIST_TYPES = Object.freeze([
@@ -10410,12 +10421,13 @@ function buildVersionCopyInputs({
     }
   }
 
-  // 費目 → 種別（補助）の候補。工種ローカルが空ならコード表全体の紐付けを使う
-  // （工事系メニューで材料費等を出したとき、10100側の種別が使えるようにする）。
+  // 費目 → 種別の候補。外注費・材料費はマスタ正本固定（コード表マージしない）。
+  // 他費目は工種ローカル → コード表全体の順（工事系メニューで 10100 側を使えるようにする）。
   function jy2TypesForHimoku(entry, himoku) {
     const key = String(himoku || "").trim();
     if (!key) return [];
     if (key === "外注費") return [...JY2_GAICHU_TYPE_MENU];
+    if (key === "材料費") return [...JY2_MATERIAL_TYPE_MENU];
     const local =
       entry && entry.typesByHimoku && Array.isArray(entry.typesByHimoku[key])
         ? entry.typesByHimoku[key]
