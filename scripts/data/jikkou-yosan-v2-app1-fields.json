@@ -7,7 +7,8 @@
       "A2: summary_unit は共通単位DD（㎡/式/回/人/日/箇月/－）。",
       "A5: 消費税率の選択肢は全角％（0％/8％/10％・初期値10％）。",
       "project_days・各集計・summary_amount_excl_tax 等はJS再計算の表示キャッシュ。編集不可制御と自動計算はPhase3（カスタムUI/保存ガード）で実装する。",
-      "version_seq の初版=1、series_guard_key/version_record_key の組み立ては保存ロジック（Phase3）が行い、フィールド既定値では表現しない。"
+      "version_seq の初版=1、series_guard_key/version_record_key の組み立ては保存ロジック（Phase3）が行い、フィールド既定値では表現しない。",
+      "G0-S1: work_kind〜work_class, office_name, holiday_days/working_days, holiday_lines, contract_work_desc, summary_material_name — scripts/data/jikkou-yosan-v2-g0-s1-fields.json"
     ]
   },
   "properties": {
@@ -145,6 +146,141 @@
       "required": false,
       "defaultValue": ""
     },
+    "work_kind": {
+      "type": "DROP_DOWN",
+      "code": "work_kind",
+      "label": "工事種別",
+      "required": false,
+      "options": {
+        "土木一式": { "label": "土木一式", "index": "0" },
+        "とび・土工・コンクリート": { "label": "とび・土工・コンクリート", "index": "1" },
+        "塗装": { "label": "塗装", "index": "2" },
+        "塗装（防水）": { "label": "塗装（防水）", "index": "3" },
+        "調査": { "label": "調査", "index": "4" },
+        "工事外": { "label": "工事外", "index": "5" }
+      },
+      "defaultValue": ""
+    },
+    "order_form": {
+      "type": "DROP_DOWN",
+      "code": "order_form",
+      "label": "受注形態",
+      "required": false,
+      "options": {
+        "単独": { "label": "単独", "index": "0" },
+        "JV": { "label": "JV", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "jv_type": {
+      "type": "DROP_DOWN",
+      "code": "jv_type",
+      "label": "ＪＶ区分",
+      "required": false,
+      "options": {
+        "特定JV甲型": { "label": "特定JV甲型", "index": "0" },
+        "特定JV乙型": { "label": "特定JV乙型", "index": "1" },
+        "経常JV甲型": { "label": "経常JV甲型", "index": "2" },
+        "経常JV乙型": { "label": "経常JV乙型", "index": "3" },
+        "その他": { "label": "その他", "index": "4" }
+      },
+      "defaultValue": ""
+    },
+    "order_role": {
+      "type": "DROP_DOWN",
+      "code": "order_role",
+      "label": "受注区分",
+      "required": false,
+      "options": {
+        "元請": { "label": "元請", "index": "0" },
+        "下請": { "label": "下請", "index": "1" },
+        "その他": { "label": "その他", "index": "2" }
+      },
+      "defaultValue": ""
+    },
+    "order_method": {
+      "type": "DROP_DOWN",
+      "code": "order_method",
+      "label": "受注方法",
+      "required": false,
+      "options": {
+        "特命": { "label": "特命", "index": "0" },
+        "指名競争入札": { "label": "指名競争入札", "index": "1" },
+        "工事希望型競争入札": { "label": "工事希望型競争入札", "index": "2" },
+        "公募プロポーザル方式": { "label": "公募プロポーザル方式", "index": "3" },
+        "見積入札": { "label": "見積入札", "index": "4" },
+        "一般競争入札": { "label": "一般競争入札", "index": "5" },
+        "随意契約": { "label": "随意契約", "index": "6" },
+        "その他": { "label": "その他", "index": "7" }
+      },
+      "defaultValue": ""
+    },
+    "main_misc": {
+      "type": "DROP_DOWN",
+      "code": "main_misc",
+      "label": "本雑区分",
+      "required": false,
+      "options": {
+        "本工事": { "label": "本工事", "index": "0" },
+        "雑工事": { "label": "雑工事", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "public_private_1": {
+      "type": "DROP_DOWN",
+      "code": "public_private_1",
+      "label": "官民区分１",
+      "required": false,
+      "options": {
+        "官庁": { "label": "官庁", "index": "0" },
+        "民間": { "label": "民間", "index": "1" }
+      },
+      "defaultValue": ""
+    },
+    "public_private_2": {
+      "type": "DROP_DOWN",
+      "code": "public_private_2",
+      "label": "官民区分２",
+      "required": false,
+      "options": {
+        "中央官庁": { "label": "中央官庁", "index": "0" },
+        "公社・公団": { "label": "公社・公団", "index": "1" },
+        "都道府県": { "label": "都道府県", "index": "2" },
+        "市町村": { "label": "市町村", "index": "3" },
+        "準官庁": { "label": "準官庁", "index": "4" }
+      },
+      "defaultValue": ""
+    },
+    "civil_arch": {
+      "type": "DROP_DOWN",
+      "code": "civil_arch",
+      "label": "土建区分",
+      "required": false,
+      "options": {
+        "土木(ＪＲ)": { "label": "土木(ＪＲ)", "index": "0" },
+        "土木(その他鉄道会社)": { "label": "土木(その他鉄道会社)", "index": "1" },
+        "建築(民間)": { "label": "建築(民間)", "index": "2" },
+        "その他(ﾘﾌｫｰﾑ)": { "label": "その他(ﾘﾌｫｰﾑ)", "index": "3" }
+      },
+      "defaultValue": ""
+    },
+    "work_class": {
+      "type": "DROP_DOWN",
+      "code": "work_class",
+      "label": "工事区分",
+      "required": false,
+      "options": {
+        "A：ＪＲ鉄桁塗替塗装": { "label": "A：ＪＲ鉄桁塗替塗装", "index": "0" },
+        "B：ＪＲ受託": { "label": "B：ＪＲ受託", "index": "1" },
+        "C：ＪＲ橋りょう修繕工事": { "label": "C：ＪＲ橋りょう修繕工事", "index": "2" },
+        "D：ＪＲその他工事": { "label": "D：ＪＲその他工事", "index": "3" },
+        "E：その他鉄道会社塗替塗装": { "label": "E：その他鉄道会社塗替塗装", "index": "4" },
+        "F：その他鉄道会社受託": { "label": "F：その他鉄道会社受託", "index": "5" },
+        "G：一般工事": { "label": "G：一般工事", "index": "6" },
+        "Q：ＪＲ保安（工管・線閉）": { "label": "Q：ＪＲ保安（工管・線閉）", "index": "7" }
+      },
+      "defaultValue": ""
+    },
     "project_official_name": {
       "type": "SINGLE_LINE_TEXT",
       "code": "project_official_name",
@@ -182,6 +318,20 @@
       "required": false,
       "defaultValue": ""
     },
+    "holiday_days": {
+      "type": "NUMBER",
+      "code": "holiday_days",
+      "label": "休日数",
+      "required": false,
+      "defaultValue": ""
+    },
+    "working_days": {
+      "type": "NUMBER",
+      "code": "working_days",
+      "label": "稼働日数",
+      "required": false,
+      "defaultValue": ""
+    },
     "site_entry_date": {
       "type": "DATE",
       "code": "site_entry_date",
@@ -210,6 +360,23 @@
       "code": "order_branch",
       "label": "発注支社",
       "required": false,
+      "defaultValue": ""
+    },
+    "office_name": {
+      "type": "DROP_DOWN",
+      "code": "office_name",
+      "label": "担当事務所",
+      "required": false,
+      "options": {
+        "東京土木設備技術センター": { "label": "東京土木設備技術センター", "index": "0" },
+        "横浜土木設備技術センター": { "label": "横浜土木設備技術センター", "index": "1" },
+        "水戸土木設備技術センター": { "label": "水戸土木設備技術センター", "index": "2" },
+        "千葉土木設備技術センター": { "label": "千葉土木設備技術センター", "index": "3" },
+        "大宮土木設備技術センター": { "label": "大宮土木設備技術センター", "index": "4" },
+        "八王子土木設備技術センター": { "label": "八王子土木設備技術センター", "index": "5" },
+        "高崎土木設備技術センター": { "label": "高崎土木設備技術センター", "index": "6" },
+        "長野土木設備技術センター": { "label": "長野土木設備技術センター", "index": "7" }
+      },
       "defaultValue": ""
     },
     "department": {
@@ -260,6 +427,54 @@
       "required": false,
       "defaultValue": ""
     },
+    "holiday_lines": {
+      "type": "SUBTABLE",
+      "code": "holiday_lines",
+      "label": "休日設定",
+      "fields": {
+        "holiday_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "holiday_name",
+          "label": "休日名称",
+          "required": false,
+          "defaultValue": ""
+        },
+        "holiday_kind": {
+          "type": "DROP_DOWN",
+          "code": "holiday_kind",
+          "label": "休日種別",
+          "required": false,
+          "options": {
+            "1日": { "label": "1日", "index": "0" },
+            "期間": { "label": "期間", "index": "1" }
+          },
+          "defaultValue": ""
+        },
+        "holiday_start": {
+          "type": "DATE",
+          "code": "holiday_start",
+          "label": "開始日",
+          "required": false,
+          "defaultValue": "",
+          "defaultNowValue": false
+        },
+        "holiday_end": {
+          "type": "DATE",
+          "code": "holiday_end",
+          "label": "終了日",
+          "required": false,
+          "defaultValue": "",
+          "defaultNowValue": false
+        },
+        "holiday_note": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "holiday_note",
+          "label": "備考",
+          "required": false,
+          "defaultValue": ""
+        }
+      }
+    },
     "contract_lines": {
       "type": "SUBTABLE",
       "code": "contract_lines",
@@ -287,6 +502,13 @@
           "type": "SINGLE_LINE_TEXT",
           "code": "contract_work_name",
           "label": "契約工種",
+          "required": false,
+          "defaultValue": ""
+        },
+        "contract_work_desc": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "contract_work_desc",
+          "label": "工種説明",
           "required": false,
           "defaultValue": ""
         },
@@ -477,6 +699,13 @@
           "type": "SINGLE_LINE_TEXT",
           "code": "summary_work_type_name",
           "label": "システム入力工種",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_material_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_material_name",
+          "label": "材料",
           "required": false,
           "defaultValue": ""
         },
