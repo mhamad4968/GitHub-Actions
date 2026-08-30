@@ -6620,6 +6620,8 @@ function buildVersionCopyInputs({
       ".jy2-combo-wrap{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;width:100%;min-width:0}",
       ".jy2-combo-wrap>.jy2-input{flex:1;min-width:0;border-top-right-radius:0;border-bottom-right-radius:0}",
       ".jy2-combo-wrap>.jy2-combo-select{flex:0 0 2rem;width:2rem;max-width:2rem;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;border-radius:0 4px 4px 0;background:#F4FAF4;cursor:pointer;font-size:11px;line-height:1}",
+      ".jy2-combo-list-only>.jy2-combo-readonly{cursor:pointer;background:#F4FAF4;caret-color:transparent}",
+      ".jy2-combo-list-only>.jy2-combo-readonly:focus{outline:2px solid #2563eb;outline-offset:1px}",
       ".jy2-select{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;padding:2px 4px;background:#f1f5f9;border-radius:4px;cursor:pointer}",
       ".jy2-select:focus{border-color:#2563eb;background:#eef4ff}",
       ".jy2-incomplete{background:#FFF5F5!important}",
@@ -7303,10 +7305,11 @@ function buildVersionCopyInputs({
   // 右 <select>(▼) は全候補を常時列挙（datalist が現行値で絞られても選べる）。
   // opts.displayDitto: U27 連続同値は初期表示を「〃」にし、focus で実値を一時表示。
   // opts.revealValue: focus 時に見せる実値（〃保存時は解決済みの上段値）。
-  // opts.listOnly: 候補あり時はリスト外の非空値を blur/change で拒否（空クリアは可）。
-  //   「〃」は常に許可。既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
-  // opts.fullTitle: 見切れ時ホバーで全文（定義及び品名など長文列）。listOnly 拒否中は miss 文言優先。
-  function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
+    // opts.listOnly: 候補あり時はリスト外の非空値を拒否（空クリアは可）。
+    //   「〃」は常に許可。既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
+    //   G0: 費目／種別／取引先／材料はリスト選択のみ → 打鍵入力は readOnly（▼からのみ変更）。
+    // opts.fullTitle: 見切れ時ホバーで全文（定義及び品名など長文列）。listOnly 拒否中は miss 文言優先。
+    function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
     const stored = value === null || value === undefined ? "" : String(value);
@@ -7374,6 +7377,15 @@ function buildVersionCopyInputs({
       dlOpt.value = text;
       datalist.appendChild(dlOpt);
     }
+    // listOnly + 候補あり: 表示は input、変更は▼のみ（手入力でリスト外を足せない）。
+    const listOnlySelect = Boolean(opts.listOnly) && seen.size > 0;
+    if (listOnlySelect) {
+      input.readOnly = true;
+      input.removeAttribute("list");
+      input.classList.add("jy2-combo-readonly");
+      input.title = input.title || "リストから選択してください（▼）";
+      wrap.classList.add("jy2-combo-list-only");
+    }
     if ([...seen].every((t) => t === JY2_DITTO_MARK) && !useDittoDisplay && seen.size === 0) {
       select.disabled = true;
       select.title = "このブロックに候補リストがありません";
@@ -7392,7 +7404,7 @@ function buildVersionCopyInputs({
       miss.hidden = true;
       miss.textContent = "";
       if (fullTitle) syncFullTitle();
-      else input.title = "";
+      else if (!listOnlySelect) input.title = "";
     };
     const showMiss = (msg = "リストにありません") => {
       miss.textContent = msg;
@@ -7442,20 +7454,35 @@ function buildVersionCopyInputs({
         input.value = revealValue || stored;
       }
     });
-    input.addEventListener("change", commit);
-    input.addEventListener("blur", commit);
-    input.addEventListener("compositionstart", () => {
-      composing = true;
-    });
-    input.addEventListener("compositionend", () => {
-      composing = false;
-      if (opts.commitExactOption && seen.has(input.value.trim())) commit();
-    });
-    input.addEventListener("input", () => {
-      if (fullTitle) syncFullTitle();
-      // 工種番号など既知候補と完全一致した時点で、Tab/blurを待たず即時反映。
-      if (!composing && opts.commitExactOption && seen.has(input.value.trim())) commit();
-    });
+    // listOnly の readOnly 表示欄は change/blur で手入力確定しない（▼経路のみ）。
+    if (!listOnlySelect) {
+      input.addEventListener("change", commit);
+      input.addEventListener("blur", commit);
+      input.addEventListener("compositionstart", () => {
+        composing = true;
+      });
+      input.addEventListener("compositionend", () => {
+        composing = false;
+        if (opts.commitExactOption && seen.has(input.value.trim())) commit();
+      });
+      input.addEventListener("input", () => {
+        if (fullTitle) syncFullTitle();
+        // 工種番号など既知候補と完全一致した時点で、Tab/blurを待たず即時反映。
+        if (!composing && opts.commitExactOption && seen.has(input.value.trim())) commit();
+      });
+    } else {
+      // readOnly 欄クリックで▼へ誘導（選択体験を明確化）
+      input.addEventListener("mousedown", (event) => {
+        if (select.disabled) return;
+        if (typeof event.preventDefault === "function") event.preventDefault();
+        try {
+          select.focus();
+          if (typeof select.showPicker === "function") select.showPicker();
+        } catch {
+          // showPicker 非対応ブラウザは focus のみ
+        }
+      });
+    }
     select.addEventListener("change", () => {
       const picked = select.value;
       if (!picked) return;
