@@ -2839,14 +2839,18 @@
     }
     // listOnly: 候補の有無に関わらず手入力不可（▼選択のみ）。候補ゼロ時も自由入力させない。
     const listOnlySelect = Boolean(opts.listOnly);
+    // 空クリア: listOnly 既定は可（材料等）。hideClearWhenSet かつ現行値ありなら「▼／空」を出さない。
+    const allowClear =
+      opts.allowClear !== false &&
+      !(opts.hideClearWhenSet && stored.trim());
     if (listOnlySelect) {
       input.readOnly = true;
       input.removeAttribute("list");
       input.classList.add("jy2-combo-readonly");
       input.title = input.title || "リストから選択してください（▼）";
       wrap.classList.add("jy2-combo-list-only");
-      // 任意クリア用（材料・費目など空欄可）
-      blank.textContent = "▼／空";
+      // 任意クリア用（材料・費目など空欄可）。設定済み＋hideClearWhenSet は ▼ のみ。
+      blank.textContent = allowClear ? "▼／空" : "▼";
       blank.value = "";
     }
     if ([...seen].every((t) => t === JY2_DITTO_MARK) && !useDittoDisplay && seen.size === 0) {
@@ -2950,9 +2954,13 @@
       const picked = select.value;
       revealed = true;
       clearMiss();
-      // listOnly: 空選択＝クリア（材料などは任意）
+      // listOnly: 空選択＝クリア（材料などは任意）。hideClearWhenSet 時は無視。
       if (!picked) {
         if (listOnlySelect) {
+          if (!allowClear) {
+            select.selectedIndex = 0;
+            return;
+          }
           input.value = useDittoDisplay ? "" : "";
           lastCommitted = "";
           onCommit("");
@@ -8762,16 +8770,14 @@
         const mapped =
           codeMaster.workTypeByName[savedName] ||
           codeMaster.workTypeByName[value];
-        let newCode = block.workTypeCode;
-        if (mapped) {
-          detailModel.updateBlockHeader(id, { workTypeCode: mapped });
-          newCode = mapped;
-          const codeInput = section.querySelector(
-            '[data-jy2-worktype-field="code"] input',
-          );
-          if (codeInput) codeInput.value = mapped;
-        }
-        const costCat = jy2ResolveCostCategoryFromWorkType(newCode, value);
+        // 番号なしマスタ（軌道工事等）はコードを空にする。
+        const newCode = mapped ? String(mapped) : "";
+        detailModel.updateBlockHeader(id, { workTypeCode: newCode });
+        const codeInput = section.querySelector(
+          '[data-jy2-worktype-field="code"] input',
+        );
+        if (codeInput) codeInput.value = newCode;
+        const costCat = jy2ResolveCostCategoryFromWorkType(newCode, savedName);
         if (costCat === "施工" || costCat === "保安") {
           detailModel.updateBlockHeader(id, { costCategory: costCat });
         } else if (costCat === "給与") {
@@ -8785,7 +8791,7 @@
         block.workTypeCode,
         jy2SystemWorkCodeChoices(block.workTypeCode),
         commitWorkTypeCode,
-        { listOnly: true, commitExactOption: true },
+        { listOnly: true, commitExactOption: true, hideClearWhenSet: true },
       );
       workTypeCodeControl.dataset.jy2WorktypeField = "code";
       headerField(
@@ -8797,7 +8803,7 @@
         block.workTypeName,
         jy2SystemWorkNameChoices(block.workTypeName),
         commitWorkTypeName,
-        { listOnly: true, commitExactOption: true },
+        { listOnly: true, commitExactOption: true, hideClearWhenSet: true },
       );
       workTypeNameControl.dataset.jy2WorktypeField = "name";
       headerField(
