@@ -2983,18 +2983,98 @@
   // 会社名（取引先コンボ）: データマスタ I∪J を1本化（依頼者確認 2026-07-26）。
   // 生成: node scripts/jikkou-yosan-v2-sync-vendor-list.mjs
 
+  // G0 §8: システム工種＋工種番号（マスタ整理順。空コードは採番しない）。
+  const JY2_SYSTEM_WORK_MASTER = Object.freeze([
+    Object.freeze({ name: "材料費", code: "10100" }),
+    Object.freeze({ name: "塗装工事", code: "10200" }),
+    Object.freeze({ name: "足場工事", code: "10300" }),
+    Object.freeze({ name: "塗装及び足場工事", code: "10400" }),
+    Object.freeze({ name: "修繕等工事", code: "10600" }),
+    Object.freeze({ name: "塗装付帯工事", code: "10700" }),
+    Object.freeze({ name: "軌道工事", code: "" }),
+    Object.freeze({ name: "調査設計費", code: "" }),
+    Object.freeze({ name: "外注試験費", code: "" }),
+    Object.freeze({ name: "交通規制費", code: "" }),
+    Object.freeze({ name: "追加工事①", code: "14100" }),
+    Object.freeze({ name: "追加工事②", code: "14200" }),
+    Object.freeze({ name: "追加工事③", code: "14300" }),
+    Object.freeze({ name: "追加工事④", code: "14400" }),
+    Object.freeze({ name: "追加工事⑤", code: "14500" }),
+    Object.freeze({ name: "工事管理者賃金", code: "10900" }),
+    Object.freeze({ name: "建設機械オペレーター", code: "" }),
+    Object.freeze({ name: "その他労務者", code: "" }),
+    Object.freeze({ name: "鎌ヶ谷資材使用料", code: "10800" }),
+    Object.freeze({ name: "レンタル", code: "11600" }),
+    Object.freeze({ name: "仮設・工具費等", code: "" }),
+    Object.freeze({ name: "運送費", code: "11700" }),
+    Object.freeze({ name: "産業廃棄物処理費", code: "11800" }),
+    Object.freeze({ name: "租税公課", code: "11900" }),
+    Object.freeze({ name: "借地料等", code: "12000" }),
+    Object.freeze({ name: "消耗品費", code: "12100" }),
+    Object.freeze({ name: "事務費", code: "12200" }),
+    Object.freeze({ name: "通信費", code: "12300" }),
+    Object.freeze({ name: "旅費交通費", code: "12400" }),
+    Object.freeze({ name: "履行保証保険料", code: "12600" }),
+    Object.freeze({ name: "建退共証紙購入費", code: "12700" }),
+    Object.freeze({ name: "諸雑費", code: "12900" }),
+    Object.freeze({ name: "諸会費", code: "13100" }),
+    Object.freeze({ name: "会議費", code: "13620" }),
+    Object.freeze({ name: "補償費", code: "12800" }),
+    Object.freeze({ name: "交際費", code: "13600" }),
+    Object.freeze({ name: "各種保険料(任意保険）", code: "" }),
+    Object.freeze({ name: "法定福利費", code: "" }),
+    Object.freeze({ name: "工事安全専任管理者", code: "11000" }),
+    Object.freeze({ name: "線閉責任者", code: "11100" }),
+    Object.freeze({ name: "列車見張員", code: "11200" }),
+    Object.freeze({ name: "交通整理員", code: "11300" }),
+    Object.freeze({ name: "検電接地", code: "11400" }),
+    Object.freeze({ name: "その他保安費", code: "11500" }),
+    Object.freeze({ name: "重機誘導員", code: "13500" }),
+  ]);
+  const JY2_SYSTEM_WORK_NAMES = Object.freeze(
+    JY2_SYSTEM_WORK_MASTER.map((x) => x.name),
+  );
+  const JY2_SYSTEM_WORK_CODES = Object.freeze([
+    "10100",
+    "10200",
+    "10300",
+    "10400",
+    "10600",
+    "10700",
+    "14100",
+    "14200",
+    "14300",
+    "14400",
+    "14500",
+    "10900",
+    "10800",
+    "11600",
+    "11700",
+    "11800",
+    "11900",
+    "12000",
+    "12100",
+    "12200",
+    "12300",
+    "12400",
+    "12600",
+    "12700",
+    "12900",
+    "13100",
+    "13620",
+    "12800",
+    "13600",
+    "11000",
+    "11100",
+    "11200",
+    "11300",
+    "11400",
+    "11500",
+    "13500",
+  ]);
+
+  // G0 V1: 協力会社∪取引先（マスタ順・協力会社→取引先）。
   const JY2_VENDOR_SEEDS = Object.freeze([
-    "ＡＣＣＥＳＳ",
-    "松岡塗料",
-    "東海塗料興業",
-    "横浜化成",
-    "エイトポイント",
-    "大塚刷毛",
-    "国元商会",
-    "興亜産業",
-    "島津テクノリサーチ",
-    "仙台銘板",
-    "協力会社",
     "abit",
     "今岡塗装",
     "大沼塗装工業",
@@ -3016,9 +3096,16 @@
     "姉崎工業",
     "ＮＲ",
     "オオイ",
+    "大曾根建設",
     "共和工業",
     "ビーエムシー",
     "ヘイセイ工業",
+    "島津テクノリサーチ",
+    "シンコーハイウェイ",
+    "テイケイ",
+    "建設機械オペレーター会社",
+    "プロスタエクセキューション",
+    "ニシオワークサポート",
     "レンタル",
     "鎌ヶ谷倉庫",
     "アクティオ",
@@ -3030,19 +3117,49 @@
     "産業廃棄物業者",
     "ジャパンウェスト",
     "タケエイ",
-    "山仁不動産",
     "保安要員関係会社",
     "SmB",
     "エスジーアイ鉄道",
     "オリエンタル警備",
-    "シンコーハイウェイ",
-    "テイケイ",
     "みはりや",
     "関東メンテナンス",
     "事業開発者",
     "大光電産",
-    "プロスタエクセキューション",
-    "ニシオワークサポート",
+    "Re.code",
+    "ＡＣＣＥＳＳ",
+    "松岡塗料",
+    "東海塗料興業",
+    "中島商会",
+    "横浜化成",
+    "エイトポイント",
+    "大塚刷毛",
+    "国元商会",
+    "興亜産業",
+    "仙台銘板",
+  ]);
+
+  const JY2_BRANCH_MASTER = Object.freeze([
+    "本社（JR東日本）",
+    "首都圏本部",
+    "横浜支社",
+    "八王子支社",
+    "大宮支社",
+    "千葉支社",
+    "長野支社",
+    "水戸支社",
+    "高崎支社",
+    "本社（JR東海）",
+    "新幹線鉄道事業本部",
+  ]);
+  const JY2_DEPARTMENT_MASTER = Object.freeze([
+    "施工部　東京１グループ",
+    "施工部　東京２グループ",
+    "施工部　東京３グループ",
+    "施工部　横浜１グループ",
+    "施工部　横浜２グループ",
+    "橋りょうリペア部",
+    "水戸営業所",
+    "千葉営業所",
   ]);
 
   // G0 §6.2 / §16.1: 請負 契約工種マスタ（帯別）。新規行はマスタのみ、既存値は祖父。
@@ -3085,6 +3202,86 @@
     "その他材料",
   ]);
 
+  // G0 §9: 費目→種別（マスタ整理「内訳」列順）。外注費のみ §9.1 の5件。
+  const JY2_TYPES_BY_HIMOKU_MASTER = Object.freeze({
+    材料費: JY2_MATERIAL_TYPE_MENU,
+    外注費: JY2_GAICHU_TYPE_MENU,
+    労務費: Object.freeze([
+      "出向工事管理者（昼間）",
+      "出向工事管理者（夜間）",
+      "軌陸車オペレーター（昼間）",
+      "軌陸車オペレーター（夜間）",
+      "その他建設機械オペレーター（昼間）",
+      "その他建設機械オペレーター（夜間）",
+      "その他労務者（昼間）",
+      "その他労務者（夜間）",
+    ]),
+    仮設機械経費: Object.freeze([
+      "仮設材･鉄道器材レンタル",
+      "仮設材レンタル",
+      "建設機械類レンタル",
+      "保安用機材類レンタル",
+      "仮設ハウス･仮設トイレ",
+      "その他機材レンタル",
+      "建設機械油脂類",
+      "油脂燃料費",
+    ]),
+    現場経費: Object.freeze([
+      "工場製品運搬費",
+      "建設機械運搬費",
+      "仮設資材運搬費",
+      "その他資材運搬費",
+      "一般産業廃棄物",
+      "特別産業廃棄物",
+      "収入印紙",
+      "県証紙",
+      "防護服･ペール缶",
+      "電動ファン用フィルター",
+      "郵便･宅配便など",
+      "携帯電話代金やＦＡＸ料金",
+      "出張旅費特例",
+      "３万円未満公共交通機関特例",
+      "その他旅費交通費",
+      "借上げ自動車費",
+      "労災保険料",
+      "寄付金･安全祈願祭など",
+      "汲み取り料",
+      "その他日用雑貨等",
+      "安全衛生協議会費",
+      "その他諸団体会費",
+      "事前打合せ費等",
+    ]),
+    その他費用: Object.freeze([
+      "漁協・水利組合など",
+      "瑕損補修費",
+      "隣接物瑕損補償費",
+      "その他補償費",
+      "得意先接待交際費（甲）",
+      "得意先接待交際費（乙）",
+      "その他接待交際費",
+    ]),
+    外注労務費: Object.freeze([
+      "出向工事安全専任管理者（昼間）",
+      "出向工事安全専任管理者（夜間）",
+      "外注線閉責任者（昼間）",
+      "外注線閉責任者（夜間）",
+      "外注列車見張員（昼間）",
+      "外注列車見張員（夜間）",
+      "外注交通整理員（昼間）",
+      "外注交通整理員（夜間）",
+      "外注停電責任者（昼間）",
+      "外注停電責任者（夜間）",
+      "外注検電接地作業者（昼間）",
+      "外注検電接地作業者（夜間）",
+      "外注安全帯監視人（昼間）",
+      "外注安全帯監視人（夜間）",
+      "外注その他保安要員（昼間）",
+      "外注その他保安要員（夜間）",
+      "外注重機誘導員（昼間）",
+      "外注重機誘導員（夜間）",
+    ]),
+  });
+
   // G0 §10.1: 材料費×(塗料|その他材料) の listOnly。
   // 種別「その他材料費」は塗料マスタではなくシール等（Excel／コード表）を使う。
   const JY2_MATERIAL_LIST_TYPES = Object.freeze([
@@ -3101,6 +3298,7 @@
     "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-7",
     "塗料用シンナー",
     "エポキシシンナー",
+    "ウレタンシンナー",
   ]);
   const JY2_OTHER_MATERIAL_MASTER = Object.freeze([
     "塗装記録表示シール",
@@ -5797,10 +5995,14 @@
   function jy2ResolveNameHierarchy(block) {
     const code = String((block && block.workTypeCode) || "").trim();
     const name = String((block && block.workTypeName) || "").trim();
+    const nameBare = name.replace(/^（塗）/u, "");
     const byCode = JY2_NAME_HIERARCHY.byWorkTypeCode || {};
     const byName = JY2_NAME_HIERARCHY.byWorkTypeName || {};
     // 名称優先（同一コードの衝突や誤記訂正後も名称で正確に引く）。
+    // マスタ名（塗なし）と旧（塗）付きの両方を引く。
     if (name && byName[name]) return byName[name];
+    if (nameBare && byName[nameBare]) return byName[nameBare];
+    if (nameBare && byName[`（塗）${nameBare}`]) return byName[`（塗）${nameBare}`];
     if (code && byCode[code]) return byCode[code];
     return null;
   }
@@ -5889,21 +6091,14 @@
     }
   }
 
-  // 費目 → 種別の候補。外注費・材料費はマスタ正本固定（コード表マージしない）。
-  // 他費目は工種ローカル → コード表全体の順（工事系メニューで 10100 側を使えるようにする）。
+  // 費目 → 種別。マスタ整理「内訳」正本のみ（コード表 typesByHimoku は使わない）。
+  // 外注費は §9.1 の5件。
   function jy2TypesForHimoku(entry, himoku) {
+    void entry;
     const key = String(himoku || "").trim();
     if (!key) return [];
-    if (key === "外注費") return [...JY2_GAICHU_TYPE_MENU];
-    if (key === "材料費") return [...JY2_MATERIAL_TYPE_MENU];
-    const local =
-      entry && entry.typesByHimoku && Array.isArray(entry.typesByHimoku[key])
-        ? entry.typesByHimoku[key]
-        : [];
-    if (local.length) return [...local];
-    const globalMap = JY2_NAME_HIERARCHY.typesByHimoku || {};
-    const global = Array.isArray(globalMap[key]) ? globalMap[key] : [];
-    return global.length ? [...global] : [];
+    const menu = JY2_TYPES_BY_HIMOKU_MASTER[key];
+    return Array.isArray(menu) ? [...menu] : [];
   }
 
   // 候補がちょうど1件ならそれを返す（「－」固定費目は別経路）。
@@ -6000,16 +6195,15 @@
   }
 
   function jy2CollectDetailSuggestions(detailModel, block, row) {
-    // 候補源はコード表＋工事系費目メニュー（レコード値で汚染しない）。
-    const vendors = new Set(JY2_VENDOR_SEEDS);
+    // 候補源はマスタ整理正本（コード表の余剰候補は出さない）。
+    // 取引先: マスタ順を維持。レコードの現行値のみ祖父追加（五十音ソートしない）。
+    const vendors = [...JY2_VENDOR_SEEDS];
     if (detailModel) {
       for (const b of detailModel.snapshot().blocks) {
-        if (b.vendorName) vendors.add(String(b.vendorName));
+        const v = b && b.vendorName ? String(b.vendorName).trim() : "";
+        if (v && !vendors.includes(v)) vendors.push(v);
       }
     }
-    // 費目／種別／定義の並びはコード表（JY2_NAME_HIERARCHY）の出現順を維持する。
-    // 五十音ソートはしない（依頼者：リスト順＝コード表順）。
-    const sortJa = (left, right) => String(left).localeCompare(String(right), "ja");
     const entry = jy2ResolveNameHierarchy(block || {});
     const selectedHimoku = row && row.name1 ? String(row.name1).trim() : "";
     const selectedType = row && row.name2 ? String(row.name2).trim() : "";
@@ -6030,9 +6224,10 @@
             selectedType || (row && row.name2),
           )
         : [];
+      // 材料種類マスタ対象のみ list。それ以外の詳細は手入力（コード表定義候補は出さない）。
       name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
         ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
-        : jy2DefinitionsForType(selectedType, selectedHimoku, entry);
+        : [];
     } else {
       // 工種空（R-05）: 費目もマスタ7件のみ。種別は費目選択後。
       name1 = jy2ListOnlyChoices(
@@ -6047,18 +6242,18 @@
         : [];
       name3 = jy2UsesMaterialList(selectedHimoku, selectedType)
         ? jy2MaterialChoices(row && row.name3, selectedHimoku, selectedType)
-        : jy2DefinitionsForType(selectedType, selectedHimoku, null);
+        : [];
     }
     return {
       profile: entry
         ? entry.constructionMenu
           ? "construction-menu"
-          : "code-table"
-        : "no-work-type",
+          : "hierarchy"
+        : "all",
       name1,
       name2,
       name3,
-      vendors: [...vendors].sort(sortJa),
+      vendors,
       himokuLocked: Boolean(entry && !entry.constructionMenu && name1.length === 1),
     };
   }
@@ -7011,51 +7206,46 @@
     };
   }
 
-  // システム工種／工種番号の並びをコード表の依頼者確認リスト順にする。
-  // 階層マスタのコードを優先（例: レンタル=11600＝Excel誤記10300の訂正）。
+  // システム工種／工種番号の並び＝マスタ整理順（コード表（塗）接頭は正本にしない）。
   function jy2ApplyWorkTypeCodeTableOrder(lists) {
-    const order = Array.isArray(JY2_NAME_HIERARCHY.workTypeNameOrder)
-      ? JY2_NAME_HIERARCHY.workTypeNameOrder
-      : Object.keys(JY2_NAME_HIERARCHY.byWorkTypeName || {});
-    const byName = JY2_NAME_HIERARCHY.byWorkTypeName || {};
-    const seenCodes = new Set();
-    for (const name of order) {
+    lists.workTypeNames = [];
+    lists.workTypeCodes = [];
+    lists.workTypeByName = {};
+    lists.workTypeByCode = {};
+    for (const row of JY2_SYSTEM_WORK_MASTER) {
+      const name = row && row.name ? String(row.name).trim() : "";
+      const code = row && row.code ? String(row.code).trim() : "";
       if (!name) continue;
       if (!lists.workTypeNames.includes(name)) lists.workTypeNames.push(name);
-      const entry = byName[name];
-      const code = entry && entry.workTypeCode ? String(entry.workTypeCode).trim() : "";
       if (code) {
         lists.workTypeByName[name] = code;
-        if (!seenCodes.has(code)) {
-          lists.workTypeByCode[code] = name;
-          seenCodes.add(code);
-        }
+        if (!lists.workTypeByCode[code]) lists.workTypeByCode[code] = name;
+        if (!lists.workTypeCodes.includes(code)) lists.workTypeCodes.push(code);
       }
     }
-    const rank = new Map(order.map((n, i) => [n, i]));
-    lists.workTypeNames.sort((a, b) => {
-      const ra = rank.has(a) ? rank.get(a) : 100000;
-      const rb = rank.has(b) ? rank.get(b) : 100000;
-      if (ra !== rb) return ra - rb;
-      return String(a).localeCompare(String(b), "ja");
-    });
-    // 工種番号も名称リストと同じ順（初出コードのみ）。
-    const codes = [];
-    for (const name of lists.workTypeNames) {
-      const code = lists.workTypeByName[name];
-      if (code && !codes.includes(code)) codes.push(code);
-    }
-    for (const code of lists.workTypeCodes) {
-      if (code && !codes.includes(code)) codes.push(code);
-    }
-    lists.workTypeCodes = codes;
+  }
+
+  function jy2SystemWorkNameChoices(currentValue) {
+    const cur = String(currentValue || "").trim();
+    const stripped = cur.replace(/^（塗）/u, "");
+    // マスタ名順。祖父はマスタ外の現行値（（塗）付き含む）のみ末尾追加。
+    const base = jy2ListOnlyChoices(JY2_SYSTEM_WORK_NAMES, stripped);
+    if (cur && cur !== stripped && !base.includes(cur)) base.push(cur);
+    return base;
+  }
+
+  function jy2SystemWorkCodeChoices(currentValue) {
+    return jy2ListOnlyChoices(JY2_SYSTEM_WORK_CODES, currentValue);
   }
 
   async function jy2LoadMasterLists(api) {
     if (jy2MasterListsCache) return jy2MasterListsCache;
     const empty = jy2EmptyMasterLists();
+    // システム工種は常にマスタ整理正本（API コード表行は混ぜない）。
+    jy2ApplyWorkTypeCodeTableOrder(empty);
+    empty.branches = [...JY2_BRANCH_MASTER];
+    empty.departments = [...JY2_DEPARTMENT_MASTER];
     if (typeof api !== "function") {
-      jy2ApplyWorkTypeCodeTableOrder(empty);
       jy2MasterListsCache = empty;
       return empty;
     }
@@ -7065,44 +7255,25 @@
         query: 'is_active in ("有効") order by sort_order asc limit 500',
       });
       const lists = jy2EmptyMasterLists();
+      jy2ApplyWorkTypeCodeTableOrder(lists);
       for (const rec of response.records || []) {
         const cat = String(
           (rec.list_category && rec.list_category.value) || "",
         ).trim();
         const name = String((rec.item_name && rec.item_name.value) || "").trim();
-        if (cat === "コード表行" || cat.includes("コード")) {
-          const code = String(
-            (rec.work_type_code && rec.work_type_code.value) || "",
-          ).trim();
-          const wtName = String(
-            (rec.work_type_name && rec.work_type_name.value) || "",
-          ).trim();
-          if (code) {
-            lists.workTypeByCode[code] = wtName;
-            if (!lists.workTypeCodes.includes(code)) lists.workTypeCodes.push(code);
-          }
-          if (wtName && !lists.workTypeNames.includes(wtName)) {
-            lists.workTypeNames.push(wtName);
-          }
-          if (wtName && code && lists.workTypeByName[wtName] == null) {
-            lists.workTypeByName[wtName] = code;
-          }
-          continue;
-        }
+        // コード表行はシステム工種候補に使わない（G0 §8）。
+        if (cat === "コード表行" || cat.includes("コード")) continue;
         if (!name) continue;
         if (cat === "桁種別") lists.girderTypes.push(name);
-        else if (cat === "発注支社") lists.branches.push(name);
-        else if (cat === "部門") lists.departments.push(name);
       }
-      // システム工種はコード番号順ではなく、コード表（依頼者確認リスト）順。
-      jy2ApplyWorkTypeCodeTableOrder(lists);
+      lists.branches = [...JY2_BRANCH_MASTER];
+      lists.departments = [...JY2_DEPARTMENT_MASTER];
       jy2MasterListsCache = lists;
       return lists;
     } catch (error) {
       if (typeof console !== "undefined" && console.warn) {
         console.warn("JY2 マスタ一覧の読込に失敗（手入力フォールバック）:", error);
       }
-      jy2ApplyWorkTypeCodeTableOrder(empty);
       jy2MasterListsCache = empty;
       return empty;
     }
@@ -8585,8 +8756,12 @@
       };
       const commitWorkTypeName = (value) => {
         const id = block.stableBlockId;
-        detailModel.updateBlockHeader(id, { workTypeName: value });
-        const mapped = codeMaster.workTypeByName[value];
+        // G0 §8.1: 保存はマスタ名（（塗）なし）。
+        const savedName = String(value || "").trim().replace(/^（塗）/u, "");
+        detailModel.updateBlockHeader(id, { workTypeName: savedName });
+        const mapped =
+          codeMaster.workTypeByName[savedName] ||
+          codeMaster.workTypeByName[value];
         let newCode = block.workTypeCode;
         if (mapped) {
           detailModel.updateBlockHeader(id, { workTypeCode: mapped });
@@ -8608,9 +8783,9 @@
       const workTypeCodeControl = jy2ComboInput(
         documentRef,
         block.workTypeCode,
-        codeMaster.workTypeCodes,
+        jy2SystemWorkCodeChoices(block.workTypeCode),
         commitWorkTypeCode,
-        { commitExactOption: true },
+        { listOnly: true, commitExactOption: true },
       );
       workTypeCodeControl.dataset.jy2WorktypeField = "code";
       headerField(
@@ -8620,9 +8795,9 @@
       const workTypeNameControl = jy2ComboInput(
         documentRef,
         block.workTypeName,
-        codeMaster.workTypeNames,
+        jy2SystemWorkNameChoices(block.workTypeName),
         commitWorkTypeName,
-        { commitExactOption: true },
+        { listOnly: true, commitExactOption: true },
       );
       workTypeNameControl.dataset.jy2WorktypeField = "name";
       headerField(
