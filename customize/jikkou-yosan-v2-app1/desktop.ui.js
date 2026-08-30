@@ -7184,9 +7184,13 @@
     version: "バージョン管理",
   };
 
+  // G0 S4: 工事原価管理タブは非表示のみ。actuals / 758 書込ロジックは残置。
+  const JY2_HIDE_COST_MGMT_TAB = true;
+
   function jy2ShellTabList(model) {
     const tabs = [];
     for (const tab of model.tabs) {
+      if (JY2_HIDE_COST_MGMT_TAB && tab.id === "actual") continue;
       tabs.push(tab);
       if (tab.id === "header") {
         tabs.push(
@@ -13550,6 +13554,10 @@
       }
     };
     const refreshActuals = () => {
+      if (!actualPane) {
+        actualsDirty = false;
+        return;
+      }
       jy2RenderActualPane(
         documentRef,
         actualPane,
