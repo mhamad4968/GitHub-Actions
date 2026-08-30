@@ -1,5 +1,7 @@
 # 夜セッション必読 — 実行予算 Ver.02 マスタ／内訳・総括（2026-08-29 朝締め）
 
+> **2026-08-30 朝締め**: 本ファイルの「夜の対象」（コード表・項目名）は **G0 §4〜11 で実施済**。今夜の実装正本は `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。本ファイルを今夜の作業指示にしない。
+
 > 朝は **G0 合意のみ**（実装・deploy なし）。夜はコード表系＋項目名変更の整理。  
 > G0 正本: `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`  
 > ローカル作業メモ: `C:\tmp\実行予算ver2\_master-mapping-g0.md`  

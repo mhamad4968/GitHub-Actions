@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-08-29T23:39:52.301Z",
+  "scoredAt": "2026-08-30T02:33:55.778Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+  "topTask": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
   "topTaskKind": "work",
-  "topWorkTask": "夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+  "topWorkTask": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
   "tasks": [
     {
-      "id": "checkpoint:夜_cold-start_後_`chat-sessions/2026-08-29",
-      "text": "夜 cold-start 後 `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md` ＋ G0 SPEC を読む。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
+      "id": "checkpoint:夜_cold-start_後_`chat-sessions/2026-08-30",
+      "text": "夜 cold-start 後 `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md` ＋ G0 **§15**。項番 -0（浜田指示）。個人資産月次は 9/13–17 必須",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,
