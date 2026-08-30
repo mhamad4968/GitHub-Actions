@@ -487,7 +487,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.doesNotMatch(source, /row\.bcRate/);
   assert.doesNotMatch(source, /row\.ecRate/);
   // Y10 note + Y4 exclusion are stated on the pane.
-  assert.match(source, /給与手当は対象外/);
+  assert.match(source, /給与手当除く/);
   // 2026-07-29-ver02-actual-detail-expand: parent-only display + child rows;
   // Phase2c-c-excel-flat で費目開閉トグルは廃止（Excel常時階層）。
   assert.match(source, /jy2ActualChildRow/);
@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-08-01-ver02-actual-excel-dedupe-coded/);
+  assert.match(source, /@JY_V2_BUILD 2026-08-02-ver02-actual-visual-readability/);
   assert.match(source, /Phase2c-excel-dedupe-coded/);
   assert.match(source, /jy2CostMgmtDuplicateCodedBlockIdSet/);
   assert.match(
@@ -631,7 +631,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /Phase2c-excel-12700-kentaikyo/);
   assert.match(source, /Phase2c-excel-12600-bond/);
   assert.match(source, /Phase2c-excel-typeless-name2-persist/);
-  assert.match(source, /jy2CostMgmtSanitizeTypelessName2Ditto/);
+  assert.match(source, /typelessDualLeft && jy2IsDitto/);
   assert.doesNotMatch(source, /jy2CostMgmtClearHimokuMirroredName2/);
   assert.match(source, /skipEmptyName2Ditto/);
   assert.match(source, /prepareForSave\(\{[\s\S]*?skipEmptyName2Ditto/);
@@ -825,7 +825,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2-actual-auto-budget/);
   assert.match(source, /JY2_ACTUAL_FREEZE_COLS = 5/);
   assert.match(source, /th\("費目"/);
-  assert.match(source, /th\("種別（補助）"/);
+  assert.match(source, /th\("種別"/);
   assert.match(source, /th\("詳細"/);
   assert.match(source, /th\("操作"/);
   assert.doesNotMatch(source, /th\("費目・種別・詳細"/);
@@ -882,8 +882,8 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
   assert.match(source, /jy2ActualPrimaryHimokuLabel/);
   assert.match(source, /jy2-actual-parent-himoku/);
   assert.match(source, /himokuLabel !== primaryHimokuLabel/);
-  assert.match(source, /Excelどおり種別・詳細を常時表示/);
-  assert.match(source, /その下に種別・詳細を常時表示/);
+  assert.match(source, /詳細がある費目は▶／▼で開閉/);
+  assert.match(source, /すべて展開／すべて閉じる/);
   assert.doesNotMatch(source, /種別行を開く/);
   assert.doesNotMatch(
     source,

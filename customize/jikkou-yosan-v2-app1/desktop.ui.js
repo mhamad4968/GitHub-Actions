@@ -1923,6 +1923,7 @@
       ".jy2-tabs{display:flex;gap:4px;padding:6px 0 0;background:transparent;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}",
       ".jy2-tab{border:1px solid #cbd5e1;border-bottom:0;border-radius:6px 6px 0 0;background:#f1f5f9;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:600;color:#475569;white-space:nowrap;flex:0 0 auto}",
       ".jy2-tab[data-tab-id='header']{background:#f8fafc;color:#475569;border-color:#94a3b8}",
+      ".jy2-tab[data-tab-id='holiday']{background:#f8fafc;color:#475569;border-color:#94a3b8}",
       ".jy2-tab[data-tab-id='summary']{background:#eff6ff;color:#1e40af;border-color:#93c5fd}",
       ".jy2-tab[data-tab-id='detail']{background:#ecfdf5;color:#166534;border-color:#86efac}",
       ".jy2-tab[data-tab-id='actual']{background:#fffbeb;color:#92400e;border-color:#fcd34d}",
@@ -1933,11 +1934,13 @@
       ".jy2-tab[data-tab-id='actual'][aria-selected='true']{background:#d97706;color:#fff;border-color:#d97706}",
       ".jy2-tab[data-tab-id='version'][aria-selected='true']{background:#7c3aed;color:#fff;border-color:#7c3aed}",
       ".jy2-tab[data-tab-id='header'][aria-selected='true']{background:#64748b;color:#fff;border-color:#64748b}",
+      ".jy2-tab[data-tab-id='holiday'][aria-selected='true']{background:#64748b;color:#fff;border-color:#64748b}",
       ".jy2-tab[data-read-only='true']::after{content:' 🔒';font-size:11px}",
       ".jy2-pane{display:none;min-height:0;padding:8px 12px 14px;background:#fff;border:1px solid #cbd5e1;border-top:none;border-radius:0 0 8px 8px;max-width:100%;min-width:0;width:100%;box-sizing:border-box;overflow-x:clip;overflow-y:visible}",
       ".jy2-pane[data-active='true']{display:block}",
       // U38: タブ切替が分かるようペイン全体を薄い色面に（表セルは白維持）
       ".jy2-pane[data-tab-id='header'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#f1f5f9}",
+      ".jy2-pane[data-tab-id='holiday'][data-active='true']{border-color:#94a3b8;border-top:3px solid #64748b;background:#f1f5f9}",
       ".jy2-pane[data-tab-id='summary'][data-active='true']{border-color:#93c5fd;border-top:3px solid #3b82f6;background:#e8f4fd}",
       ".jy2-pane[data-tab-id='detail'][data-active='true']{border-color:#86efac;border-top:3px solid #22c55e;background:#e8f5e9}",
       ".jy2-pane[data-tab-id='actual'][data-active='true']{border-color:#fcd34d;border-top:3px solid #f59e0b;background:#fff3e0}",
@@ -1950,6 +1953,7 @@
       ".jy2-pane-head-banner{display:none!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;border:0!important}",
       ".jy2-sheet-title{width:100%;max-width:960px;box-sizing:border-box;padding:10px 36px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;line-height:1.3;text-align:center;box-shadow:0 3px 8px rgba(15,23,42,.12);margin:0 auto}",
       ".jy2-sheet-title-header{background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 55%,#cbd5e1 100%);border:1px solid #94a3b8}",
+      ".jy2-sheet-title-holiday{background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 55%,#cbd5e1 100%);border:1px solid #94a3b8}",
       ".jy2-sheet-title-summary{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 55%,#bfdbfe 100%);border:1px solid #93c5fd}",
       ".jy2-sheet-title-detail{background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 55%,#bbf7d0 100%);border:1px solid #86efac}",
       ".jy2-sheet-title-actual{background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%);border:1px solid #fcd34d}",
@@ -1960,12 +1964,14 @@
       ".jy2-sheet-title-actual .jy2-sheet-title-doc{color:#92400e}",
       ".jy2-sheet-title-version .jy2-sheet-title-doc{color:#5b21b6}",
       ".jy2-sheet-title-header .jy2-sheet-title-doc{color:#334155}",
+      ".jy2-sheet-title-holiday .jy2-sheet-title-doc{color:#334155}",
       ".jy2-sheet-title-sheet{display:inline-block;font-size:16px;font-weight:700;letter-spacing:.2em;margin-inline-end:-.2em;padding:5px 22px;border-radius:8px;background:#fff;text-align:center}",
       ".jy2-sheet-title-summary .jy2-sheet-title-sheet{color:#1d4ed8;border:1px solid #93c5fd}",
       ".jy2-sheet-title-detail .jy2-sheet-title-sheet{color:#047857;border:1px solid #86efac}",
       ".jy2-sheet-title-actual .jy2-sheet-title-sheet{color:#b45309;border:1px solid #fcd34d}",
       ".jy2-sheet-title-version .jy2-sheet-title-sheet{color:#6d28d9;border:1px solid #c4b5fd}",
       ".jy2-sheet-title-header .jy2-sheet-title-sheet{color:#475569;border:1px solid #94a3b8}",
+      ".jy2-sheet-title-holiday .jy2-sheet-title-sheet{color:#475569;border:1px solid #94a3b8}",
       "@media (max-width:900px){.jy2-sheet-title{padding:12px 20px}.jy2-sheet-title-doc{font-size:18px;letter-spacing:.14em;margin-inline-end:-.14em}.jy2-sheet-title-sheet{font-size:14px;letter-spacing:.14em;margin-inline-end:-.14em;padding:4px 14px}}",
       ".jy2-empty{color:#475569;font-size:13px;padding:10px 12px;margin:8px 0;background:#fff;border:1px dashed #94a3b8;border-radius:8px;border-left:4px solid #64748b}",
       ".jy2-section-title{margin:14px 0 6px;font-size:14px;font-weight:700;padding:6px 10px;background:#e8eef4;border-left:4px solid #2563eb;color:#1e3a8a;border-radius:0 6px 6px 0}",
@@ -2873,7 +2879,7 @@
   }
 
   // #R-NAME-01 / #R-07: 明細候補の正本は「内訳で使うコード表.xlsx」。
-  // ラベル: 費目 / 種別（補助） / 定義及び品名（フィールドコード name_1/2/3 は据え置き）。
+  // ラベル: 費目 / 種別 / 詳細（フィールドコード name_1/2/3 は据え置き）。
   // 生成: node scripts/jikkou-yosan-v2-sync-code-table-name-hierarchy.mjs
   // 会社名（取引先コンボ）: データマスタ I∪J を1本化（依頼者確認 2026-07-26）。
   // 生成: node scripts/jikkou-yosan-v2-sync-vendor-list.mjs
@@ -2947,8 +2953,8 @@
   "generatedAt": "2026-07-29T18:56:16",
   "labels": {
     "name1": "費目",
-    "name2": "種別（補助）",
-    "name3": "定義及び品名"
+    "name2": "種別",
+    "name3": "詳細"
   },
   "constructionHimokuMenu": [
     "材料費",
@@ -6404,7 +6410,7 @@
     };
     top.appendChild(th("システム工種", { rowSpan: 2, freeze: 0 }));
     top.appendChild(th("費目", { rowSpan: 2, freeze: 1 }));
-    top.appendChild(th("種別（補助）", { rowSpan: 2, freeze: 2 }));
+    top.appendChild(th("種別", { rowSpan: 2, freeze: 2 }));
     top.appendChild(th("詳細", { rowSpan: 2, freeze: 3 }));
     const opsHead = th("操作", { rowSpan: 2, freeze: 4 });
     opsHead.title = "詳細行の追加（＋）・削除（－）。構造は一時保存で App757 へ";
@@ -6469,7 +6475,7 @@
   }
 
   /** 「単位（選択）」形式 → { label, mode }。タグ無しはそのまま。
-   * 「補助」はモードにしない（列名「種別（補助）」をタグ分割しない。#R-EXCEL-UI-01）。 */
+   * 「補助」はモードにしない（列名「種別」をタグ分割しない。#R-EXCEL-UI-01）。 */
   function jy2ParseModeLabel(raw) {
     const text = String(raw ?? "");
     const match = /^(.*)（(選択|入力|自動|日付)）$/.exec(text);
@@ -6522,6 +6528,215 @@
     const days = Math.floor((end - start) / 86400000) + 1;
     return days > 0 ? String(days) : "";
   }
+
+  /** 内閣府相当・2025–2028（W1: 土日は含めない） */
+  const JY2_JP_HOLIDAY_YMD = Object.freeze(
+    (() => {
+      const map = Object.create(null);
+      (
+        "2025-01-01,2025-01-13,2025-02-11,2025-02-23,2025-02-24,2025-03-20,2025-04-29,2025-05-03,2025-05-04,2025-05-05,2025-05-06," +
+        "2025-07-21,2025-08-11,2025-09-15,2025-09-23,2025-10-13,2025-11-03,2025-11-23,2025-11-24," +
+        "2026-01-01,2026-01-12,2026-02-11,2026-02-23,2026-03-20,2026-04-29,2026-05-03,2026-05-04,2026-05-05,2026-05-06," +
+        "2026-07-20,2026-08-11,2026-09-21,2026-09-22,2026-09-23,2026-10-12,2026-11-03,2026-11-23," +
+        "2027-01-01,2027-01-11,2027-02-11,2027-02-23,2027-03-21,2027-04-29,2027-05-03,2027-05-04,2027-05-05," +
+        "2027-07-19,2027-08-11,2027-09-20,2027-09-23,2027-10-11,2027-11-03,2027-11-23," +
+        "2028-01-01,2028-01-10,2028-02-11,2028-02-23,2028-03-20,2028-04-29,2028-05-03,2028-05-04,2028-05-05," +
+        "2028-07-17,2028-08-11,2028-09-18,2028-09-22,2028-10-09,2028-11-03,2028-11-23"
+      )
+        .split(",")
+        .forEach((token) => {
+          const ymd = token.trim();
+          if (ymd) map[ymd] = true;
+        });
+      return map;
+    })(),
+  );
+
+  function jy2IsJpHolidayYmd(ymd) {
+    return JY2_JP_HOLIDAY_YMD[String(ymd || "").trim()] === true;
+  }
+
+  function jy2YmdAddDays(ymd, days) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || "").trim());
+    if (!match) return String(ymd || "");
+    const ms =
+      Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12, 0, 0) +
+      days * 86400000;
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date(ms));
+    const y = parts.find((part) => part.type === "year").value;
+    const mo = parts.find((part) => part.type === "month").value;
+    const d = parts.find((part) => part.type === "day").value;
+    return `${y}-${mo}-${d}`;
+  }
+
+  function jy2EachYmdInRange(startYmd, endYmd, fn) {
+    if (!startYmd || !endYmd || startYmd > endYmd) return;
+    let cur = startYmd;
+    while (cur <= endYmd) {
+      fn(cur);
+      cur = jy2YmdAddDays(cur, 1);
+    }
+  }
+
+  function jy2ExpandHolidayLineDates(holidayLines) {
+    const out = [];
+    const rows = Array.isArray(holidayLines) ? holidayLines : [];
+    for (const row of rows) {
+      const cell = row?.value || {};
+      const start = String(cell.holiday_start?.value || "").trim();
+      if (!start) continue;
+      const kind = String(cell.holiday_kind?.value || "1日").trim();
+      const end = String(cell.holiday_end?.value || "").trim();
+      if (kind === "期間" && end && end >= start) {
+        jy2EachYmdInRange(start, end, (ymd) => out.push(ymd));
+      } else {
+        out.push(start);
+      }
+    }
+    return out;
+  }
+
+  function jy2CalcHolidayAndWorkingDays(startDate, endDate, holidayLines) {
+    const projectDaysRaw = jy2CalcProjectDays(startDate, endDate);
+    const projectDays = projectDaysRaw ? Number(projectDaysRaw) : 0;
+    if (!startDate || !endDate || !projectDays) {
+      return { holidayDays: "", workingDays: "" };
+    }
+    const holidaySet = new Set();
+    jy2EachYmdInRange(startDate, endDate, (ymd) => {
+      if (jy2IsJpHolidayYmd(ymd)) holidaySet.add(ymd);
+    });
+    for (const ymd of jy2ExpandHolidayLineDates(holidayLines)) {
+      if (ymd >= startDate && ymd <= endDate) holidaySet.add(ymd);
+    }
+    const holidayCount = holidaySet.size;
+    return {
+      holidayDays: String(holidayCount),
+      workingDays: String(Math.max(0, projectDays - holidayCount)),
+    };
+  }
+
+  function jy2EnsureHolidayLinesField(record) {
+    if (!record) return;
+    if (!record.holiday_lines) record.holiday_lines = { value: [] };
+    if (!Array.isArray(record.holiday_lines.value)) record.holiday_lines.value = [];
+  }
+
+  function jy2NewHolidayLineRow() {
+    return {
+      value: {
+        holiday_name: { value: "" },
+        holiday_kind: { value: "1日" },
+        holiday_start: { value: "" },
+        holiday_end: { value: "" },
+        holiday_note: { value: "" },
+      },
+    };
+  }
+
+  function jy2CollectHolidayLines(record) {
+    jy2EnsureHolidayLinesField(record);
+    const rows = record.holiday_lines.value;
+    return {
+      holiday_lines: {
+        value: rows.map((row) => ({
+          ...(row?.id != null ? { id: row.id } : {}),
+          value: {
+            holiday_name: { value: row?.value?.holiday_name?.value ?? "" },
+            holiday_kind: { value: row?.value?.holiday_kind?.value ?? "" },
+            holiday_start: { value: row?.value?.holiday_start?.value ?? "" },
+            holiday_end: { value: row?.value?.holiday_end?.value ?? "" },
+            holiday_note: { value: row?.value?.holiday_note?.value ?? "" },
+          },
+        })),
+      },
+    };
+  }
+
+  function jy2SyncHolidayWorkingDays(record) {
+    if (!record) return;
+    const start = jy2HeaderFieldValue(record, "start_date");
+    const end = jy2HeaderFieldValue(record, "end_date");
+    jy2EnsureHolidayLinesField(record);
+    const calc = jy2CalcHolidayAndWorkingDays(
+      start,
+      end,
+      record.holiday_lines.value,
+    );
+    jy2ApplyHeaderField(record, "holiday_days", calc.holidayDays);
+    jy2ApplyHeaderField(record, "working_days", calc.workingDays);
+  }
+
+  /** G0 S2: ヘッダ DD ブロック用マスタ（ハードコード） */
+  const JY2_HEADER_MASTER_OPTIONS = Object.freeze({
+    work_kind: Object.freeze([
+      "土木一式",
+      "とび・土工・コンクリート",
+      "塗装",
+      "塗装（防水）",
+      "調査",
+      "工事外",
+    ]),
+    order_form: Object.freeze(["単独", "JV"]),
+    jv_type: Object.freeze([
+      "特定JV甲型",
+      "特定JV乙型",
+      "経常JV甲型",
+      "経常JV乙型",
+      "その他",
+    ]),
+    order_role: Object.freeze(["元請", "下請", "その他"]),
+    order_method: Object.freeze([
+      "特命",
+      "指名競争入札",
+      "工事希望型競争入札",
+      "公募プロポーザル方式",
+      "見積入札",
+      "一般競争入札",
+      "随意契約",
+      "その他",
+    ]),
+    main_misc: Object.freeze(["本工事", "雑工事"]),
+    public_private_1: Object.freeze(["官庁", "民間"]),
+    public_private_2: Object.freeze([
+      "中央官庁",
+      "公社・公団",
+      "都道府県",
+      "市町村",
+      "準官庁",
+    ]),
+    civil_arch: Object.freeze([
+      "土木(ＪＲ)",
+      "土木(その他鉄道会社)",
+      "建築(民間)",
+      "その他(ﾘﾌｫｰﾑ)",
+    ]),
+    work_class: Object.freeze([
+      "A：ＪＲ鉄桁塗替塗装",
+      "B：ＪＲ受託",
+      "C：ＪＲ橋りょう修繕工事",
+      "D：ＪＲその他工事",
+      "E：その他鉄道会社塗替塗装",
+      "F：その他鉄道会社受託",
+      "G：一般工事",
+      "Q：ＪＲ保安（工管・線閉）",
+    ]),
+    office_name: Object.freeze([
+      "東京土木設備技術センター",
+      "横浜土木設備技術センター",
+      "水戸土木設備技術センター",
+      "千葉土木設備技術センター",
+      "大宮土木設備技術センター",
+      "八王子土木設備技術センター",
+      "高崎土木設備技術センター",
+      "長野土木設備技術センター",
+    ]),
+  });
 
   /** 着手日・竣工日が両方あり、着手日が竣工日より後なら true（U35） */
   function jy2IsStartDateAfterEndDate(startDate, endDate) {
@@ -6733,14 +6948,27 @@
     "project_branch",
     "project_official_name",
     "project_name",
-    "girder_type",
-    "order_branch",
-    "department",
+    "work_kind",
+    "order_form",
+    "jv_type",
+    "order_role",
+    "order_method",
+    "main_misc",
+    "public_private_1",
+    "public_private_2",
+    "civil_arch",
+    "work_class",
     "client_name",
+    "order_branch",
+    "office_name",
+    "department",
+    "girder_type",
     "safety_rule_88",
     "start_date",
     "end_date",
     "project_days",
+    "holiday_days",
+    "working_days",
     "created_by_name",
     "person_in_charge_name",
     "note",
@@ -6766,6 +6994,7 @@
 
   function jy2CollectHeaderFields(record) {
     jy2EnsurePersonNameFields(record);
+    jy2SyncHolidayWorkingDays(record);
     const out = {};
     for (const code of JY2_HEADER_EDITABLE_CODES) {
       if (!record || !record[code]) continue;
@@ -6776,7 +7005,11 @@
       if (code === "created_by_name" || code === "person_in_charge_name") {
         value = jy2NormalizePersonName(value);
       }
-      if (code === "project_days") {
+      if (
+        code === "project_days" ||
+        code === "holiday_days" ||
+        code === "working_days"
+      ) {
         value = jy2NormalizeProjectDaysValue(value);
       }
       out[code] = { value };
@@ -6841,11 +7074,29 @@
   const JY2_IDEO = "\u3000";
   const JY2_SHEET_LABELS = {
     header: "工事基本情報",
+    holiday: "休日設定",
     summary: `総${JY2_IDEO}括${JY2_IDEO}表`,
     detail: `内${JY2_IDEO}訳`,
     actual: `工${JY2_IDEO}事${JY2_IDEO}原${JY2_IDEO}価${JY2_IDEO}管${JY2_IDEO}理`,
     version: "バージョン管理",
   };
+
+  function jy2ShellTabList(model) {
+    const tabs = [];
+    for (const tab of model.tabs) {
+      tabs.push(tab);
+      if (tab.id === "header") {
+        tabs.push(
+          Object.freeze({
+            id: "holiday",
+            label: JY2_SHEET_LABELS.holiday,
+            readOnly: tab.readOnly,
+          }),
+        );
+      }
+    }
+    return Object.freeze(tabs);
+  }
 
   function jy2PaneBanner(documentRef, tabId, sheetLabel) {
     const wrap = documentRef.createElement("div");
@@ -6882,7 +7133,7 @@
     host.appendChild(jy2SheetTitleEl(documentRef, tabId, label));
   }
 
-  function jy2RenderHeaderPane(documentRef, record, editable, masterLists) {
+  function jy2RenderHeaderPane(documentRef, record, editable, masterLists, opts = {}) {
     const wrap = documentRef.createElement("div");
     wrap.className = "jy2-header-pane";
     const legend = documentRef.createElement("div");
@@ -6904,6 +7155,7 @@
     const lists = masterLists || jy2EmptyMasterLists();
     const canEdit = Boolean(editable);
     jy2EnsurePersonNameFields(record);
+    jy2EnsureHolidayLinesField(record);
 
     function cell(span2, rowStart) {
       const div = documentRef.createElement("div");
@@ -6927,13 +7179,13 @@
       input.addEventListener("blur", commit);
     }
 
-    function addText(kind, labelText, code, opts = {}) {
-      const box = cell(opts.span2, opts.rowStart);
+    function addText(kind, labelText, code, opts2 = {}) {
+      const box = cell(opts2.span2, opts2.rowStart);
       box.appendChild(jy2HfLabel(documentRef, kind, labelText));
       let input;
-      if (opts.textarea) {
+      if (opts2.textarea) {
         input = documentRef.createElement("textarea");
-        input.rows = opts.rows || 2;
+        input.rows = opts2.rows || 2;
         input.className = kind === "auto" ? "jy2-hf-readonly" : "jy2-hf-text";
       } else {
         input = documentRef.createElement("input");
@@ -6948,33 +7200,33 @@
       let value = jy2HeaderFieldValue(record, code);
       if (code === "project_official_name") value = jy2NormalizeFiscalYearText(value);
       input.value = value;
-      if (opts.placeholder) input.placeholder = opts.placeholder;
+      if (opts2.placeholder) input.placeholder = opts2.placeholder;
       if (kind === "auto") {
         input.readOnly = true;
         input.disabled = true;
       } else {
-        bindEditable(input, code, opts.transform);
+        bindEditable(input, code, opts2.transform);
       }
       box.appendChild(input);
       grid.appendChild(box);
-      return input;
+      return { box, input };
     }
 
-    function addSelect(labelText, code, options, opts = {}) {
-      const box = cell(opts.span2);
+    function addSelect(labelText, code, options, opts2 = {}) {
+      const box = cell(opts2.span2);
       box.appendChild(jy2HfLabel(documentRef, "select", labelText));
       const select = documentRef.createElement("select");
       select.className = "jy2-hf-select";
       const current = jy2HeaderFieldValue(record, code);
       jy2FillSelect(
         select,
-        jy2SelectOptions(options, current, opts.allowBlank !== false),
+        jy2SelectOptions(options, current, opts2.allowBlank !== false),
         current,
       );
       bindEditable(select, code);
       box.appendChild(select);
       grid.appendChild(box);
-      return select;
+      return { box, select };
     }
 
     // 版メタ（Ver.01 同配置）
@@ -7010,41 +7262,272 @@
       transform: jy2NormalizeFiscalYearText,
     });
     addText("input", "工事名称", "project_name");
-    addSelect("桁種別", "girder_type", lists.girderTypes);
-    addSelect("発注支社", "order_branch", lists.branches);
-    addSelect("部門", "department", lists.departments);
+
+    // G0 DD ①〜④
+    addSelect("工事種別", "work_kind", JY2_HEADER_MASTER_OPTIONS.work_kind);
+    const orderFormCtl = addSelect(
+      "受注形態",
+      "order_form",
+      JY2_HEADER_MASTER_OPTIONS.order_form,
+    );
+    const jvTypeCtl = addSelect(
+      "ＪＶ区分",
+      "jv_type",
+      JY2_HEADER_MASTER_OPTIONS.jv_type,
+    );
+    addSelect("受注区分", "order_role", JY2_HEADER_MASTER_OPTIONS.order_role);
+    addSelect("受注方法", "order_method", JY2_HEADER_MASTER_OPTIONS.order_method);
+    addSelect("本雑区分", "main_misc", JY2_HEADER_MASTER_OPTIONS.main_misc);
+    const public1Ctl = addSelect(
+      "官民区分１",
+      "public_private_1",
+      JY2_HEADER_MASTER_OPTIONS.public_private_1,
+    );
+    const public2Ctl = addSelect(
+      "官民区分２",
+      "public_private_2",
+      JY2_HEADER_MASTER_OPTIONS.public_private_2,
+    );
+    addSelect("土建区分", "civil_arch", JY2_HEADER_MASTER_OPTIONS.civil_arch);
+    addSelect("工事区分", "work_class", JY2_HEADER_MASTER_OPTIONS.work_class, {
+      span2: true,
+    });
+
+    // 組織
     addText("input", "発注者", "client_name");
+    addSelect("担当支社", "order_branch", lists.branches);
+    addSelect("担当事務所", "office_name", JY2_HEADER_MASTER_OPTIONS.office_name);
+    addSelect("担当部門", "department", lists.departments);
+    addSelect("桁種別", "girder_type", lists.girderTypes);
     addSelect("安衛則88条", "safety_rule_88", ["有", "無"], { allowBlank: false });
 
-    // 1行: 着手日 → 竣工日 → 工期日数（自動・表示は「N日」）
-    const startInput = addText("date", "着手日", "start_date", { rowStart: true });
-    const endInput = addText("date", "竣工日", "end_date");
-    const daysInput = addText("auto", "工期日数", "project_days");
+    // 工期
+    const startCtl = addText("date", "着手日", "start_date", { rowStart: true });
+    const endCtl = addText("date", "竣工日", "end_date");
+    const daysCtl = addText("auto", "工期日数", "project_days");
+    const holidayDaysCtl = addText("auto", "休日数", "holiday_days");
+    const workingDaysCtl = addText("auto", "稼働日数", "working_days");
     const dateOrderWarn = documentRef.createElement("p");
     dateOrderWarn.className = "jy2-warning jy2-span-2";
     dateOrderWarn.hidden = true;
     dateOrderWarn.textContent =
       "着手日が竣工日より後になっています（一時保存は可・版の確定は不可）";
     grid.appendChild(dateOrderWarn);
+
+    const refreshJvTypeVisibility = () => {
+      const isJv = orderFormCtl.select.value === "JV";
+      jvTypeCtl.box.hidden = !isJv;
+      if (!isJv) {
+        jvTypeCtl.select.value = "";
+        jy2ApplyHeaderField(record, "jv_type", "");
+        jvTypeCtl.select.disabled = true;
+      } else if (canEdit) {
+        jvTypeCtl.select.disabled = false;
+      }
+    };
+    const refreshPublic2Visibility = () => {
+      const isPrivate = public1Ctl.select.value === "民間";
+      public2Ctl.box.hidden = isPrivate;
+      if (isPrivate) {
+        public2Ctl.select.value = "";
+        jy2ApplyHeaderField(record, "public_private_2", "");
+        public2Ctl.select.disabled = true;
+      } else if (canEdit) {
+        public2Ctl.select.disabled = false;
+      }
+    };
     const refreshDays = () => {
-      const days = jy2CalcProjectDays(startInput.value, endInput.value);
-      daysInput.value = jy2FormatProjectDaysDisplay(days);
+      const days = jy2CalcProjectDays(startCtl.input.value, endCtl.input.value);
+      daysCtl.input.value = jy2FormatProjectDaysDisplay(days);
       jy2ApplyHeaderField(record, "project_days", days);
-      const inverted = jy2IsStartDateAfterEndDate(startInput.value, endInput.value);
+      jy2SyncHolidayWorkingDays(record);
+      holidayDaysCtl.input.value = jy2FormatProjectDaysDisplay(
+        jy2HeaderFieldValue(record, "holiday_days"),
+      );
+      workingDaysCtl.input.value = jy2FormatProjectDaysDisplay(
+        jy2HeaderFieldValue(record, "working_days"),
+      );
+      const inverted = jy2IsStartDateAfterEndDate(
+        startCtl.input.value,
+        endCtl.input.value,
+      );
       dateOrderWarn.hidden = !inverted;
     };
-    if (canEdit) {
-      startInput.addEventListener("change", refreshDays);
-      endInput.addEventListener("change", refreshDays);
-      startInput.addEventListener("input", refreshDays);
-      endInput.addEventListener("input", refreshDays);
-    }
+    refreshJvTypeVisibility();
+    refreshPublic2Visibility();
     refreshDays();
+    if (canEdit) {
+      orderFormCtl.select.addEventListener("change", () => {
+        refreshJvTypeVisibility();
+      });
+      public1Ctl.select.addEventListener("change", () => {
+        refreshPublic2Visibility();
+      });
+      for (const input of [startCtl.input, endCtl.input]) {
+        input.addEventListener("change", refreshDays);
+        input.addEventListener("input", refreshDays);
+      }
+    }
+    if (typeof opts.onRegisterHolidayRefresh === "function") {
+      opts.onRegisterHolidayRefresh(refreshDays);
+    }
 
     addText("input", "備考", "note", { span2: true, textarea: true, rows: 2 });
 
     wrap.appendChild(grid);
-    // C12: フル幅 auto-fit。狭幅は折り返し（横スクロールは総括・内訳・予実の表側）
+    return wrap;
+  }
+
+  function jy2RenderHolidayPane(documentRef, record, editable, opts = {}) {
+    const wrap = documentRef.createElement("div");
+    wrap.className = "jy2-holiday-pane";
+    jy2EnsureHolidayLinesField(record);
+    const canEdit = Boolean(editable);
+    const onLinesChange =
+      typeof opts.onHolidayLinesChange === "function"
+        ? opts.onHolidayLinesChange
+        : () => {};
+
+    const table = documentRef.createElement("table");
+    table.className = "jy2-table jy2-holiday-table";
+
+    const rebuild = () => {
+      table.textContent = "";
+      const body = documentRef.createElement("tbody");
+      body.appendChild(
+        jy2HeadRow(documentRef, [
+          "名称",
+          "種別",
+          "開始日",
+          "終了日",
+          "備考",
+          "操作",
+        ]),
+      );
+
+      const rows = record.holiday_lines.value;
+      if (rows.length === 0 && !canEdit) {
+        const emptyRow = documentRef.createElement("tr");
+        const emptyCell = jy2Cell(documentRef, "td", "jy2-empty", "休日設定なし");
+        emptyCell.colSpan = 6;
+        emptyRow.appendChild(emptyCell);
+        body.appendChild(emptyRow);
+      }
+
+      rows.forEach((row, rowIndex) => {
+        const tr = documentRef.createElement("tr");
+        const cellValue = (code) =>
+          row?.value?.[code]?.value == null ? "" : String(row.value[code].value);
+        const commitCell = (code, value) => {
+          if (!row.value) row.value = {};
+          if (!row.value[code]) row.value[code] = { value: "" };
+          row.value[code].value = value;
+          if (code === "holiday_kind" && value === "1日") {
+            if (!row.value.holiday_end) row.value.holiday_end = { value: "" };
+            row.value.holiday_end.value = "";
+          }
+          jy2SyncHolidayWorkingDays(record);
+          onLinesChange();
+        };
+
+        if (canEdit) {
+          const nameCell = jy2Cell(documentRef, "td", "", "");
+          nameCell.appendChild(
+            jy2TextInput(documentRef, cellValue("holiday_name"), (value) =>
+              commitCell("holiday_name", value),
+            ),
+          );
+          tr.appendChild(nameCell);
+
+          const kindCell = jy2Cell(documentRef, "td", "", "");
+          const kindSelect = documentRef.createElement("select");
+          kindSelect.className = "jy2-select";
+          jy2FillSelect(
+            kindSelect,
+            ["1日", "期間"],
+            cellValue("holiday_kind") || "1日",
+          );
+          kindCell.appendChild(kindSelect);
+          tr.appendChild(kindCell);
+
+          const startCell = jy2Cell(documentRef, "td", "", "");
+          const startInput = documentRef.createElement("input");
+          startInput.type = "date";
+          startInput.className = "jy2-input";
+          startInput.value = cellValue("holiday_start");
+          startInput.addEventListener("change", () => {
+            commitCell("holiday_start", startInput.value);
+          });
+          startCell.appendChild(startInput);
+          tr.appendChild(startCell);
+
+          const endCell = jy2Cell(documentRef, "td", "", "");
+          const endInput = documentRef.createElement("input");
+          endInput.type = "date";
+          endInput.className = "jy2-input";
+          endInput.value = cellValue("holiday_end");
+          endInput.disabled = cellValue("holiday_kind") !== "期間";
+          endInput.addEventListener("change", () => {
+            commitCell("holiday_end", endInput.value);
+          });
+          endCell.appendChild(endInput);
+          tr.appendChild(endCell);
+          kindSelect.addEventListener("change", () => {
+            commitCell("holiday_kind", kindSelect.value);
+            endInput.disabled = kindSelect.value !== "期間";
+            if (kindSelect.value === "1日") endInput.value = "";
+          });
+
+          const noteCell = jy2Cell(documentRef, "td", "", "");
+          noteCell.appendChild(
+            jy2TextInput(documentRef, cellValue("holiday_note"), (value) =>
+              commitCell("holiday_note", value),
+            ),
+          );
+          tr.appendChild(noteCell);
+
+          const actionCell = jy2Cell(documentRef, "td", "", "");
+          actionCell.appendChild(
+            jy2RowButton(documentRef, "削除", () => {
+              record.holiday_lines.value.splice(rowIndex, 1);
+              jy2SyncHolidayWorkingDays(record);
+              onLinesChange();
+              rebuild();
+            }),
+          );
+          tr.appendChild(actionCell);
+        } else {
+          tr.appendChild(jy2Cell(documentRef, "td", "", cellValue("holiday_name")));
+          tr.appendChild(jy2Cell(documentRef, "td", "", cellValue("holiday_kind")));
+          tr.appendChild(jy2Cell(documentRef, "td", "", cellValue("holiday_start")));
+          tr.appendChild(jy2Cell(documentRef, "td", "", cellValue("holiday_end")));
+          tr.appendChild(jy2Cell(documentRef, "td", "", cellValue("holiday_note")));
+          tr.appendChild(jy2Cell(documentRef, "td", "", ""));
+        }
+        body.appendChild(tr);
+      });
+
+      if (canEdit) {
+        const addRow = documentRef.createElement("tr");
+        const addCell = jy2Cell(documentRef, "td", "", "");
+        addCell.colSpan = 6;
+        addCell.appendChild(
+          jy2RowButton(documentRef, "行追加", () => {
+            record.holiday_lines.value.push(jy2NewHolidayLineRow());
+            jy2SyncHolidayWorkingDays(record);
+            onLinesChange();
+            rebuild();
+          }),
+        );
+        addRow.appendChild(addCell);
+        body.appendChild(addRow);
+      }
+
+      table.appendChild(body);
+    };
+
+    rebuild();
+    wrap.appendChild(table);
     return wrap;
   }
 
@@ -7227,7 +7710,7 @@
     const body = documentRef.createElement("tbody");
     body.appendChild(
       jy2HeadRow(documentRef, [
-        "役職・名称（入力）",
+        "名称（入力）",
         "氏名（入力）",
         "単位（選択）",
         "数量（入力）",
@@ -7366,9 +7849,9 @@
     body.appendChild(
       jy2HeadRow(documentRef, [
         "内訳№（自動）",
-        "費用区分（自動）",
+        "区分（自動）",
         "工種番号（自動）",
-        "システム入力工種（自動）",
+        "システム工種（自動）",
         "種別（入力）",
         "単位（自動）",
         "数量（自動）",
@@ -7518,7 +8001,7 @@
       ["原価・保安計", totals.costSafety, "jy2-sub-row"],
       ["給与計", totals.salary, "jy2-sub-row"],
       ["⑧ 工事原価合計", totals.total8, "jy2-key-row"],
-      ["⑨ 差引（①－⑧）", totals.profit9, "jy2-key-row"],
+      ["⑨ 粗利（①－⑧）", totals.profit9, "jy2-key-row"],
     ];
     for (const [label, amount, className] of keyRows) {
       const row = documentRef.createElement("tr");
@@ -7907,7 +8390,7 @@
       );
       workTypeNameControl.dataset.jy2WorktypeField = "name";
       headerField(
-        "システム入力工種（選択）",
+        "システム工種（選択）",
         workTypeNameControl,
       );
       // U29: 区分 sits left of 取引先; list-select colored (green).
@@ -7992,8 +8475,8 @@
     body.appendChild(
       jy2HeadRow(documentRef, [
         "費目（選択）",
-        "種別（補助）（選択）",
-        "定義及び品名（入力）",
+        "種別（選択）",
+        "詳細（入力）",
         "単位（選択）",
         "数量（入力）",
         "単価（入力）",
@@ -8076,7 +8559,7 @@
         blank: name2DisplayBlank,
         continued: name2ShowDitto,
         label: prevName2,
-        kind: "種別（補助）",
+        kind: "種別",
       };
       if (blockEditable) {
         // U4: 費目/種別（補助）＝リストのみ（打鍵候補は維持）。定義及び品名＝手入力＋候補（全角カナ正規化）。
@@ -8100,7 +8583,7 @@
         if (dashTypeFixed) {
           name2.classList.add("jy2-readonly");
           name2.textContent = "－";
-          name2.title = "コード表で種別（補助）が「－」のため自動固定";
+          name2.title = "コード表で種別が「－」のため自動固定";
         } else {
           const name2Ctrl = jy2ComboInput(
             documentRef,
@@ -9031,10 +9514,10 @@
           ? "jy2-input jy2-actual-child-name-input jy2-actual-type-only-input"
           : "jy2-input jy2-actual-child-name-input jy2-actual-dual-detail-input";
         name2Input.placeholder = typeOnlyLeaf
-          ? "種別（補助）"
+          ? "種別"
           : "詳細（左）";
         name2Input.title = typeOnlyLeaf
-          ? "種別（補助）を手入力"
+          ? "種別を手入力"
           : dualUnderType
             ? `詳細左セル（種別「${underTypeLabel}」の下）`
             : "詳細左セル（例: エンドポイント）";
@@ -12299,6 +12782,7 @@
             ? summarySnapshotToSubtables(summaryModel.snapshot())
             : {}),
           ...jy2CollectHeaderFields(record),
+          ...jy2CollectHolidayLines(record),
         };
         const blocks = detailModel.projectionBlocks();
         const totals = summaryModel ? summaryModel.totals(blocks) : null;
@@ -12793,11 +13277,13 @@
     shell._jy2ActivateTab = activate;
 
     let headerPane = null;
+    let holidayPane = null;
     let summaryPane = null;
     let detailPane = null;
     let actualPane = null;
     let versionPane = null;
-    model.tabs.forEach((tab, index) => {
+    const shellTabs = jy2ShellTabList(model);
+    shellTabs.forEach((tab, index) => {
       const button = documentRef.createElement("button");
       button.type = "button";
       button.className = "jy2-tab";
@@ -12817,6 +13303,8 @@
       pane.setAttribute("role", "tabpanel");
       if (tab.id === "header") {
         headerPane = pane;
+      } else if (tab.id === "holiday") {
+        holidayPane = pane;
       } else if (tab.id === "summary") {
         summaryPane = pane;
       } else if (tab.id === "detail") {
@@ -12828,13 +13316,14 @@
       }
       panes.appendChild(pane);
     });
-    const allowedTabIds = model.tabs.map((tab) => tab.id);
+    const allowedTabIds = shellTabs.map((tab) => tab.id);
     const restoredTab =
       jy2ReadStoredActiveTab(documentRef.defaultView, allowedTabIds) ||
-      model.tabs[0]?.id ||
+      shellTabs[0]?.id ||
       "header";
     activate(restoredTab);
 
+    let refreshHeaderHolidayCounts = () => {};
     if (headerPane) {
       headerPane.appendChild(
         jy2RenderHeaderPane(
@@ -12842,7 +13331,19 @@
           record || {},
           canEditBudget,
           summaryData.masterLists || null,
+          {
+            onRegisterHolidayRefresh: (fn) => {
+              refreshHeaderHolidayCounts = fn;
+            },
+          },
         ),
+      );
+    }
+    if (holidayPane) {
+      holidayPane.appendChild(
+        jy2RenderHolidayPane(documentRef, record || {}, canEditBudget, {
+          onHolidayLinesChange: () => refreshHeaderHolidayCounts(),
+        }),
       );
     }
 

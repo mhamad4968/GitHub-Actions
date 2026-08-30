@@ -341,7 +341,7 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   assert.match(source, /createContractSalaryModel/);
   assert.match(source, /① 請負金額合計/);
   assert.match(source, /⑧ 工事原価合計/);
-  assert.match(source, /⑨ 差引（①－⑧）/);
+  assert.match(source, /⑨ 粗利（①－⑧）/);
   assert.doesNotMatch(source, /className\s*=\s*["']jy-/);
   assert.doesNotMatch(source, /請負編集|内訳編集|管理者グループ/);
 });

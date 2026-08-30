@@ -721,7 +721,7 @@ test("C15 project days display appends 日 while saving numeric value", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2FormatProjectDaysDisplay\b/);
   assert.match(source, /function jy2NormalizeProjectDaysValue\b/);
-  assert.match(source, /daysInput\.value = jy2FormatProjectDaysDisplay\(days\)/);
+  assert.match(source, /daysCtl\.input\.value = jy2FormatProjectDaysDisplay\(days\)/);
   assert.match(source, /jy2ApplyHeaderField\(record, "project_days", days\)/);
 });
 
@@ -780,8 +780,8 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2AppendModeLabel/);
   assert.match(source, /jy2-hf-tag-select/);
   assert.match(source, /費目（選択）/);
-  assert.match(source, /種別（補助）（選択）/);
-  assert.match(source, /定義及び品名（入力）/);
+  assert.match(source, /種別（選択）/);
+  assert.match(source, /詳細（入力）/);
   assert.match(
     source,
     /const anchor =\s*[\s\S]*?jy2HasText\(row\.name1\)[\s\S]*?jy2HasText\(row\.name2\)/,
