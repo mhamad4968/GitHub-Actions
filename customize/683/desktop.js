@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const BUILD = '2026-08-23-683-doyou-shukujitsu-taiou-label';
+  const BUILD = '2026-09-02-683-wiring-print-box';
   /** `true`: グラフ直下に月次・週次コメント欄（kintone 要約キャッシュの表示・修正保存）。 */
   const USER683_SHOW_AI_SUMMARY_UI = true;
   /**
@@ -1542,46 +1542,43 @@
     return s.slice(0, max - 1) + '…';
   }
 
-  function extractSpecialSectionFromMonthSummary(text) {
-    if (!text) return '';
-    const markers = ['【土・日・祝日対応】', '【特別対応（土日祝）】'];
-    let idx = -1;
-    let marker = '';
-    for (let i = 0; i < markers.length; i += 1) {
-      const j = String(text).indexOf(markers[i]);
-      if (j >= 0 && (idx < 0 || j < idx)) {
-        idx = j;
-        marker = markers[i];
-      }
+  /** 682 対応文（amRaw/pmRaw）の非空行のうち「配線整理」を含む行数 */
+  function countWiringLinesInRaw(rawText) {
+    if (!rawText) return 0;
+    let count = 0;
+    const lines = String(rawText).split(/\r?\n/);
+    for (let i = 0; i < lines.length; i += 1) {
+      const line = lines[i].trim();
+      if (line && line.indexOf('配線整理') >= 0) count += 1;
     }
-    if (idx < 0) return '';
-    let rest = String(text).slice(idx + marker.length);
-    const nextSec = rest.search(/\n【[^\n]+】/);
-    const body = nextSec >= 0 ? rest.slice(0, nextSec) : rest;
-    return normalizeSummaryWhitespace(body);
+    return count;
   }
 
-  function buildSpecialDaysOneLiner(ym, dim, byDay, maxLen) {
-    const cap = maxLen != null ? maxLen : 120;
-    const parts = [];
+  function countWiringLinesForDay(x) {
+    if (!x) return 0;
+    return countWiringLinesInRaw(x.amRaw) + countWiringLinesInRaw(x.pmRaw);
+  }
+
+  /** 印刷1枚目・下枠 — 682 対応文から配線整理件数を集計（120字切り詰めなし） */
+  function buildWiringPrintText(ym, dim, byDay) {
+    const zeroText = '配線整理の対応なし　月合計0件対応をした';
+    if (!ym || !dim || !byDay) return zeroText;
+    const dateParts = [];
+    let monthTotal = 0;
     for (let d = 1; d <= dim; d += 1) {
       const ymd = ym.y + '-' + pad2(ym.m) + '-' + pad2(d);
-      const x = byDay && byDay[ymd];
-      const dt = x && x.dt != null ? x.dt : 0;
-      if (!isSpecialResponseDay(ymd, dt)) continue;
-      parts.push(formatYmdSlashWday(ymd) + ' ' + dt + '件');
+      const n = countWiringLinesForDay(byDay[ymd]);
+      if (n > 0) {
+        dateParts.push('対応日' + ym.m + '月' + d + '日対応');
+        monthTotal += n;
+      }
     }
-    if (parts.length === 0) return '土・日・祝日対応なし';
-    return truncateOneLine('土・日・祝日対応: ' + parts.join('、'), cap);
+    if (monthTotal === 0) return zeroText;
+    return dateParts.join('、') + '　月合計' + monthTotal + '件対応をした';
   }
 
-  function resolvePrintSpecialText(ym, dim, byDay, monthSummaryText) {
-    const extracted = extractSpecialSectionFromMonthSummary(monthSummaryText);
-    if (extracted) return extracted;
-    if (ym && dim && byDay) {
-      return buildSpecialDaysOneLiner(ym, dim, byDay, 120);
-    }
-    return '土・日・祝日対応なし';
+  function resolvePrintSpecialText(ym, dim, byDay) {
+    return buildWiringPrintText(ym, dim, byDay);
   }
 
   /** 日付セル末尾の対応マーク（件数列には付けない） */
@@ -2336,7 +2333,7 @@
   }
 
   var USER683_PRINT_AFTERPRINT_BOUND = false;
-  /** 印刷報告用 — 直近ダッシュ読込の暦月・byDay（特別対応短枠のフォールバック用） */
+  /** 印刷報告用 — 直近ダッシュ読込の暦月・byDay（配線整理印刷枠の集計用） */
   var USER683_DASH_CTX = null;
 
   function ensureUser683PrintReportStyles() {
@@ -2850,16 +2847,15 @@
       ctx && ctx.ym,
       ctx && ctx.dim,
       ctx && ctx.byDay,
-      summaryText,
     );
     var spBox = document.createElement('div');
     spBox.className = 'us683-print-special us683-print-block';
     var spLabel = document.createElement('div');
     spLabel.className = 'us683-print-special-label';
-    spLabel.textContent = '【土・日・祝日対応】';
+    spLabel.textContent = '【配線整理】';
     spBox.appendChild(spLabel);
     var spBody = document.createElement('div');
-    spBody.textContent = specialPrintText || '土・日・祝日対応なし';
+    spBody.textContent = specialPrintText || '配線整理の対応なし　月合計0件対応をした';
     spBox.appendChild(spBody);
     p1inner.appendChild(spBox);
 

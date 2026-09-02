@@ -17,6 +17,8 @@
 
 ## 月次印刷（正）— 683 ブラウザ `window.print()`
 
+- **印刷下枠（B5）**: 月次要約の直下。**【配線整理】** — 682 対応文に「配線整理」を含む行の暦月件数（月次要約の【土・日・祝日対応】とは別・重複しない）。
+
 - **運用の正（CEO 2026-05-17）**: **683 一覧**から **ブラウザ印刷**（`window.print()`・`@media print` で **2 枚前後**を目標）。**一覧の「提出用PDF」ボタンは撤去済み**（2026-05-16）。**`npm run user683:monthly-pdf:serve` は廃止**（`package.json` から削除。`scripts/user683-monthly-pdf-serve.mjs` は履歴用に残置）。
 - **`npm run user683:local-servers`**: **Claude 中継のみ**別ウィンドウ起動（PDF 配信は含まない）。
 - **オフライン ReportLab PDF（任意）**: 提出物をファイルで欲しいときのみ CLI — `npm run user683:monthly-pdf -- --year YYYY --month M --out path.pdf`（レイアウト: **`docs/plans/2026-05-15-user683-monthly-pdf-layout-spec.md`**・手順: **`scripts/user683-monthly-pdf/README.md`**）。**kintone UI からは叩かない**。

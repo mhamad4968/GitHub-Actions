@@ -66,11 +66,11 @@
       "note": null
     },
     "683": {
-      "build": "2026-08-23-683-doyou-shukujitsu-taiou-label",
-      "fileKey": "ebf3878a-5477-47d2-a062-631c5be8f50a",
-      "revision": "116",
+      "build": "2026-09-02-683-wiring-print-box",
+      "fileKey": "df4cd13b-b963-4916-8ba4-52864918219f",
+      "revision": "117",
       "relPath": "customize/683/desktop.js",
-      "deployedAt": "2026-08-23T00:44:47.111Z",
+      "deployedAt": "2026-09-02T09:40:08.229Z",
       "note": null
     },
     "686": {
