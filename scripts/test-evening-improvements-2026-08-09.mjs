@@ -6,11 +6,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { coalesceReportRel } from './lib/resolve-archived-report.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function read(rel) {
-  return fs.readFileSync(path.join(root, rel), 'utf8');
+  return fs.readFileSync(path.join(root, coalesceReportRel(root, rel)), 'utf8');
 }
 
 for (const rel of [
@@ -20,7 +21,7 @@ for (const rel of [
   'docs/plans/2026-08-09-evening-improvements-spec.md',
   'docs/reports/2026-08-09-evening-reflection.md',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  assert.ok(fs.existsSync(path.join(root, coalesceReportRel(root, rel))), `missing ${rel}`);
 }
 
 {

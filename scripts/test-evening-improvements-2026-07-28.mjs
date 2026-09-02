@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { coalesceReportRel } from './lib/resolve-archived-report.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const node = process.execPath;
@@ -18,7 +19,7 @@ for (const rel of [
   'docs/reports/2026-07-28-evening-reflection.md',
   'scripts/cio-handoff-gha-fix.mjs',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  assert.ok(fs.existsSync(path.join(root, coalesceReportRel(root, rel))), `missing ${rel}`);
 }
 
 {

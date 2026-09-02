@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
  * Z-3: docs/reports/ の先月分 *.md を docs/reports/archive/YYYY-MM/ へ移動し 1 commit する。
+ * CI 針（test-evening-improvements-*）は live パスをハードコードしうる。
+ * 移動後も 1 実体で解決する: scripts/lib/resolve-archived-report.mjs
  * @see docs/plans/2026-04-26-Z3-reports-archive-design.md
  */
 import fs from 'node:fs';
@@ -78,6 +80,10 @@ export function maybeArchivePreviousMonth(opts = {}) {
     (f) => f.endsWith('.md') && f.startsWith(prefix) && f !== 'README.md',
   );
   candidates.sort();
+
+  log(
+    `[archive-reports] INFO ${candidates.length} files → ${archiveRel}/ (CI live pins: scripts/lib/resolve-archived-report.mjs)`,
+  );
 
   if (candidates.length === 0) {
     return { skipped: true, reason: 'no-matching-files', prevLabel, jst };

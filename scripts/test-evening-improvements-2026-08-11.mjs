@@ -10,11 +10,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SKIP_CLONE_FIELD_TYPES } from './lib/kintone-record-clone-post.mjs';
+import { coalesceReportRel } from './lib/resolve-archived-report.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 function read(rel) {
-  return fs.readFileSync(path.join(root, rel), 'utf8');
+  return fs.readFileSync(path.join(root, coalesceReportRel(root, rel)), 'utf8');
 }
 
 for (const rel of [
@@ -28,7 +29,8 @@ for (const rel of [
   'scripts/lib/kintone-record-clone-post.mjs',
   'scripts/lib/kintone-record-clone-post.test.mjs',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  const checkRel = coalesceReportRel(root, rel);
+  assert.ok(fs.existsSync(path.join(root, checkRel)), `missing ${rel}`);
 }
 
 {

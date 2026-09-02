@@ -6,9 +6,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { coalesceReportRel } from './lib/resolve-archived-report.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
+const read = (rel) => fs.readFileSync(path.join(root, coalesceReportRel(root, rel)), 'utf8');
 
 for (const rel of [
   'docs/approved-changes/2026-08-15-evening-reflection-hamada-go.md',
@@ -20,7 +21,7 @@ for (const rel of [
   'scripts/cio-day-close.mjs',
   'scripts/verify-session-close-git-warn.mjs',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  assert.ok(fs.existsSync(path.join(root, coalesceReportRel(root, rel))), `missing ${rel}`);
 }
 
 {

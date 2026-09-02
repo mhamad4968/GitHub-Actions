@@ -11,12 +11,13 @@ import { fileURLToPath } from 'node:url';
 import {
   assertCheckpointUtf8Integrity,
 } from './lib/cio-checkpoint-git-sync.mjs';
+import { coalesceReportRel } from './lib/resolve-archived-report.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const node = process.execPath;
 
 function read(rel) {
-  return fs.readFileSync(path.join(root, rel), 'utf8');
+  return fs.readFileSync(path.join(root, coalesceReportRel(root, rel)), 'utf8');
 }
 
 for (const rel of [
@@ -26,7 +27,7 @@ for (const rel of [
   'docs/reports/2026-08-05-evening-reflection.md',
   'scripts/cio-session-close-preflight.mjs',
 ]) {
-  assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  assert.ok(fs.existsSync(path.join(root, coalesceReportRel(root, rel))), `missing ${rel}`);
 }
 
 {

@@ -106,6 +106,9 @@ jobs:
       - name: verify-retired-app-refs（2026-08-11 R2 — 退役アプリ稼働参照）
         run: npm run verify:retired-app-refs
 
+      - name: test-resolve-archived-report（Z-3 live→archive 針）
+        run: npm run test:resolve-archived-report
+
       - name: test-evening-improvements-2026-08-11（clone POST / IME / ahead）
         run: npm run test:evening-improvements-2026-08-11
 
