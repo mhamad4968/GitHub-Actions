@@ -26,7 +26,7 @@
 
 | ID | 対策 | 実装 |
 |----|------|------|
-| P0 | **毎ターン最初**に `npm run cio:turn-start` | `scripts/cio-turn-start.mjs` |
+| P0 | **毎ターン最初**に `npm run cio:turn-start` | `scripts/cio-turn-start.mjs`（checkpoint「次の1手」と現行レーンが違うときは `--goal` で契約 Goal を上書き・#O1） |
 | P1 | **実装・編集前**に `npm run cio:pre-implement-gate -- --strict` | 証跡なしは **exit 2** |
 | P2 | **ドキュメントレーン**は stamp 必須 | `cio:doc-lane-gate` + `fix_toc_v5.py` 内 stamp 検査 |
 | P3 | **報告・締め**は下書き → `cio:report-verify-response` exit 0 | 変更なし（D4 厳守を runbook 再掲） |
@@ -38,6 +38,7 @@
 
 ```
 npm run cio:turn-start                    # 全ターン（§1 テンプレ表示）
+npm run cio:turn-start -- --goal "本題"   # checkpoint 次の1手と現行レーンが違うとき（#O1）
 npm run cio:pre-implement-gate -- --strict   # 編集・Shell・deploy の前
 # doc-lane のとき追加:
 npm run cio:doc-lane-gate -- --strict

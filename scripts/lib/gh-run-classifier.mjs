@@ -26,12 +26,37 @@ function compareNewestFirst(left, right) {
   return Number(right.databaseId || 0) - Number(left.databaseId || 0);
 }
 
-function describeCancellation(run, latestConclusion, reason) {
+function describeTrackedRun(run, latestConclusion, reason) {
   return {
     ...run,
     latestConclusion,
     reason,
   };
+}
+
+function findLatestNewerSameWorkflow(ordered, run) {
+  const workflowIdentity = workflowIdentityOf(run);
+  if (!workflowIdentity || !run.headBranch) {
+    return { workflowIdentity, latestNewerRun: null };
+  }
+  const latestNewerRun = ordered.find(
+    (candidate) =>
+      compareNewestFirst(candidate, run) < 0 &&
+      workflowIdentityOf(candidate) === workflowIdentity &&
+      candidate.headBranch === run.headBranch,
+  );
+  return { workflowIdentity, latestNewerRun };
+}
+
+async function isSupersededByNewerSuccess(run, latestNewerRun, isAncestor) {
+  if (latestNewerRun?.conclusion !== "success") return false;
+  if (!run.headSha || !latestNewerRun.headSha) return false;
+  if (run.headSha === latestNewerRun.headSha) return true;
+  try {
+    return await isAncestor(run.headSha, latestNewerRun.headSha);
+  } catch {
+    return false;
+  }
 }
 
 export async function classifyGhRuns(runs, { isAncestor }) {
@@ -46,14 +71,19 @@ export async function classifyGhRuns(runs, { isAncestor }) {
   );
   const supersededCancellations = [];
   const unresolvedCancellations = [];
+  const supersededFailures = [];
+  const unresolvedFailures = [];
 
   for (const cancelled of ordered.filter(
     (run) => run.conclusion === "cancelled",
   )) {
-    const workflowIdentity = workflowIdentityOf(cancelled);
+    const { workflowIdentity, latestNewerRun } = findLatestNewerSameWorkflow(
+      ordered,
+      cancelled,
+    );
     if (!workflowIdentity || !cancelled.headBranch) {
       unresolvedCancellations.push(
-        describeCancellation(
+        describeTrackedRun(
           cancelled,
           "cancelled",
           !workflowIdentity
@@ -64,17 +94,11 @@ export async function classifyGhRuns(runs, { isAncestor }) {
       continue;
     }
 
-    const latestNewerRun = ordered.find(
-      (candidate) =>
-        compareNewestFirst(candidate, cancelled) < 0 &&
-        workflowIdentityOf(candidate) === workflowIdentity &&
-        candidate.headBranch === cancelled.headBranch,
-    );
     const latestConclusion = latestNewerRun?.conclusion || "cancelled";
 
     if (latestNewerRun?.conclusion !== "success") {
       unresolvedCancellations.push(
-        describeCancellation(
+        describeTrackedRun(
           cancelled,
           latestConclusion,
           latestNewerRun
@@ -85,20 +109,14 @@ export async function classifyGhRuns(runs, { isAncestor }) {
       continue;
     }
 
-    let ancestor = false;
-    if (cancelled.headSha && latestNewerRun.headSha) {
-      try {
-        ancestor =
-          cancelled.headSha === latestNewerRun.headSha ||
-          (await isAncestor(cancelled.headSha, latestNewerRun.headSha));
-      } catch {
-        ancestor = false;
-      }
-    }
-
+    const ancestor = await isSupersededByNewerSuccess(
+      cancelled,
+      latestNewerRun,
+      isAncestor,
+    );
     const target = ancestor ? supersededCancellations : unresolvedCancellations;
     target.push(
-      describeCancellation(
+      describeTrackedRun(
         cancelled,
         latestConclusion,
         ancestor
@@ -108,10 +126,66 @@ export async function classifyGhRuns(runs, { isAncestor }) {
     );
   }
 
+  for (const failed of failures) {
+    const { workflowIdentity, latestNewerRun } = findLatestNewerSameWorkflow(
+      ordered,
+      failed,
+    );
+    if (!workflowIdentity || !failed.headBranch) {
+      unresolvedFailures.push(
+        describeTrackedRun(
+          failed,
+          failed.conclusion,
+          !workflowIdentity
+            ? "missing stable workflow identity"
+            : "missing head branch",
+        ),
+      );
+      continue;
+    }
+
+    const latestNewerSuccess = ordered.find(
+      (candidate) =>
+        compareNewestFirst(candidate, failed) < 0 &&
+        workflowIdentityOf(candidate) === workflowIdentity &&
+        candidate.headBranch === failed.headBranch &&
+        candidate.conclusion === "success",
+    );
+    const latestConclusion = latestNewerRun?.conclusion || failed.conclusion;
+    const healed = await isSupersededByNewerSuccess(
+      failed,
+      latestNewerSuccess,
+      isAncestor,
+    );
+    if (healed) {
+      supersededFailures.push(
+        describeTrackedRun(
+          failed,
+          latestConclusion,
+          `healed by successful run ${latestNewerSuccess.databaseId}`,
+        ),
+      );
+      continue;
+    }
+    unresolvedFailures.push(
+      describeTrackedRun(
+        failed,
+        latestConclusion,
+        latestNewerRun
+          ? `latest newer run concluded ${latestConclusion}`
+          : "no newer successful run for the same workflow and branch",
+      ),
+    );
+  }
+
   return {
     latestConclusion: ordered[0]?.conclusion || "unknown",
     failures,
     failureCount: failures.length,
+    supersededFailures,
+    supersededFailureCount: supersededFailures.length,
+    unresolvedFailures,
+    unresolvedFailureCount: unresolvedFailures.length,
     supersededCancellations,
     supersededCancellationCount: supersededCancellations.length,
     unresolvedCancellations,

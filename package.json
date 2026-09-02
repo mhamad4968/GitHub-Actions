@@ -181,6 +181,8 @@
     "test:resolve-archived-report": "node scripts/lib/resolve-archived-report.test.mjs",
     "test:evening-improvements-2026-08-13": "node scripts/test-evening-improvements-2026-08-13.mjs",
     "test:evening-improvements-2026-08-15": "node scripts/test-evening-improvements-2026-08-15.mjs",
+    "test:evening-improvements-2026-09-02": "node scripts/test-evening-improvements-2026-09-02.mjs",
+    "test:cio-turn-start-goal": "node scripts/cio-turn-start-goal.test.mjs",
     "test:kintone-record-clone-post": "node scripts/lib/kintone-record-clone-post.test.mjs",
     "test:674-jbis-max-plus-one": "npx dotenv -e .env -e .env.proxy -- node scripts/test-674-jbis-max-plus-one.mjs",
     "cio:pre-push-local-parity": "node scripts/cio-pre-push-local-parity.mjs",

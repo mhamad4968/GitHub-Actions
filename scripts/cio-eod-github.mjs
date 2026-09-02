@@ -61,11 +61,16 @@ async function main() {
 
   const classified = await classifyGhRuns(list, { isAncestor: gitIsAncestor });
   console.log(
-    `[cio:eod:github] recent runs=${list.length} failures=${classified.failureCount} cancelled superseded=${classified.supersededCancellationCount} unresolved=${classified.unresolvedCancellationCount}`,
+    `[cio:eod:github] recent runs=${list.length} failures=${classified.failureCount} unresolvedFailures=${classified.unresolvedFailureCount} healed=${classified.supersededFailureCount} cancelled superseded=${classified.supersededCancellationCount} unresolved=${classified.unresolvedCancellationCount}`,
   );
-  for (const b of classified.failures) {
+  for (const b of classified.unresolvedFailures) {
     console.log(
       `  FAIL ${b.conclusion} ${b.name} ${b.displayTitle || b.workflowName || ''} ${b.url || ''}`,
+    );
+  }
+  for (const b of classified.supersededFailures) {
+    console.log(
+      `  INFO failure healed ${b.name} ${b.displayTitle || b.workflowName || ''} ${b.url || ''}`,
     );
   }
   for (const b of classified.supersededCancellations) {
@@ -103,7 +108,10 @@ async function main() {
   }
   console.log(`[cio:eod:github] 674 live BUILD=${liveBuild} rev=${liveRev}`);
 
-  if (classified.failureCount > 0 || classified.unresolvedCancellationCount > 0) {
+  if (
+    classified.unresolvedFailureCount > 0 ||
+    classified.unresolvedCancellationCount > 0
+  ) {
     console.error('[cio:eod:github] NG — fix Actions failures');
     process.exit(1);
   }

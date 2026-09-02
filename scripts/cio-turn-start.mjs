@@ -7,6 +7,7 @@
  *   npm run cio:turn-start
  *   npm run cio:turn-start -- --lane doc-lane --strict
  *   npm run cio:turn-start -- --tier quick|standard|strict|lite
+ *   npm run cio:turn-start -- --goal "現行レーンの本題"  # checkpoint 次の1手と違うとき（#O1）
  *   npm run cio:turn-start -- --complete   # セッション区切り（Desktop verify リマインド）
  */
 import { spawnSync } from 'node:child_process';
@@ -27,6 +28,7 @@ import {
   recordLiteUsage,
   recordTurnStartEvent,
   resolveTier,
+  resolveTurnStartGoal,
   validateTierGate,
   writeLastTier,
 } from './lib/cio-turn-start-tier.mjs';
@@ -61,12 +63,13 @@ const TEMPLATES = {
 };
 
 function parseArgs(argv) {
-  const out = { lane: 'default', strict: false, complete: false, tier: null };
+  const out = { lane: 'default', strict: false, complete: false, tier: null, goal: '' };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--lane' && argv[i + 1]) out.lane = argv[++i];
     else if (argv[i] === '--strict') out.strict = true;
     else if (argv[i] === '--complete') out.complete = true;
     else if (argv[i] === '--tier' && argv[i + 1]) out.tier = argv[++i];
+    else if (argv[i] === '--goal' && argv[i + 1]) out.goal = argv[++i];
   }
   return out;
 }
@@ -122,10 +125,16 @@ function main() {
   for (const line of lines) console.log(line);
   console.log('');
 
-  const goal = readCheckpointNextTask(root) || '(checkpoint-latest.md を Read)';
+  const resolvedGoal = resolveTurnStartGoal(readCheckpointNextTask(root), args.goal);
   const touchFiles = getDefaultBridgeNextFiles(root).slice(0, 2);
   const specTouched = inferSpecTouched(args.lane);
-  printContractForTier(tier, goal, touchFiles, specTouched);
+  printContractForTier(tier, resolvedGoal.goal, touchFiles, specTouched);
+  console.log('[cio:turn-start] 注: checkpoint「次の1手」と現行レーンが違うときは --goal で Goal を上書き');
+  if (resolvedGoal.overridden) {
+    const from = String(resolvedGoal.checkpointGoal).slice(0, 80);
+    const to = String(resolvedGoal.goal).slice(0, 80);
+    console.log(`[cio:turn-start] Goal 上書き: checkpoint「${from}」→ 本題「${to}」`);
+  }
 
   if (tier === 'lite') {
     recordLiteUsage(root, { lane: args.lane, tier: 'lite' });

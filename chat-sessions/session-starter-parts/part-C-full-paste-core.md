@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-08-30 反映・2026-09-02 WAKE同期）】
-- 本日レーン: **現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須
+【今やってる主タスク（2026-09-02 自動更新）】
+- 次の1手: **現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須
 - checkpoint: 2026-08-30 18:50 JST — **夜 day-close 完了**。G0 §15+§16 実装済＋夕反省全GO（#S1/#R1/#D1）反映。756 live **rev333**。
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
-- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
+- 進行中 plan: docs/plans/2026-08-23-user-support-682-683-ux-spec.md
+- 当日コミット (上位 3):
+  - fix(683): show wiring counts in monthly print lower box
+  - chore(checkpoint): sync Git line after commit
+  - fix(ci): follow Z-3 archived reports in evening-improvement tests

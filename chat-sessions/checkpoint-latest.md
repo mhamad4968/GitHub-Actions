@@ -1,25 +1,25 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-08-30 18:50 JST — **夜 day-close 完了**。G0 §15+§16 実装済＋夕反省全GO（#S1/#R1/#D1）反映。756 live **rev333**。
+**最終更新**: 2026-09-02 19:10 JST — **夜 day-close**。683 印刷下枠【配線整理】rev**117** 目視OK。夕反省全GO（#S1/#O1/#M1/#P1）。
 **次の1手**: **現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須
 **レーン変更**: 実行予算 756 継続。工事原価管理はタブ非表示のみ。スライスA／別画面は廃案。**736不触**
 **Git**: **`bc7fe665`** = `origin/main` — push 済
 **closeStatus**: **closed**（夜 day-close 完了）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
-**本日状態**: **756**=`2026-08-02-ver02-actual-visual-readability` rev**333**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-08-23-683-doyou-shukujitsu-taiou-label` rev**116**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: **756**=`2026-08-02-ver02-actual-visual-readability` rev**333**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-08-30）
+### 本日アクティブ（BUILD/rev — 2026-09-02）
 | App | BUILD | rev |
 |-----|-------|-----|
 | **756** | `2026-08-02-ver02-actual-visual-readability` | **333** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
 | **682** | `2026-08-23-682-banner-label-clarify` | **30** |
-| **683** | `2026-08-23-683-doyou-shukujitsu-taiou-label` | **116** |
+| **683** | `2026-09-02-683-wiring-print-box` | **117** |
 | **721** | `2026-08-23-jr-ipad-dash-p2-vux` | **17** |
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: G0 §15+§16 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`／夕GO `docs/approved-changes/2026-08-30-evening-reflection-hamada-go.md`／個人資産 `docs/personal/nisa-ops.md`
+**継続メモ**: G0 §15+§16 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`／夕GO `docs/approved-changes/2026-09-02-evening-reflection-hamada-go.md`／個人資産 `docs/personal/nisa-ops.md`
 **GO待ち**: なし（現場入力フィードバック待ち）。ロック済 G0 範囲の再確認は不要
 **調査正本**: G0 §15+§16
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
@@ -45,6 +45,13 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-09-02
+
+### 2026-09-02 夜締め（day-close）
+- 683 印刷下枠【配線整理】件数。live **rev117**。浜田目視 OK。8月要約再生成（週次四半期誤記は手 PATCH）
+- 夕反省全GO: #S1 GHA healed / #O1 turn-start `--goal` / #M1 Kimi404→DeepSeek / #P1 会計年度四半期固定
+- closeStatus: **closed**
+
 ## 2026-08-30
 
 ### 2026-08-30 夜締め（day-close 完了）

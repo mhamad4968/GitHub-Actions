@@ -145,6 +145,23 @@ export function recordLiteUsage(root, meta = {}) {
   fs.writeFileSync(logPath, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
 }
 
+/**
+ * checkpoint「次の1手」と現行レーンが違うとき、--goal で契約 Goal だけ上書きする（#O1）。
+ * checkpoint 本文は書き換えない。
+ */
+export function resolveTurnStartGoal(checkpointGoal, overrideGoal) {
+  const checkpoint = String(checkpointGoal || '').trim() || '(checkpoint-latest.md を Read)';
+  const override = String(overrideGoal || '').trim();
+  if (!override) {
+    return { goal: checkpoint, overridden: false, checkpointGoal: checkpoint };
+  }
+  return {
+    goal: override,
+    overridden: override !== checkpoint,
+    checkpointGoal: checkpoint,
+  };
+}
+
 export function printContractForTier(tier, goal, touchFiles, specTouched) {
   if (tier === 'quick') {
     console.log('【ターン契約 — quick】');

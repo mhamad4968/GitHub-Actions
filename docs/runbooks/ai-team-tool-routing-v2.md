@@ -130,6 +130,7 @@ Kimi MCP は WSL Ubuntu 内で動作するため、Windows パスを直接渡さ
 4. Windows パスの `ENOENT` は **経路障害**、代替AIの結果は **代替レビュー** と記録する。
 5. 代替レビュー後も経路を修復し、Kimi本人の読取＋レビュー成功を **復旧完了** とする。
 6. `/mnt/...` でも `ENOENT` なら実ファイル欠落またはマウント障害として fallback。`EACCES` は権限エラーとして扱う。
+7. **#M1（2026-09-02）**: `kimi_review` が `moonshot-v1-128k` **404** のときも ENOENT と同じく **DeepSeek へ寄せ**、チャットに `MCPスキップ: kimi — <理由> → DeepSeek` を 1 行。切替フラグは `docs/mcp-status.md`。mcp.json のモデル ID は独断変更しない。
 
 ---
 
