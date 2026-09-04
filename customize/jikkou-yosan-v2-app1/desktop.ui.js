@@ -12,7 +12,8 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-08-02-ver02-actual-visual-readability
+  // @JY_V2_BUILD 2026-09-04-ver02-gaichu-type-menu
+  // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
   // Phase2c-actual-visual-polish: 予実Chrome（案内/合計/開閉/費目）の視覚整理。#R-EXCEL-UI-17
@@ -6123,6 +6124,9 @@
   function jy2HimokuUsesDashType(entry, himoku) {
     const key = String(himoku || "").trim();
     if (!key) return false;
+    // G0 §9.1: 外注費の種別は材料費／労務費／仮設機械経費／現場経費／その他費用の5件。
+    // 旧コード表の dashTypeByHimoku／dashOnlyHimoku「外注費＝－」は使わない。
+    if (key === "外注費") return false;
     // Excel原価管理の種別なし費目: name2=詳細左。コード表の「－」固定種別は使わない。
     if (jy2CostMgmtIsTypeLessHimoku(key)) {
       return false;
@@ -6146,10 +6150,15 @@
           jy2IsDitto(row.name1) || !jy2HasText(row.name1)
             ? jy2PrevResolved(block.detailRows, rowIndex, "name1")
             : String(row.name1 || "").trim();
-        if (
-          jy2HimokuUsesDashType(entry, himoku) &&
-          String(row.name2 || "").trim() !== "－"
-        ) {
+        const currentType = String(row.name2 || "").trim();
+        // G0 §9.1: 外注費に残った旧「－」はクリア（5件メニューへ）。
+        if (himoku === "外注費" && currentType === "－") {
+          detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
+            name2: null,
+          });
+          return;
+        }
+        if (jy2HimokuUsesDashType(entry, himoku) && currentType !== "－") {
           detailModel.updateDetailRow(block.stableBlockId, row.rowKey, {
             name2: "－",
           });

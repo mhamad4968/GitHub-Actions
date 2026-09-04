@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-04（内訳・外注費種別5件・G0 §9.1）**: 費目＝外注費で種別が「－」固定だった不具合を修正。`jy2HimokuUsesDashType` が旧コード表 `dashTypeByHimoku`／`dashOnlyHimoku` を優先していたのを、外注費は常に false。種別＝材料費／労務費／仮設機械経費／現場経費／その他費用。既存「－」は正規化でクリア。LIVE **rev334** / BUILD `2026-09-04-ver02-gaichu-type-menu`。  
 **2026-08-29（マスタ整理 G0・実装なし）**: ヘッダ属性 DD／休日設定タブ／発注者 E2／会社名 V1／単位 U1 等を合意。正本 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`。契約工種・内訳・総括項目名は夜セッション。  
 **2026-08-02（内訳カタログのみ非表示・#R-EXCEL-LINK-00）**: 材料費品名カタログ（鋼材/H形鋼等）のみ原価管理非表示。手入力詳細は再表示。BUILD `2026-08-02-ver02-actual-unlink-catalog`。  
 **2026-08-02（内訳自動reveal停止・#R-EXCEL-LINK-00）**: （過剰→catalog除外へ修正）BUILD `2026-08-02-ver02-actual-unlink-reveal`。  
