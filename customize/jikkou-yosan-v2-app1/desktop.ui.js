@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-gaichu-himoku-five
+  // @JY_V2_BUILD 2026-09-05-ver02-worktype-types-clear
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -6104,11 +6104,16 @@
   // 費目 → 種別。マスタ整理「内訳」正本のみ（コード表 typesByHimoku は使わない）。
   // 外注費は §9.1 の5件。
   function jy2TypesForHimoku(entry, himoku) {
-    void entry;
     const key = String(himoku || "").trim();
     if (!key) return [];
-    const menu = JY2_TYPES_BY_HIMOKU_MASTER[key];
-    return Array.isArray(menu) ? [...menu] : [];
+    const master = JY2_TYPES_BY_HIMOKU_MASTER[key];
+    const masterList = Array.isArray(master) ? [...master] : [];
+    return jy2TypesFromSystemWork(
+      entry && entry.workTypeCode,
+      entry && entry.workTypeName,
+      key,
+      masterList,
+    );
   }
 
   function jy2GaichuDetailChoices(typeName, currentValue) {
@@ -8769,7 +8774,14 @@
         detailModel.updateBlockHeader(id, { workTypeCode: value });
         const mapped = codeMaster.workTypeByCode[value];
         let newName = block.workTypeName;
-        if (mapped) {
+        if (!String(value || "").trim()) {
+          detailModel.updateBlockHeader(id, { workTypeName: "" });
+          newName = "";
+          const nameInput = section.querySelector(
+            '[data-jy2-worktype-field="name"] input',
+          );
+          if (nameInput) nameInput.value = "";
+        } else if (mapped) {
           detailModel.updateBlockHeader(id, { workTypeName: mapped });
           newName = mapped;
           const nameInput = section.querySelector(
@@ -8816,7 +8828,7 @@
         block.workTypeCode,
         jy2SystemWorkCodeChoices(block.workTypeCode),
         commitWorkTypeCode,
-        { listOnly: true, commitExactOption: true, hideClearWhenSet: true },
+        { listOnly: true, commitExactOption: true, allowClear: true },
       );
       workTypeCodeControl.dataset.jy2WorktypeField = "code";
       headerField(
@@ -8828,7 +8840,7 @@
         block.workTypeName,
         jy2SystemWorkNameChoices(block.workTypeName),
         commitWorkTypeName,
-        { listOnly: true, commitExactOption: true, hideClearWhenSet: true },
+        { listOnly: true, commitExactOption: true, allowClear: true },
       );
       workTypeNameControl.dataset.jy2WorktypeField = "name";
       headerField(
@@ -9092,6 +9104,7 @@
             displayDitto: name1ShowDitto,
             revealValue: prevName1 || row.name1,
             listOnly: true,
+            allowClear: true,
             allowDitto: Boolean(prevName1),
           },
         );
@@ -9113,6 +9126,7 @@
               displayDitto: name2ShowDitto,
               revealValue: prevName2 || row.name2,
               listOnly: true,
+              allowClear: true,
               allowDitto: Boolean(prevName2),
             },
           );

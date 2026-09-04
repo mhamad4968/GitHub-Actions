@@ -11,6 +11,7 @@ import {
   jy2HimokuChoicesFromSystemWork,
   jy2HimokuCurrentIsWorkTypeName,
   jy2HimokuFromSystemWork,
+  jy2TypesFromSystemWork,
   jy2IsGaichuMaterial,
   jy2NextBlockVendorAfterLineCompanies,
   jy2SplitGaichuTypesCell,
@@ -134,5 +135,58 @@ test("外注の＋混在セルを種別5件へ分解", () => {
   assert.deepEqual(
     jy2SplitGaichuTypesCell("材料費＋労務費＋仮設機械経費＋現場経費+その他費用"),
     ["材料費", "労務費", "仮設機械経費", "現場経費", "その他費用"],
+  );
+});
+
+test("種別▼は工種JSONの types（労務費マスタ全体を出さない）", () => {
+  const laborMaster = [
+    "出向工事管理者（昼間）",
+    "出向工事管理者（夜間）",
+    "軌陸車オペレーター（昼間）",
+    "軌陸車オペレーター（夜間）",
+    "その他建設機械オペレーター（昼間）",
+    "その他建設機械オペレーター（夜間）",
+    "その他労務者（昼間）",
+    "その他労務者（夜間）",
+  ];
+  const materialMaster = ["塗料", "鋼材", "二次製品", "生コンクリート･石材", "ＡＳ合材", "鋼製製品･ゴム製品等", "その他材料"];
+  const siteMaster = [
+    "工場製品運搬費",
+    "建設機械運搬費",
+    "仮設資材運搬費",
+    "その他資材運搬費",
+    "一般産業廃棄物",
+    "特別産業廃棄物",
+    "収入印紙",
+    "県証紙",
+  ];
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "建設機械オペレーター", "労務費", laborMaster),
+    [
+      "軌陸車オペレーター（昼間）",
+      "軌陸車オペレーター（夜間）",
+      "その他建設機械オペレーター（昼間）",
+      "その他建設機械オペレーター（夜間）",
+    ],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("10900", "工事管理者賃金", "労務費", laborMaster),
+    ["出向工事管理者（昼間）", "出向工事管理者（夜間）"],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "その他労務者", "労務費", laborMaster),
+    ["その他労務者（昼間）", "その他労務者（夜間）"],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("11700", "運送費", "現場経費", siteMaster),
+    ["工場製品運搬費", "建設機械運搬費", "仮設資材運搬費", "その他資材運搬費"],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("10200", "塗装工事", "材料費", materialMaster),
+    materialMaster,
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "", "労務費", laborMaster),
+    laborMaster,
   );
 });

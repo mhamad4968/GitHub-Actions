@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-05-ver02-gaichu-himoku-five",
-      "fileKey": "fd06be53-66e8-4a1a-a123-de01d7c703d2",
-      "revision": "337",
+      "build": "2026-09-05-ver02-worktype-types-clear",
+      "fileKey": "d54a450b-ca7b-4fc3-863b-40a0bf47709f",
+      "revision": "338",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-04T23:13:30.115Z",
+      "deployedAt": "2026-09-04T23:26:05.627Z",
       "note": null
     },
     "757": {
