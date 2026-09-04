@@ -515,7 +515,7 @@ test("App 1 actual tab renders the jy2-* 予実 matrix wired to editActuals", ()
     /jy2RoundYenQtyTimesPrice\(trimmed,\s*liveUnitPrice\(\)\)/,
   );
   // Phase2c-c-three-cols: Excel 原価管理明細列（固定＋操作＋単価）。
-  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-worktype-types-clear/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-clear-option-cascade/);
   assert.match(source, /Phase2c-excel-dedupe-coded/);
   assert.match(source, /jy2CostMgmtDuplicateCodedBlockIdSet/);
   assert.match(
