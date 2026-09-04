@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-02 19:10 JST — **夜 day-close**。683 印刷下枠【配線整理】rev**117** 目視OK。夕反省全GO（#S1/#O1/#M1/#P1）。
 **次の1手**: **現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須
 **レーン変更**: 実行予算 756 継続。工事原価管理はタブ非表示のみ。スライスA／別画面は廃案。**736不触**
-**Git**: **`558a77d4`** = `origin/main` — push 済（R44 parent）
+**Git**: **`50d82233`** = `origin/main` — push 済
 **closeStatus**: **closed**（夜 day-close 完了）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-08-02-ver02-actual-visual-readability` rev**333**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -52,6 +52,7 @@
 - 夕反省全GO: #S1 GHA healed / #O1 turn-start `--goal` / #M1 Kimi404→DeepSeek / #P1 会計年度四半期固定
 - closeStatus: **closed**
 
+
 ## 2026-08-30
 
 ### 2026-08-30 夜締め（day-close 完了）
@@ -73,6 +74,7 @@
 - closeStatus: **closed**（朝区切り。day-close は今夜最終）
 
 
+
 ## 2026-08-29
 
 ### 2026-08-29 朝（749 UX 改善レーンクローズ）
@@ -84,22 +86,5 @@
 
 
 
-## 2026-08-29
 
-### 2026-08-29 朝締め（実行予算 v2 マスタ G0）
-- G0 確定: ヘッダ①〜④／発注者E2／支社P1／事務所新／部門P1／休日タブ（祝日自動・土日手動・重複除外）／V1・S1・U1
-- SPEC: `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`
-- **夜必読**: `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md`（契約工種・内訳・総括項目名）
-- 実装・deploy **なし**（明示 GO まで）
-- 749 UX レーンクローズ済（rev18）
-- closeStatus: **closed**（朝区切り。day-close は今夜最終）
-
-### 2026-08-29 朝（749 UX 改善レーンクローズ）
-- 浜田目視 **OK**（1–8＋一覧 IP/管理者ID/PW コピー）
-- live **749** `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18** / fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`
-- SPEC §7.5 / §8.2 更新 · `closures JSON 不触（UXレーンのみ・closed-v1 維持）`
-- closeStatus: **closed**（UXレーン。day-close は別途）
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-08-30.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-04.md -->

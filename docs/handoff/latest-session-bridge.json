@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-02T10:07:58.337Z",
-  "gitHead": "558a77d4",
-  "gitStatus": "## main...origin/main [ahead 2]",
+  "exportedAt": "2026-09-04T04:47:21.301Z",
+  "gitHead": "8b74eff4",
+  "gitStatus": "## main...origin/main [ahead 1]",
   "nextTask": "**現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=558a77d4 | 次=**現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-09-02T10:07:58.782Z",
-  "crosscheckOk": true
+  "promptBlock": "【SESSION-BRIDGE】git=8b74eff4 | 次=**現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
