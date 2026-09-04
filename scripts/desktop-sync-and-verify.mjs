@@ -34,8 +34,12 @@ runStep('verify-evening-reflection-scope', () =>
 runStep('verify-checkpoint-project-closure', () =>
   runNodeScriptSync(root, 'scripts/verify-checkpoint-project-closure.mjs', [], { stdio: 'inherit' }),
 );
+// mid-session / Desktop 同期では #D-CLOSE-02（前日締め日付）を偽陽性にしない。
+// 締め本体は cio:session:close-git が先に strict（--wake-context なし）を実行する。
 runStep('verify-session-close-git-warn', () =>
-  runNodeScriptSync(root, 'scripts/verify-session-close-git-warn.mjs', [], { stdio: 'inherit' }),
+  runNodeScriptSync(root, 'scripts/verify-session-close-git-warn.mjs', ['--wake-context'], {
+    stdio: 'inherit',
+  }),
 );
 runStep('mcp:sync-cursor-windows', () =>
   runNpmScriptSync(root, 'mcp:sync-cursor-windows', [], { stdio: 'inherit' }),

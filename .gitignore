@@ -115,6 +115,9 @@ docs/reports/*-morning-prep.md
 # #D-R63-01 runtime stamp (local only)
 data/cio-r63-v2-pending.json
 
+# npm-update 等の未 GO 提案キュー（commit 禁止・ローカルのみ / 2026-09-02 夕GO・2026-09-04 WAKE）
+docs/approved-changes/pending/
+
 scripts/mcp-deepseek-v4/node_modules/
 
 # Cursor MCP sync backups (do not commit)
