@@ -1,0 +1,518 @@
+{
+  "sourceFile": "システム工種整理.xlsx",
+  "sourcePathLocal": "C:\\\\tmp\\\\実行予算ver2\\\\システム工種整理.xlsx",
+  "repoCopy": "docs/reference/jikkou-yosan-v2/2026-09-04-system-worktype-himoku.xlsx",
+  "decidedAt": "2026-09-04",
+  "decidedBy": "浜田",
+  "blocks": [
+    {
+      "section": "施工",
+      "workTypeCode": "10100",
+      "systemWorkType": "材料費",
+      "himoku": "材料費",
+      "types": [
+        "塗料",
+        "鋼材",
+        "二次製品",
+        "生コンクリート･石材",
+        "ＡＳ合材",
+        "鋼製製品･ゴム製品等",
+        "その他材料"
+      ],
+      "materials": {
+        "塗料": [
+          "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 赤さび",
+          "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 ｸﾞﾚｰ",
+          "厚膜型変性ｴﾎﾟｷｼ樹脂系塗料 青緑、淡",
+          "厚膜型ﾎﾟﾘｳﾚﾀﾝ樹脂塗料 青緑系",
+          "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-8.5",
+          "無溶剤変性ｴﾎﾟｷｼ樹脂塗料N-7",
+          "塗料用シンナー",
+          "エポキシシンナー",
+          "ウレタンシンナー"
+        ],
+        "その他材料": [
+          "塗装記録表示シール",
+          "桁番号表示シール"
+        ]
+      }
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10200",
+      "systemWorkType": "塗装工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10300",
+      "systemWorkType": "足場工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10400",
+      "systemWorkType": "塗装及び足場工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10600",
+      "systemWorkType": "修繕等工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10700",
+      "systemWorkType": "塗装付帯工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "軌道工事",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "調査設計費",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "外注試験費",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "交通規制費",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14100",
+      "systemWorkType": "追加工事①",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14200",
+      "systemWorkType": "追加工事②",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14300",
+      "systemWorkType": "追加工事③",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14400",
+      "systemWorkType": "追加工事④",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14500",
+      "systemWorkType": "追加工事⑤",
+      "himoku": "外注費",
+      "types": [
+        "材料費＋労務費＋仮設機械経費＋現場経費+その他費用"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10900",
+      "systemWorkType": "工事管理者賃金",
+      "himoku": "労務費",
+      "types": [
+        "出向工事管理者（昼間）",
+        "出向工事管理者（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "建設機械オペレーター",
+      "himoku": "労務費",
+      "types": [
+        "軌陸車オペレーター（昼間）",
+        "軌陸車オペレーター（夜間）",
+        "その他建設機械オペレーター（昼間）",
+        "その他建設機械オペレーター（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "その他労務者",
+      "himoku": "労務費",
+      "types": [
+        "その他労務者（昼間）",
+        "その他労務者（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10800",
+      "systemWorkType": "鎌ヶ谷資材使用料",
+      "himoku": "仮設機械経費",
+      "types": [
+        "仮設材･鉄道器材レンタル"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "11600",
+      "systemWorkType": "レンタル",
+      "himoku": "仮設機械経費",
+      "types": [
+        "仮設材レンタル",
+        "建設機械類レンタル",
+        "保安用機材類レンタル",
+        "仮設ハウス･仮設トイレ",
+        "その他機材レンタル",
+        "建設機械油脂類"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "仮設・工具費等",
+      "himoku": "仮設機械経費",
+      "types": [
+        "油脂燃料費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "11700",
+      "systemWorkType": "運送費",
+      "himoku": "現場経費",
+      "types": [
+        "工場製品運搬費",
+        "建設機械運搬費",
+        "仮設資材運搬費",
+        "その他資材運搬費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "11800",
+      "systemWorkType": "産業廃棄物処理費",
+      "himoku": "現場経費",
+      "types": [
+        "一般産業廃棄物",
+        "特別産業廃棄物"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "11900",
+      "systemWorkType": "租税公課",
+      "himoku": "現場経費",
+      "types": [
+        "収入印紙",
+        "県証紙"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12000",
+      "systemWorkType": "借地料等",
+      "himoku": "現場経費",
+      "types": [
+        "防護服･ペール缶"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12100",
+      "systemWorkType": "消耗品費",
+      "himoku": "現場経費",
+      "types": [
+        "電動ファン用フィルター"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12200",
+      "systemWorkType": "事務費",
+      "himoku": "現場経費",
+      "types": [
+        "郵便･宅配便など"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12300",
+      "systemWorkType": "通信費",
+      "himoku": "現場経費",
+      "types": [
+        "携帯電話代金やＦＡＸ料金"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12400",
+      "systemWorkType": "旅費交通費",
+      "himoku": "現場経費",
+      "types": [
+        "出張旅費特例",
+        "３万円未満公共交通機関特例",
+        "その他旅費交通費",
+        "借上げ自動車費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12600",
+      "systemWorkType": "履行保証保険料",
+      "himoku": "現場経費",
+      "types": [
+        "労災保険料"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12700",
+      "systemWorkType": "建退共証紙購入費",
+      "himoku": "現場経費",
+      "types": [
+        "建退共証紙購入費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12900",
+      "systemWorkType": "諸雑費",
+      "himoku": "現場経費",
+      "types": [
+        "寄付金･安全祈願祭など",
+        "汲み取り料",
+        "その他日用雑貨等"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "13100",
+      "systemWorkType": "諸会費",
+      "himoku": "現場経費",
+      "types": [
+        "安全衛生協議会費",
+        "その他諸団体会費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "13620",
+      "systemWorkType": "会議費",
+      "himoku": "現場経費",
+      "types": [
+        "事前打合せ費等"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "12800",
+      "systemWorkType": "補償費",
+      "himoku": "その他費用",
+      "types": [
+        "漁協・水利組合など",
+        "瑕損補修費",
+        "隣接物瑕損補償費",
+        "その他補償費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "13600",
+      "systemWorkType": "交際費",
+      "himoku": "その他費用",
+      "types": [
+        "得意先接待交際費（甲）",
+        "得意先接待交際費（乙）",
+        "その他接待交際費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "各種保険料(任意保険）",
+      "himoku": "その他費用",
+      "types": [
+        "各種保険料(任意保険）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "施工",
+      "workTypeCode": null,
+      "systemWorkType": "法定福利費",
+      "himoku": "その他費用",
+      "types": [
+        "法定福利費"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11000",
+      "systemWorkType": "工事安全専任管理者",
+      "himoku": "外注労務費",
+      "types": [
+        "出向工事安全専任管理者（昼間）",
+        "出向工事安全専任管理者（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11100",
+      "systemWorkType": "線閉責任者",
+      "himoku": "外注労務費",
+      "types": [
+        "外注線閉責任者（昼間）",
+        "外注線閉責任者（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11200",
+      "systemWorkType": "列車見張員",
+      "himoku": "外注労務費",
+      "types": [
+        "外注列車見張員（昼間）",
+        "外注列車見張員（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11300",
+      "systemWorkType": "交通整理員",
+      "himoku": "外注労務費",
+      "types": [
+        "外注交通整理員（昼間）",
+        "外注交通整理員（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11400",
+      "systemWorkType": "検電接地",
+      "himoku": "外注労務費",
+      "types": [
+        "外注停電責任者（昼間）",
+        "外注停電責任者（夜間）",
+        "外注検電接地作業者（昼間）",
+        "外注検電接地作業者（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "11500",
+      "systemWorkType": "その他保安費",
+      "himoku": "外注労務費",
+      "types": [
+        "外注安全帯監視人（昼間）",
+        "外注安全帯監視人（夜間）",
+        "外注その他保安要員（昼間）",
+        "外注その他保安要員（夜間）"
+      ],
+      "materials": {}
+    },
+    {
+      "section": "保安",
+      "workTypeCode": "13500",
+      "systemWorkType": "重機誘導員",
+      "himoku": "外注労務費",
+      "types": [
+        "外注重機誘導員（昼間）",
+        "外注重機誘導員（夜間）"
+      ],
+      "materials": {}
+    }
+  ]
+}

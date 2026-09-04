@@ -2,9 +2,10 @@
 
 **日付**: 2026-08-29（朝セッション）  
 **状態**: **2026-08-30 夜**。§15（中身）＋**§16（段階・listOnly）**確定。コード・deploy なし。**実装は浜田の合図後 S0〜**。§12〜§14.3 のスライス／別画面は **廃案**。  
+**2026-09-04（内訳階層追記）**: 外注費 cascade／会社・氏名／システム工種→費目連携を仕様化。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`（**実装は明示 GO までしない**）。§10 は同仕様で外注経路の材料品名を **拡張**（本文は GO 時に追記可）。  
 **正本 Excel**: `C:\tmp\実行予算ver2\マスタ整理.xlsx`（シート「データマスタ」）  
 **作業メモ（ローカル）**: `C:\tmp\実行予算ver2\_master-mapping-g0.md`  
-**関連**: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` / `docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md`  
+**関連**: `docs/plans/2026-07-19-jikkou-yosan-ver02-redesign-spec-draft.md` / `docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md` / `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`  
 **アプリ**: 756（App1 UI）· 757/758 · **736 不触** · リストマスタ 735  
 **夜必読（今夜実装）**: `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md`（正は **§15**）  
 **8/29 当時の夜作業ログ**: `chat-sessions/2026-08-29-jikkou-yosan-v2-night-handoff.md`（項目名合意は済。今夜の作業指示にしない）
@@ -254,7 +255,8 @@ SPEC D-22（当面手入力）を **更新**: 請負金額の契約工種は **�
 材料費／労務費／仮設機械経費／現場経費／その他費用
 
 現行 756 の「外注費＝－」は使わない。  
-費目＝外注費＋種別＝材料費 と、費目＝材料費 は別物。材料種類マスタは **費目が材料費のときだけ**（外注費の種別に出さない）。実装は明示 GO までしない。
+費目＝外注費＋種別＝材料費 と、費目＝材料費 は別物。材料種類マスタは **費目が材料費のときだけ**（外注費の種別に出さない）。実装は明示 GO までしない。  
+**2026-09-04 拡張（仕様のみ）**: 外注費の詳細 cascade・会社／氏名・外注×材料の詳細2セル＋品名マスタは `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`。§10 の「費目＝材料費のときだけ」は同仕様で外注経路を追加する（実装 GO 時に本文更新）。
 
 ---
 
