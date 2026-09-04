@@ -830,7 +830,7 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /jy2NormalizeSoleTypeDetails/);
   assert.match(
     source,
-    /jy2ComboInput\(\s*documentRef,\s*row\.name1,\s*rowSuggest\.name1/,
+    /jy2ComboInput\(\s*documentRef,\s*(?:row\.name1|jy2HimokuCurrentIsWorkTypeName\()/,
   );
   assert.match(
     source,

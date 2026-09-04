@@ -7,7 +7,9 @@ import {
   jy2FilterSystemWorkNamesForPicker,
   jy2GaichuItemIsDashFixed,
   jy2GaichuItemUsesMaterialMaster,
+  JY2_GAICHU_HIMOKU_CHOICES,
   jy2HimokuChoicesFromSystemWork,
+  jy2HimokuCurrentIsWorkTypeName,
   jy2HimokuFromSystemWork,
   jy2IsGaichuMaterial,
   jy2NextBlockVendorAfterLineCompanies,
@@ -114,8 +116,18 @@ test("費目▼は JSON 工種の1件に絞る（材料費に外注費を出さ�
     jy2HimokuChoicesFromSystemWork("10100", "（塗）材料費", master),
     ["材料費"],
   );
-  assert.deepEqual(jy2HimokuChoicesFromSystemWork("10200", "（塗）塗装工事", master), ["外注費"]);
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("10200", "（塗）塗装工事", master),
+    [...JY2_GAICHU_HIMOKU_CHOICES],
+  );
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("", "軌道工事", master),
+    [...JY2_GAICHU_HIMOKU_CHOICES],
+  );
   assert.deepEqual(jy2HimokuChoicesFromSystemWork("", "", master), master);
+  assert.equal(jy2HimokuCurrentIsWorkTypeName("塗装工事", "（塗）塗装工事"), true);
+  assert.equal(jy2HimokuCurrentIsWorkTypeName("材料費", "材料費"), false);
+  assert.equal(jy2HimokuCurrentIsWorkTypeName("外注費", "塗装工事"), false);
 });
 
 test("外注の＋混在セルを種別5件へ分解", () => {

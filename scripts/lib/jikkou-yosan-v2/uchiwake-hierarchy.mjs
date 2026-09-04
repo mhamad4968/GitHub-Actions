@@ -106,8 +106,44 @@ export function jy2HasUchiwakeText(value) {
   return value !== undefined && value !== null && String(value).trim() !== "";
 }
 
+/** 外注工事の費目▼（JSON types セルを分解した5件。外注費そのものは出さない）。 */
+export const JY2_GAICHU_HIMOKU_CHOICES = Object.freeze([
+  "材料費",
+  "労務費",
+  "仮設機械経費",
+  "現場経費",
+  "その他費用",
+]);
+
 export function jy2IsGaichuHimoku(himoku) {
   return String(himoku || "").trim() === "外注費";
+}
+
+/** 費目セルに工種名（塗装工事等）を祖父しない。材料費工種の「材料費」は費目なので残す。 */
+export function jy2HimokuCurrentIsWorkTypeName(current, workTypeName) {
+  const cur = String(current || "")
+    .trim()
+    .replace(/^（塗）/u, "");
+  if (!cur) return false;
+  if (
+    cur === "材料費" ||
+    cur === "外注費" ||
+    cur === "労務費" ||
+    cur === "仮設機械経費" ||
+    cur === "現場経費" ||
+    cur === "その他費用" ||
+    cur === "外注労務費"
+  ) {
+    return false;
+  }
+  const work = String(workTypeName || "")
+    .trim()
+    .replace(/^（塗）/u, "");
+  if (work && cur === work) return true;
+  if (!Object.prototype.hasOwnProperty.call(JY2_SYSTEM_WORK_HIMOKU_BY_NAME, cur)) {
+    return false;
+  }
+  return JY2_SYSTEM_WORK_HIMOKU_BY_NAME[cur] !== cur;
 }
 
 export function jy2IsGaichuMaterial(himoku, typeName) {
@@ -252,12 +288,16 @@ export function jy2HimokuFromSystemWork(code, name) {
 }
 
 /**
- * 費目▼の候補。JSON に費目がある工種はその1件（G0 7件の部分集合）。
- * コード表 himoku の余剰（諸経費・予備費等）は混ぜない。工種空／未登録は7件。
+ * 費目▼の候補。コード表 himoku の余剰（諸経費・予備費等）は混ぜない。
+ * JSON 費目が外注費の工種 → 材料費〜その他費用の5件（工種名は出さない）。
+ * それ以外の JSON 費目が7件に含まれる → その1件。工種空／未登録 → 7件。
  */
 export function jy2HimokuChoicesFromSystemWork(code, name, masterMenu) {
   const master = Array.isArray(masterMenu) ? [...masterMenu] : [];
   const fromJson = jy2HimokuFromSystemWork(code, name);
+  if (fromJson === "外注費") {
+    return JY2_GAICHU_HIMOKU_CHOICES.filter((item) => master.includes(item));
+  }
   if (fromJson && master.includes(fromJson)) return [fromJson];
   return master;
 }

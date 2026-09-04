@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-himoku-json-choices
+  // @JY_V2_BUILD 2026-09-05-ver02-gaichu-himoku-five
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -6034,23 +6034,17 @@
 
   function jy2HimokuDefaultForBlock(block) {
     const code = String((block && block.workTypeCode) || "").trim();
-    const short = jy2CostMgmtExcelShortName(block && block.workTypeName);
-    const override =
-      (code && JY2_COST_MGMT_HIMOKU_OVERRIDE[code]) ||
-      (short && JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[short]) ||
-      null;
-    if (override && override.length > 0) return override[0];
-    const fromJson = jy2HimokuFromSystemWork(code, block && block.workTypeName);
-    if (fromJson) return fromJson;
-    const entry = jy2ResolveNameHierarchy(block);
-    if (!entry) return null;
+    const entry = jy2ResolveNameHierarchy(block) || {
+      workTypeCode: code,
+      workTypeName: block && block.workTypeName,
+    };
     const choices = jy2HimokuChoicesForEntry(entry);
-    if (entry.himokuDefault && choices.includes(entry.himokuDefault)) {
+    const fromJson = jy2HimokuFromSystemWork(code, block && block.workTypeName);
+    if (fromJson && choices.includes(fromJson)) return fromJson;
+    if (entry && entry.himokuDefault && choices.includes(entry.himokuDefault)) {
       return entry.himokuDefault;
     }
     if (choices.length === 1) return choices[0];
-    // 工事系は複数費目が並ぶので空行へは既定（外注費）だけ入れる。
-    if (entry.constructionMenu && choices.includes("外注費")) return "外注費";
     return null;
   }
 
@@ -6078,20 +6072,21 @@
     const snap = detailModel.snapshot().blocks.find((b) => b.stableBlockId === stableBlockId);
     if (!snap) return;
     const himoku = jy2HimokuDefaultForBlock(snap);
-    if (!himoku) return;
     const entry = jy2ResolveNameHierarchy(snap);
-    const allowed = new Set(jy2HimokuChoicesForEntry(entry));
-    if (allowed.size === 0) allowed.add(himoku);
+    const allowed = new Set(jy2HimokuChoicesForEntry(entry || snap));
     for (const row of snap.detailRows) {
       const current = row.name1 == null ? "" : String(row.name1).trim();
-      const nextHimoku = !current || !allowed.has(current) ? himoku : current;
+      const invalid =
+        current &&
+        (jy2HimokuCurrentIsWorkTypeName(current, snap.workTypeName) || !allowed.has(current));
+      const nextHimoku = !current || invalid ? (himoku || null) : current;
       const patch = {};
-      if (!current || !allowed.has(current)) {
-        patch.name1 = himoku;
+      if (!current || invalid) {
+        patch.name1 = himoku || null;
       }
-      if (jy2HimokuUsesDashType(entry, nextHimoku)) {
+      if (nextHimoku && jy2HimokuUsesDashType(entry, nextHimoku)) {
         patch.name2 = "－";
-      } else {
+      } else if (nextHimoku) {
         const sole = jy2SoleTypeForHimoku(entry, nextHimoku);
         const currentType = String(row.name2 || "").trim();
         if (sole) {
@@ -6244,11 +6239,14 @@
     let name2;
     let name3;
     if (entry) {
-      // システム工種あり → 費目は JSON の1件（無ければ7件）＋現行値の祖父。
+      // システム工種あり → JSON 外注工事は費目5件。工種名は祖父しない。
       // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
+      const himokuCurrent = selectedHimoku || (row && row.name1);
       name1 = jy2ListOnlyChoices(
         jy2HimokuChoicesForEntry(entry),
-        selectedHimoku || (row && row.name1),
+        jy2HimokuCurrentIsWorkTypeName(himokuCurrent, block && block.workTypeName)
+          ? ""
+          : himokuCurrent,
       );
       name2 = selectedHimoku
         ? jy2ListOnlyChoices(
@@ -9037,10 +9035,13 @@
         }
         scheduleRerender();
       };
-      const resolvedName1 =
+      let resolvedName1 =
         jy2IsDitto(row.name1) || !jy2HasText(row.name1)
           ? prevName1
           : String(row.name1).trim();
+      if (jy2HimokuCurrentIsWorkTypeName(resolvedName1, block && block.workTypeName)) {
+        resolvedName1 = "";
+      }
       const resolvedName2 =
         jy2IsDitto(row.name2) || !jy2HasText(row.name2)
           ? prevName2
@@ -9082,7 +9083,9 @@
         const name1 = jy2Cell(documentRef, "td", "", "");
         const name1Ctrl = jy2ComboInput(
           documentRef,
-          row.name1,
+          jy2HimokuCurrentIsWorkTypeName(row.name1, block && block.workTypeName)
+            ? ""
+            : row.name1,
           rowSuggest.name1,
           commit("name1"),
           {
