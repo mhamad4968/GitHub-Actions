@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-04-ver02-gaichu-type-menu
+  // @JY_V2_BUILD 2026-09-05-ver02-uchiwake-hierarchy
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2132,13 +2132,13 @@
       ".jy2-detail-table th.jy2-th-stacked{min-width:4.5rem;padding:6px 4px!important}",
       ".jy2-detail-table .jy2-th-stack .jy2-th-label{white-space:normal;max-width:6.5rem;line-height:1.25}",
       ".jy2-detail-table .jy2-combo-wrap{min-width:8.5rem}",
-      // 定義及び品名(3列目): 長文見切れ緩和（契約工種 C16 と同趣旨・ホバー全文は fullTitle）
-      ".jy2-detail-table th:nth-child(3),.jy2-detail-table td:nth-child(3){min-width:16rem}",
-      ".jy2-detail-table td:nth-child(3) .jy2-combo-wrap{min-width:16rem}",
-      ".jy2-detail-table td:nth-child(3) .jy2-input{min-width:14rem}",
-      // 備考(8列目): 長文見切れ緩和（定義及び品名と同趣旨）
-      ".jy2-detail-table th:nth-child(8),.jy2-detail-table td:nth-child(8){min-width:12rem}",
-      ".jy2-detail-table td:nth-child(8) .jy2-input{min-width:11rem}",
+      // 詳細（入力）／材料（選択）列: 長文見切れ緩和（契約工種 C16 と同趣旨・ホバー全文は fullTitle）
+      ".jy2-detail-table th.jy2-col-detail,.jy2-detail-table td.jy2-col-detail{min-width:16rem}",
+      ".jy2-detail-table td.jy2-col-detail .jy2-combo-wrap{min-width:16rem}",
+      ".jy2-detail-table td.jy2-col-detail .jy2-input{min-width:14rem}",
+      // 備考列: 長文見切れ緩和（詳細列と同趣旨）
+      ".jy2-detail-table th.jy2-col-note,.jy2-detail-table td.jy2-col-note{min-width:12rem}",
+      ".jy2-detail-table td.jy2-col-note .jy2-input{min-width:11rem}",
       ".jy2-detail-table td .jy2-input{min-width:5.5rem}",
       ".jy2-detail-table td .jy2-select{min-width:4.5rem}",
       ".jy2-footer-row td{background:#f8fafc}",
@@ -6038,6 +6038,8 @@
       (short && JY2_COST_MGMT_HIMOKU_OVERRIDE_BY_NAME[short]) ||
       null;
     if (override && override.length > 0) return override[0];
+    const fromJson = jy2HimokuFromSystemWork(code, block && block.workTypeName);
+    if (fromJson) return fromJson;
     const entry = jy2ResolveNameHierarchy(block);
     if (!entry) return null;
     const choices = jy2HimokuChoicesForEntry(entry);
@@ -6110,6 +6112,12 @@
     if (!key) return [];
     const menu = JY2_TYPES_BY_HIMOKU_MASTER[key];
     return Array.isArray(menu) ? [...menu] : [];
+  }
+
+  function jy2GaichuDetailChoices(typeName, currentValue) {
+    const t = String(typeName || "").trim();
+    if (t === "材料費") return jy2ListOnlyChoices(JY2_MATERIAL_TYPE_MENU, currentValue);
+    return jy2ListOnlyChoices(jy2TypesForHimoku(null, t), currentValue);
   }
 
   // 候補がちょうど1件ならそれを返す（「－」固定費目は別経路）。
@@ -7251,7 +7259,10 @@
     const cur = String(currentValue || "").trim();
     const stripped = cur.replace(/^（塗）/u, "");
     // マスタ名順。祖父はマスタ外の現行値（（塗）付き含む）のみ末尾追加。
-    const base = jy2ListOnlyChoices(JY2_SYSTEM_WORK_NAMES, stripped);
+    const base = jy2ListOnlyChoices(
+      jy2FilterSystemWorkNamesForPicker(JY2_SYSTEM_WORK_NAMES),
+      stripped,
+    );
     if (cur && cur !== stripped && !base.includes(cur)) base.push(cur);
     return base;
   }
@@ -8903,23 +8914,53 @@
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-detail-table";
     const body = documentRef.createElement("tbody");
-    body.appendChild(
-      jy2HeadRow(documentRef, [
-        "費目（選択）",
-        "種別（選択）",
-        "詳細（入力）／材料（選択）",
-        "単位（選択）",
-        "数量（入力）",
-        "単価（入力）",
-        "金額（自動）",
-        "備考（入力）",
-        "",
-      ]),
-    );
+    let showItem = false;
+    let showVendor = false;
+    let showPerson = false;
+    block.detailRows.forEach((scanRow, scanIndex) => {
+      const scanPrev1 = jy2PrevResolved(block.detailRows, scanIndex, "name1");
+      const scanPrev2 = jy2PrevResolved(block.detailRows, scanIndex, "name2");
+      const scanName1 =
+        jy2IsDitto(scanRow.name1) || !jy2HasText(scanRow.name1)
+          ? scanPrev1
+          : String(scanRow.name1).trim();
+      const scanName2 =
+        jy2IsDitto(scanRow.name2) || !jy2HasText(scanRow.name2)
+          ? scanPrev2
+          : String(scanRow.name2).trim();
+      if (jy2IsGaichuMaterial(scanName1, scanName2)) showItem = true;
+      if (jy2UchiwakeLineVendorVisible(scanName1, scanName2)) showVendor = true;
+      if (jy2UchiwakeLinePersonVisible(scanName1, scanName2)) showPerson = true;
+    });
+    const extraCount = (showItem ? 1 : 0) + (showVendor ? 1 : 0) + (showPerson ? 1 : 0);
+    // 詳細（入力）／材料（選択） — 外注は nameDetail、材料費は name3
+    const headerRow = documentRef.createElement("tr");
+    const appendDetailHead = (label, cls) => {
+      const th = documentRef.createElement("th");
+      if (cls) th.classList.add(cls);
+      jy2AppendModeLabel(documentRef, th, label);
+      headerRow.appendChild(th);
+    };
+    appendDetailHead("費目（選択）");
+    appendDetailHead("種別（選択）");
+    appendDetailHead("詳細（選択）", "jy2-col-detail");
+    if (showItem) appendDetailHead("品名（選択）", "jy2-col-item");
+    if (showVendor) appendDetailHead("会社名（選択）", "jy2-col-line-vendor");
+    if (showPerson) appendDetailHead("氏名（入力）", "jy2-col-line-person");
+    appendDetailHead("単位（選択）");
+    appendDetailHead("数量（入力）");
+    appendDetailHead("単価（入力）");
+    appendDetailHead("金額（自動）");
+    appendDetailHead("備考（入力）", "jy2-col-note");
+    appendDetailHead("");
+    body.appendChild(headerRow);
 
     block.detailRows.forEach((row, rowIndex) => {
       const tr = documentRef.createElement("tr");
       tr.dataset.rowKey = row.rowKey;
+      const prevName1 = jy2PrevResolved(block.detailRows, rowIndex, "name1");
+      const prevName2 = jy2PrevResolved(block.detailRows, rowIndex, "name2");
+      const prevName3 = jy2PrevResolved(block.detailRows, rowIndex, "name3");
       const commit = (field) => (value) => {
         const patch = { [field]: value };
         // 費目変更時: 新しい費目に紐づかない種別はクリア（カスケード整合）。
@@ -8945,15 +8986,55 @@
             }
           }
         }
-        // 種別変更時: 定義候補に無い値は残してよい（手入力可）が、
-        // 種別クリア時は定義はそのまま（自由記述のため）。
+        const merged = { ...row, ...patch };
+        const nextHimoku =
+          jy2IsDitto(merged.name1) || !jy2HasText(merged.name1)
+            ? prevName1
+            : String(merged.name1).trim();
+        const nextType =
+          jy2IsDitto(merged.name2) || !jy2HasText(merged.name2)
+            ? prevName2
+            : String(merged.name2).trim();
+        Object.assign(
+          patch,
+          jy2UchiwakeClearOutOfScopeLineFields(nextHimoku, nextType, merged),
+        );
+        if (!jy2IsGaichuHimoku(nextHimoku)) {
+          patch.nameDetail = null;
+          patch.nameItem = null;
+        } else if (field === "name1" || field === "name2") {
+          const curDetail =
+            row.nameDetail == null ? "" : String(row.nameDetail).trim();
+          if (curDetail && !jy2GaichuDetailChoices(nextType, curDetail).includes(curDetail)) {
+            patch.nameDetail = null;
+          }
+          const detailForItem =
+            patch.nameDetail !== undefined ? patch.nameDetail : row.nameDetail;
+          if (jy2GaichuItemIsDashFixed(nextHimoku, nextType, detailForItem)) {
+            patch.nameItem = "－";
+          } else if (
+            String(row.nameItem || "").trim() === "－" &&
+            jy2GaichuItemUsesMaterialMaster(nextHimoku, nextType, detailForItem)
+          ) {
+            patch.nameItem = null;
+          }
+        }
+        if (field === "nameDetail") {
+          if (jy2GaichuItemIsDashFixed(nextHimoku, nextType, value)) {
+            patch.nameItem = "－";
+          } else if (
+            String(row.nameItem || "").trim() === "－" &&
+            jy2GaichuItemUsesMaterialMaster(nextHimoku, nextType, value)
+          ) {
+            patch.nameItem = null;
+          }
+        }
         detailModel.updateDetailRow(block.stableBlockId, row.rowKey, patch);
+        if (field === "lineVendorName" && jy2HasText(value)) {
+          detailModel.updateBlockHeader(block.stableBlockId, { vendorName: "－" });
+        }
         scheduleRerender();
       };
-      // 行ごとのカスケード候補（費目→種別→定義及び品名）。〃／空は上段実値で解決。
-      const prevName1 = jy2PrevResolved(block.detailRows, rowIndex, "name1");
-      const prevName2 = jy2PrevResolved(block.detailRows, rowIndex, "name2");
-      const prevName3 = jy2PrevResolved(block.detailRows, rowIndex, "name3");
       const resolvedName1 =
         jy2IsDitto(row.name1) || !jy2HasText(row.name1)
           ? prevName1
@@ -9034,36 +9115,101 @@
           name2.appendChild(name2Ctrl);
         }
         tr.appendChild(name2);
-        const name3 = jy2Cell(documentRef, "td", "", "");
-        const name3Ctrl = name3UsesMaterialList
-          ? jy2ComboInput(
+        const detailCell = jy2Cell(documentRef, "td", "jy2-col-detail", "");
+        if (jy2IsGaichuHimoku(resolvedName1)) {
+          const detailCtrl = jy2ComboInput(
+            documentRef,
+            row.nameDetail,
+            jy2GaichuDetailChoices(resolvedName2, row.nameDetail),
+            commit("nameDetail"),
+            { listOnly: true, allowClear: true },
+          );
+          detailCtrl.dataset.jy2Field = "nameDetail";
+          detailCell.appendChild(detailCtrl);
+        } else {
+          const name3Ctrl = name3UsesMaterialList
+            ? jy2ComboInput(
+                documentRef,
+                row.name3,
+                jy2MaterialChoices(row.name3, resolvedName1, resolvedName2),
+                (value) => commit("name3")(jy2ToFullWidthKana(value)),
+                {
+                  displayDitto: name3ShowDitto,
+                  revealValue: prevName3 || row.name3,
+                  listOnly: true,
+                  allowClear: true,
+                  allowDitto: Boolean(prevName3),
+                },
+              )
+            : jy2ComboInput(
+                documentRef,
+                row.name3,
+                rowSuggest.name3,
+                (value) => commit("name3")(jy2ToFullWidthKana(value)),
+                {
+                  fullTitle: true,
+                  displayDitto: name3ShowDitto,
+                  revealValue: prevName3 || row.name3,
+                  allowDitto: Boolean(prevName3),
+                },
+              );
+          name3Ctrl.dataset.jy2Field = "name3";
+          detailCell.appendChild(name3Ctrl);
+        }
+        tr.appendChild(detailCell);
+        if (showItem) {
+          const itemCell = jy2Cell(documentRef, "td", "jy2-col-item", "");
+          if (jy2IsGaichuMaterial(resolvedName1, resolvedName2)) {
+            if (jy2GaichuItemIsDashFixed(resolvedName1, resolvedName2, row.nameDetail)) {
+              itemCell.classList.add("jy2-readonly");
+              itemCell.textContent = "－";
+            } else {
+              const itemCtrl = jy2ComboInput(
+                documentRef,
+                row.nameItem,
+                jy2MaterialChoices(row.nameItem, "材料費", row.nameDetail),
+                (value) => commit("nameItem")(jy2ToFullWidthKana(value)),
+                { listOnly: true, allowClear: true },
+              );
+              itemCtrl.dataset.jy2Field = "nameItem";
+              itemCell.appendChild(itemCtrl);
+            }
+          }
+          tr.appendChild(itemCell);
+        }
+        if (showVendor) {
+          const vendorCell = jy2Cell(documentRef, "td", "jy2-col-line-vendor", "");
+          if (jy2UchiwakeLineVendorVisible(resolvedName1, resolvedName2)) {
+            const lineVendorChoices = [...JY2_VENDOR_SEEDS];
+            const blockVendor = String(block.vendorName || "").trim();
+            if (blockVendor && !lineVendorChoices.includes(blockVendor)) {
+              lineVendorChoices.push(blockVendor);
+            }
+            const vendorCtrl = jy2ComboInput(
               documentRef,
-              row.name3,
-              jy2MaterialChoices(row.name3, resolvedName1, resolvedName2),
-              (value) => commit("name3")(jy2ToFullWidthKana(value)),
-              {
-                displayDitto: name3ShowDitto,
-                revealValue: prevName3 || row.name3,
-                listOnly: true,
-                allowClear: true,
-                allowDitto: Boolean(prevName3),
-              },
-            )
-          : jy2ComboInput(
-              documentRef,
-              row.name3,
-              rowSuggest.name3,
-              (value) => commit("name3")(jy2ToFullWidthKana(value)),
-              {
-                fullTitle: true,
-                displayDitto: name3ShowDitto,
-                revealValue: prevName3 || row.name3,
-                allowDitto: Boolean(prevName3),
-              },
+              row.lineVendorName,
+              jy2ListOnlyChoices(lineVendorChoices, row.lineVendorName),
+              commit("lineVendorName"),
+              { listOnly: true, allowClear: true },
             );
-        name3Ctrl.dataset.jy2Field = "name3";
-        name3.appendChild(name3Ctrl);
-        tr.appendChild(name3);
+            vendorCtrl.dataset.jy2Field = "lineVendorName";
+            vendorCell.appendChild(vendorCtrl);
+          }
+          tr.appendChild(vendorCell);
+        }
+        if (showPerson) {
+          const personCell = jy2Cell(documentRef, "td", "jy2-col-line-person", "");
+          if (jy2UchiwakeLinePersonVisible(resolvedName1, resolvedName2)) {
+            const personCtrl = jy2TextInput(
+              documentRef,
+              row.linePersonName,
+              commit("linePersonName"),
+            );
+            personCtrl.dataset.jy2Field = "linePersonName";
+            personCell.appendChild(personCtrl);
+          }
+          tr.appendChild(personCell);
+        }
         const unit = jy2Cell(documentRef, "td", "", "");
         const unitCtrl = jy2UnitSelect(
           documentRef,
@@ -9117,7 +9263,7 @@
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
-        const note = jy2Cell(documentRef, "td", "", "");
+        const note = jy2Cell(documentRef, "td", "jy2-col-note", "");
         const noteCtrl = jy2TextInput(documentRef, row.note, commit("note"), {
           fullTitle: true,
         });
@@ -9171,19 +9317,65 @@
         tr.appendChild(name1Cell);
         tr.appendChild(name2Cell);
         {
-          const name3Ro = jy2Cell(
-            documentRef,
-            "td",
-            "",
-            name3ShowDitto ? JY2_DITTO_MARK : row.name3,
-          );
-          const name3Text = name3ShowDitto
-            ? prevName3 || ""
-            : row.name3 === null || row.name3 === undefined
-              ? ""
-              : String(row.name3).trim();
-          if (name3Text) name3Ro.title = name3Text;
-          tr.appendChild(name3Ro);
+          const detailRo = jy2Cell(documentRef, "td", "jy2-col-detail", "");
+          if (jy2IsGaichuHimoku(resolvedName1)) {
+            const detailText =
+              row.nameDetail === null || row.nameDetail === undefined
+                ? ""
+                : String(row.nameDetail).trim();
+            detailRo.textContent = detailText;
+            if (detailText) detailRo.title = detailText;
+          } else {
+            detailRo.textContent = name3ShowDitto ? JY2_DITTO_MARK : row.name3;
+            const name3Text = name3ShowDitto
+              ? prevName3 || ""
+              : row.name3 === null || row.name3 === undefined
+                ? ""
+                : String(row.name3).trim();
+            if (name3Text) detailRo.title = name3Text;
+          }
+          tr.appendChild(detailRo);
+        }
+        if (showItem) {
+          const itemRo = jy2Cell(documentRef, "td", "jy2-col-item", "");
+          if (jy2IsGaichuMaterial(resolvedName1, resolvedName2)) {
+            const itemText = jy2GaichuItemIsDashFixed(
+              resolvedName1,
+              resolvedName2,
+              row.nameDetail,
+            )
+              ? "－"
+              : row.nameItem === null || row.nameItem === undefined
+                ? ""
+                : String(row.nameItem).trim();
+            itemRo.textContent = itemText;
+            if (itemText) itemRo.title = itemText;
+          }
+          tr.appendChild(itemRo);
+        }
+        if (showVendor) {
+          const vendorRo = jy2Cell(documentRef, "td", "jy2-col-line-vendor", "");
+          if (jy2UchiwakeLineVendorVisible(resolvedName1, resolvedName2)) {
+            const vendorText =
+              row.lineVendorName === null || row.lineVendorName === undefined
+                ? ""
+                : String(row.lineVendorName).trim();
+            vendorRo.textContent = vendorText;
+            if (vendorText) vendorRo.title = vendorText;
+          }
+          tr.appendChild(vendorRo);
+        }
+        if (showPerson) {
+          const personRo = jy2Cell(documentRef, "td", "jy2-col-line-person", "");
+          if (jy2UchiwakeLinePersonVisible(resolvedName1, resolvedName2)) {
+            const personText =
+              row.linePersonName === null || row.linePersonName === undefined
+                ? ""
+                : String(row.linePersonName).trim();
+            personRo.textContent = personText;
+            if (personText) personRo.title = personText;
+          }
+          tr.appendChild(personRo);
         }
         tr.appendChild(jy2Cell(documentRef, "td", "", row.unit));
         tr.appendChild(jy2Cell(documentRef, "td", "jy2-num", row.quantity));
@@ -9194,7 +9386,7 @@
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
         {
-          const noteRo = jy2Cell(documentRef, "td", "", row.note);
+          const noteRo = jy2Cell(documentRef, "td", "jy2-col-note", row.note);
           const noteText =
             row.note === null || row.note === undefined
               ? ""
@@ -9210,7 +9402,7 @@
     if (blockEditable) {
       const addRow = documentRef.createElement("tr");
       const addCell = jy2Cell(documentRef, "td", "", "");
-      addCell.colSpan = 9;
+      addCell.colSpan = 9 + extraCount;
       addCell.appendChild(
         jy2RowButton(documentRef, "明細行追加", () => {
           detailModel.addDetailRow(block.stableBlockId);
@@ -9243,7 +9435,7 @@
           label,
           `${BLOCK_FOOTER_LABELS[kind]}（自動）`,
         );
-        label.colSpan = 4;
+        label.colSpan = 4 + extraCount;
         tr.appendChild(label);
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-num", `${footerRow.ratePercent}%`),
@@ -9281,7 +9473,7 @@
         label,
         `${BLOCK_FOOTER_LABELS[kind]}（${footerMode}）`,
       );
-      label.colSpan = 6;
+      label.colSpan = 6 + extraCount;
       tr.appendChild(label);
       if (manual && blockEditable) {
         const amount = jy2Cell(documentRef, "td", "jy2-num", "");
@@ -13221,6 +13413,16 @@
       },
       // 残A: 工事基本情報 + 総括（請負/給与/原価投影手入力）は親 PUT に同乗。
       async save(detailModel, summaryModel, projectionManual, options = {}) {
+        for (const b of detailModel.snapshot().blocks) {
+          if (b.status === "retired") continue;
+          const next = jy2NextBlockVendorAfterLineCompanies(b);
+          if (next === "－" && String(b.vendorName || "").trim() !== "－") {
+            detailModel.updateBlockHeader(b.stableBlockId, { vendorName: "－" });
+          }
+        }
+        const uchiwakeWarnings = jy2CollectUchiwakeSaveWarnings(
+          detailModel.snapshot().blocks,
+        );
         // 詳細左は name2。name1 が〃でも判定が外れないよう、name2 の〃化は常時禁止。
         detailModel.prepareForSave({
           skipEmptyName2Ditto: () => true,
@@ -13311,6 +13513,7 @@
           projectionRepaired,
           projectionStatus: projectionCheck.status,
           softSaveReady,
+          uchiwakeWarnings,
         });
       },
       async saveActuals(actualsModel) {
@@ -14022,10 +14225,14 @@
               "総括原価投影に差分があったため修復しました。版確定はキャンセルされました。内容を確認のうえ、再度保存から版確定してください。",
             );
           } else if (view && typeof view.alert === "function") {
-            view.alert(
+            let saveAlert =
               doneAlert ||
-                `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`,
-            );
+              `工事基本情報・総括・内訳を保存しました（${outcome.requestCount}リクエスト）`;
+            if (outcome.uchiwakeWarnings && outcome.uchiwakeWarnings.length) {
+              saveAlert +=
+                `\n\n注意:\n` + outcome.uchiwakeWarnings.join("\n");
+            }
+            view.alert(saveAlert);
           }
           // soft-save（フルreload回避）は撤回: RESTで親を更新すると kintone 本体が
           // 「レコードに新しいバージョンがあります」を出すため、一時保存後も従来どおりreload。

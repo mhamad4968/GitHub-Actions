@@ -145,6 +145,10 @@ const DETAIL_EDITABLE_FIELDS = Object.freeze([
   "name1",
   "name2",
   "name3",
+  "nameDetail",
+  "nameItem",
+  "lineVendorName",
+  "linePersonName",
   "unit",
   "quantity",
   "unitPrice",
@@ -230,6 +234,10 @@ export function createDetailBlockModel({
       name1: null,
       name2: null,
       name3: null,
+      nameDetail: null,
+      nameItem: null,
+      lineVendorName: null,
+      linePersonName: null,
       unit: null,
       quantity: null,
       unitPrice: null,
@@ -300,6 +308,10 @@ export function createDetailBlockModel({
       name1: detailNormalizedOptional(row.name1),
       name2: detailNormalizedOptional(row.name2),
       name3: detailNormalizedOptional(row.name3),
+      nameDetail: detailNormalizedOptional(row.nameDetail),
+      nameItem: detailNormalizedOptional(row.nameItem),
+      lineVendorName: detailNormalizedOptional(row.lineVendorName),
+      linePersonName: detailNormalizedOptional(row.linePersonName),
       unit: normalizedUnit(row.unit, where),
       quantity: detailNormalizedOptional(row.quantity),
       unitPrice: detailNormalizedOptional(row.unitPrice),
@@ -530,6 +542,10 @@ export function createDetailBlockModel({
       !detailHasText(row.name1) &&
       !detailHasText(row.name2) &&
       !detailHasText(row.name3) &&
+      !detailHasText(row.nameDetail) &&
+      !detailHasText(row.nameItem) &&
+      !detailHasText(row.lineVendorName) &&
+      !detailHasText(row.linePersonName) &&
       !detailHasText(row.unit) &&
       !detailHasText(row.quantity) &&
       !detailHasText(row.unitPrice) &&
@@ -615,6 +631,10 @@ export function createDetailBlockModel({
           name_1: row.name1 ?? "",
           name_2: row.name2 ?? "",
           name_3: row.name3 ?? "",
+          name_detail: row.nameDetail ?? "",
+          name_item: row.nameItem ?? "",
+          line_vendor_name: row.lineVendorName ?? "",
+          line_person_name: row.linePersonName ?? "",
           name_spec_group: groups[rowIndex] ?? "",
           unit: row.unit ?? "",
           quantity: row.quantity ?? "",

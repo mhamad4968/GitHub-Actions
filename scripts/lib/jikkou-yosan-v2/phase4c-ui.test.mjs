@@ -858,7 +858,7 @@ test("U37 定義及び品名は列幅拡大＋fullTitleホバー全文", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(
     source,
-    /\.jy2-detail-table th:nth-child\(3\),\s*\.jy2-detail-table td:nth-child\(3\)\{min-width:16rem\}/,
+    /\.jy2-detail-table th\.jy2-col-detail,\s*\.jy2-detail-table td\.jy2-col-detail\{min-width:16rem\}/,
   );
   assert.match(source, /opts\.fullTitle/);
   assert.match(
@@ -892,7 +892,7 @@ test("U39 視覚磨き（focus-visible・備考幅・節見出し連動）", () 
   assert.match(source, /:focus-visible/);
   assert.match(
     source,
-    /\.jy2-detail-table th:nth-child\(8\),\s*\.jy2-detail-table td:nth-child\(8\)\{min-width:12rem\}/,
+    /\.jy2-detail-table th\.jy2-col-note,\s*\.jy2-detail-table td\.jy2-col-note\{min-width:12rem\}/,
   );
   assert.match(
     source,

@@ -183,6 +183,36 @@ test("forbidden app ids are rejected", () => {
   );
 });
 
+test("uchiwake fields round-trip on detail rows", () => {
+  const model = sampleModel();
+  const block = model.snapshot().blocks[0];
+  model.updateDetailRow(block.stableBlockId, block.detailRows[0].rowKey, {
+    name1: "外注費",
+    name2: "材料費",
+    nameDetail: "塗料",
+    nameItem: "塗料用シンナー",
+    lineVendorName: "協力A",
+    linePersonName: "",
+  });
+  const detail = model.toApp2Rows().find((row) => row.row_kind === "detail");
+  assert.equal(detail.name_detail, "塗料");
+  assert.equal(detail.name_item, "塗料用シンナー");
+  assert.equal(detail.line_vendor_name, "協力A");
+  const rec = detailRowToRecord(detail, KEYS);
+  assert.equal(rec.name_detail.value, "塗料");
+  assert.equal(rec.line_vendor_name.value, "協力A");
+  const blocks = app2RecordsToBlocks([
+    {
+      ...rec,
+      $id: { value: "1" },
+      $revision: { value: "1" },
+    },
+  ]);
+  assert.equal(blocks[0].detailRows[0].nameDetail, "塗料");
+  assert.equal(blocks[0].detailRows[0].nameItem, "塗料用シンナー");
+  assert.equal(blocks[0].detailRows[0].lineVendorName, "協力A");
+});
+
 test("LIVE records round-trip: reload then save diffs as pure updates", () => {
   const rows = sampleModel().toApp2Rows();
   const liveRecords = rows.map((row, index) => ({

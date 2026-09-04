@@ -430,7 +430,18 @@ test("app2: catalog fields, options, and A4 write_channel are exact", () => {
   ]) {
     assert.equal(p[code].required, true, `${code} must be required`);
   }
-  for (const code of ["name_1", "name_2", "name_3", "name_spec_group", "vendor_name", "retired_at_version_id"]) {
+  for (const code of [
+    "name_1",
+    "name_2",
+    "name_3",
+    "name_detail",
+    "name_item",
+    "line_vendor_name",
+    "line_person_name",
+    "name_spec_group",
+    "vendor_name",
+    "retired_at_version_id",
+  ]) {
     assert.equal(p[code].required ?? false, false, `${code} must be optional`);
   }
 });

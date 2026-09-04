@@ -160,6 +160,34 @@
       "required": false,
       "defaultValue": ""
     },
+    "name_detail": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_detail",
+      "label": "詳細（外注細目）",
+      "required": false,
+      "defaultValue": ""
+    },
+    "name_item": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "name_item",
+      "label": "品名（外注×材料）",
+      "required": false,
+      "defaultValue": ""
+    },
+    "line_vendor_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "line_vendor_name",
+      "label": "行の会社名",
+      "required": false,
+      "defaultValue": ""
+    },
+    "line_person_name": {
+      "type": "SINGLE_LINE_TEXT",
+      "code": "line_person_name",
+      "label": "行の氏名",
+      "required": false,
+      "defaultValue": ""
+    },
     "name_spec_group": {
       "type": "SINGLE_LINE_TEXT",
       "code": "name_spec_group",

@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-04-ver02-gaichu-type-menu",
-      "fileKey": "f898354e-0339-441d-9e57-50049b76bf08",
-      "revision": "334",
+      "build": "2026-09-05-ver02-uchiwake-hierarchy",
+      "fileKey": "8948c9fb-1892-4f0e-bbee-1175bd413780",
+      "revision": "335",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-04T05:05:45.893Z",
+      "deployedAt": "2026-09-04T22:43:06.395Z",
       "note": null
     },
     "757": {

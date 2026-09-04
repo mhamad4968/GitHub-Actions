@@ -41,6 +41,7 @@ const sourceNames = [
   "projection-consistency.mjs",
   "contract-salary-model.mjs",
   "detail-block-model.mjs",
+  "uchiwake-hierarchy.mjs",
   "actuals-matrix.mjs",
   "save-model.mjs",
   "version-series-model.mjs",
