@@ -431,7 +431,9 @@
       "types": [
         "法定福利費"
       ],
-      "materials": {}
+      "materials": {},
+      "excludeFromUchiwakeWorkTypeList": true,
+      "reason": "footer-auto-only (G0 §7.1 / Q7 B)"
     },
     {
       "section": "保安",
@@ -514,5 +516,9 @@
       ],
       "materials": {}
     }
-  ]
+  ],
+  "notes": {
+    "法定福利費": "Excel上は費目=その他費用のメモとして残す。内訳システム工種一覧には出さない（フッタ自動行のみ・Q7 B 2026-09-04）。",
+    "aiReviewQ1toQ8": "docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md §6"
+  }
 }
