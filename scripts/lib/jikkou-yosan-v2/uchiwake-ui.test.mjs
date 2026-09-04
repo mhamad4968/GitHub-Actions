@@ -18,10 +18,13 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-clear-option-cascade/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-worktype-clear-lock/);
   assert.match(source, /jy2HimokuChoicesFromSystemWork/);
   assert.match(source, /jy2HimokuCurrentIsWorkTypeName/);
   assert.match(source, /jy2TypesFromSystemWork/);
+  assert.match(source, /jy2WorkTypeIsEmpty/);
+  assert.match(source, /himokuChoiceLocked/);
+  assert.match(source, /typeChoiceLocked/);
   assert.match(source, /（空）/);
   assert.match(source, /__JY2_CLEAR__/);
   assert.match(source, /jy2FilterSystemWorkNamesForPicker/);

@@ -399,14 +399,29 @@ export function jy2FilterSystemWorkNamesForPicker(masterNames) {
   return (masterNames || []).filter((name) => name !== JY2_LEGAL_WELFARE_WORK_TYPE);
 }
 
+/** コード表の旧名称・括弧ゆれを JSON キーへ。塗装工事等の外注工種名は変換しない。 */
+export const JY2_SYSTEM_WORK_NAME_ALIASES = Object.freeze({
+  その他労務者賃金: "その他労務者",
+  建設機械オペレーター賃金: "建設機械オペレーター",
+  "各種保険料（任意保険）": "各種保険料(任意保険）",
+  "各種保険料（任意保険)": "各種保険料(任意保険）",
+  "各種保険料(任意保険)": "各種保険料(任意保険）",
+});
+
+export function jy2CanonicalSystemWorkName(name) {
+  const n = String(name || "")
+    .trim()
+    .replace(/^（塗）/u, "");
+  if (!n) return "";
+  return JY2_SYSTEM_WORK_NAME_ALIASES[n] || n;
+}
+
 export function jy2HimokuFromSystemWork(code, name) {
   const c = String(code || "").trim();
   if (c && Object.prototype.hasOwnProperty.call(JY2_SYSTEM_WORK_HIMOKU_BY_CODE, c)) {
     return JY2_SYSTEM_WORK_HIMOKU_BY_CODE[c];
   }
-  const n = String(name || "")
-    .trim()
-    .replace(/^（塗）/u, "");
+  const n = jy2CanonicalSystemWorkName(name);
   if (n && Object.prototype.hasOwnProperty.call(JY2_SYSTEM_WORK_HIMOKU_BY_NAME, n)) {
     return JY2_SYSTEM_WORK_HIMOKU_BY_NAME[n];
   }
@@ -433,9 +448,7 @@ export function jy2JsonTypesFromSystemWork(code, name) {
   if (c && Object.prototype.hasOwnProperty.call(JY2_SYSTEM_WORK_TYPES_BY_CODE, c)) {
     return [...JY2_SYSTEM_WORK_TYPES_BY_CODE[c]];
   }
-  const n = String(name || "")
-    .trim()
-    .replace(/^（塗）/u, "");
+  const n = jy2CanonicalSystemWorkName(name);
   if (n && Object.prototype.hasOwnProperty.call(JY2_SYSTEM_WORK_TYPES_BY_NAME, n)) {
     return [...JY2_SYSTEM_WORK_TYPES_BY_NAME[n]];
   }

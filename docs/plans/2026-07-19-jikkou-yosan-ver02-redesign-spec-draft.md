@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-05（工種クリア／1件固定／名称ゆれ）**: システム工種空で費目以降クリア。費目空で種別以降クリア。候補1件はreadonly固定。その他労務者賃金・保険料括弧ゆれを JSON キーへ。仮設・工具費等＝仮設機械経費×油脂燃料費、各種保険料＝その他費用×同名種別。LIVE BUILD `2026-09-05-ver02-worktype-clear-lock`。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`。  
 **2026-09-05（U4 空クリア実項目＋費目カスケード）**: listOnly の▼はプレースホルダのみ。空クリアはリスト項目「（空）」（sentinel `__JY2_CLEAR__`）。費目変更で種別以降（詳細・品名）をクリア。会社・氏名は条件外のみ。LIVE **rev339** / BUILD `2026-09-05-ver02-clear-option-cascade`。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`。  
 **2026-09-04（内訳階層仕様・実装なし）**: 外注費 cascade／行の会社・氏名／システム工種→費目連携を確定。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`＋JSON／Excel 控え。浜田: 内訳は以上で当面よい・実装は明示 GO 後。同日 AIレビュー Q1〜Q8 追記（別フィールド詳細・保存時警告・帳票印字・法定福利はフッタのみ等）。  
 **2026-09-04（内訳・外注費種別5件・G0 §9.1）**: 費目＝外注費で種別が「－」固定だった不具合を修正。`jy2HimokuUsesDashType` が旧コード表 `dashTypeByHimoku`／`dashOnlyHimoku` を優先していたのを、外注費は常に false。種別＝材料費／労務費／仮設機械経費／現場経費／その他費用。既存「－」は正規化でクリア。LIVE **rev334** / BUILD `2026-09-04-ver02-gaichu-type-menu`。  

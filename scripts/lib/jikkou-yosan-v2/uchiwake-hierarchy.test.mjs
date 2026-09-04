@@ -189,4 +189,61 @@ test("種別▼は工種JSONの types（労務費マスタ全体を出さない�
     jy2TypesFromSystemWork("", "", "労務費", laborMaster),
     laborMaster,
   );
+  const g0Seven = [
+    "材料費",
+    "外注費",
+    "労務費",
+    "仮設機械経費",
+    "現場経費",
+    "その他費用",
+    "外注労務費",
+  ];
+  const kasetsuMaster = [
+    "仮設材･鉄道器材レンタル",
+    "仮設材レンタル",
+    "建設機械類レンタル",
+    "保安用機材類レンタル",
+    "仮設ハウス･仮設トイレ",
+    "その他機材レンタル",
+    "建設機械油脂類",
+    "油脂燃料費",
+  ];
+  const otherCostMaster = [
+    "漁協・水利組合など",
+    "瑕損補修費",
+    "隣接物瑕損補償費",
+    "その他補償費",
+    "得意先接待交際費（甲）",
+    "得意先接待交際費（乙）",
+    "その他接待交際費",
+  ];
+  assert.deepEqual(jy2HimokuChoicesFromSystemWork("", "その他労務者", g0Seven), ["労務費"]);
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("", "（塗）その他労務者賃金", g0Seven),
+    ["労務費"],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "その他労務者賃金", "労務費", laborMaster),
+    ["その他労務者（昼間）", "その他労務者（夜間）"],
+  );
+  assert.deepEqual(jy2HimokuChoicesFromSystemWork("", "仮設・工具費等", g0Seven), [
+    "仮設機械経費",
+  ]);
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "仮設・工具費等", "仮設機械経費", kasetsuMaster),
+    ["油脂燃料費"],
+  );
+  assert.equal(jy2HimokuFromSystemWork("", "各種保険料（任意保険）"), "その他費用");
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("", "各種保険料(任意保険）", g0Seven),
+    ["その他費用"],
+  );
+  assert.deepEqual(
+    jy2TypesFromSystemWork("", "各種保険料（任意保険）", "その他費用", otherCostMaster),
+    ["各種保険料(任意保険）"],
+  );
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("10200", "塗装工事", g0Seven),
+    ["材料費", "労務費", "仮設機械経費", "現場経費", "その他費用"],
+  );
 });

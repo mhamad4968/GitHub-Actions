@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-clear-option-cascade
+  // @JY_V2_BUILD 2026-09-05-ver02-worktype-clear-lock
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -3284,6 +3284,7 @@
       "得意先接待交際費（甲）",
       "得意先接待交際費（乙）",
       "その他接待交際費",
+      "各種保険料(任意保険）",
     ]),
     外注労務費: Object.freeze([
       "出向工事安全専任管理者（昼間）",
@@ -6037,6 +6038,18 @@
     return [...(JY2_NAME_HIERARCHY.constructionHimokuMenu || [])];
   }
 
+  function jy2WorkTypeIsEmpty(block) {
+    return !jy2HasText(block && block.workTypeCode) && !jy2HasText(block && block.workTypeName);
+  }
+
+  function jy2HimokuChoicesForBlock(block) {
+    return jy2HimokuChoicesFromSystemWork(
+      block && block.workTypeCode,
+      block && block.workTypeName,
+      jy2HimokuMasterMenu(),
+    );
+  }
+
   function jy2HimokuChoicesForEntry(entry) {
     // JSON 工種の費目（7件の部分集合）。コード表 himoku の余剰は混ぜない。
     return jy2HimokuChoicesFromSystemWork(
@@ -6052,7 +6065,7 @@
       workTypeCode: code,
       workTypeName: block && block.workTypeName,
     };
-    const choices = jy2HimokuChoicesForEntry(entry);
+    const choices = jy2HimokuChoicesForBlock(block);
     const fromJson = jy2HimokuFromSystemWork(code, block && block.workTypeName);
     if (fromJson && choices.includes(fromJson)) return fromJson;
     if (entry && entry.himokuDefault && choices.includes(entry.himokuDefault)) {
@@ -6085,29 +6098,56 @@
   function jy2ApplyHimokuDefaultToDetails(detailModel, stableBlockId) {
     const snap = detailModel.snapshot().blocks.find((b) => b.stableBlockId === stableBlockId);
     if (!snap) return;
+    if (jy2WorkTypeIsEmpty(snap)) {
+      for (const row of snap.detailRows) {
+        const merged = {
+          ...row,
+          name1: null,
+          name2: null,
+          name3: null,
+          nameDetail: null,
+          nameItem: null,
+        };
+        const patch = {
+          name1: null,
+          name2: null,
+          name3: null,
+          nameDetail: null,
+          nameItem: null,
+          ...jy2UchiwakeClearOutOfScopeLineFields("", "", merged),
+        };
+        detailModel.updateDetailRow(stableBlockId, row.rowKey, patch);
+      }
+      return;
+    }
     const himoku = jy2HimokuDefaultForBlock(snap);
-    const entry = jy2ResolveNameHierarchy(snap);
-    const allowed = new Set(jy2HimokuChoicesForEntry(entry || snap));
+    const allowed = new Set(jy2HimokuChoicesForBlock(snap));
     for (const row of snap.detailRows) {
       const current = row.name1 == null ? "" : String(row.name1).trim();
       const invalid =
         current &&
         (jy2HimokuCurrentIsWorkTypeName(current, snap.workTypeName) || !allowed.has(current));
       const nextHimoku = !current || invalid ? (himoku || null) : current;
+      const himokuReplaced = !current || invalid;
       const patch = {};
-      if (!current || invalid) {
+      if (himokuReplaced) {
         patch.name1 = himoku || null;
+        patch.name3 = null;
+        patch.nameDetail = null;
+        patch.nameItem = null;
       }
-      if (nextHimoku && jy2HimokuUsesDashType(entry, nextHimoku)) {
+      if (nextHimoku && jy2HimokuUsesDashType(snap, nextHimoku)) {
         patch.name2 = "－";
       } else if (nextHimoku) {
-        const sole = jy2SoleTypeForHimoku(entry, nextHimoku);
+        const sole = jy2SoleTypeForHimoku(snap, nextHimoku);
         const currentType = String(row.name2 || "").trim();
         if (sole) {
           if (currentType !== sole) patch.name2 = sole;
-        } else if (currentType === "－") {
+        } else if (himokuReplaced || currentType === "－") {
           patch.name2 = null;
         }
+      } else if (himokuReplaced) {
+        patch.name2 = null;
       }
       if (Object.keys(patch).length) {
         detailModel.updateDetailRow(stableBlockId, row.rowKey, patch);
@@ -6254,40 +6294,35 @@
     const grandfatherType =
       rawType && !jy2IsDitto(rawType) ? rawType : "";
 
+    const jsonKnown = Boolean(
+      jy2HimokuFromSystemWork(block && block.workTypeCode, block && block.workTypeName),
+    );
     let name1;
     let name2;
     let name3;
-    if (entry) {
-      // システム工種あり → JSON 外注工事は費目5件。工種名は祖父しない。
-      // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
+    if (jsonKnown || (block && (block.workTypeCode || block.workTypeName))) {
+      // JSON / picker 工種あり。entry が null でも 7件に落とさない。
       const himokuCurrent = selectedHimoku || (row && row.name1);
       name1 = jy2ListOnlyChoices(
-        jy2HimokuChoicesForEntry(entry),
+        jy2HimokuChoicesForBlock(block),
         jy2HimokuCurrentIsWorkTypeName(himokuCurrent, block && block.workTypeName)
           ? ""
           : himokuCurrent,
       );
       name2 = selectedHimoku
-        ? jy2ListOnlyChoices(
-            jy2TypesForHimoku(entry, selectedHimoku),
-            grandfatherType,
-          )
+        ? jy2ListOnlyChoices(jy2TypesForHimoku(block, selectedHimoku), grandfatherType)
         : [];
-      // 材料種類マスタ対象のみ list。それ以外の詳細は手入力（コード表定義候補は出さない）。
       name3 = jy2UsesMaterialList(selectedHimoku, grandfatherType)
         ? jy2MaterialChoices(row && row.name3, selectedHimoku, grandfatherType)
         : [];
     } else {
-      // 工種空（R-05）: 費目もマスタ7件のみ。種別は費目選択後。
+      // 真の工種空（R-05）: 費目もマスタ7件のみ。種別は費目選択後。
       name1 = jy2ListOnlyChoices(
         jy2HimokuMasterMenu(),
         selectedHimoku || (row && row.name1),
       );
       name2 = selectedHimoku
-        ? jy2ListOnlyChoices(
-            jy2TypesForHimoku(null, selectedHimoku),
-            grandfatherType,
-          )
+        ? jy2ListOnlyChoices(jy2TypesForHimoku(null, selectedHimoku), grandfatherType)
         : [];
       name3 = jy2UsesMaterialList(selectedHimoku, grandfatherType)
         ? jy2MaterialChoices(row && row.name3, selectedHimoku, grandfatherType)
@@ -6303,7 +6338,6 @@
       name2,
       name3,
       vendors,
-      himokuLocked: entry ? jy2HimokuChoicesForEntry(entry).length === 1 : false,
     };
   }
 
@@ -8991,21 +9025,27 @@
         const patch = { [field]: value };
         // 費目変更時: 種別以降を常にクリア（入力間違い防止）。dash/sole のみ種別を自動設定。
         if (field === "name1") {
-          const entry = jy2ResolveNameHierarchy(block);
-          if (jy2HimokuUsesDashType(entry, value)) {
-            patch.name2 = "－";
+          if (!jy2HasText(value)) {
+            patch.name2 = null;
+            patch.name3 = null;
+            patch.nameDetail = null;
+            patch.nameItem = null;
           } else {
-            const sole = jy2SoleTypeForHimoku(entry, value);
-            if (sole) {
-              // 候補が1件だけの費目は種別（補助）を自動選択。
-              patch.name2 = sole;
+            if (jy2HimokuUsesDashType(block, value)) {
+              patch.name2 = "－";
             } else {
-              patch.name2 = null;
+              const sole = jy2SoleTypeForHimoku(block, value);
+              if (sole) {
+                // 候補が1件だけの費目は種別（補助）を自動選択。
+                patch.name2 = sole;
+              } else {
+                patch.name2 = null;
+              }
             }
+            patch.name3 = null;
+            patch.nameDetail = null;
+            patch.nameItem = null;
           }
-          patch.name3 = null;
-          patch.nameDetail = null;
-          patch.nameItem = null;
         } else if (field === "name2") {
           patch.name3 = null;
           patch.nameDetail = null;
@@ -9013,9 +9053,11 @@
         }
         const merged = { ...row, ...patch };
         const nextHimoku =
-          jy2IsDitto(merged.name1) || !jy2HasText(merged.name1)
-            ? prevName1
-            : String(merged.name1).trim();
+          field === "name1" && !jy2HasText(merged.name1)
+            ? ""
+            : jy2IsDitto(merged.name1) || !jy2HasText(merged.name1)
+              ? prevName1
+              : String(merged.name1).trim();
         const nextType =
           field === "name1" &&
           !jy2HasText(merged.name2) &&
@@ -9081,10 +9123,13 @@
         // name2 は raw のまま渡す。〃解決値を祖父にすると
         // 上段の「塗料」等が仮設機械経費など別費目の種別候補へ混入する。
       });
-      const dashTypeFixed = jy2HimokuUsesDashType(
-        jy2ResolveNameHierarchy(block),
-        resolvedName1,
-      );
+      const dashTypeFixed = jy2HimokuUsesDashType(block, resolvedName1);
+      const himokuChoiceLocked =
+        jy2HimokuChoicesForBlock(block).length === 1 && jy2HasText(resolvedName1);
+      const typeChoiceLocked =
+        !dashTypeFixed &&
+        jy2HasText(resolvedName1) &&
+        jy2TypesForHimoku(block, resolvedName1).filter((t) => t && t !== "－").length === 1;
       // U27: 直前と同値／空継承／保存〃 → 画面は「〃」（Excelの空欄表示は廃止）
       const name1ShowDitto = jy2ShowDitto(row.name1, prevName1);
       const name2ShowDitto = jy2ShowDitto(row.name2, prevName2);
@@ -9110,29 +9155,45 @@
       if (blockEditable) {
         // U4: 費目/種別（補助）＝リストのみ（打鍵候補は維持）。材料費×塗料等は材料 listOnly。
         const name1 = jy2Cell(documentRef, "td", "", "");
-        const name1Ctrl = jy2ComboInput(
-          documentRef,
-          jy2HimokuCurrentIsWorkTypeName(row.name1, block && block.workTypeName)
-            ? ""
-            : row.name1,
-          rowSuggest.name1,
-          commit("name1"),
-          {
-            displayDitto: name1ShowDitto,
-            revealValue: prevName1 || row.name1,
-            listOnly: true,
-            allowClear: true,
-            allowDitto: Boolean(prevName1),
-          },
-        );
-        name1Ctrl.dataset.jy2Field = "name1";
-        name1.appendChild(name1Ctrl);
+        if (himokuChoiceLocked) {
+          name1.classList.add("jy2-readonly");
+          const himokuDisplay = name1ShowDitto
+            ? JY2_DITTO_MARK
+            : resolvedName1 || row.name1 || "";
+          name1.textContent = himokuDisplay;
+          if (himokuDisplay) name1.title = "候補が1件のため固定";
+        } else {
+          const name1Ctrl = jy2ComboInput(
+            documentRef,
+            jy2HimokuCurrentIsWorkTypeName(row.name1, block && block.workTypeName)
+              ? ""
+              : row.name1,
+            rowSuggest.name1,
+            commit("name1"),
+            {
+              displayDitto: name1ShowDitto,
+              revealValue: prevName1 || row.name1,
+              listOnly: true,
+              allowClear: true,
+              allowDitto: Boolean(prevName1),
+            },
+          );
+          name1Ctrl.dataset.jy2Field = "name1";
+          name1.appendChild(name1Ctrl);
+        }
         tr.appendChild(name1);
         const name2 = jy2Cell(documentRef, "td", "", "");
         if (dashTypeFixed) {
           name2.classList.add("jy2-readonly");
           name2.textContent = "－";
           name2.title = "コード表で種別が「－」のため自動固定";
+        } else if (typeChoiceLocked) {
+          name2.classList.add("jy2-readonly");
+          const typeDisplay = name2ShowDitto
+            ? JY2_DITTO_MARK
+            : resolvedName2 || jy2SoleTypeForHimoku(block, resolvedName1) || "";
+          name2.textContent = typeDisplay;
+          if (typeDisplay) name2.title = "候補が1件のため固定";
         } else {
           const name2Ctrl = jy2ComboInput(
             documentRef,
@@ -9294,8 +9355,10 @@
         jy2MarkIncompleteIfAnchor(unit, anchor, row.unit);
         jy2MarkIncompleteIfAnchor(quantityCell, anchor, row.quantity);
         jy2MarkIncompleteIfAnchor(unitPriceCell, anchor, row.unitPrice);
-        jy2MarkNameBlankVisual(name1, name1BlankVisual);
-        if (!dashTypeFixed) jy2MarkNameBlankVisual(name2, name2BlankVisual);
+        if (!himokuChoiceLocked) jy2MarkNameBlankVisual(name1, name1BlankVisual);
+        if (!dashTypeFixed && !typeChoiceLocked) {
+          jy2MarkNameBlankVisual(name2, name2BlankVisual);
+        }
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
