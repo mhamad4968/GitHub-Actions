@@ -7,6 +7,7 @@ import {
   jy2FilterSystemWorkNamesForPicker,
   jy2GaichuItemIsDashFixed,
   jy2GaichuItemUsesMaterialMaster,
+  jy2HimokuChoicesFromSystemWork,
   jy2HimokuFromSystemWork,
   jy2IsGaichuMaterial,
   jy2NextBlockVendorAfterLineCompanies,
@@ -96,6 +97,25 @@ test("法定福利費はピッカーから除外。JSON 費目はコード優先
   assert.equal(jy2HimokuFromSystemWork("10900", "塗装工事"), "労務費");
   assert.equal(jy2HimokuFromSystemWork("", "軌道工事"), "外注費");
   assert.equal(jy2HimokuFromSystemWork("", "（塗）レンタル"), "仮設機械経費");
+});
+
+test("費目▼は JSON 工種の1件に絞る（材料費に外注費を出さない）", () => {
+  const master = [
+    "材料費",
+    "外注費",
+    "労務費",
+    "仮設機械経費",
+    "現場経費",
+    "その他費用",
+    "外注労務費",
+  ];
+  assert.deepEqual(jy2HimokuChoicesFromSystemWork("10100", "材料費", master), ["材料費"]);
+  assert.deepEqual(
+    jy2HimokuChoicesFromSystemWork("10100", "（塗）材料費", master),
+    ["材料費"],
+  );
+  assert.deepEqual(jy2HimokuChoicesFromSystemWork("10200", "（塗）塗装工事", master), ["外注費"]);
+  assert.deepEqual(jy2HimokuChoicesFromSystemWork("", "", master), master);
 });
 
 test("外注の＋混在セルを種別5件へ分解", () => {

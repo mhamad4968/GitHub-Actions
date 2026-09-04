@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-uchiwake-hierarchy
+  // @JY_V2_BUILD 2026-09-05-ver02-himoku-json-choices
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -6024,10 +6024,12 @@
   }
 
   function jy2HimokuChoicesForEntry(entry) {
-    // entry の有無に関わらず7件固定。コード表 himoku／allHimoku は混ぜない。
-    // （旧: constructionMenu 時に entry.himoku をマージ → 7件超の原因）
-    void entry;
-    return jy2HimokuMasterMenu();
+    // JSON 工種の費目（7件の部分集合）。コード表 himoku の余剰は混ぜない。
+    return jy2HimokuChoicesFromSystemWork(
+      entry && entry.workTypeCode,
+      entry && entry.workTypeName,
+      jy2HimokuMasterMenu(),
+    );
   }
 
   function jy2HimokuDefaultForBlock(block) {
@@ -6242,7 +6244,7 @@
     let name2;
     let name3;
     if (entry) {
-      // システム工種あり → 費目は G0 マスタ7件（＋現行値の祖父）。
+      // システム工種あり → 費目は JSON の1件（無ければ7件）＋現行値の祖父。
       // 種別は選んだ費目に紐づく候補のみ（未選択時は空＝紐付けを明示）。
       name1 = jy2ListOnlyChoices(
         jy2HimokuChoicesForEntry(entry),
@@ -6284,7 +6286,7 @@
       name2,
       name3,
       vendors,
-      himokuLocked: Boolean(entry && !entry.constructionMenu && name1.length === 1),
+      himokuLocked: entry ? jy2HimokuChoicesForEntry(entry).length === 1 : false,
     };
   }
 

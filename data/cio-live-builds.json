@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-05-ver02-uchiwake-hierarchy",
-      "fileKey": "8948c9fb-1892-4f0e-bbee-1175bd413780",
-      "revision": "335",
+      "build": "2026-09-05-ver02-himoku-json-choices",
+      "fileKey": "3cf9bd4e-228c-4067-a129-3f000bd8b731",
+      "revision": "336",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-04T22:43:06.395Z",
+      "deployedAt": "2026-09-04T22:57:06.542Z",
       "note": null
     },
     "757": {

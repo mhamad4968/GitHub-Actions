@@ -251,6 +251,17 @@ export function jy2HimokuFromSystemWork(code, name) {
   return null;
 }
 
+/**
+ * 費目▼の候補。JSON に費目がある工種はその1件（G0 7件の部分集合）。
+ * コード表 himoku の余剰（諸経費・予備費等）は混ぜない。工種空／未登録は7件。
+ */
+export function jy2HimokuChoicesFromSystemWork(code, name, masterMenu) {
+  const master = Array.isArray(masterMenu) ? [...masterMenu] : [];
+  const fromJson = jy2HimokuFromSystemWork(code, name);
+  if (fromJson && master.includes(fromJson)) return [fromJson];
+  return master;
+}
+
 /** Excel「材料費＋労務費＋…」を種別5件へ。半角 + 混在可。 */
 export function jy2SplitGaichuTypesCell(cell) {
   const s = String(cell || "").trim();

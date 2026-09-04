@@ -18,7 +18,8 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-uchiwake-hierarchy/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-himoku-json-choices/);
+  assert.match(source, /jy2HimokuChoicesFromSystemWork/);
   assert.match(source, /jy2FilterSystemWorkNamesForPicker/);
   assert.match(source, /jy2HimokuFromSystemWork/);
   assert.match(source, /jy2IsGaichuHimoku/);
