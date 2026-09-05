@@ -26,6 +26,9 @@ const i5e2 = cold.indexOf('Phase 5e2 CHECKPOINT-GIT-HEAL');
 const i6 = cold.indexOf('Phase 6 BOOTSTRAP');
 const i5f = cold.indexOf('Phase 5f EARLY-WAKE-HANDOFF-COMMIT');
 assert.ok(i5e > 0 && i5e2 > i5e && i5f > i5e2 && i6 > i5f, 'order: 5e → 5e2 → 5f → 6');
+// 6b は 6b2 前に HEAD へ寄せる（5e2 と同型）。通常 heal の off-by-one no-op だと 6b2 で tip^2
+const i6bHeal = cold.indexOf("run('npm run cio:checkpoint:git-heal -- --force-stamp')", i6);
+assert.ok(i6bHeal > i6, 'Phase 6b after bootstrap uses --force-stamp');
 
 assert.ok(fs.existsSync(path.join(root, 'scripts/cio-wake-preflight-heal.mjs')));
 

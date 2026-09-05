@@ -87,7 +87,7 @@ powershell -ExecutionPolicy Bypass -File scripts/install-morning-task-windows.ps
 
 ## Phase 5e2 — early checkpoint Git stamp（2026-08-10）
 
-`Phase 5f` early wake-commit の **前**に `cio:checkpoint:git-heal`（worktree stamp のみ）を実行する。古い `**Git**` 行のまま 5f が commit すると bootstrap で **D-CHKPT-02（ancestor）** が出る。5e2 で stamp → 5f commit 後は R44 off-by-one まで落とす。Phase 6b の stamp→export→wake 1 commit は維持。
+`Phase 5f` early wake-commit の **前**に `cio:checkpoint:git-heal -- --force-stamp`（worktree stamp のみ）を実行する。古い `**Git**` 行のまま 5f が commit すると bootstrap で **D-CHKPT-02（ancestor）** が出る。5e2 で stamp → 5f commit 後は R44 off-by-one まで落とす。**Phase 6b も `--force-stamp`**（通常 heal は 5f 後 off-by-one で no-op → 6b2 が tip^2）。stamp→export→wake 1 commit は維持（6b では `--commit` しない）。
 
 ## cold-start 完了報告（OPS-1・2026-08-09）
 

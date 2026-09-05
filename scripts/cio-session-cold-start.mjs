@@ -155,7 +155,10 @@ function main() {
   // （ancestor ずれ）が出る。early commit 前に stamp し、bootstrap では R44 off-by-one まで落とす。
   // 2026-08-11: 通常 heal は off-by-one で no-op → 5f 後 tip^2 で D-CHKPT-02 再発。
   //   → **--force-stamp** で HEAD へ寄せてから 5f（commit 後は tip^1 = R44 許容）。
-  // Phase 6b の stamp→export→wake 1 commit は維持（#D-CLOSE-02 / R44）。
+  // Phase 6b も --force-stamp: 通常 heal は 5f 後 off-by-one で no-op のまま、
+  // 6b2 が 2 個目の commit になり tip^2 で D-CHKPT-02 / session-close-git-warn NG
+  // （2026-09-05 WAKE: a86b151f vs d291a310）。5e2 と同型で HEAD へ寄せてから
+  // export→6b2。6b では --commit しない（heal 単独 commit + wake = #D-CLOSE-02）。
   console.log('\n▶ Phase 5e2 CHECKPOINT-GIT-HEAL（pre-early-wake stamp）');
   try {
     run('npm run cio:checkpoint:git-heal -- --force-stamp');
@@ -181,12 +184,15 @@ function main() {
 
   // Phase 6b — D-CHKPT-02 worktree stamp のみ（--commit/--push 禁止）
   // heal 単独 commit→直後 wake だと tip が進み Git が grandparent になり #D-CLOSE-02 NG（2026-08-06）
-  // 正: stamp → export → wake が checkpoint+bridge を 1 commit（R44 off-by-one = parent）
+  // 正: --force-stamp → export → wake が checkpoint+bridge を 1 commit（R44 off-by-one = parent）
+  // 通常 heal は 5f 後 off-by-one で no-op → 6b2 で tip^2（2026-09-05）
   console.log('\n▶ Phase 6b CHECKPOINT-GIT-HEAL（worktree stamp）');
   try {
-    run('npm run cio:checkpoint:git-heal');
+    run('npm run cio:checkpoint:git-heal -- --force-stamp');
   } catch {
-    console.warn('[cold-start] checkpoint:git-heal NG — 手動で npm run cio:checkpoint:git-heal');
+    console.warn(
+      '[cold-start] checkpoint:git-heal --force-stamp NG — 手動で npm run cio:checkpoint:git-heal -- --force-stamp',
+    );
   }
 
   // Phase 6b1 — bridge を現 tip に合わせてから wake（stamp 後の鮮度）
