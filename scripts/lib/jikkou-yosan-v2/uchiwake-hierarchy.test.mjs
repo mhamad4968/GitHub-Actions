@@ -16,6 +16,9 @@ import {
   jy2NextBlockVendorAfterLineCompanies,
   jy2SplitGaichuTypesCell,
   jy2UchiwakeClearOutOfScopeLineFields,
+  jy2UchiwakeDetailDashPatch,
+  jy2UchiwakeDetailIsDashFixed,
+  jy2UchiwakeDetailNeedsInput,
   jy2UchiwakeLinePersonVisible,
   jy2UchiwakeLineVendorVisible,
 } from "./uchiwake-hierarchy.mjs";
@@ -28,6 +31,26 @@ test("外注×材料の品名マスタは塗料／その他材料だけ", () => 
   assert.equal(jy2GaichuItemIsDashFixed("外注費", "材料費", "鋼材"), true);
   assert.equal(jy2GaichuItemIsDashFixed("外注費", "材料費", ""), false);
   assert.equal(jy2GaichuItemIsDashFixed("材料費", "塗料", "塗料"), false);
+});
+
+test("詳細はマスタがない費目で－固定。外注と材料リストは入力", () => {
+  assert.equal(jy2UchiwakeDetailIsDashFixed("労務費", "その他労務者（昼間）"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("仮設機械経費", "油脂燃料費"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("その他費用", "各種保険料(任意保険）"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("現場経費", "工場製品運搬費"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("外注労務費", "外注線閉責任者（昼間）"), true);
+  assert.equal(jy2UchiwakeDetailNeedsInput("外注費", "労務費"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("外注費", ""), true);
+  assert.equal(jy2UchiwakeDetailNeedsInput("材料費", "塗料"), true);
+  assert.equal(jy2UchiwakeDetailNeedsInput("材料費", "鋼材"), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("材料費", ""), true);
+  assert.equal(jy2UchiwakeDetailIsDashFixed("", ""), false);
+  assert.deepEqual(jy2UchiwakeDetailDashPatch("労務費", "その他労務者（昼間）"), {
+    name3: "－",
+    nameDetail: null,
+    nameItem: null,
+  });
+  assert.deepEqual(jy2UchiwakeDetailDashPatch("外注費", "労務費"), {});
 });
 
 test("§3.1 会社・氏名の表示条件", () => {

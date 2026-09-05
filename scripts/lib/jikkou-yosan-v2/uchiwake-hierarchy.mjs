@@ -290,6 +290,39 @@ export function jy2GaichuItemIsDashFixed(himoku, typeName, detail) {
   return !jy2GaichuItemUsesMaterialMaster(himoku, typeName, detail);
 }
 
+export function jy2UchiwakeUsesMaterialList(himoku, typeName) {
+  const h = String(himoku || "").trim();
+  const t = String(typeName || "").trim();
+  if (h === "その他材料費") return true;
+  return h === "材料費" && (t === "塗料" || t === "その他材料" || t === "その他材料費");
+}
+
+/** 詳細の入力が要る: 外注で種別あり、材料リスト、材料費のその他種別（鋼材等）。 */
+export function jy2UchiwakeDetailNeedsInput(himoku, typeName) {
+  const h = String(himoku || "").trim();
+  const t = String(typeName || "").trim();
+  if (!h) return false;
+  if (jy2IsGaichuHimoku(h)) return Boolean(t);
+  if (jy2UchiwakeUsesMaterialList(h, t)) return true;
+  if (h === "材料費" && t) return true;
+  return false;
+}
+
+/** 詳細に入れる必要がない → 「－」固定。費目未定は空のまま。 */
+export function jy2UchiwakeDetailIsDashFixed(himoku, typeName) {
+  if (!jy2HasUchiwakeText(himoku)) return false;
+  return !jy2UchiwakeDetailNeedsInput(himoku, typeName);
+}
+
+/** 詳細を－固定するときの patch。入力が要る行は空オブジェクト。 */
+export function jy2UchiwakeDetailDashPatch(himoku, typeName) {
+  if (!jy2UchiwakeDetailIsDashFixed(himoku, typeName)) return {};
+  if (jy2IsGaichuHimoku(himoku)) {
+    return { nameDetail: "－", nameItem: null };
+  }
+  return { name3: "－", nameDetail: null, nameItem: null };
+}
+
 /** 仕様 §3.1 行の会社列。 */
 export function jy2UchiwakeLineVendorVisible(himoku, typeName) {
   const h = String(himoku || "").trim();

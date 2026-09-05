@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-worktype-clear-lock
+  // @JY_V2_BUILD 2026-09-05-ver02-detail-dash-lock
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -6149,6 +6149,16 @@
       } else if (himokuReplaced) {
         patch.name2 = null;
       }
+      const resultingName1 = patch.name1 !== undefined ? patch.name1 : row.name1;
+      const resultingName2 = patch.name2 !== undefined ? patch.name2 : row.name2;
+      const nextHimokuForRow =
+        resultingName1 == null ? "" : String(resultingName1).trim();
+      const nextTypeForRow =
+        resultingName2 == null ? "" : String(resultingName2).trim();
+      Object.assign(
+        patch,
+        jy2UchiwakeDetailDashPatch(nextHimokuForRow, nextTypeForRow),
+      );
       if (Object.keys(patch).length) {
         detailModel.updateDetailRow(stableBlockId, row.rowKey, patch);
       }
@@ -9100,6 +9110,17 @@
             patch.nameItem = null;
           }
         }
+        Object.assign(patch, jy2UchiwakeDetailDashPatch(nextHimoku, nextType));
+        if (jy2UchiwakeDetailNeedsInput(nextHimoku, nextType)) {
+          const detailMerged = { ...row, ...patch };
+          if (jy2IsGaichuHimoku(nextHimoku)) {
+            if (String(detailMerged.nameDetail || "").trim() === "－") {
+              patch.nameDetail = null;
+            }
+          } else if (String(detailMerged.name3 || "").trim() === "－") {
+            patch.name3 = null;
+          }
+        }
         detailModel.updateDetailRow(block.stableBlockId, row.rowKey, patch);
         if (field === "lineVendorName" && jy2HasText(value)) {
           detailModel.updateBlockHeader(block.stableBlockId, { vendorName: "－" });
@@ -9117,6 +9138,14 @@
         jy2IsDitto(row.name2) || !jy2HasText(row.name2)
           ? prevName2
           : String(row.name2).trim();
+      const detailDashFixed = jy2UchiwakeDetailIsDashFixed(resolvedName1, resolvedName2);
+      const gaichuDetailNonDash = jy2IsGaichuHimoku(resolvedName1)
+        ? jy2GaichuDetailChoices(resolvedName2, row.nameDetail).filter(
+            (t) => t && String(t).trim() && String(t).trim() !== "－",
+          )
+        : [];
+      const gaichuDetailLocked =
+        !detailDashFixed && jy2IsGaichuHimoku(resolvedName1) && gaichuDetailNonDash.length === 1;
       const rowSuggest = jy2CollectDetailSuggestions(null, block, {
         ...row,
         name1: resolvedName1,
@@ -9213,16 +9242,30 @@
         }
         tr.appendChild(name2);
         const detailCell = jy2Cell(documentRef, "td", "jy2-col-detail", "");
-        if (jy2IsGaichuHimoku(resolvedName1)) {
-          const detailCtrl = jy2ComboInput(
-            documentRef,
-            row.nameDetail,
-            jy2GaichuDetailChoices(resolvedName2, row.nameDetail),
-            commit("nameDetail"),
-            { listOnly: true, allowClear: true },
-          );
-          detailCtrl.dataset.jy2Field = "nameDetail";
-          detailCell.appendChild(detailCtrl);
+        if (detailDashFixed) {
+          detailCell.classList.add("jy2-readonly");
+          detailCell.textContent = "－";
+          detailCell.title = "詳細の入力がないため固定";
+        } else if (jy2IsGaichuHimoku(resolvedName1)) {
+          if (gaichuDetailLocked) {
+            detailCell.classList.add("jy2-readonly");
+            const curDetail = String(row.nameDetail || "").trim();
+            const detailDisplay = gaichuDetailNonDash.includes(curDetail)
+              ? curDetail
+              : gaichuDetailNonDash[0];
+            detailCell.textContent = detailDisplay;
+            if (detailDisplay) detailCell.title = "候補が1件のため固定";
+          } else {
+            const detailCtrl = jy2ComboInput(
+              documentRef,
+              row.nameDetail,
+              jy2GaichuDetailChoices(resolvedName2, row.nameDetail),
+              commit("nameDetail"),
+              { listOnly: true, allowClear: true },
+            );
+            detailCtrl.dataset.jy2Field = "nameDetail";
+            detailCell.appendChild(detailCtrl);
+          }
         } else {
           const name3Ctrl = name3UsesMaterialList
             ? jy2ComboInput(
@@ -9417,7 +9460,10 @@
         tr.appendChild(name2Cell);
         {
           const detailRo = jy2Cell(documentRef, "td", "jy2-col-detail", "");
-          if (jy2IsGaichuHimoku(resolvedName1)) {
+          if (detailDashFixed) {
+            detailRo.textContent = "－";
+            detailRo.title = "詳細の入力がないため固定";
+          } else if (jy2IsGaichuHimoku(resolvedName1)) {
             const detailText =
               row.nameDetail === null || row.nameDetail === undefined
                 ? ""

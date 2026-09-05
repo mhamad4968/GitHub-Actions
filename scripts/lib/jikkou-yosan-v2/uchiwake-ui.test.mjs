@@ -18,7 +18,7 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-worktype-clear-lock/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-detail-dash-lock/);
   assert.match(source, /jy2HimokuChoicesFromSystemWork/);
   assert.match(source, /jy2HimokuCurrentIsWorkTypeName/);
   assert.match(source, /jy2TypesFromSystemWork/);
@@ -32,6 +32,7 @@ test("内訳階層: UI が純関数と新フィールドを接続する", () => 
   assert.match(source, /jy2IsGaichuHimoku/);
   assert.match(source, /jy2GaichuItemUsesMaterialMaster/);
   assert.match(source, /jy2GaichuItemIsDashFixed/);
+  assert.match(source, /jy2UchiwakeDetailIsDashFixed/);
   assert.match(source, /jy2UchiwakeLineVendorVisible/);
   assert.match(source, /jy2UchiwakeLinePersonVisible/);
   assert.match(source, /jy2UchiwakeClearOutOfScopeLineFields/);
