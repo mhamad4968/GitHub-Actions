@@ -6321,3 +6321,19 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT外 / 677–679 / SKYSEA / 閉済9件 / 予実タブ作り直し / 作業員設定タブ
 
 ---
+
+### 2026-09-05 JST — **GitHubメンテ（756本日終了後）**
+
+**要約**: GHA 直近は success。remote は `main` のみ。最新 commit の黄色 pending は Cursor GitHub App の check suite queued（0 runs）。Actions 本体は緑。main force push なし。
+
+**話したこと**: 実行予算は本日終了。次に GitHub メンテ。失敗履歴は 9/2 以前で既に是正済。PR は CLOSED #1 のみ（branch 削除済）。stash@{0} session-dirty は deps queue 等のため未 drop。
+
+**次の1手**: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本は今夜仕様。個人資産月次 9/13–17
+
+**Git**: `d9520488` = origin/main
+
+**GO待ち**: Cursor GitHub App を本リポから外すかは浜田（Settings → GitHub Apps）。AI からは外せず。
+
+**触らない**: 736 / main force push / stash drop は中身確認後のみ
+
+---
