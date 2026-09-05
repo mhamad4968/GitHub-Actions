@@ -6312,7 +6312,7 @@ npm run cio:morning:ready
 
 **次の1手**: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本は今夜仕様。個人資産月次 9/13–17
 
-**Git**: 本ターンの spec commit / push
+**Git**: `23903b1e` — 今夜統括仕様（origin へ push）
 
 **BUILD**: 756 `2026-09-05-ver02-locked-fuka-badge` rev342（実装前）
 
