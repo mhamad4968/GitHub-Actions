@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-02 19:10 JST — **夜 day-close**。683 印刷下枠【配線整理】rev**117** 目視OK。夕反省全GO（#S1/#O1/#M1/#P1）。
-**次の1手**: **現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須
-**レーン変更**: 実行予算 756 継続。工事原価管理はタブ非表示のみ。スライスA／別画面は廃案。**736不触**
+**最終更新**: 2026-09-05 09:52 JST — **朝セッション締め**。756内訳UX目視OK（不可バッジ rev342）。OpenRouter V1 nano既定。今晩19:00統括検討。
+**次の1手**: 今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17
+**レーン変更**: 756内訳朝完了 → 今晩19:00統括表検討。**736不触**
 **Git**: **`4bfb2543`** = `origin/main` — push 済
-**closeStatus**: **closed**（夜 day-close 完了）
+**closeStatus**: **closed**（朝区切り。日終わりは今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
-**本日状態**: **756**=`2026-08-02-ver02-actual-visual-readability` rev**333**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: **756**=`2026-09-05-ver02-locked-fuka-badge` rev**342**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-09-02）
+### 本日アクティブ（BUILD/rev — 2026-09-05）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-08-02-ver02-actual-visual-readability` | **333** |
+| **756** | `2026-09-05-ver02-locked-fuka-badge` | **342** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
 | **682** | `2026-08-23-682-banner-label-clarify` | **30** |
@@ -20,7 +20,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: G0 §15+§16 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`／夕GO `docs/approved-changes/2026-09-02-evening-reflection-hamada-go.md`／個人資産 `docs/personal/nisa-ops.md`
-**GO待ち**: なし（現場入力フィードバック待ち）。ロック済 G0 範囲の再確認は不要
+**GO待ち**: 今晩19:00 統括表の検討開始（実装は今夜の明示GO後）
 **調査正本**: G0 §15+§16
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -36,7 +36,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | LIVE rev333 · MANUAL_ONLY |
+| **756/757/758** | 756 LIVE rev342 · 757 rev31 · MANUAL_ONLY |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -45,6 +45,16 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+
+
+## 2026-09-05
+
+### 2026-09-05 朝締め（内訳UX・OpenRouter既定）
+- 756 LIVE `2026-09-05-ver02-locked-fuka-badge` rev**342**。固定セル灰色「不可」目視OK
+- OpenRouter 省略時既定 `openai/gpt-4.1-nano`（クレジット不足ではない）
+- 今晩19:00 統括表検討。アジェンダ `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tab-tonight-agenda.md`。朝は検討・実装しない
+- closeStatus: **closed**（朝区切り）
+
 ## 2026-09-02
 
 ### 2026-09-02 夜締め（day-close）

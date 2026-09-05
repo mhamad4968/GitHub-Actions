@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-04T22:06:34.633Z",
-  "gitHead": "8a75c3bb",
+  "exportedAt": "2026-09-05T00:57:48.117Z",
+  "gitHead": "fbd46c0d",
   "gitStatus": "## main...origin/main",
-  "nextTask": "**現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須",
+  "nextTask": "今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=8a75c3bb | 次=**現場責任者**が App **756** で実入力・挙動確認。フィードバックで UX 修正（マスタ順・listOnly厳守）。個人資産月次は 9/13–17 必須 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=fbd46c0d | 次=今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-09-05T00:57:48.643Z",
+  "crosscheckOk": true
 }
