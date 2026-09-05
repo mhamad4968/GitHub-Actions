@@ -54,6 +54,15 @@
 
 ---
 
+## [2026-09-05] OpenRouter MCP — model 未指定 404（既定なし）
+
+**前提**: `user-openrouter` `chat_completion` を `model` なしで呼ぶと `No model specified and no default model configured… OPENROUTER_DEFAULT_MODEL` になる。クレジット不足ではない（キー付き V1 は数トークンで成功する）。  
+**手順**: (1) Windows 生成は `scripts/sync-cursor-mcp-windows-from-wsl.mjs` が `OPENROUTER_DEFAULT_MODEL=openai/gpt-4.1-nano` を bash と env に入れる。(2) WSL 正本 `~/.cursor/mcp.json` の openrouter にも同キー。(3) `npm run mcp:sync-cursor-windows` → Cursor で OpenRouter MCP を再接続。(4) 視覚化は引き続き V1 を明示してよい。高額モデル（o3 / gpt-5 / 無指定のまま高い既定）は使わない。  
+**禁止**: mcp.json に API キーを直書きすること／既定を gpt-4o 以上にすること。  
+**exit**: `verify:cursor-mcp-windows` が openrouter 既定を含む · 省略呼び出しが V1 で通る（再接続後）
+
+---
+
 ## [2026-07-15] cio:mcp:profile — dry-run と apply 同時禁止
 
 **前提**: Cold プロファイルを試すとき  

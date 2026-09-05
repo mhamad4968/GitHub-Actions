@@ -233,11 +233,21 @@ export function buildWindowsMcp(S) {
       DEEPSEEK_THINKING_DEFAULT: "disabled",
     },
   };
-  out.mcpServers.openrouter = aiWindowsServer(
-    S.openrouter,
-    "OPENROUTER_API_KEY",
-    "npx -y @mcpservers/openrouterai@latest",
-  );
+  // 2026-09-05: @mcpservers/openrouterai は既定モデルなし。省略すると
+  // 「No model specified… OPENROUTER_DEFAULT_MODEL」。V1 nano を既定にする。
+  // OPENROUTER_API_KEY は ai-secrets.env（mcp.json に直書きしない）。
+  out.mcpServers.openrouter = {
+    ...wslBash(
+      `set -a && source ${AI_SECRET_FILE} && set +a && ` +
+        `export PATH=/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:$PATH ` +
+        `OPENROUTER_DEFAULT_MODEL=openai/gpt-4.1-nano && ` +
+        `exec npx -y @mcpservers/openrouterai@latest`,
+    ),
+    env: {
+      PATH: "/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      OPENROUTER_DEFAULT_MODEL: "openai/gpt-4.1-nano",
+    },
+  };
 
   // TSB-029: @iflow-mcp/markdownify-mcp は npx 経由だと preinstall 欠落 tarball で即死しうる。
   // WSL では `npm install -g --ignore-scripts @iflow-mcp/markdownify-mcp@0.0.2` のうえ node 直起動（NVM 替え時はパス更新）。

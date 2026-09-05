@@ -120,6 +120,18 @@ if (/\bnpx\b.*@iflow-mcp\/markdownify-mcp/.test(mdJoin)) {
   fail('markdownify must not use npx @iflow-mcp/markdownify-mcp (TSB-029 preinstall trap)');
 }
 
+const or = servers.openrouter;
+const orJoin = argsJoin(or);
+const orEnv = or.env && typeof or.env === 'object' ? or.env : {};
+if (
+  !orJoin.includes('OPENROUTER_DEFAULT_MODEL=openai/gpt-4.1-nano') &&
+  orEnv.OPENROUTER_DEFAULT_MODEL !== 'openai/gpt-4.1-nano'
+) {
+  fail(
+    'openrouter must default to openai/gpt-4.1-nano (OPENROUTER_DEFAULT_MODEL in bash -lc or env)',
+  );
+}
+
 for (const overlay of ['repo-tree', 'eslint-mcp', 'context7']) {
   if (!servers[overlay]) {
     console.warn(`[verify-cursor-mcp-windows] WARN: missing overlay ${overlay} (npm run mcp:apply-repo-overlays-windows)`);

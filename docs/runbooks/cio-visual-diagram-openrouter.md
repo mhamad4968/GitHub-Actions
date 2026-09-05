@@ -30,7 +30,7 @@ CIO が **直列**で起動（Kimi / Composer と並列不可）。
 
 ## 3. MCP 呼び出し
 
-**必須**: スキーマ読了後 `chat_completion`
+**必須**: スキーマ読了後 `chat_completion`。`model` は **毎回明示**してよい。mcp.json の既定は **V1** `openai/gpt-4.1-nano`（`OPENROUTER_DEFAULT_MODEL`）。省略しても V1 に落ちる。高額モデルを既定にしない。
 
 ```json
 {
