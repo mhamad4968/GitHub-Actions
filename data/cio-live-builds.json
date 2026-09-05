@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-05-ver02-detail-dash-lock",
-      "fileKey": "11cd5b27-1c03-4074-a19d-6efaf6dad8fb",
-      "revision": "341",
+      "build": "2026-09-05-ver02-locked-fuka-badge",
+      "fileKey": "92205613-35aa-4485-95e2-1d56a2bf5442",
+      "revision": "342",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-05T00:05:41.701Z",
+      "deployedAt": "2026-09-05T00:30:05.924Z",
       "note": null
     },
     "757": {

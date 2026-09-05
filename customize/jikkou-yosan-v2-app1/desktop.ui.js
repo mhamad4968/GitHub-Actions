@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-05-ver02-detail-dash-lock
+  // @JY_V2_BUILD 2026-09-05-ver02-locked-fuka-badge
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2081,6 +2081,9 @@
       ".jy2-combo-wrap{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;width:100%;min-width:0}",
       ".jy2-combo-wrap>.jy2-input{flex:1;min-width:0;border-top-right-radius:0;border-bottom-right-radius:0}",
       ".jy2-combo-wrap>.jy2-combo-select{flex:0 0 2rem;width:2rem;max-width:2rem;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;border-radius:0 4px 4px 0;background:#F4FAF4;cursor:pointer;font-size:11px;line-height:1}",
+      ".jy2-locked-wrap>.jy2-combo-readonly{cursor:default;background:#f8fafc;color:#64748b;caret-color:transparent}",
+      ".jy2-locked-wrap>.jy2-locked-badge{flex:0 0 2rem;width:2rem;max-width:2rem;display:flex;align-items:center;justify-content:center;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;border-radius:0 4px 4px 0;background:#e2e8f0;color:#64748b;font-size:10px;line-height:1;cursor:default;user-select:none}",
+      "@media print{.jy2-locked-badge{display:none!important}.jy2-locked-wrap>.jy2-combo-readonly{border-right:1px solid #cbd5e1;border-radius:4px}}",
       ".jy2-combo-list-only>.jy2-combo-readonly{cursor:pointer;background:#F4FAF4;caret-color:transparent}",
       ".jy2-combo-list-only>.jy2-combo-readonly:focus{outline:2px solid #2563eb;outline-offset:1px}",
       ".jy2-select{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;padding:2px 4px;background:#f1f5f9;border-radius:4px;cursor:pointer}",
@@ -2771,6 +2774,26 @@
     //   「〃」は常に許可。既存保存値がリスト外でも編集するまで維持。拒否時は lastCommitted へ復元。
     //   G0: 費目／種別／取引先／材料はリスト選択のみ → 打鍵入力は readOnly（▼からのみ変更）。
     // opts.fullTitle: 見切れ時ホバーで全文（定義及び品名など長文列）。listOnly 拒否中は miss 文言優先。
+    // 固定セル: 左に値、右は▼ではなく灰色「不可」。帳票ではバッジを隠す。保存値は変えない。
+    function jy2LockedValueControl(documentRef, displayText) {
+      const wrap = documentRef.createElement("span");
+      wrap.className = "jy2-combo-wrap jy2-locked-wrap";
+      wrap.title = "入力不可（固定）";
+      wrap.setAttribute("aria-label", "入力不可（固定）");
+      const input = documentRef.createElement("input");
+      input.type = "text";
+      input.className = "jy2-input jy2-combo jy2-combo-readonly";
+      input.readOnly = true;
+      input.tabIndex = -1;
+      input.value = displayText == null ? "" : String(displayText);
+      const badge = documentRef.createElement("span");
+      badge.className = "jy2-locked-badge";
+      badge.textContent = "不可";
+      badge.setAttribute("aria-hidden", "true");
+      wrap.appendChild(input);
+      wrap.appendChild(badge);
+      return wrap;
+    }
     function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
@@ -9189,8 +9212,7 @@
           const himokuDisplay = name1ShowDitto
             ? JY2_DITTO_MARK
             : resolvedName1 || row.name1 || "";
-          name1.textContent = himokuDisplay;
-          if (himokuDisplay) name1.title = "候補が1件のため固定";
+          name1.appendChild(jy2LockedValueControl(documentRef, himokuDisplay));
         } else {
           const name1Ctrl = jy2ComboInput(
             documentRef,
@@ -9214,15 +9236,13 @@
         const name2 = jy2Cell(documentRef, "td", "", "");
         if (dashTypeFixed) {
           name2.classList.add("jy2-readonly");
-          name2.textContent = "－";
-          name2.title = "コード表で種別が「－」のため自動固定";
+          name2.appendChild(jy2LockedValueControl(documentRef, "－"));
         } else if (typeChoiceLocked) {
           name2.classList.add("jy2-readonly");
           const typeDisplay = name2ShowDitto
             ? JY2_DITTO_MARK
             : resolvedName2 || jy2SoleTypeForHimoku(block, resolvedName1) || "";
-          name2.textContent = typeDisplay;
-          if (typeDisplay) name2.title = "候補が1件のため固定";
+          name2.appendChild(jy2LockedValueControl(documentRef, typeDisplay));
         } else {
           const name2Ctrl = jy2ComboInput(
             documentRef,
@@ -9244,8 +9264,7 @@
         const detailCell = jy2Cell(documentRef, "td", "jy2-col-detail", "");
         if (detailDashFixed) {
           detailCell.classList.add("jy2-readonly");
-          detailCell.textContent = "－";
-          detailCell.title = "詳細の入力がないため固定";
+          detailCell.appendChild(jy2LockedValueControl(documentRef, "－"));
         } else if (jy2IsGaichuHimoku(resolvedName1)) {
           if (gaichuDetailLocked) {
             detailCell.classList.add("jy2-readonly");
@@ -9253,8 +9272,7 @@
             const detailDisplay = gaichuDetailNonDash.includes(curDetail)
               ? curDetail
               : gaichuDetailNonDash[0];
-            detailCell.textContent = detailDisplay;
-            if (detailDisplay) detailCell.title = "候補が1件のため固定";
+            detailCell.appendChild(jy2LockedValueControl(documentRef, detailDisplay));
           } else {
             const detailCtrl = jy2ComboInput(
               documentRef,
@@ -9302,7 +9320,7 @@
           if (jy2IsGaichuMaterial(resolvedName1, resolvedName2)) {
             if (jy2GaichuItemIsDashFixed(resolvedName1, resolvedName2, row.nameDetail)) {
               itemCell.classList.add("jy2-readonly");
-              itemCell.textContent = "－";
+              itemCell.appendChild(jy2LockedValueControl(documentRef, "－"));
             } else {
               const itemCtrl = jy2ComboInput(
                 documentRef,

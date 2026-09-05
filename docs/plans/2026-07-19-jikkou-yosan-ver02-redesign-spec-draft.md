@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-05（固定セル不可バッジ）**: 詳細－／種別－／候補1件／品名右－は▼と同じ右枠に灰色「不可」（ホバー「入力不可（固定）」。帳票では隠す。保存値は変えない）。LIVE BUILD `2026-09-05-ver02-locked-fuka-badge`。  
 **2026-09-05（詳細－固定）**: 詳細にマスタ／材料リスト／外注cascadeが無い費目（労務費・仮設機械経費・現場経費・その他費用・外注労務費、外注で種別空）は「－」readonly。鋼材等の材料費詳細は手入力のまま。LIVE BUILD `2026-09-05-ver02-detail-dash-lock`。  
 **2026-09-05（工種クリア／1件固定／名称ゆれ）**: システム工種空で費目以降クリア。費目空で種別以降クリア。候補1件はreadonly固定。その他労務者賃金・保険料括弧ゆれを JSON キーへ。仮設・工具費等＝仮設機械経費×油脂燃料費、各種保険料＝その他費用×同名種別。LIVE BUILD `2026-09-05-ver02-worktype-clear-lock`。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`。  
 **2026-09-05（U4 空クリア実項目＋費目カスケード）**: listOnly の▼はプレースホルダのみ。空クリアはリスト項目「（空）」（sentinel `__JY2_CLEAR__`）。費目変更で種別以降（詳細・品名）をクリア。会社・氏名は条件外のみ。LIVE **rev339** / BUILD `2026-09-05-ver02-clear-option-cascade`。正本 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`。  
