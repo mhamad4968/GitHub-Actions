@@ -29,7 +29,7 @@
 - `docs/approved-changes/pending/*`（未 GO の提案 JSON）
 - `scripts/tmp-*.mjs`（移行・調査完了後）
 - `scripts/_tmp-*.mjs`（ad-hoc 作業）
-- `logs/tmp-*.md`、`logs/_cio-draft-*.txt`、`logs/tmp-briefing-*.md`
+- `logs/tmp-*`、`logs/_cio-draft-*`
 
 ## ad-hoc スクリプト
 

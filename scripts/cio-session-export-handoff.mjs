@@ -44,20 +44,13 @@ function sh(cmd) {
 }
 
 function purgeTemporaries() {
-  const patterns = [
-    path.join(root, 'logs', 'tmp-*.md'),
-    path.join(root, 'logs', '_cio-draft-*.txt'),
-    path.join(root, 'logs', 'tmp-briefing-*.md'),
-  ];
   let n = 0;
-  for (const dir of [path.join(root, 'logs')]) {
-    if (!fs.existsSync(dir)) continue;
-    for (const name of fs.readdirSync(dir)) {
-      const full = path.join(dir, name);
-      if (/^tmp-.*\.md$/i.test(name) || /^_cio-draft-.*\.txt$/i.test(name) || /^tmp-briefing-.*\.md$/i.test(name)) {
-        fs.unlinkSync(full);
-        n++;
-      }
+  const dir = path.join(root, 'logs');
+  if (!fs.existsSync(dir)) return n;
+  for (const name of fs.readdirSync(dir)) {
+    if (/^tmp-/i.test(name) || /^_cio-draft-/i.test(name)) {
+      fs.unlinkSync(path.join(dir, name));
+      n++;
     }
   }
   return n;

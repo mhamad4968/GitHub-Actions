@@ -33,6 +33,12 @@
 
 **機密**: パスワード入り Excel は kintone 正本移行後 **削除**（リポに commit しない）。
 
+## 2026-09-05 追記 — GitHubメンテ時のルート残骸
+
+リポ内 `npm run cio:repo:purge-temp -- --apply` に加え、`C:\tmp` **ルート直下の一度きりスキャン**（`.py` / 調査 txt・json・xlsx）を削除。**残す**: `実行予算ver2`（現行マスタ作業）・`実行予算書`・`app736-*`・Skysea・台帳フォルダ・registry の keep。
+
+---
+
 ## 都度作成フォルダ
 
 作業開始前:

@@ -37,7 +37,7 @@ function collectCandidates() {
       if (dir.endsWith('scripts') && /^tmp-.*\.mjs$/i.test(name)) found.add(full);
       if (dir.endsWith('scripts') && /^_tmp-.*\.mjs$/i.test(name)) found.add(full);
       if (dir.endsWith('data') && /^tmp-.*\.(txt|json)$/i.test(name)) found.add(full);
-      if (dir.endsWith('logs') && (/^tmp-.*\.md$/i.test(name) || /^_cio-draft-.*\.txt$/i.test(name) || /^tmp-briefing-.*\.md$/i.test(name))) {
+      if (dir.endsWith('logs') && (/^tmp-/i.test(name) || /^_cio-draft-/i.test(name))) {
         found.add(full);
       }
     }
