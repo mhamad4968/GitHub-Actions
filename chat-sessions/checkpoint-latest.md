@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-05 18:10 JST — **GitHubメンテ**: 未使用一時ファイル掃除済。GHA緑。Cursor App pending は管理者操作待ち。
+**最終更新**: 2026-09-05 18:20 JST — **kintoneアプリ一覧メンテ**: 776 を registry 登録。LIVE 棚卸 OK。757 form rev31 を live-builds に反映。
 **次の1手**: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17
-**レーン変更**: 756本日終了 → GitHubメンテ（未使用ファイル掃除）。**736不触**
-**Git**: **`bcfffe89`** = `origin/main` — push 済
+**レーン変更**: GitHubメンテ → アプリ一覧棚卸。**736不触**
+**Git**: **`7ab67edd`** = `origin/main` — 本コミット後に更新
 **closeStatus**: **open**（夜セッション継続可。day-close は今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-05-ver02-locked-fuka-badge` rev**342**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**

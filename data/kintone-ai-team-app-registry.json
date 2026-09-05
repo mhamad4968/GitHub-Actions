@@ -2,7 +2,7 @@
   "version": 1,
   "scope": "AIチームと作成・管理したkintoneアプリ",
   "outsideScopePolicy": "ignore",
-  "updatedAt": "2026-08-11",
+  "updatedAt": "2026-09-05",
   "activeAppIds": [
     "595",
     "629",
@@ -71,7 +71,8 @@
     "757",
     "758",
     "769",
-    "770"
+    "770",
+    "776"
   ],
   "retiredAppIds": [
     "594",

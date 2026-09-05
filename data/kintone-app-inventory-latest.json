@@ -1,19 +1,19 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-11T10:36:27.844Z",
+  "generatedAt": "2026-09-05T09:16:51.877Z",
   "ok": true,
   "counts": {
-    "live": 68,
-    "tenantFetched": 250,
-    "scope": 81,
-    "managed": 74,
-    "activePresent": 68,
+    "live": 69,
+    "tenantFetched": 252,
+    "scope": 82,
+    "managed": 75,
+    "activePresent": 69,
     "activeMissing": 0,
     "retiredAbsent": 13,
     "retiredPresent": 0,
     "trackedMissing": 0,
     "unlistedLive": 0,
-    "newSinceLast": 0,
+    "newSinceLast": 1,
     "removedSinceLast": 0,
     "nameChanges": 0
   },
@@ -28,7 +28,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-03-21T06:32:46.000Z",
-          "modifiedAt": "2026-07-06T22:58:29.000Z"
+          "modifiedAt": "2026-08-22T10:02:58.000Z"
         }
       },
       {
@@ -136,7 +136,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-04-26T08:21:50.000Z",
-          "modifiedAt": "2026-08-11T10:33:56.000Z"
+          "modifiedAt": "2026-08-19T10:44:20.000Z"
         }
       },
       {
@@ -177,7 +177,7 @@
       },
       {
         "appId": "680",
-        "logicalName": "新・PC台帳 所属候補マスタ（674 共有・JR・595 社員マスタの「所属候補から選ぶ」モーダル。API 失敗時は674 JS の埋め込み一覧にフォールバック）",
+        "logicalName": "新・PC台帳 所属候補マスタ（674・715・595 の所属候補。API 失敗時は各 JS 埋め込みへフォールバック）",
         "live": {
           "appId": "680",
           "name": "新・PC台帳 所属候補マスタ",
@@ -196,7 +196,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-05-08T07:35:36.000Z",
-          "modifiedAt": "2026-08-01T22:22:14.000Z"
+          "modifiedAt": "2026-09-01T17:40:50.000Z"
         }
       },
       {
@@ -208,7 +208,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-05-10T08:11:13.000Z",
-          "modifiedAt": "2026-08-02T10:16:49.000Z"
+          "modifiedAt": "2026-09-02T09:40:08.000Z"
         }
       },
       {
@@ -280,7 +280,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-06-03T07:57:23.000Z",
-          "modifiedAt": "2026-08-11T10:27:21.000Z"
+          "modifiedAt": "2026-08-16T00:38:17.000Z"
         }
       },
       {
@@ -304,7 +304,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-06-06T06:36:02.000Z",
-          "modifiedAt": "2026-06-21T11:49:57.000Z"
+          "modifiedAt": "2026-08-24T09:34:34.000Z"
         }
       },
       {
@@ -472,7 +472,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-06-13T23:13:38.000Z",
-          "modifiedAt": "2026-06-13T23:14:38.000Z"
+          "modifiedAt": "2026-08-19T10:23:16.000Z"
         }
       },
       {
@@ -484,7 +484,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-06-13T23:13:50.000Z",
-          "modifiedAt": "2026-06-17T12:52:53.000Z"
+          "modifiedAt": "2026-08-19T10:40:27.000Z"
         }
       },
       {
@@ -556,7 +556,7 @@
           "spaceId": "34",
           "threadId": "38",
           "createdAt": "2026-06-15T09:27:59.000Z",
-          "modifiedAt": "2026-08-03T10:08:54.000Z"
+          "modifiedAt": "2026-08-22T23:53:32.000Z"
         }
       },
       {
@@ -580,7 +580,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-06-16T11:42:04.000Z",
-          "modifiedAt": "2026-07-31T22:22:32.000Z"
+          "modifiedAt": "2026-08-16T09:55:17.000Z"
         }
       },
       {
@@ -688,7 +688,7 @@
           "spaceId": "34",
           "threadId": "38",
           "createdAt": "2026-06-27T11:15:13.000Z",
-          "modifiedAt": "2026-07-18T04:37:43.000Z"
+          "modifiedAt": "2026-08-21T01:12:10.000Z"
         }
       },
       {
@@ -700,7 +700,7 @@
           "spaceId": "34",
           "threadId": "38",
           "createdAt": "2026-06-27T11:15:26.000Z",
-          "modifiedAt": "2026-07-18T04:59:31.000Z"
+          "modifiedAt": "2026-08-21T01:12:29.000Z"
         }
       },
       {
@@ -724,7 +724,7 @@
           "spaceId": "48",
           "threadId": "52",
           "createdAt": "2026-06-28T10:31:48.000Z",
-          "modifiedAt": "2026-06-29T09:56:31.000Z"
+          "modifiedAt": "2026-08-29T00:19:21.000Z"
         }
       },
       {
@@ -748,7 +748,7 @@
           "spaceId": "21",
           "threadId": "23",
           "createdAt": "2026-06-29T10:55:23.000Z",
-          "modifiedAt": "2026-07-02T06:02:32.000Z"
+          "modifiedAt": "2026-08-16T09:19:00.000Z"
         }
       },
       {
@@ -784,7 +784,7 @@
           "spaceId": "56",
           "threadId": "60",
           "createdAt": "2026-07-21T10:11:21.000Z",
-          "modifiedAt": "2026-08-02T01:06:14.000Z"
+          "modifiedAt": "2026-09-05T00:30:05.000Z"
         }
       },
       {
@@ -796,7 +796,7 @@
           "spaceId": "56",
           "threadId": "60",
           "createdAt": "2026-07-21T10:31:28.000Z",
-          "modifiedAt": "2026-07-26T03:34:21.000Z"
+          "modifiedAt": "2026-09-04T22:39:00.000Z"
         }
       },
       {
@@ -833,6 +833,18 @@
           "threadId": "34",
           "createdAt": "2026-07-28T06:01:34.000Z",
           "modifiedAt": "2026-07-29T09:28:30.000Z"
+        }
+      },
+      {
+        "appId": "776",
+        "logicalName": "社員名簿（595 投影・Space 48）",
+        "live": {
+          "appId": "776",
+          "name": "社員名簿",
+          "spaceId": "48",
+          "threadId": "52",
+          "createdAt": "2026-08-21T09:44:12.000Z",
+          "modifiedAt": "2026-08-22T10:03:41.000Z"
         }
       }
     ],
@@ -907,7 +919,16 @@
     "retiredPresent": [],
     "unlistedLive": [],
     "trackedMissing": [],
-    "newSinceLast": [],
+    "newSinceLast": [
+      {
+        "appId": "776",
+        "name": "社員名簿",
+        "spaceId": "48",
+        "threadId": "52",
+        "createdAt": "2026-08-21T09:44:12.000Z",
+        "modifiedAt": "2026-08-22T10:03:41.000Z"
+      }
+    ],
     "removedSinceLast": [],
     "nameChanges": [],
     "ok": true
@@ -919,7 +940,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-03-21T06:32:46.000Z",
-      "modifiedAt": "2026-07-06T22:58:29.000Z"
+      "modifiedAt": "2026-08-22T10:02:58.000Z"
     },
     {
       "appId": "629",
@@ -991,7 +1012,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-04-26T08:21:50.000Z",
-      "modifiedAt": "2026-08-11T10:33:56.000Z"
+      "modifiedAt": "2026-08-19T10:44:20.000Z"
     },
     {
       "appId": "677",
@@ -1031,7 +1052,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-05-08T07:35:36.000Z",
-      "modifiedAt": "2026-08-01T22:22:14.000Z"
+      "modifiedAt": "2026-09-01T17:40:50.000Z"
     },
     {
       "appId": "683",
@@ -1039,7 +1060,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-05-10T08:11:13.000Z",
-      "modifiedAt": "2026-08-02T10:16:49.000Z"
+      "modifiedAt": "2026-09-02T09:40:08.000Z"
     },
     {
       "appId": "685",
@@ -1087,7 +1108,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-06-03T07:57:23.000Z",
-      "modifiedAt": "2026-08-11T10:27:21.000Z"
+      "modifiedAt": "2026-08-16T00:38:17.000Z"
     },
     {
       "appId": "695",
@@ -1103,7 +1124,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-06-06T06:36:02.000Z",
-      "modifiedAt": "2026-06-21T11:49:57.000Z"
+      "modifiedAt": "2026-08-24T09:34:34.000Z"
     },
     {
       "appId": "697",
@@ -1215,7 +1236,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-06-13T23:13:38.000Z",
-      "modifiedAt": "2026-06-13T23:14:38.000Z"
+      "modifiedAt": "2026-08-19T10:23:16.000Z"
     },
     {
       "appId": "715",
@@ -1223,7 +1244,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-06-13T23:13:50.000Z",
-      "modifiedAt": "2026-06-17T12:52:53.000Z"
+      "modifiedAt": "2026-08-19T10:40:27.000Z"
     },
     {
       "appId": "716",
@@ -1271,7 +1292,7 @@
       "spaceId": "34",
       "threadId": "38",
       "createdAt": "2026-06-15T09:27:59.000Z",
-      "modifiedAt": "2026-08-03T10:08:54.000Z"
+      "modifiedAt": "2026-08-22T23:53:32.000Z"
     },
     {
       "appId": "733",
@@ -1287,7 +1308,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-06-16T11:42:04.000Z",
-      "modifiedAt": "2026-07-31T22:22:32.000Z"
+      "modifiedAt": "2026-08-16T09:55:17.000Z"
     },
     {
       "appId": "735",
@@ -1359,7 +1380,7 @@
       "spaceId": "34",
       "threadId": "38",
       "createdAt": "2026-06-27T11:15:13.000Z",
-      "modifiedAt": "2026-07-18T04:37:43.000Z"
+      "modifiedAt": "2026-08-21T01:12:10.000Z"
     },
     {
       "appId": "747",
@@ -1367,7 +1388,7 @@
       "spaceId": "34",
       "threadId": "38",
       "createdAt": "2026-06-27T11:15:26.000Z",
-      "modifiedAt": "2026-07-18T04:59:31.000Z"
+      "modifiedAt": "2026-08-21T01:12:29.000Z"
     },
     {
       "appId": "748",
@@ -1383,7 +1404,7 @@
       "spaceId": "48",
       "threadId": "52",
       "createdAt": "2026-06-28T10:31:48.000Z",
-      "modifiedAt": "2026-06-29T09:56:31.000Z"
+      "modifiedAt": "2026-08-29T00:19:21.000Z"
     },
     {
       "appId": "750",
@@ -1399,7 +1420,7 @@
       "spaceId": "21",
       "threadId": "23",
       "createdAt": "2026-06-29T10:55:23.000Z",
-      "modifiedAt": "2026-07-02T06:02:32.000Z"
+      "modifiedAt": "2026-08-16T09:19:00.000Z"
     },
     {
       "appId": "752",
@@ -1423,7 +1444,7 @@
       "spaceId": "56",
       "threadId": "60",
       "createdAt": "2026-07-21T10:11:21.000Z",
-      "modifiedAt": "2026-08-02T01:06:14.000Z"
+      "modifiedAt": "2026-09-05T00:30:05.000Z"
     },
     {
       "appId": "757",
@@ -1431,7 +1452,7 @@
       "spaceId": "56",
       "threadId": "60",
       "createdAt": "2026-07-21T10:31:28.000Z",
-      "modifiedAt": "2026-07-26T03:34:21.000Z"
+      "modifiedAt": "2026-09-04T22:39:00.000Z"
     },
     {
       "appId": "758",
@@ -1456,6 +1477,14 @@
       "threadId": "34",
       "createdAt": "2026-07-28T06:01:34.000Z",
       "modifiedAt": "2026-07-29T09:28:30.000Z"
+    },
+    {
+      "appId": "776",
+      "name": "社員名簿",
+      "spaceId": "48",
+      "threadId": "52",
+      "createdAt": "2026-08-21T09:44:12.000Z",
+      "modifiedAt": "2026-08-22T10:03:41.000Z"
     }
   ]
 }

@@ -11,10 +11,10 @@ import {
 } from './kintone-ai-team-app-registry.mjs';
 
 // Golden counts — bump ONLY in the same commit that changes KINTONE_AI_TEAM_APP_REGISTRY
-// (2026-08-11: +596 PC採番マスタ retired → retired 12→13, scope 80→81). Drift = constitution-gates RED.
-const EXPECTED_ACTIVE = 68;
+// (2026-09-05: +776 社員名簿 active → active 68→69, scope 81→82). Drift = constitution-gates RED.
+const EXPECTED_ACTIVE = 69;
 const EXPECTED_RETIRED = 13;
-const EXPECTED_SCOPE = 81;
+const EXPECTED_SCOPE = 82;
 assert.equal(
   KINTONE_AI_TEAM_ACTIVE_IDS.length,
   EXPECTED_ACTIVE,

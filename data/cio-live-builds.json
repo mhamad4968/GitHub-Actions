@@ -444,10 +444,10 @@
     "757": {
       "build": "2026-07-21-ver02-phase6-app2-readonly-guard",
       "fileKey": "ca97ae0c-856f-496f-95fb-08276fe63f6a",
-      "revision": "30",
+      "revision": "31",
       "relPath": "customize/jikkou-yosan-v2-app2/desktop.js",
       "deployedAt": "2026-07-26T03:34:22.238Z",
-      "note": null
+      "note": "2026-09-05 form rev31 (内訳4フィールド ADD・JS fileKey 不変)"
     },
     "758": {
       "build": "2026-07-21-ver02-phase6-app3-readonly-guard",
