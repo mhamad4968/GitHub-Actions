@@ -17,6 +17,7 @@ import {
 } from './lib/kintone-ai-team-app-registry.mjs';
 import {
   classifyInventory,
+  findManagedIdsMissingFromRegistry,
   normalizeLiveApp,
   parseManagedAppsFromMarkdown,
 } from './lib/kintone-app-inventory.mjs';
@@ -29,8 +30,10 @@ const write = process.argv.includes('--write');
 const resetBaseline = process.argv.includes('--reset-baseline');
 
 function loadAiTeamScopeIds(managedApps) {
-  const scope = new Set(KINTONE_AI_TEAM_SCOPE_IDS);
-  const missing = managedApps.map((app) => String(app.appId)).filter((appId) => !scope.has(appId));
+  const missing = findManagedIdsMissingFromRegistry(
+    managedApps,
+    KINTONE_AI_TEAM_SCOPE_IDS,
+  );
   if (missing.length) {
     throw new Error(
       `kintone-apps.md の管理IDが data/kintone-ai-team-app-registry.json に未登録: ${missing.join(', ')}`,

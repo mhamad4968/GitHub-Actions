@@ -116,6 +116,9 @@ async function main() {
     process.exit(1);
   }
   console.log('[cio:eod:github] OK — no recent Action failures');
+  console.log(
+    '[cio:eod:github] NOTE yellow commit pending ≠ Actions fail (Cursor/Mintlify queued). See docs/runbooks/github-commit-checks-pending.md',
+  );
 }
 
 main().catch((err) => {

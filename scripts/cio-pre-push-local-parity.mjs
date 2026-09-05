@@ -27,6 +27,8 @@ const steps = [
   { type: "npm", script: "test:credit-budget-reset-guard" },
   // 2026-08-11 R2 — 退役アプリ参照（月次と独立。順序依存なし）
   { type: "npm", script: "verify:retired-app-refs" },
+  // 2026-09-05 F1 — 一覧 ID が registry 未登録（オフライン。LIVE audit 前段）
+  { type: "npm", script: "verify:kintone-ai-team-registry-parity" },
 ];
 
 for (const step of steps) {

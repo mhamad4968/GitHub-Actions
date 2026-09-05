@@ -38,6 +38,11 @@ node scripts/verify-ci-rule-integrity.mjs
 npm run lint:customize
 ```
 
+## EOD（#O1 2026-09-05）
+
+`npm run cio:eod:github` は **GitHub Actions の unresolved failure だけ**を NG にする。コミット横の黄色 pending（Cursor / Mintlify queued）は **Actions 失敗ではない**。是正は本ファイルの管理者操作。
+
 ## 変更履歴
 
+- **2026-09-05**: EOD は Actions 失敗のみ NG。黄色 pending は本ファイルの管理者操作（#O1）
 - **2026-05-21**: 初版（Cursor/Mintlify queued による pending、674/629 パス判定を workflow に追記）

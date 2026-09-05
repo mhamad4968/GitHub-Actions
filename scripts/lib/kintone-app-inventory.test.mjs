@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   classifyInventory,
+  findManagedIdsMissingFromRegistry,
   parseManagedAppsFromMarkdown,
 } from './kintone-app-inventory.mjs';
 import {
@@ -51,6 +55,32 @@ assert.deepEqual(parseManagedAppsFromMarkdown(markdown), [
   { appId: '594', logicalName: '旧アプリ' },
   { appId: '674', logicalName: '現行アプリ（正本）' },
 ]);
+
+assert.deepEqual(
+  findManagedIdsMissingFromRegistry(parseManagedAppsFromMarkdown(markdown), [
+    '594',
+    '674',
+  ]),
+  [],
+);
+assert.deepEqual(
+  findManagedIdsMissingFromRegistry(parseManagedAppsFromMarkdown(markdown), [
+    '674',
+  ]),
+  ['594'],
+);
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const paritySrc = fs.readFileSync(
+  path.join(repoRoot, 'scripts', 'cio-pre-push-local-parity.mjs'),
+  'utf8',
+);
+const gatesSrc = fs.readFileSync(
+  path.join(repoRoot, '.github', 'workflows', 'constitution-gates.yml'),
+  'utf8',
+);
+assert.match(paritySrc, /verify:kintone-ai-team-registry-parity/);
+assert.match(gatesSrc, /verify:kintone-ai-team-registry-parity/);
 
 const first = classifyInventory({
   managedApps: parseManagedAppsFromMarkdown(markdown),

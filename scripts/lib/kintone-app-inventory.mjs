@@ -28,6 +28,14 @@ export function parseManagedAppsFromMarkdown(markdown) {
   return apps.sort(numericSort);
 }
 
+/** ## アプリ一覧の appId のうち、registry scope に無いもの（オフライン・API なし） */
+export function findManagedIdsMissingFromRegistry(managedApps, scopeIds) {
+  const scope = new Set([...scopeIds].map(String));
+  return [...new Set(managedApps.map((app) => String(app.appId)))].filter(
+    (id) => !scope.has(id),
+  );
+}
+
 export function normalizeLiveApp(app) {
   return {
     appId: String(app.appId),

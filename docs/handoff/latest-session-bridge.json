@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-05T07:17:21.148Z",
-  "gitHead": "740c879e",
+  "exportedAt": "2026-09-05T09:29:26.902Z",
+  "gitHead": "75c38b42",
   "gitStatus": "## main...origin/main",
-  "nextTask": "今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17",
+  "nextTask": "明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=740c879e | 次=今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=75c38b42 | 次=明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-09-05T09:29:27.819Z",
+  "crosscheckOk": true
 }

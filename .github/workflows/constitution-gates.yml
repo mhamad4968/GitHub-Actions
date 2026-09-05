@@ -59,6 +59,8 @@ on:
       - 'scripts/test-evening-improvements-2026-07-26.mjs'
       - 'scripts/test-evening-improvements-2026-07-30.mjs'
       - 'scripts/cio-pre-push-local-parity.mjs'
+      - 'scripts/verify-kintone-ai-team-registry-parity.mjs'
+      - 'scripts/lib/kintone-app-inventory.mjs'
       - 'eslint.config.js'
 
 permissions:
@@ -105,6 +107,9 @@ jobs:
 
       - name: verify-retired-app-refs（2026-08-11 R2 — 退役アプリ稼働参照）
         run: npm run verify:retired-app-refs
+
+      - name: verify-kintone-ai-team-registry-parity（2026-09-05 F1 — 一覧IDとregistry）
+        run: npm run verify:kintone-ai-team-registry-parity
 
       - name: test-resolve-archived-report（Z-3 live→archive 針）
         run: npm run test:resolve-archived-report

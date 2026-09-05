@@ -123,6 +123,8 @@ npm run verify:kintone-apps-live-build-sync -- <appId> --strict
 
 **R1（2026-07-04 GO）**: customize **deploy 成功直後**に §6 の手順 6 を **同一セッション**で実行。full CLOSE 前に `kintone-apps.md` / `data/cio-live-builds.json` を commit に含める。
 
+**フォーム ADD のみ**（JS 不変・fileKey 不変）: `cio-live-builds.json` の `revision` を LIVE form revision に合わせる。`sync:kintone-apps-build --strict` は使わない（詳細: `docs/runbooks/customize-deploy-recovery.md`）。
+
 ---
 
 ## 6. pre-push hook（R60）

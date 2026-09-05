@@ -509,6 +509,7 @@
     "audit:kintone-app-inventory": "npx dotenv -e .env -e .env.proxy -- node scripts/audit-kintone-app-inventory.mjs",
     "audit:kintone-app-inventory:write": "npx dotenv -e .env -e .env.proxy -- node scripts/audit-kintone-app-inventory.mjs --write",
     "verify:retired-app-refs": "node scripts/verify-retired-app-refs.mjs",
+    "verify:kintone-ai-team-registry-parity": "node scripts/verify-kintone-ai-team-registry-parity.mjs",
     "test:kintone-app-inventory": "node scripts/lib/kintone-app-inventory.test.mjs",
     "test:desktop-session-close-report-prune": "node scripts/lib/desktop-session-close-report-prune.test.mjs",
     "test:evening-transcript-discovery": "node scripts/lib/evening-transcript-discovery.test.mjs",

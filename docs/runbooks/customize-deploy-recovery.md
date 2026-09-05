@@ -1,6 +1,7 @@
 # customize デプロイ・先祖返り復旧 Runbook
 
 **正本台帳**: `kintone-apps.md`（人間向け）＋ `data/cio-live-builds.json`（機械照合）  
+**フォーム ADD のみ**（JS 再デプロイなし・fileKey 不変）: LIVE form revision（`kintone-get-form-fields` の `revision`）を `data/cio-live-builds.json` の当該 `apps.<id>.revision` に合わせる。`sync:kintone-apps-build -- <id> --strict` は走らせない（JS deploy rev で md を上書きするため）。  
 **監査**: `npm run cio:audit:portfolio`（`--strict` で CI 同等）  
 **定期運用（カレンダー）**: `docs/runbooks/cio-periodic-ops-schedule.md`（月次監査・四半期スナップショット・金曜 MCP）
 
@@ -75,5 +76,6 @@ npm run cio:snapshot:portfolio
 
 ## 変更履歴
 
+- **2026-09-05**: フォーム ADD のみ（JS 不変）は `cio-live-builds.json` の revision を LIVE form revision に合わせる。`sync:kintone-apps-build --strict` は使わない（#D1）
 - **2026-05-16**: R-17 承認反映・`cio:guard:multi-customize`
 - **2026-05-16**: 初版（678 先祖返り教訓・live-build registry・portfolio 監査）
