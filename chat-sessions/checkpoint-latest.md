@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-05 09:52 JST — **朝セッション締め**。756内訳UX目視OK（不可バッジ rev342）。OpenRouter V1 nano既定。今晩19:00統括検討。
-**次の1手**: 今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17
-**レーン変更**: 756内訳朝完了 → 今晩19:00統括表検討。**736不触**
-**Git**: **`740c879e`** = `origin/main` — push 済
-**closeStatus**: **closed**（朝区切り。日終わりは今夜最終）
+**最終更新**: 2026-09-05 17:55 JST — **統括仕様確定**。実装は明日。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`
+**次の1手**: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本は今夜仕様。個人資産月次 9/13–17
+**レーン変更**: 今晩統括検討完了 → 明日実装。**736不触**
+**Git**: 本ターン push 後にハッシュ更新
+**closeStatus**: **open**（夜セッション継続可。day-close は今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-05-ver02-locked-fuka-badge` rev**342**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
@@ -19,9 +19,9 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: G0 §15+§16 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`／夕GO `docs/approved-changes/2026-09-02-evening-reflection-hamada-go.md`／個人資産 `docs/personal/nisa-ops.md`
-**GO待ち**: 今晩19:00 統括表の検討開始（実装は今夜の明示GO後）
-**調査正本**: G0 §15+§16
+**継続メモ**: 今夜統括正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`／内訳 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`／G0 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`
+**GO待ち**: なし（明日実装は今夜仕様どおり。浜田目視）
+**調査正本**: 今夜統括決定ファイル
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
@@ -52,6 +52,10 @@
 - OpenRouter 省略時既定 `openai/gpt-4.1-nano`（クレジット不足ではない）
 - 今晩19:00 統括表検討。アジェンダ `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tab-tonight-agenda.md`。朝は検討・実装しない
 - closeStatus: **closed**（朝区切り）
+
+### 2026-09-05 夜（統括仕様確定・実装は明日）
+- 正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`
+- 原価行13列・給与T/U・請負現行・①⑧⑨維持。customize なし
 
 
 ## 2026-09-02
