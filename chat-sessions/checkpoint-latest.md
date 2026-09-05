@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-05 09:52 JST — **朝セッション締め**。756内訳UX目視OK（不可バッジ rev342）。OpenRouter V1 nano既定。今晩19:00統括検討。
 **次の1手**: 今晩19:00 App756 統括表を内訳改修に合わせて検討（連携・自動入力）。朝セッションでは検討・実装しない。個人資産月次 9/13–17
 **レーン変更**: 756内訳朝完了 → 今晩19:00統括表検討。**736不触**
-**Git**: **`0ff91009`** = `origin/main` — push 済（R44 parent）
+**Git**: **`11627ec9`** = `origin/main` — push 済
 **closeStatus**: **closed**（朝区切り。日終わりは今夜最終）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-05-ver02-locked-fuka-badge` rev**342**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -45,8 +45,6 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
-
-
 ## 2026-09-05
 
 ### 2026-09-05 朝締め（内訳UX・OpenRouter既定）
@@ -55,12 +53,14 @@
 - 今晩19:00 統括表検討。アジェンダ `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tab-tonight-agenda.md`。朝は検討・実装しない
 - closeStatus: **closed**（朝区切り）
 
+
 ## 2026-09-02
 
 ### 2026-09-02 夜締め（day-close）
 - 683 印刷下枠【配線整理】件数。live **rev117**。浜田目視 OK。8月要約再生成（週次四半期誤記は手 PATCH）
 - 夕反省全GO: #S1 GHA healed / #O1 turn-start `--goal` / #M1 Kimi404→DeepSeek / #P1 会計年度四半期固定
 - closeStatus: **closed**
+
 
 
 ## 2026-08-30
@@ -85,16 +85,5 @@
 
 
 
-## 2026-08-29
 
-### 2026-08-29 朝（749 UX 改善レーンクローズ）
-- 浜田目視 **OK**（1–8＋一覧 IP/管理者ID/PW コピー）
-- live **749** `2026-08-29-749-ux-toolbar-copy-pill-print` rev **18** / fileKey `53f7ec7c-ddc1-442c-a8c7-95b34be384b9`
-- SPEC §7.5 / §8.2 更新 · `closures JSON 不触（UXレーンのみ・closed-v1 維持）`
-- closeStatus: **closed**（UXレーン。day-close は別途）
-
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-04.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-05.md -->
