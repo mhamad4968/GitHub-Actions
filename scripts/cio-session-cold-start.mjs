@@ -9,7 +9,7 @@
  * 状態: IDLE → MORNING → PREFLIGHT → ROLLUP → QUICK-HEALTH → WALL-CLOCK
  *   → MANDATORY_READS → KNOWLEDGE_WAKE → GROK-RESET
  *   → **WAKE-PREFLIGHT-HEAL → EARLY-WAKE-COMMIT** → BOOTSTRAP
- *   → CHECKPOINT-GIT-HEAL → EXPORT → WAKE-COMMIT → IMPORT → READY
+ *   → CHECKPOINT-GIT-HEAL → EXPORT → WAKE-COMMIT → DESKTOP-RESYNC → IMPORT → READY
  *
  * #S-WAKE-ORDER-01: rollup/rag/stamp の dirty を bootstrap の Git 残件検査より前に commit し、
  * 毎回の「未コミット N 件」偽陽性を根絶する。
@@ -17,6 +17,7 @@
  * WALL-CLOCK（§51-6-2）: bootstrap 直前に session:clock:clear → session:clock:set。
  * 続けて watch / web を確保（manual-desktop / trialPaused でも WAKE 後の stale watch を防ぐ）。
  * Phase 6c: bootstrap 後に watch/web を再確保（cio:health 二重起動による stale 防止）。
+ * Phase 6d: 6b2 後に Desktop を再 sync（LITE Git 行が 6b heal 前のまま残るのを防ぐ。リポ外）。
  * trialPaused / manual-desktop で sessionEnd が clear しない場合の残留開始時刻を防ぐ。
  *
  * @see docs/runbooks/session-cold-start-v1.md
@@ -210,6 +211,15 @@ function main() {
     run('npm run cio:wake:handoff-commit -- --push');
   } catch {
     console.warn('[cold-start] wake:handoff-commit NG — 手動で npm run cio:wake:handoff-commit -- --push');
+  }
+
+  // Phase 6d — bootstrap 内 Desktop sync は 6b Git heal より前。LITE の Git 行が古いまま残るのを防ぐ。
+  // Desktop はリポ外（git dirty にしない）。verify 失敗は WARN（本題ブロックしない）。
+  console.log('\n▶ Phase 6d DESKTOP-RESYNC（post-heal）');
+  try {
+    run('npm run desktop:sync-and-verify');
+  } catch {
+    console.warn('[cold-start] desktop:sync-and-verify NG — 手動で npm run desktop:sync-and-verify');
   }
 
   // Phase 6c — bootstrap 内 cio:health が WSL /tmp 経路で web を二重起動し、

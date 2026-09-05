@@ -4,7 +4,7 @@
  * デフォルト: 未コミットまたは origin より ahead なら exit 1（締め禁止）。
  * --warn-only … 警告のみ exit 0
  * --skip-push-check … push 未実施チェックをスキップ（通常は使わない）
- * --wake-context … bootstrap/WAKE 専用（#D-CLOSE-02 前日締め日付の偽陽性を抑止）。締めでは付けない
+ * --wake-context … bootstrap/WAKE 専用（#D-CLOSE-02 前日日付の偽陽性を抑止。closeStatus=open 含む）。締めでは付けない
  */
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';

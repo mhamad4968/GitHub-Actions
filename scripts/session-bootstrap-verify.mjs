@@ -83,7 +83,7 @@ if (tmpReg.status !== 0) {
 }
 
 console.log('\n=== [bootstrap] Git 残件 (verify:session-close-git-warn 非ブロック) ===');
-// --wake-context: 前日 closed-day の最終更新日付は #D-CLOSE-02 偽陽性にしない（締め時は strict）
+// --wake-context: 最終更新が前日以前なら日付 #D-CLOSE-02 をスキップ（open の夜継続含む。締め時は strict）
 const gitWarn = spawnSync(
   process.execPath,
   ['scripts/verify-session-close-git-warn.mjs', '--wake-context'],

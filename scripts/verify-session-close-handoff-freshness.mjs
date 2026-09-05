@@ -5,7 +5,8 @@
  * Usage: node scripts/verify-session-close-handoff-freshness.mjs [--warn-only] [--wake-context]
  *
  * --wake-context … bootstrap/WAKE 専用。
- *   (1) closeStatus が前日締め（closed-day 等）のとき「最終更新≠当日」は NG にしない（日付スキップ）。
+ *   (1) 最終更新 < 当日JST なら closeStatus 不問で日付検査スキップ
+ *       （open のまま翌日 New Chat する夜継続も対象。WAKE は締めではない）。
  *   (2) bridge が HEAD/parent 不一致でも、lock/credit tip 直後の adjacent grandparent fold
  *       （isWakeAdjacentGrandparentFold）なら INFO スキップ — close/strict では付けない。
  *   締め（close-preflight / close-git）では付けない — 当日 stamp 必須・grandparent 非許容を維持。
@@ -47,20 +48,17 @@ function main() {
     const text = fs.readFileSync(cpPath, "utf8");
     const m = text.match(/\*\*最終更新\*\*\s*:\s*(\d{4}-\d{2}-\d{2})/);
     const today = jstTodayYmd();
-    const closeStatusM = text.match(/\*\*closeStatus\*\*\s*:\s*(\S+)/i);
+    const closeStatusM = text.match(
+      /\*\*closeStatus\*\*\s*:\s*(?:\*\*)?(closed-day|closed-full|closed|closing|open|full)/i,
+    );
     const closeStatus = closeStatusM ? closeStatusM[1].trim().toLowerCase() : "";
-    // priorClose: closed* に加え、WAKE 限定で「前日以前の stuck closing」
-    // （heal 未実行の bootstrap 単独でも #D-CLOSE-02 偽陽性にしない）
-    const priorClose =
-      /^(closed-day|closed|full|closed-full)$/.test(closeStatus) ||
-      closeStatus.includes("closed") ||
-      (wakeContext && closeStatus === "closing" && m && m[1] < today);
     if (!m) {
       issues.push('checkpoint に「**最終更新**: YYYY-MM-DD」が無い');
     } else if (m[1] !== today) {
-      if (wakeContext && priorClose && m[1] < today) {
+      // WAKE は締めではない。open のまま日付跨ぎ New Chat しても当日 stamp は不要。
+      if (wakeContext && m[1] < today) {
         console.log(
-          `[verify-session-close-handoff-freshness] WAKE: 最終更新 ${m[1]}（closeStatus=${closeStatus || "?"}）— 前日締めとして日付検査スキップ`,
+          `[verify-session-close-handoff-freshness] WAKE: 最終更新 ${m[1]}（closeStatus=${closeStatus || "?"}）— 前日以前のため日付検査スキップ（締めではない）`,
         );
       } else {
         issues.push(

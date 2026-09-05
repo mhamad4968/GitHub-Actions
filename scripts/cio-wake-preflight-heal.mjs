@@ -145,8 +145,8 @@ function healPhantomGitDirty() {
 }
 
 /**
- * #D-CLOSE-02 偽陽性根絶 — 前日以前の closeStatus=closing が凍結ゾーンに残ると
- * --wake-context の priorClose（closed* のみ）に入らず WARN になる。
+ * 前日以前の closeStatus=closing を closed へ戻す（途中締めの見た目を残さない）。
+ * 日付 #D-CLOSE-02 の WAKE スキップは freshness --wake-context（open 含む）側。
  * 当日の締め途中（最終更新=当日）は触らない。
  */
 function healStuckClosingStatus() {

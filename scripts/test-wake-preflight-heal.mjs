@@ -68,7 +68,11 @@ assert.match(healSrc, /healStuckClosingStatus/);
 assert.match(healSrc, /auto-heal-stuck-closing/);
 
 const freshness = read('scripts/verify-session-close-handoff-freshness.mjs');
-assert.match(freshness, /stuck closing/);
-assert.match(freshness, /closeStatus === "closing"/);
+assert.match(freshness, /前日以前のため日付検査スキップ/);
+assert.match(freshness, /closeStatus 不問/);
+assert.match(cold, /Phase 6d DESKTOP-RESYNC/);
+const i6d = cold.indexOf('Phase 6d DESKTOP-RESYNC');
+const i6c = cold.indexOf('Phase 6c WALL-CLOCK-REEENSURE');
+assert.ok(i6d > 0 && i6c > i6d, 'order: 6d desktop resync before 6c wall-clock');
 
 console.log('[test:wake-preflight-heal] OK');
