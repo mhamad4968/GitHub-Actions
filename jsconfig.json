@@ -6,18 +6,21 @@
     "target": "ES2022",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
-    "maxNodeModuleJsDepth": 0
+    "maxNodeModuleJsDepth": 0,
+    "disableSizeLimit": true
   },
   "include": [
-    "customize/**/*.js",
     "scripts/**/*.js",
     "scripts/**/*.mjs",
     "scripts/**/*.cjs",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "mcp/**/*.js",
+    "mcp/**/*.mjs"
   ],
   "exclude": [
     "node_modules",
     "**/node_modules",
+    "customize",
     "security-next-automation",
     "ict-tech-digest-automation",
     "vite-kintone-list-button",
@@ -30,7 +33,7 @@
     "artifacts",
     "data/snapshots",
     "scripts/mcp-deepseek-v4/node_modules",
-    "customize/**/*.bundle.js",
-    "**/*.min.js"
+    "**/*.min.js",
+    "**/*.bundle.js"
   ]
 }

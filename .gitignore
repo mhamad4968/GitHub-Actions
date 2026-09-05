@@ -26,7 +26,8 @@ node_modules/
 Thumbs.db
 *.swp
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 
 # 一時プレビュー・作業ファイル（コミット対象外）
 tmp/

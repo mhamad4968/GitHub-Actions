@@ -1,0 +1,33 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.rag": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/backups": true,
+    "**/artifacts": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.rag/**": true,
+    "**/dist/**": true,
+    "**/logs/**": true,
+    "**/data/snapshots/**": true,
+    "**/scripts/mcp-deepseek-v4/node_modules/**": true,
+    "**/ict-tech-digest-automation/node_modules/**": true,
+    "**/security-next-automation/node_modules/**": true,
+    "**/*.bundle.js": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.rag": true,
+    "**/dist": true,
+    "**/logs": true,
+    "**/data/snapshots": true,
+    "**/coverage": true,
+    "**/*.bundle.js": true
+  },
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "js/ts.implicitProjectConfig.checkJs": false
+}

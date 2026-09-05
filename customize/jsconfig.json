@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "noEmit": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 0,
+    "disableSizeLimit": true
+  },
+  "include": ["**/*.js"],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "**/*.bundle.js",
+    "**/*.min.js"
+  ]
+}
