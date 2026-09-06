@@ -374,6 +374,7 @@ test("app1: aggregate and rate-to-1 cache fields exist with locked codes (A1)", 
   ]);
   assert.equal(p.summary_projection_checked_at.type, "DATETIME");
   assert.equal(p.ui_col_layout_json.type, "MULTI_LINE_TEXT");
+  assert.equal(p.summary_total_notes.type, "MULTI_LINE_TEXT");
 });
 
 test("app1: subtable row keys and sort orders exist per catalog", () => {

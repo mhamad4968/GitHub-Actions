@@ -12,6 +12,8 @@ import {
   COMMON_UNITS,
   CONTRACT_SECTIONS,
   SALARY_DEFAULT_UNIT,
+  SALARY_PERSON_MASTER,
+  SALARY_ROLE_MASTER,
   SALARY_TAX_DISPLAY,
   contractLineAmount,
   createContractSalaryModel,
@@ -126,6 +128,9 @@ test("common units dropdown and salary defaults follow D-29/X7", () => {
   assert.deepEqual(CONTRACT_SECTIONS, ["施工", "保安"]);
   assert.equal(SALARY_DEFAULT_UNIT, "箇月");
   assert.equal(SALARY_TAX_DISPLAY, "－");
+  assert.equal(SALARY_ROLE_MASTER.length, 11);
+  assert.equal(SALARY_PERSON_MASTER.length, 32);
+  assert.ok(SALARY_PERSON_MASTER.every((name) => name.includes("　")));
   const model = editableModel();
   assert.equal(model.snapshot().salaryLines[0].unit, "箇月");
 });
@@ -344,11 +349,42 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /jy2-contract-table/);
   assert.match(source, /jy2-salary-table/);
-  assert.match(source, /氏名（入力）/);
+  assert.match(source, /氏名（選択）/);
+  assert.match(source, /名称（選択）/);
   assert.match(source, /personName/);
-  assert.match(source, /jy2MarkSalaryNameSpaceWarning/);
-  assert.match(source, /姓と名の間に全角スペースを入力してください/);
+  assert.match(source, /SALARY_ROLE_MASTER/);
+  assert.match(source, /SALARY_PERSON_MASTER/);
+  assert.doesNotMatch(source, /jy2MarkSalaryNameSpaceWarning/);
+  assert.doesNotMatch(source, /姓と名の間に全角スペースを入力してください/);
   assert.match(source, /jy2-projection-table/);
+  assert.match(source, /会社名（自動）/);
+  assert.match(source, /種別（自動）/);
+  assert.match(source, /emptyCell.colSpan = 13/);
+  assert.match(source, /jy2-block-break/);
+  assert.match(
+    source,
+    /tr\.jy2-block-break>td\{border-top:1px solid #cbd5e1\}/,
+  );
+  assert.match(source, /jy2-projection-block-total/);
+  assert.match(source, /jy2-subtotal-badge/);
+  assert.match(source, /label\.colSpan = 11/);
+  assert.match(source, /原価行合計/);
+  assert.match(source, /jy2-print-button/);
+  assert.match(source, /jy2-print-portal/);
+  assert.match(source, /jy2OpenSummaryPrint/);
+  assert.match(source, /jy2PrStartTable/);
+  assert.match(source, /html,body\{[^}]*overflow:visible!important/);
+  assert.match(source, /overflow-wrap:anywhere/);
+  assert.match(source, /\.jy2-pr-table thead\{display:table-header-group\}/);
+  assert.match(source, /\.jy2-pr-table tfoot\{display:table-row-group\}/);
+  assert.match(source, /\.jy2-pr-table tr\{break-inside:avoid;page-break-inside:avoid\}/);
+  assert.match(source, /jy2-pr-center/);
+  assert.match(source, /td\.jy2-pr-center\{text-align:center/);
+  assert.match(source, /jy2-pr-total-label/);
+  assert.match(source, /jy2-pr-sub-badge/);
+  assert.match(source, /summary_total_notes/);
+  assert.match(source, /function jy2ParseTotalNotes/);
+  assert.match(source, /jy2TotalNoteCell/);
   assert.match(source, /jy2-summary-footer/);
   assert.match(source, /jy2-budget-summary/);
   assert.match(source, /区分別サマリー/);

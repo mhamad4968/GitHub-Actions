@@ -84,7 +84,7 @@ test("残A: App1 record round-trips back into the summary model", () => {
   assert.equal(b.salaryLines[0].personName, "山田太郎");
 });
 
-test("残A: projectionRowsToSubtable writes summary_cost_lines (種別手入力を含む)", () => {
+test("残A: projectionRowsToSubtable writes summary_cost_lines (備考は row_key で引き継ぎ)", () => {
   const detail = createDetailBlockModel({
     lockState: LOCK_STATES.EDITABLE,
     uuidFactory,
@@ -98,26 +98,26 @@ test("残A: projectionRowsToSubtable writes summary_cost_lines (種別手入力�
     ],
   });
   const blocks = detail.projectionBlocks();
+  const generated = regenerateSummaryCostLines(blocks, { contractTotal1: "1000" });
   const rows = regenerateSummaryCostLines(blocks, {
     contractTotal1: "1000",
-    previousLines: [
-      {
-        summary_stable_block_id: blocks[0].stableBlockId,
-        summary_line_type: "外注",
-        summary_calc_basis: "実測",
-        summary_note: "メモ",
-      },
-    ],
+    previousLines: generated.map((row, index) => ({
+      ...row,
+      summary_line_type: "外注",
+      summary_calc_basis: "実測",
+      summary_note: index === 0 ? "メモ" : "",
+    })),
   });
   const field = projectionRowsToSubtable(rows);
   assert.ok(field.summary_cost_lines, "must key by summary_cost_lines, not bare value");
   assert.equal(field.value, undefined);
   const cell = field.summary_cost_lines.value[0].value;
-  assert.equal(cell.summary_line_type.value, "外注");
-  assert.equal(cell.summary_calc_basis.value, "実測");
+  assert.equal(cell.summary_line_type.value, ""); // 種別は内訳 name2。手入力は捨てる
+  assert.equal(cell.summary_unit.value, "㎡"); // m2 は DROP_DOWN に無いので ㎡ へ
   assert.equal(cell.summary_note.value, "メモ");
   const previous = app1RecordToProjectionPreviousLines(field);
-  assert.equal(previous[0].summary_line_type, "外注");
+  assert.equal(previous[0].summary_row_key, generated[0].summary_row_key);
+  assert.equal(previous[0].summary_note, "メモ");
 });
 
 test("残A: subtables ride the parentPut of an atomic detail save", () => {

@@ -110,7 +110,7 @@
 
 ### 1.6 集計・UIフィールド
 
-`contract_construction_total`、`contract_safety_total`、`contract_total_1`、`cost_construction_total`、`cost_safety_total`、`salary_total`、`cost_total_8`、`profit_9`、各対①率（数値、JS自動・編集不可）、`summary_projection_status`（DD: `synced`／`dirty`／`error`）、`summary_projection_checked_at`（日時）、`ui_col_layout_json`（複数行文字列）。
+`contract_construction_total`、`contract_safety_total`、`contract_total_1`、`cost_construction_total`、`cost_safety_total`、`salary_total`、`cost_total_8`、`profit_9`、各対①率（数値、JS自動・編集不可）、`summary_projection_status`（DD: `synced`／`dirty`／`error`）、`summary_projection_checked_at`（日時）、`ui_col_layout_json`（複数行文字列）、`summary_total_notes`（複数行文字列・合計行備考JSON）。
 
 P-33/P-39により、`summary_amount_excl_tax`および原価集計欄は正本ではなく表示キャッシュ。⑧⑨は②の`active`ブロック`block_total`と①給与から再計算し、`retired`は現行予算0として除外する。版確定時に全`stable_block_id`を照合し、差があれば確定を拒否して②から再投影する。①から②への金額逆同期は禁止。
 

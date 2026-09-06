@@ -29,12 +29,34 @@ import {
   versionRecordKey,
 } from "./keys.mjs";
 import { RECORDS_PER_REQUEST } from "./planner.mjs";
+import { normalizeSummaryRowKey } from "./projection.mjs";
 
 const RECORD_API = "/k/v1/record.json";
 const RECORDS_API_GET = "/k/v1/records.json";
 const FETCH_PAGE_SIZE = 500;
 
 const TEXT = (value) => ({ value: value === null || value === undefined ? "" : String(value) });
+
+/** App1 summary_unit DROP_DOWN の現行LIVE選択肢。㎡ を残し COMMON_UNITS を足す。 */
+export const SUMMARY_UNIT_FIELD_VALUES = Object.freeze([
+  "㎡",
+  ...COMMON_UNITS.filter((unit) => unit !== "㎡"),
+]);
+
+export function toSummaryUnitFieldValue(unit) {
+  const raw = String(unit ?? "").trim();
+  if (!raw) return "－";
+  const aliases = {
+    m2: "㎡",
+    "㎡": "㎡",
+    掛m2: "掛m2",
+    "掛㎡": "掛m2",
+  };
+  const mapped = Object.prototype.hasOwnProperty.call(aliases, raw)
+    ? aliases[raw]
+    : raw;
+  return SUMMARY_UNIT_FIELD_VALUES.includes(mapped) ? mapped : "式";
+}
 
 function requireText(value, name) {
   if (typeof value !== "string" || value.trim() === "") {
@@ -286,7 +308,7 @@ export function app1RecordToSummaryLines(record) {
 
 /**
  * App1 summary_cost_lines → 投影の previousLines（手入力列の引き継ぎ用）。
- * 種別 / 計算基準 / 備考のみを stable_block_id キーで運ぶ。
+ * 備考は summary_row_key で運ぶ（legacy は stable_block_id）。
  */
 export function app1RecordToProjectionPreviousLines(record) {
   const field = record?.summary_cost_lines;
@@ -297,6 +319,9 @@ export function app1RecordToProjectionPreviousLines(record) {
   };
   return rows.map((row) => ({
     summary_stable_block_id: cell(row, "summary_stable_block_id").trim(),
+    summary_row_key: normalizeSummaryRowKey(cell(row, "summary_row_key")),
+    summary_vendor_name: cell(row, "summary_vendor_name"),
+    summary_person_name: cell(row, "summary_person_name"),
     summary_work_type_code: cell(row, "summary_work_type_code").trim(),
     summary_line_type: cell(row, "summary_line_type"),
     summary_material_name: cell(row, "summary_material_name"),
@@ -324,23 +349,6 @@ export function projectionRowsToSubtable(projectionRows) {
     }
     return "10％";
   };
-  const unitOption = (unit) => {
-    const allowed = COMMON_UNITS;
-    const raw = String(unit ?? "");
-    if (!raw) return "－";
-    const aliases = {
-      "㎡": "m2",
-      "掛㎡": "掛m2",
-      m: "ｍ",
-      km: "㎞",
-      kg: "㎏",
-    };
-    const mapped = Object.prototype.hasOwnProperty.call(aliases, raw)
-      ? aliases[raw]
-      : raw;
-    // マスタ外は祖父としてそのまま残す（－に潰さない）。
-    return allowed.includes(mapped) || mapped ? mapped : "－";
-  };
   // contract_lines / salary_lines と同じく「フィールドコード → { value: rows }」。
   // `{ value: rows }` だけ返すと parentRecord.value に載り、summary_cost_lines が PUT されない。
   return {
@@ -352,9 +360,12 @@ export function projectionRowsToSubtable(projectionRows) {
           summary_cost_category: TEXT(line.summary_cost_category ?? ""),
           summary_work_type_code: TEXT(line.summary_work_type_code ?? ""),
           summary_work_type_name: TEXT(line.summary_work_type_name ?? ""),
+          summary_vendor_name: TEXT(line.summary_vendor_name ?? ""),
+          summary_person_name: TEXT(line.summary_person_name ?? ""),
+          summary_row_key: TEXT(line.summary_row_key ?? ""),
           summary_line_type: TEXT(line.summary_line_type ?? ""),
           summary_material_name: TEXT(line.summary_material_name ?? ""),
-          summary_unit: TEXT(unitOption(line.summary_unit)),
+          summary_unit: TEXT(toSummaryUnitFieldValue(line.summary_unit)),
           summary_qty: TEXT(line.summary_qty ?? ""),
           summary_unit_price: TEXT(line.summary_unit_price ?? ""),
           summary_amount_excl_tax: TEXT(line.summary_amount_excl_tax ?? ""),
@@ -371,7 +382,7 @@ export function projectionRowsToSubtable(projectionRows) {
 }
 
 const FOOTER_KINDS = ["overhead", "insurance", "subtotal", "legal_welfare", "block_total"];
-// R-11/R-12: overhead・legal_welfare は自動計算(読取専用)のため手入力金額を復元しない
+// 諸経費フッタは自動再計算。法定福利フッタ金額は復元しない（作成者明細）。
 // (rowKey は footerRowKeys で保持=round-trip安定)。insurance のみ手入力復元。
 const MANUAL_FOOTER_CAMEL = { insurance: "insurance" };
 

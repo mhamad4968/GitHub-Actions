@@ -147,15 +147,18 @@ test("dirty: amount drift, missing/extra rows and reorders are all reported", ()
       type: "field_mismatch",
       stableBlockId: cache[0].summary_stable_block_id,
       field: "summary_amount_excl_tax",
-      expected: "880", // 塗装 800 + 諸経費(自動 10%)80 (R-11)
+      expected: "800",
       cached: "801",
     },
   ]);
 
-  // A block that projects but has no cache row → missing_line.
+  // 施工キャッシュだけ残し、保安ブロック分が欠ける → missing_line。
+  const constructionCache = cache.filter(
+    (line) => line.summary_cost_category === "施工",
+  );
   result = checkSummaryProjection({
     blocks,
-    cachedLines: cache.slice(0, 1),
+    cachedLines: constructionCache,
     contractTotal1: "2000",
   });
   assert.deepEqual(
@@ -178,7 +181,7 @@ test("dirty: amount drift, missing/extra rows and reorders are all reported", ()
   // Reordered cache rows → order_mismatch for both displaced rows.
   result = checkSummaryProjection({
     blocks,
-    cachedLines: [cache[1], cache[0]],
+    cachedLines: [cache[1], cache[0], ...cache.slice(2)],
     contractTotal1: "2000",
   });
   assert.equal(result.status, "dirty");
@@ -217,7 +220,7 @@ test("error: the check refuses to guess over corrupt cache or block shapes", () 
 
   result = checkSummaryProjection({ blocks, cachedLines: [cache[0], cache[0]] });
   assert.equal(result.status, "error");
-  assert.match(result.reason, /duplicate summary_stable_block_id/);
+  assert.match(result.reason, /duplicate summary row keys/);
 
   // Corrupt blocks make regeneration itself fail → error, never a guess.
   result = checkSummaryProjection({
@@ -230,6 +233,64 @@ test("error: the check refuses to guess over corrupt cache or block shapes", () 
   result = checkSummaryProjection({ cachedLines: cache });
   assert.equal(result.status, "error");
   assert.match(result.reason, /projection failed/);
+});
+
+test("split: same-block rows stay unique via summary_row_key; kintone-stripped tabs still sync", () => {
+  const blocks = [
+    {
+      stableBlockId: "blk-a",
+      status: "active",
+      costCategory: "施工",
+      total: "1100",
+      overheadAmount: "100",
+      workTypeCode: "K-1",
+      workTypeName: "塗装工事",
+      lines: [
+        { himoku: "材料費", typeName: "塗料", unit: "缶", quantity: "1", amount: "700" },
+        { himoku: "材料費", typeName: "養生", unit: "式", quantity: "1", amount: "300" },
+      ],
+    },
+  ];
+  const cache = freshCache(blocks);
+  assert.ok(cache.length >= 2, "split + 諸経費 footer must emit multiple rows");
+  const keys = cache.map((line) => String(line.summary_row_key || "")).filter(Boolean);
+  assert.equal(new Set(keys).size, keys.length, "regenerated keys must be unique");
+  assert.equal(
+    new Set(cache.map((line) => line.summary_stable_block_id)).size,
+    1,
+  );
+
+  assert.equal(
+    checkSummaryProjection({ blocks, cachedLines: cache, contractTotal1: "2000" })
+      .status,
+    "synced",
+  );
+
+  const stripped = cache.map((line) => ({
+    ...line,
+    summary_row_key: String(line.summary_row_key ?? "").replace(/\t+$/g, ""),
+  }));
+  assert.equal(
+    checkSummaryProjection({
+      blocks,
+      cachedLines: stripped,
+      contractTotal1: "2000",
+    }).status,
+    "synced",
+  );
+
+  const omitted = cache.map((line) => {
+    const next = { ...line };
+    delete next.summary_row_key;
+    return next;
+  });
+  const result = checkSummaryProjection({
+    blocks,
+    cachedLines: omitted,
+    contractTotal1: "2000",
+  });
+  assert.equal(result.status, "error");
+  assert.match(result.reason, /duplicate summary row keys/);
 });
 
 test("phase 5 module is pure: no kintone I/O, no App 735/736, no customize/736", () => {

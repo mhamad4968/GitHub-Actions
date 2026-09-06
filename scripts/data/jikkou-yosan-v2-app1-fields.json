@@ -702,6 +702,27 @@
           "required": false,
           "defaultValue": ""
         },
+        "summary_vendor_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_vendor_name",
+          "label": "会社名",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_person_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_person_name",
+          "label": "氏名",
+          "required": false,
+          "defaultValue": ""
+        },
+        "summary_row_key": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "summary_row_key",
+          "label": "原価行キー",
+          "required": false,
+          "defaultValue": ""
+        },
         "summary_material_name": {
           "type": "SINGLE_LINE_TEXT",
           "code": "summary_material_name",
@@ -931,6 +952,13 @@
       "type": "MULTI_LINE_TEXT",
       "code": "ui_col_layout_json",
       "label": "UI列レイアウトJSON",
+      "required": false,
+      "defaultValue": ""
+    },
+    "summary_total_notes": {
+      "type": "MULTI_LINE_TEXT",
+      "code": "summary_total_notes",
+      "label": "合計行備考",
       "required": false,
       "defaultValue": ""
     }

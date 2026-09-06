@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-05 18:20 JST — **kintoneアプリ一覧メンテ**: 776 を registry 登録。LIVE 棚卸 OK。757 form rev31 を live-builds に反映。
-**次の1手**: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17
-**レーン変更**: GitHubメンテ → アプリ一覧棚卸。**736不触**
-**Git**: **`f9d6d1c1`** = `origin/main` — push 済
-**closeStatus**: **open**（夜セッション継続可。day-close は今夜最終）
+**最終更新**: 2026-09-06 10:20 JST — **756 統括本日完了** LIVE `2026-09-06-ver02-total-notes` rev**358**。本セッション締め。
+**次の1手**: 浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02
+**レーン変更**: 756統括実装完了 → セッション締め。**736不触**
+**Git**: **`8bfc33a7`** — close-git 前（push 後に同期）
+**closeStatus**: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
-**本日状態**: **756**=`2026-09-05-ver02-locked-fuka-badge` rev**342**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: **756**=`2026-09-06-ver02-total-notes` rev**358**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-09-05）
+### 本日アクティブ（BUILD/rev — 2026-09-06）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-05-ver02-locked-fuka-badge` | **342** |
+| **756** | `2026-09-06-ver02-total-notes` | **358** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
 | **682** | `2026-08-23-682-banner-label-clarify` | **30** |
@@ -19,9 +19,9 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 今夜統括正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`／内訳 `docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md`／G0 `docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md`
-**GO待ち**: なし（明日実装は今夜仕様どおり。浜田目視）
-**調査正本**: 今夜統括決定ファイル
+**継続メモ**: 統括正本は実装済。駐車 `docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`。Mac Studio M3 Ultra 96GB/16TB・2026-12-20購入／2027-02移行
+**GO待ち**: なし
+**調査正本**: `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 
@@ -36,7 +36,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev342 · 757 rev31 · MANUAL_ONLY |
+| **756/757/758** | 756 LIVE rev358 · 757 rev31 · 757 customize 未deploy |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -45,6 +45,13 @@
 **正本** `docs/runbooks/session-lifecycle-v2.md` | **WAKE** `npm run cio:session:cold-start`  
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
+## 2026-09-06
+
+### 2026-09-06 朝締め（756統括・本セッション）
+- 756 LIVE `2026-09-06-ver02-total-notes` rev**358**。浜田目視OK（計・境・印刷・合計行備考）
+- 実行予算は本日終わり。設定タブは駐車。Mac移行は2027-02
+- closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
+
 ## 2026-09-05
 
 ### 2026-09-05 朝締め（内訳UX・OpenRouter既定）

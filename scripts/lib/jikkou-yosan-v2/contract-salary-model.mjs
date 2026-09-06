@@ -34,6 +34,54 @@ export const CONTRACT_SECTIONS = Object.freeze(["施工", "保安"]);
 export const SALARY_DEFAULT_UNIT = "箇月";
 // X7: 給与手当は消費税・税込とも「－」表示.
 export const SALARY_TAX_DISPLAY = "－";
+// 2026-09-05 給与 T/U — listOnly。T と U は独立（紐づけなし）。
+export const SALARY_ROLE_MASTER = Object.freeze([
+  "社員助勢",
+  "現場代理人･監理技術者",
+  "工事担当者",
+  "社員工事管理者",
+  "直轄工事安全専任管理者(昼)",
+  "直轄線閉責任者",
+  "直轄列車見張員",
+  "直轄交通整理員",
+  "直轄停電責任者",
+  "直轄検電接地作業者",
+  "直轄重機誘導員",
+]);
+export const SALARY_PERSON_MASTER = Object.freeze([
+  "大塚　英雄",
+  "山田　健太郎",
+  "大内　清孝",
+  "高良　智樹",
+  "平嶋　伸也",
+  "柏﨑　孝",
+  "津田　健太郎",
+  "根本　孝",
+  "島﨑　信弘",
+  "日田　聖人",
+  "松本　結太",
+  "倉田　純弥",
+  "藤田　大輝",
+  "海藤　光治",
+  "加賀谷　慎吾",
+  "阿部　伊吹",
+  "赤堀　太一",
+  "渡邊　陽一",
+  "勝部　裕太",
+  "大前　涼",
+  "鈴木　純平",
+  "高橋　成典",
+  "佐藤　嘉辰",
+  "森　蕉太",
+  "伊藤　祐二",
+  "小俣　富士夫",
+  "中嶋　優歩",
+  "船生　誠",
+  "米沢　一起",
+  "髙田　将平",
+  "大井　晴男",
+  "南部　結女",
+]);
 
 const CONTRACT_EDITABLE_FIELDS = Object.freeze([
   "workName",
@@ -61,7 +109,6 @@ function normalizedOptional(value) {
 }
 
 // 給与氏名: 姓名間の空白は、半角・全角・連続を問わず全角1文字に統一する。
-// 空白なしの氏名は境界を推測できないため、そのまま保持してUIで警告する。
 function normalizedSalaryPersonName(value) {
   if (!hasText(value)) return null;
   return String(value).trim().replace(/\s+/g, "　");

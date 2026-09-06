@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-05-ver02-locked-fuka-badge",
-      "fileKey": "92205613-35aa-4485-95e2-1d56a2bf5442",
-      "revision": "342",
+      "build": "2026-09-06-ver02-total-notes",
+      "fileKey": "726d1e3c-a291-45ea-a998-87144c7deef4",
+      "revision": "358",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-05T00:30:05.924Z",
+      "deployedAt": "2026-09-06T00:49:19.027Z",
       "note": null
     },
     "757": {

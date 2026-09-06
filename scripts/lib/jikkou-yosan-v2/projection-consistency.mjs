@@ -1,5 +1,6 @@
 import { compare } from "./decimal.mjs";
 import {
+  normalizeSummaryRowKey,
   normalizeSummaryTaxRate,
   regenerateSummaryCostLines,
 } from "./projection.mjs";
@@ -33,6 +34,19 @@ const DECIMAL_FIELDS = new Set([
   "summary_tax_rate",
   "summary_amount_incl_tax",
 ]);
+
+function projectionLineKey(line, index) {
+  const raw = String(
+    projectionLineFieldValue(line, "summary_row_key") ?? "",
+  ).trim();
+  // kintone SINGLE_LINE_TEXT は末尾タブを落とす。6欄へ戻してから突合する。
+  if (raw) return `row:${normalizeSummaryRowKey(raw)}`;
+  const stableBlockId = String(
+    projectionLineFieldValue(line, "summary_stable_block_id") ?? "",
+  ).trim();
+  if (stableBlockId) return `block:${stableBlockId}`;
+  return `index:${index}`;
+}
 
 function projectionLineFieldValue(line, code) {
   const field = line?.[code];
@@ -88,7 +102,7 @@ export function checkSummaryProjection({
         `cachedLines[${index}]: summary_stable_block_id is required`,
       );
     }
-    cached.push({ stableBlockId, line });
+    cached.push({ key: projectionLineKey(line, index), stableBlockId, line });
   }
   let expectedLines;
   try {
@@ -103,24 +117,26 @@ export function checkSummaryProjection({
   }
 
   const differences = [];
-  const cachedByBlockId = new Map(
-    cached.map((entry, index) => [entry.stableBlockId, { ...entry, index }]),
+  const cachedByKey = new Map(
+    cached.map((entry, index) => [entry.key, { ...entry, index }]),
   );
-  if (cachedByBlockId.size !== cached.length) {
-    return errorResult("cachedLines contain duplicate summary_stable_block_id");
+  if (cachedByKey.size !== cached.length) {
+    return errorResult("cachedLines contain duplicate summary row keys");
   }
   expectedLines.forEach((expected, index) => {
-    const entry = cachedByBlockId.get(expected.summary_stable_block_id);
+    const expectedKey = projectionLineKey(expected, index);
+    const entry = cachedByKey.get(expectedKey);
     if (!entry) {
       differences.push(
         Object.freeze({
           type: "missing_line",
           stableBlockId: expected.summary_stable_block_id,
+          rowKey: expected.summary_row_key ?? "",
         }),
       );
       return;
     }
-    cachedByBlockId.delete(expected.summary_stable_block_id);
+    cachedByKey.delete(expectedKey);
     if (entry.index !== index) {
       differences.push(
         Object.freeze({
@@ -147,8 +163,13 @@ export function checkSummaryProjection({
     }
   });
   // Cache rows whose block no longer projects (deleted/retired) are stale.
-  for (const [stableBlockId] of cachedByBlockId) {
-    differences.push(Object.freeze({ type: "extra_line", stableBlockId }));
+  for (const [, leftover] of cachedByKey) {
+    differences.push(
+      Object.freeze({
+        type: "extra_line",
+        stableBlockId: leftover.stableBlockId,
+      }),
+    );
   }
   return Object.freeze({
     status: differences.length === 0 ? "synced" : "dirty",

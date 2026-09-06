@@ -96,13 +96,62 @@ function normalizeFailure(plan, error, uniqueKeyCodes) {
     );
   }
   const wrapped = new Error(
-    `bulkRequest failed for ${plan.operation}: ${error?.message ?? String(error)}`,
+    `bulkRequest failed for ${plan.operation}: ${formatBulkRequestFailure(error)}`,
   );
   wrapped.name = "BulkRequestExecutionError";
   wrapped.operation = plan.operation;
   wrapped.autoRetry = false;
   wrapped.cause = error;
   return wrapped;
+}
+
+const BULK_ERROR_TEXT_MAX = 900;
+
+function compactJson(value) {
+  try {
+    const text = JSON.stringify(value);
+    if (!text || text === "{}" || text === "[]") return "";
+    return text.length > BULK_ERROR_TEXT_MAX
+      ? `${text.slice(0, BULK_ERROR_TEXT_MAX)}…`
+      : text;
+  } catch {
+    return "";
+  }
+}
+
+/** kintone.api は Error ではなく { code, errors, results } で reject することがある。 */
+export function formatBulkRequestFailure(error) {
+  if (error == null) return "unknown error";
+  if (typeof error === "string") return error;
+  const bits = [];
+  if (typeof error.message === "string" && error.message.trim()) {
+    bits.push(error.message.trim());
+  }
+  if (typeof error.code === "string" && error.code) bits.push(error.code);
+  if (error.errors) {
+    const extra = compactJson(error.errors);
+    if (extra) bits.push(extra);
+  }
+  if (Array.isArray(error.results)) {
+    error.results.forEach((item, index) => {
+      if (!item || typeof item !== "object") return;
+      if (!item.code && !item.message && !item.errors) return;
+      const piece = [
+        `results[${index}]`,
+        item.code || "",
+        typeof item.message === "string" ? item.message : "",
+        item.errors ? compactJson(item.errors) : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      if (piece) bits.push(piece);
+    });
+  }
+  const joined = bits.filter(Boolean).join(" | ");
+  if (joined) return joined;
+  const json = compactJson(error);
+  if (json) return json;
+  return Object.prototype.toString.call(error);
 }
 
 /**

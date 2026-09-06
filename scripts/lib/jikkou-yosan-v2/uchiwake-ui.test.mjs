@@ -18,7 +18,7 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-05-ver02-locked-fuka-badge/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-06-ver02-total-notes/);
   assert.match(source, /jy2LockedValueControl/);
   assert.match(source, /入力不可（固定）/);
   assert.match(source, /jy2-locked-badge/);
@@ -49,4 +49,16 @@ test("内訳階層: UI が純関数と新フィールドを接続する", () => 
   assert.match(source, /dataset\.jy2Field = "nameDetail"/);
   assert.match(source, /dataset\.jy2Field = "nameItem"/);
   assert.doesNotMatch(source, /customize\/736/);
+});
+
+test("保存時の総括整合チェックは summary_row_key を読む", () => {
+  const source = readUi();
+  assert.match(
+    source,
+    /function jy2SummaryCostLinesFromRecord\([\s\S]*?"summary_row_key"[\s\S]*?"summary_sort_order"/,
+  );
+  assert.match(
+    source,
+    /function jy2SummaryCostLinesFromRecord\([\s\S]*?"summary_vendor_name"[\s\S]*?"summary_person_name"/,
+  );
 });

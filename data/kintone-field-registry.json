@@ -247,7 +247,8 @@
         "profit_9_rate_to_1",
         "summary_projection_status",
         "summary_projection_checked_at",
-        "ui_col_layout_json"
+        "ui_col_layout_json",
+        "summary_total_notes"
       ],
       "subtables": {
         "contract_lines": [

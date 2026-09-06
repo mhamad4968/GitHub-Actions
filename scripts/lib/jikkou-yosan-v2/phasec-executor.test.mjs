@@ -138,6 +138,32 @@ test("unique key collision (GAIA_DA02) becomes ConflictAbortError with collidedK
   );
 });
 
+test("plain kintone reject objects surface code/errors instead of [object Object]", async () => {
+  const plan = samplePlan();
+  const cause = {
+    code: "CB_VA01",
+    errors: {
+      "record.summary_cost_lines.value[0].value.summary_unit.value": {
+        messages: ["指定した値は選択肢にありません。"],
+      },
+    },
+  };
+  const client = mockClient(async () => {
+    throw cause;
+  });
+  await assert.rejects(
+    () => executePlan(plan, client),
+    (error) => {
+      assert.equal(error.name, "BulkRequestExecutionError");
+      assert.match(error.message, /CB_VA01/);
+      assert.match(error.message, /summary_unit/);
+      assert.doesNotMatch(error.message, /\[object Object\]/);
+      assert.equal(error.cause, cause);
+      return true;
+    },
+  );
+});
+
 test("other failures are wrapped, marked non-retryable, and keep the cause", async () => {
   const plan = samplePlan();
   const cause = new Error("HTTP 520 something odd");

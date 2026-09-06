@@ -1,7 +1,6 @@
 import {
   blockTotals,
   detailLineAmount,
-  legalWelfareFromLaborAmounts,
   overheadFromDetails,
 } from "./calc.mjs";
 import { add, sum } from "./decimal.mjs";
@@ -47,10 +46,10 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
 // G0 §7.2: 各種保険料は固定フッタから外す（明細として追加）。手入力フッタは無し。
 export const MANUAL_FOOTER_KINDS = Object.freeze([]);
 
-// G0 §7.1: 施工ブロックのみ UI に出すフッタ（保険料行なし）。
+// 施工は諸経費（自動 10%）→計。法定福利は明細。保安はフッタ無し。
 export function footerKindsForCostCategory(costCategory) {
   if (costCategory !== "施工") return [];
-  return Object.freeze(["overhead", "subtotal", "legal_welfare", "block_total"]);
+  return Object.freeze(["overhead", "block_total"]);
 }
 
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
@@ -357,13 +356,19 @@ export function createDetailBlockModel({
     return numbers;
   }
 
-  // U25 / G0 §7.1: 施工のみ 小計=明細+諸経費、計=小計+法定福利費（保険料固定行なし）。
-  // 保安・区分未入力は明細合計のみ。R-11/R-12 は施工のみ。
+  // 施工: 諸経費 = 明細合計×10%（費目「諸経費」は母数から除く）。法定福利は自動しない。
   function computedTotals(block) {
-    const detailAmounts = block.detailRows
-      .map((row) => detailRowAmount(row))
-      .filter((amount) => amount !== null);
-    const detailSum = detailAmounts.length ? sum(detailAmounts) : null;
+    const overheadBaseAmounts = [];
+    const billedAmounts = [];
+    block.detailRows.forEach((row, rowIndex) => {
+      const himoku = resolveContinuedField(block.detailRows, rowIndex, "name1");
+      const amount = detailRowAmount(row);
+      if (amount === null) return;
+      if (himoku === "諸経費") return;
+      billedAmounts.push(amount);
+      overheadBaseAmounts.push(amount);
+    });
+    const detailSum = billedAmounts.length ? sum(billedAmounts) : null;
     if (block.costCategory !== "施工") {
       return {
         subtotal: detailSum,
@@ -373,28 +378,18 @@ export function createDetailBlockModel({
         legalWelfare: null,
       };
     }
-    const overheadBase = detailAmounts.length ? detailSum : null;
-    const overhead = overheadFromDetails(detailAmounts, OVERHEAD_RATE);
-    const laborAmounts = block.detailRows
-      .map((row, rowIndex) => ({
-        name1: resolveContinuedField(block.detailRows, rowIndex, "name1"),
-        amount: detailRowAmount(row),
-      }))
-      .filter(
-        (row) => row.name1 === LEGAL_WELFARE_NAME1 && row.amount !== null,
-      )
-      .map((row) => row.amount);
-    const legalWelfare = legalWelfareFromLaborAmounts(laborAmounts);
+    const overheadBase = overheadBaseAmounts.length ? detailSum : null;
+    const overhead = overheadFromDetails(overheadBaseAmounts, OVERHEAD_RATE);
     return {
       ...blockTotals({
-        detailAmounts,
+        detailAmounts: billedAmounts,
         overhead,
         insurance: null,
-        legalWelfare,
+        legalWelfare: null,
       }),
       overhead,
       overheadBase,
-      legalWelfare,
+      legalWelfare: null,
     };
   }
 
@@ -434,7 +429,7 @@ export function createDetailBlockModel({
         ),
       ),
       footer: Object.freeze({
-        // R-11: 諸経費は自動(読取専用)。case B: 根拠(base=明細合計, rate=10%)も公開。
+        // R-11: 諸経費は自動(読取専用)。根拠(base=明細合計, rate=10%)も公開。
         overhead: Object.freeze({
           rowKey: block.footer.overhead.rowKey,
           amount: totals.overhead,
@@ -447,7 +442,7 @@ export function createDetailBlockModel({
           rowKey: block.footer.subtotal.rowKey,
           amount: totals.subtotal,
         }),
-        // R-12: 法定福利費は自動(読取専用)。保存値は再計算で上書き。
+        // 法定福利は作成者の明細。フッタ金額は null。
         legal_welfare: Object.freeze({
           rowKey: block.footer.legal_welfare.rowKey,
           amount: totals.legalWelfare,
@@ -510,16 +505,50 @@ export function createDetailBlockModel({
         .map((block) => {
           const totals = computedTotals(block);
           const uniform = uniformUnitProjection(block, totals);
+          const lines = Object.freeze(
+            block.detailRows
+              .map((row, rowIndex) => {
+                if (isDetailRowFullyEmpty(row)) return null;
+                const himoku =
+                  resolveContinuedField(block.detailRows, rowIndex, "name1") ||
+                  "";
+                const typeName =
+                  resolveContinuedField(block.detailRows, rowIndex, "name2") ||
+                  "";
+                const materialName = detailHasText(row.nameItem)
+                  ? String(row.nameItem).trim()
+                  : detailHasText(row.name3)
+                    ? String(row.name3).trim()
+                    : "";
+                return Object.freeze({
+                  himoku,
+                  typeName,
+                  name1: himoku,
+                  name2: typeName,
+                  materialName,
+                  lineVendorName: row.lineVendorName,
+                  linePersonName: row.linePersonName,
+                  unit: row.unit,
+                  quantity: row.quantity,
+                  amount: detailRowAmount(row),
+                });
+              })
+              .filter(Boolean),
+          );
           return Object.freeze({
             stableBlockId: block.stableBlockId,
             status: block.status,
             costCategory: block.costCategory,
             workTypeCode: block.workTypeCode ?? "",
             workTypeName: block.workTypeName ?? "",
+            vendorName: block.vendorName ?? "",
             blockNo: numbers.get(block.stableBlockId),
             mixedUnits: uniform === null,
             ...(uniform ?? {}),
             total: totals.total,
+            overheadAmount: totals.overhead,
+            legalWelfareAmount: totals.legalWelfare,
+            lines,
           });
         }),
     );

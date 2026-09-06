@@ -65,6 +65,7 @@ export const APP1_COPY_FIELDS = Object.freeze([
   "summary_projection_status",
   "summary_projection_checked_at",
   "ui_col_layout_json",
+  "summary_total_notes",
 ]);
 
 /** App2 の複製時にそのまま写す行フィールド（キー3種と状態系は個別処理）。 */

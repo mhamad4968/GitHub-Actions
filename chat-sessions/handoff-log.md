@@ -6369,3 +6369,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 閉済9件再開 / テナント全件の台帳化
 
 ---
+
+### 2026-09-06 JST — **756統括実装完了・本セッション締め**
+
+**要約**: 756 LIVE `2026-09-06-ver02-total-notes` rev**358**。統括の今朝分は浜田目視OK。実行予算は本日終わり。設定タブは駐車。Mac Studioは2026-12-20購入／2027-02移行。
+
+**話したこと**: 今朝実装の確認は終わった。請負計・給与計の備考は未実装でいまのところこれでいい。設定タブは今日作らず、依頼があれば案を出す（正本 `docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。個人PCをMac Studio M3 Ultra / 96GB / 16TBへ。会社PCではない。ヨドバシ店頭で買える。ラボのMac整備は移行直前。仕様作成とcommit→pushで本セッションを閉める。day-closeは今夜最終ならそのとき。
+
+**次の1手**: 浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02
+
+**Git**: `8bfc33a7` — close-git 前（push 後に同期）
+
+**BUILD**: App **756** — BUILD=`2026-09-06-ver02-total-notes` rev **358**
+
+**GO待ち**: なし
+
+**触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 予実作り直し / 757 customize
+
+---

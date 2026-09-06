@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-09-05T21:45:41.620Z",
+  "scoredAt": "2026-09-06T01:20:36.787Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17",
+  "topTask": "浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02",
   "topTaskKind": "work",
-  "topWorkTask": "明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17",
+  "topWorkTask": "浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02",
   "tasks": [
     {
-      "id": "checkpoint:明日_756_統括実装（原価行分割・10800・給与T/U）＋目視。正本_`do",
-      "text": "明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17",
+      "id": "checkpoint:浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans",
+      "text": "浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 2,
