@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-06T01:20:37.258Z",
-  "gitHead": "8bfc33a7",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-09-06T01:20:51.278Z",
+  "gitHead": "df592146",
+  "gitStatus": "## main...origin/main [ahead 2]",
   "nextTask": "浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,8 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=8bfc33a7 | 次=浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=df592146 | 次=浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
-  "validatedAt": "2026-09-06T01:20:37.822Z",
+  "validatedAt": "2026-09-06T01:20:51.754Z",
   "crosscheckOk": true
 }

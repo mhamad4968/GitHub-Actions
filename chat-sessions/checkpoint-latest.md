@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-06 10:20 JST — **756 統括本日完了** LIVE `2026-09-06-ver02-total-notes` rev**358**。本セッション締め。
 **次の1手**: 浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02
 **レーン変更**: 756統括実装完了 → セッション締め。**736不触**
-**Git**: **`8bfc33a7`** — close-git 前（push 後に同期）
+**Git**: **`df592146`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-06-ver02-total-notes` rev**358**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
