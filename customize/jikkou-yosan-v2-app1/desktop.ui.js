@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-06-ver02-total-notes
+  // @JY_V2_BUILD 2026-09-08-ver02-summary-himoku-type
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -8372,7 +8372,7 @@
   }
 
   // 総括原価投影 (P-21/P-33): amounts are read-only from App2.
-  // 2026-09-05: 13列。種別/材料/会社/氏名は内訳から自動。備考だけ手入力（row_key）。
+  // 2026-09-08: 11列。種別/材料は内訳から自動。会社名・氏名は出さない。備考だけ手入力（row_key）。
   // 消費税率・金額税込列は非表示（依頼者 2026-07-29）。保存フィールドは後方互換で残す。
   // X5: 表下に原価・施工計／原価・保安計を出す（⑧は給与計込みでフッタ）。
   function jy2ProjectionManualKey(line) {
@@ -8498,8 +8498,6 @@
         "システム工種（自動）",
         "種別（自動）",
         "材料（自動）",
-        "会社名（自動）",
-        "氏名（自動）",
         "単位（自動）",
         "数量（自動）",
         "単価（自動）",
@@ -8515,7 +8513,7 @@
         "jy2-empty",
         "内訳ブロックなし（内訳タブで追加すると自動反映されます）",
       );
-      emptyCell.colSpan = 13;
+      emptyCell.colSpan = 11;
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
     }
@@ -8565,12 +8563,6 @@
       row.appendChild(
         jy2Cell(documentRef, "td", "", line.summary_material_name),
       );
-      row.appendChild(
-        jy2Cell(documentRef, "td", "", line.summary_vendor_name),
-      );
-      row.appendChild(
-        jy2Cell(documentRef, "td", "", line.summary_person_name),
-      );
       row.appendChild(jy2Cell(documentRef, "td", "", line.summary_unit));
       row.appendChild(jy2Cell(documentRef, "td", "jy2-num", line.summary_qty));
       row.appendChild(
@@ -8614,9 +8606,9 @@
       const row = documentRef.createElement("tr");
       row.className = "jy2-projection-row jy2-projection-block-total";
       if (blockId) row.dataset.stableBlockId = blockId;
-      // ver.01 同型: 金額より左は空。バッジは金額列の直前（№〜単価=11列）。
+      // ver.01 同型: 金額より左は空。バッジは金額列の直前（№〜単価=9列）。
       const label = jy2Cell(documentRef, "td", "jy2-subtotal-label", "");
-      label.colSpan = 11;
+      label.colSpan = 9;
       const badge = documentRef.createElement("span");
       badge.className = "jy2-subtotal-badge";
       badge.textContent = "計";
@@ -8669,7 +8661,7 @@
         const totalRow = documentRef.createElement("tr");
         totalRow.className = "jy2-total-row";
         const totalLabel = jy2Cell(documentRef, "td", "", label);
-        totalLabel.colSpan = 11;
+        totalLabel.colSpan = 9;
         totalRow.appendChild(totalLabel);
         totalRow.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
@@ -8689,7 +8681,7 @@
       const grand = documentRef.createElement("tr");
       grand.className = "jy2-total-row jy2-grand-total-row";
       const grandLabel = jy2Cell(documentRef, "td", "", "原価行合計");
-      grandLabel.colSpan = 11;
+      grandLabel.colSpan = 9;
       grand.appendChild(grandLabel);
       grand.appendChild(
         jy2Cell(
@@ -9069,8 +9061,6 @@
       "システム工種",
       "種別",
       "材料",
-      "会社名",
-      "氏名",
       "単位",
       "数量",
       "単価",
@@ -9087,7 +9077,7 @@
       const kei = documentRef.createElement("tr");
       kei.className = "jy2-pr-sub";
       const label = jy2Cell(documentRef, "td", "jy2-pr-sub-label", "");
-      label.colSpan = 11;
+      label.colSpan = 9;
       const badge = documentRef.createElement("span");
       badge.className = "jy2-pr-sub-badge";
       badge.textContent = "計";
@@ -9199,8 +9189,6 @@
       );
       row.appendChild(jy2Cell(documentRef, "td", "", line.summary_line_type));
       row.appendChild(jy2Cell(documentRef, "td", "", line.summary_material_name));
-      row.appendChild(jy2Cell(documentRef, "td", "", line.summary_vendor_name));
-      row.appendChild(jy2Cell(documentRef, "td", "", line.summary_person_name));
       row.appendChild(
         jy2Cell(documentRef, "td", "jy2-pr-center", line.summary_unit),
       );
@@ -9234,7 +9222,7 @@
         documentRef,
         "原価・施工計",
         totals.costConstruction,
-        11,
+        9,
         "",
         printNotes.costConstruction,
       ),
@@ -9244,7 +9232,7 @@
         documentRef,
         "原価・保安計",
         totals.costSafety,
-        11,
+        9,
         "",
         printNotes.costSafety,
       ),
@@ -9261,7 +9249,7 @@
             ? "0"
             : String(totals.costSafety),
         ),
-        11,
+        9,
         "jy2-pr-grand",
         printNotes.costGrand,
       ),

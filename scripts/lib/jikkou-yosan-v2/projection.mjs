@@ -26,32 +26,64 @@ function textOrEmpty(value) {
   return presentValue(value) ? String(value).trim() : "";
 }
 
-/** 2026-09-05 統括 §2.8 — 備考引き継ぎ用。ジャンプ用 ID とは別。 */
-export const SUMMARY_ROW_KEY_PARTS = 6;
+/** 2026-09-08 統括原価行 — 備考引き継ぎ用。ジャンプ用 ID とは別。 */
+export const SUMMARY_ROW_KEY_PARTS = 4;
+export const SUMMARY_ROW_KEY_PARTS_LEGACY = 6;
 
 export function buildSummaryRowKey({
   blockId,
   himoku = "",
   typeName = "",
-  vendorName = "",
-  personName = "",
   footerKind = "",
 }) {
   return [
     textOrEmpty(blockId),
     textOrEmpty(himoku),
     textOrEmpty(typeName),
-    textOrEmpty(vendorName),
-    textOrEmpty(personName),
     textOrEmpty(footerKind),
   ].join("\t");
 }
 
-/** kintone SINGLE_LINE_TEXT が末尾タブを落とすので、読取時に6欄へ戻す。 */
+/**
+ * 読取時に 4 欄へ正規化。旧 6 欄（会社・氏名込み）は落とす。
+ * kintone SINGLE_LINE_TEXT が末尾タブを落とすので不足欄は空で埋める。
+ */
 export function normalizeSummaryRowKey(key) {
   const parts = String(key ?? "").split("\t");
+  if (parts.length >= SUMMARY_ROW_KEY_PARTS_LEGACY) {
+    return [
+      textOrEmpty(parts[0]),
+      textOrEmpty(parts[1]),
+      textOrEmpty(parts[2]),
+      textOrEmpty(parts[5]),
+    ].join("\t");
+  }
+  if (parts.length === 5) {
+    return [
+      textOrEmpty(parts[0]),
+      textOrEmpty(parts[1]),
+      textOrEmpty(parts[2]),
+      "",
+    ].join("\t");
+  }
+  if (parts.length === 4) {
+    if (parts[3] === "overhead") {
+      return [
+        textOrEmpty(parts[0]),
+        textOrEmpty(parts[1]),
+        textOrEmpty(parts[2]),
+        "overhead",
+      ].join("\t");
+    }
+    return [
+      textOrEmpty(parts[0]),
+      textOrEmpty(parts[1]),
+      textOrEmpty(parts[2]),
+      "",
+    ].join("\t");
+  }
   while (parts.length < SUMMARY_ROW_KEY_PARTS) parts.push("");
-  return parts.slice(0, SUMMARY_ROW_KEY_PARTS).join("\t");
+  return parts.slice(0, SUMMARY_ROW_KEY_PARTS).map(textOrEmpty).join("\t");
 }
 
 function isSalaryHimoku(himoku) {
@@ -70,16 +102,6 @@ export function summaryPersonColumnVisible(himoku, typeName) {
   if (h === "外注費" && t === "労務費") return true;
   if (t.includes("建設機械オペレーター") || t.includes("その他労務者")) return true;
   return false;
-}
-
-function resolveSummaryVendor(line, block) {
-  const lineVendor = textOrEmpty(line.lineVendorName);
-  if (lineVendor) return lineVendor;
-  const blockVendor = textOrEmpty(block.vendorName);
-  if (!blockVendor || blockVendor === SUMMARY_DASH_VENDOR || blockVendor === "-") {
-    return "";
-  }
-  return blockVendor;
 }
 
 function uniqueMaterialName(materials) {
@@ -264,24 +286,14 @@ function projectSplitBlock(block, blockNo, options) {
     if (isSalaryHimoku(himoku)) continue;
     if (himoku === SUMMARY_FOOTER_OVERHEAD) continue;
     const typeName = textOrEmpty(line.typeName ?? line.name2);
-    const vendorName = resolveSummaryVendor(line, block);
-    const storedPerson = textOrEmpty(line.linePersonName ?? line.personName);
     const amount = displayInteger(line.amount ?? line.total);
-    if (
-      !himoku &&
-      !typeName &&
-      !vendorName &&
-      !storedPerson &&
-      amount === null
-    ) {
+    if (!himoku && !typeName && amount === null) {
       continue;
     }
     const key = buildSummaryRowKey({
       blockId: block.stableBlockId,
       himoku,
       typeName,
-      vendorName,
-      personName: storedPerson,
       footerKind: "",
     });
     let group = indexByKey.get(key);
@@ -289,8 +301,6 @@ function projectSplitBlock(block, blockNo, options) {
       group = {
         himoku,
         typeName,
-        vendorName,
-        storedPerson,
         materials: [],
         units: [],
         qtys: [],
@@ -313,21 +323,14 @@ function projectSplitBlock(block, blockNo, options) {
       blockId: block.stableBlockId,
       himoku: group.himoku,
       typeName: group.typeName,
-      vendorName: group.vendorName,
-      personName: group.storedPerson,
       footerKind: "",
     });
     const previous = previousByRowKey.get(normalizeSummaryRowKey(rowKey)) || {};
     return finishSummaryRow(
       {
         summary_row_key: rowKey,
-        summary_vendor_name: group.vendorName,
-        summary_person_name: summaryPersonColumnVisible(
-          group.himoku,
-          group.typeName,
-        )
-          ? group.storedPerson
-          : "",
+        summary_vendor_name: "",
+        summary_person_name: "",
         summary_line_type: summaryLineTypeFromDetail(
           group.himoku,
           group.typeName,
@@ -350,8 +353,6 @@ function projectSplitBlock(block, blockNo, options) {
         blockId: block.stableBlockId,
         himoku: "",
         typeName: SUMMARY_FOOTER_OVERHEAD,
-        vendorName: "",
-        personName: "",
         footerKind: "overhead",
       });
       const previous = previousByRowKey.get(normalizeSummaryRowKey(rowKey)) || {};
@@ -400,11 +401,19 @@ export function regenerateSummaryCostLines(
   const previousByBlockId = new Map(
     previousLines.map((line) => [line.summary_stable_block_id, line]),
   );
-  const previousByRowKey = new Map(
-    previousLines
-      .filter((line) => presentValue(line.summary_row_key))
-      .map((line) => [normalizeSummaryRowKey(line.summary_row_key), line]),
-  );
+  const previousByRowKey = new Map();
+  for (const line of previousLines) {
+    if (!presentValue(line.summary_row_key)) continue;
+    const rowKey = normalizeSummaryRowKey(line.summary_row_key);
+    const existing = previousByRowKey.get(rowKey);
+    if (!existing) {
+      previousByRowKey.set(rowKey, line);
+      continue;
+    }
+    if (!presentValue(existing.summary_note) && presentValue(line.summary_note)) {
+      previousByRowKey.set(rowKey, line);
+    }
+  }
   const active = blocks
     .map((block, index) => ({ block, sortValue: projectionSortValue(block, index), index }))
     .filter((entry) => entry.block.status === "active")

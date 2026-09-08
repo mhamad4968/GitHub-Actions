@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-06-ver02-total-notes",
-      "fileKey": "726d1e3c-a291-45ea-a998-87144c7deef4",
-      "revision": "358",
+      "build": "2026-09-08-ver02-summary-himoku-type",
+      "fileKey": "28f0ea90-6ba5-4db5-a0c3-1f0f7f557a3f",
+      "revision": "359",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-06T00:49:19.027Z",
+      "deployedAt": "2026-09-08T10:17:39.861Z",
       "note": null
     },
     "757": {

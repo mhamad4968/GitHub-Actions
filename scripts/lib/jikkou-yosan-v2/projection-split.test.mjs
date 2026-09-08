@@ -95,8 +95,8 @@ test("split: 同じキーは合算し、単位が揃えば数量合計・単価�
   assert.equal(rows[0].summary_unit, "人");
   assert.equal(rows[0].summary_unit_price, "100");
   assert.equal(rows[0].summary_amount_excl_tax, "300");
-  assert.equal(rows[0].summary_vendor_name, "A社");
-  assert.equal(rows[0].summary_person_name, "山田　太郎");
+  assert.equal(rows[0].summary_vendor_name, "");
+  assert.equal(rows[0].summary_person_name, "");
 });
 
 test("split: 単位混在は 式 × 1 × 金額合計", () => {
@@ -305,27 +305,54 @@ test("split: 品名が1つなら材料に出し、複数なら空", () => {
   assert.equal(many.summary_material_name, "");
 });
 
-test("split: 会社は行会社優先。ブロックが「－」なら行会社。氏名列は系統だけ値", () => {
-  assert.equal(summaryPersonColumnVisible("仮設機械経費", "レンタル"), false);
-  const [rental] = regenerateSummaryCostLines([
+test("split: ブロック内は費目×種別で合算。会社・人が違っても1行。ブロックはまたがない", () => {
+  const rows = regenerateSummaryCostLines([
     splitBlock({
       vendorName: "－",
-      total: "9",
+      total: "14",
       lines: [
         {
           himoku: "仮設機械経費",
           typeName: "仮設材･鉄道器材レンタル",
           lineVendorName: "鎌ヶ谷",
-          linePersonName: "残っていても出さない",
           amount: "9",
+          unit: "式",
+          quantity: "1",
+        },
+        {
+          himoku: "仮設機械経費",
+          typeName: "仮設材･鉄道器材レンタル",
+          lineVendorName: "別会社",
+          amount: "5",
+          unit: "式",
+          quantity: "1",
+        },
+      ],
+    }),
+    splitBlock({
+      stableBlockId: "blk-b",
+      total: "3",
+      blockSortOrder: 2,
+      lines: [
+        {
+          himoku: "仮設機械経費",
+          typeName: "仮設材･鉄道器材レンタル",
+          lineVendorName: "鎌ヶ谷",
+          amount: "3",
           unit: "式",
           quantity: "1",
         },
       ],
     }),
   ]);
-  assert.equal(rental.summary_vendor_name, "鎌ヶ谷");
-  assert.equal(rental.summary_person_name, "");
+  const a = rows.filter((row) => row.summary_stable_block_id === "blk-a");
+  const b = rows.filter((row) => row.summary_stable_block_id === "blk-b");
+  assert.equal(a.length, 1);
+  assert.equal(a[0].summary_amount_excl_tax, "14");
+  assert.equal(a[0].summary_vendor_name, "");
+  assert.equal(a[0].summary_person_name, "");
+  assert.equal(b.length, 1);
+  assert.equal(b[0].summary_amount_excl_tax, "3");
   const [labor] = regenerateSummaryCostLines([
     splitBlock({
       stableBlockId: "blk-op",
@@ -342,7 +369,59 @@ test("split: 会社は行会社優先。ブロックが「－」なら行会社�
       ],
     }),
   ]);
-  assert.equal(labor.summary_person_name, "佐藤　花子");
+  assert.equal(labor.summary_person_name, "");
+  assert.equal(summaryPersonColumnVisible("仮設機械経費", "レンタル"), false);
+});
+
+test("split: 旧6欄 row_key の備考は新4欄へ引き継ぎ。衝突は先の備考", () => {
+  const rows = regenerateSummaryCostLines(
+    [
+      splitBlock({
+        total: "3",
+        lines: [
+          {
+            himoku: "労務費",
+            typeName: "普通作業員",
+            lineVendorName: "A社",
+            linePersonName: "山田",
+            amount: "1",
+            unit: "人",
+            quantity: "1",
+          },
+          {
+            himoku: "労務費",
+            typeName: "普通作業員",
+            lineVendorName: "B社",
+            linePersonName: "佐藤",
+            amount: "2",
+            unit: "人",
+            quantity: "1",
+          },
+        ],
+      }),
+    ],
+    {
+      previousLines: [
+        {
+          summary_stable_block_id: "blk-a",
+          summary_row_key: ["blk-a", "労務費", "普通作業員", "A社", "山田", ""].join(
+            "\t",
+          ),
+          summary_note: "先メモ",
+        },
+        {
+          summary_stable_block_id: "blk-a",
+          summary_row_key: ["blk-a", "労務費", "普通作業員", "B社", "佐藤", ""].join(
+            "\t",
+          ),
+          summary_note: "後メモ",
+        },
+      ],
+    },
+  );
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].summary_note, "先メモ");
+  assert.equal(rows[0].summary_amount_excl_tax, "3");
 });
 
 test("split: lines が無いブロックは現行どおり 1 行のまま", () => {

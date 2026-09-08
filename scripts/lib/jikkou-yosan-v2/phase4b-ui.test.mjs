@@ -357,9 +357,9 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   assert.doesNotMatch(source, /jy2MarkSalaryNameSpaceWarning/);
   assert.doesNotMatch(source, /姓と名の間に全角スペースを入力してください/);
   assert.match(source, /jy2-projection-table/);
-  assert.match(source, /会社名（自動）/);
+  assert.doesNotMatch(source, /会社名（自動）/);
   assert.match(source, /種別（自動）/);
-  assert.match(source, /emptyCell.colSpan = 13/);
+  assert.match(source, /emptyCell.colSpan = 11/);
   assert.match(source, /jy2-block-break/);
   assert.match(
     source,
@@ -367,7 +367,7 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   );
   assert.match(source, /jy2-projection-block-total/);
   assert.match(source, /jy2-subtotal-badge/);
-  assert.match(source, /label\.colSpan = 11/);
+  assert.match(source, /label\.colSpan = 9/);
   assert.match(source, /原価行合計/);
   assert.match(source, /jy2-print-button/);
   assert.match(source, /jy2-print-portal/);
