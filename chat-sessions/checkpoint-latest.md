@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-06 10:20 JST — **756 統括本日完了** LIVE `2026-09-06-ver02-total-notes` rev**358**。本セッション締め。
 **次の1手**: 浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02
 **レーン変更**: 756統括実装完了 → セッション締め。**736不触**
-**Git**: **`df592146`** = `origin/main` — push 済（R44 parent）
+**Git**: **`fccb40e2`** = `origin/main` — push 済
 **closeStatus**: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-06-ver02-total-notes` rev**358**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -52,6 +52,7 @@
 - 実行予算は本日終わり。設定タブは駐車。Mac移行は2027-02
 - closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
 
+
 ## 2026-09-05
 
 ### 2026-09-05 朝締め（内訳UX・OpenRouter既定）
@@ -65,6 +66,7 @@
 - 原価行13列・給与T/U・請負現行・①⑧⑨維持。customize なし
 
 
+
 ## 2026-09-02
 
 ### 2026-09-02 夜締め（day-close）
@@ -74,27 +76,5 @@
 
 
 
-## 2026-08-30
 
-### 2026-08-30 夜締め（day-close 完了）
-- G0 §15+§16 実装・756 **rev333**（夕GO #R1 listOnly clear 既定含む）
-- 夕反省全GO: #S1 verify-master-lists / #R1 / #D1 G0 raw祖父
-- 明日: **現場責任者入力確認** → フィードバックで修正。G0 範囲再質問しない
-- closeStatus: **closed**
-
-### 2026-08-30 夜（§16 実装ゲート・合図待ち）
-- AI チーム点検: DeepSeek 条件付きGO→穴埋め後 yes相当。Kimi GO
-- G0 **§16** 追加（listOnly 祖父・S0〜S5・スモーク後 deploy）。コード・deploy **なし**
-- 次: 浜田の **実装の合図** → S0
-
-### 2026-08-30 朝締め（実行予算 756 G0 → 今夜実装）
-- 仕様のみ。コード・deploy **なし**。live 756 rev **318** 不変
-- 正: G0 **§15** ＋ `chat-sessions/2026-08-30-jikkou-yosan-v2-night-impl-handoff.md`
-- 今夜: §1〜11 全部＋工事原価管理タブ非表示。756継続。スライスA／別画面は廃案
-- 朝の4hで今夜を測らない。浜田が言ったことは聞き直さない
-- closeStatus: **closed**（朝区切り。day-close は今夜最終）
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-05.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-08.md -->

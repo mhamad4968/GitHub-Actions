@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-09-05 反映・2026-09-06 WAKE同期）】
-- 本日レーン: 明日 756 統括実装（原価行分割・10800・給与T/U）＋目視。正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`。個人資産月次 9/13–17
-- checkpoint: 2026-09-05 18:20 JST — **kintoneアプリ一覧メンテ**: 776 を registry 登録。LIVE 棚卸 OK。757 form rev31 を live-builds に反映。
+【今やってる主タスク（2026-09-06 反映・2026-09-08 WAKE同期）】
+- 本日レーン: 浜田の次依頼を待つ。756本日完了。設定タブは依頼時に案（`docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`）。Mac移行は2027-02
+- checkpoint: 2026-09-06 10:20 JST — **756 統括本日完了** LIVE `2026-09-06-ver02-total-notes` rev**358**。本セッション締め。
 - 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
 - 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
