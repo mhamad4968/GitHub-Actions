@@ -6396,7 +6396,7 @@ npm run cio:morning:ready
 
 **次の1手**: 2026-09-10 関係者レビューを待つ。原価管理・作業者設定は依頼と実装GOが来るまで作らない。
 
-**Git**: （本コミット後）
+**Git**: `9e9e6f81` — feat(756): close summary cost rows
 
 **BUILD**: App **756** — BUILD=`2026-09-08-ver02-summary-himoku-type` rev **359**
 
