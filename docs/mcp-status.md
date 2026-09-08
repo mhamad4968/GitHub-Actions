@@ -12,6 +12,7 @@
 | **今夜 mcp.json から消したもの** | **なし**（代替未確定。day-close は新 MCP 追加禁止。置き換え候補は下表） |
 | **ノウハウ MCP = `rag`** | 稼働中（302 docs / 15301 chunks）。ただし現行756正本の検索が別案件に当たった → **ingest してから使う**。権威にしない（正本 Read） |
 | **置き換え検討（追加しない）** | Brave / Exa / Firecrawl は 2026-06-05 見送り維持。未使用の「枠」を新サーバに挿し替えるのは次セッション |
+| **自発の試用提案（2026-09-08 夜・浜田GO）** | 濱田が知らない有用 MCP は **試用でも提案してよい**（自発）。**mcp.json へ足すのは提案→GOのあと**。再追加禁止リストは維持。アプリ作成は AI チーム共同で継続 |
 
 **再追加禁止（既存）**: mintlify / cyber-news / figma / colors-fonts / shadcn / accessibility-scanner / tavily / filesystem / fetch
 

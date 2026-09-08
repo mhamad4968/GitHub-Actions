@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-08 20:21 JST — 日終わり ③全GO。手順書は Desktop。756 は9/10。
+**最終更新**: 2026-09-08 20:33 JST — 日終わり⑦済。MCP 試用は自発提案GO。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。
-**レーン変更**: 日終わり ③全GO → after-go（⑤⑥⑦）
-**Git**: **`e77c024c`** = `origin/main` — push 済（R44 parent）
-**closeStatus**: **after-go**（④実施済・close-git 待ち）
+**レーン変更**: 日終わり完了
+**Git**: **`11c79f64`**
+**closeStatus**: **closed**（day-close ⑦済）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-08-ver02-summary-himoku-type` rev**359**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
@@ -19,7 +19,7 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車 `docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`。共有PC金庫はチャット相談のみ（VHDX+BitLocker・アイドル切断は閉じる.batが正）。Mac Studio M3 Ultra 96GB/16TB・2026-12-20購入／2027-02移行
+**継続メモ**: 統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車 `docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md`。共有PC金庫手順は Desktop `共有PC_部長金庫_手順書.docx`（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後・`docs/mcp-status.md` §MCP-opt）。Mac Studio M3 Ultra 96GB/16TB・2026-12-20購入／2027-02移行
 **GO待ち**: なし（③全GO済）。756は9/10レビュー後の新依頼
 **調査正本**: `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
