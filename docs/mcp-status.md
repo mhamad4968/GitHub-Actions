@@ -1,6 +1,20 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-02（#M1 Kimi review 404 フォールバック）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-08（夕反省 MCP-opt・使用列再集計）
+
+### §MCP-opt（2026-09-08 JST — 浜田「使うもの残す／不要は消す／ノウハウ活用」）
+
+| 項目 | 今夜の結論 |
+|------|------------|
+| **残す（削除しない）** | registry 必須10（deepseek / kimi / openrouter / memory / sequential-thinking / rag / markdownify / kintone / playwright / duckduckgo-search）。Kimi は 404 でも消さない（#M1 で DeepSeek 寄せ） |
+| **Windows 専用** | github / office-powerpoint / office-word — 0回でも削除しない（exempt・資料レーン） |
+| **低頻度だが役割あり** | cve-search（月次セキュリティ）/ context7（ライブラリ docs・**使う習慣を足す**）/ kintone-dev / kintone-space / kintone-schema-mcp / git-history-mcp / chrome-devtools / repo-tree / eslint-mcp |
+| **今夜 mcp.json から消したもの** | **なし**（代替未確定。day-close は新 MCP 追加禁止。置き換え候補は下表） |
+| **ノウハウ MCP = `rag`** | 稼働中（302 docs / 15301 chunks）。ただし現行756正本の検索が別案件に当たった → **ingest してから使う**。権威にしない（正本 Read） |
+| **置き換え検討（追加しない）** | Brave / Exa / Firecrawl は 2026-06-05 見送り維持。未使用の「枠」を新サーバに挿し替えるのは次セッション |
+
+**再追加禁止（既存）**: mintlify / cyber-news / figma / colors-fonts / shadcn / accessibility-scanner / tavily / filesystem / fetch
+
 
 ### §Kimi切替（2026-09-02 JST — 夕反省 #M1 浜田全GO）
 
@@ -209,18 +223,18 @@
 | 1 | github | ⏭ Win-skip | 0 回（exempt） | GitHub Issue/PR 操作 (Win 起動必要) | 5/16（サブエージェント PoC 再議論時）|
 | 2 | ~~cyber-news~~ | 🗑 **DEL-2 完了 2026-07-15** | — | 代替: **cve-search + duckduckgo-search** | 再追加禁止 |
 | 3 | office-powerpoint | ⏭ Win-skip | 0 回（exempt） | PPT 自動生成 (Win 起動必要) | 5/13 後（本番運用後の月次レポート用検討）|
-| 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **3 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
+| 4 | ~~google-search~~ → **duckduckgo-search** | ✅ active (4/23 21:35 入替 / TSB-015 解消) | **1 回** | DuckDuckGo Web 検索 (uvx duckduckgo-mcp-server / Bing ベース / DDG_REGION=jp-ja / API key 不要 / bot 検知緩) | 5/1 月次巡回 + 必要時随時 |
 | 5 | ~~filesystem~~ | 🗑 **削除済 2026-05-06** | — | （除去）`~/.cursor/mcp.json` から除去・Cursor 標準 Read／WSL で代替 | — |
-| 6 | memory | ✅ **active 化済** | **72 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
+| 6 | memory | ✅ **active 化済** | **17 回** | セッション横断記憶 (現在 10 entities + 11 relations) | PC 台帳 PJ で実戦投入後判断（5/13 頃）|
 | 7 | ~~fetch~~ | 🗑 **削除済 2026-05-06** | — | （除去）Cursor **WebFetch**／`user-fetch` で代替 | — |
-| 8 | sequential-thinking | ✅ active | **102 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
-| 9 | **kintone (公式)** | ✅ active | **211 回** | kintone API CRUD | 5/13 後（本番運用後）|
-| 10 | **kintone-dev (自作)** | ✅ active | **23 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
-| 11 | **kintone-space (自作)** | ✅ active | **5 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
+| 8 | sequential-thinking | ✅ active | **4 回** | 段階的思考 | PC 台帳 PJ で実戦投入後判断 |
+| 9 | **kintone (公式)** | ✅ active | **90 回** | kintone API CRUD | 5/13 後（本番運用後）|
+| 10 | **kintone-dev (自作)** | ✅ active | **1 回** | API 仕様参照 (アプリ作成 MCP ではない / 4/23 早朝訂正済) | **4/26 PC 台帳 Day 4 後判断** |
+| 11 | **kintone-space (自作)** | ✅ active | **3 回** | kintone スペース操作 | **4/24 環境設定マスタ作成時に実戦投入予定** |
 | 12 | ~~tavily~~ | 🗑 **削除済 2026-05-06** | 0 回（削除済） | （除去）Web 検索は **duckduckgo-search** | — |
-| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **7 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
-| 14 | cve-search | ✅ **active 化済** | **2 回** | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
-| 15 | rag | ✅ **強化済** | **47 回** | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
+| 13 | playwright | ✅ active (4/23 21:30 Chrome 147.0.7727.116 install + 実 call 動作確認済) | **2 回** | ブラウザ自動操作 / E2E | 4/26 PC 台帳 customize テスト時 |
+| 14 | cve-search | ✅ **active 化済** | 0 回（exempt） | CVE 脆弱性検索 | 5/1（月次セキュリティ巡回時 / S14）|
+| 15 | rag | ✅ **強化済** | **8 回** | LanceDB ローカル RAG (現在 76 docs / 3429 chunks) | **§50 + §21 強化（R24/R25）後再評価 / 4/30 判断** |
 | 16 | accessibility-scanner | ✅ active (4/23 21:30 同 Chrome で実 call 動作確認済) | 0 回（exempt） | アクセシビリティ検査 | 4/26 PC 台帳 customize 時 |
 | 17 | **figma（公式 remote MCP）** | ✅ **global + リポ**に `url` 追記済（2026-05-04）／初回 OAuth | 0 回（exempt） | 表・ダッシュの **配色・タイポ・間隔・レイアウト**を Figma から取得し実装に反映 | **`docs/mcp-design-figma.md`**／Figma プランの rate limit に注意 |
 | 18 | **figma-developer-mcp**（任意） | **📋 PAT 要・stdio** | — | 上記の代替（npm `figma-developer-mcp`） | 同上／§17-3 で **npx 絶対 path** |

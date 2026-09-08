@@ -23,7 +23,7 @@ npm run cio:day-close -- --after-go
 
 改善なしで締めるときだけ `--skip-go`。
 
-③の承認は **全GO／個別指定／見送り** の1問（ORG-1）。締めターンは DeepSeek 1問（MCP-1。脚本は MCP を呼ばない）。medal 行はレーン固定、本文で Subagent 未使用（RULE-1）。80行超 ops は Composer、薄い配線は CIO（A3）。
+③の承認は **全GO／個別指定／見送り** の1問（ORG-1）。**疑問文だけは承認に数えない**（ORG-1b）。案は「何が変わるか」1行で言えるものだけ（ORG-1c）。締めターンは DeepSeek 1問（MCP-1。脚本は MCP を呼ばない）。medal 行はレーン固定、本文で Subagent 未使用（RULE-1）。80行超 ops は Composer、薄い配線は CIO（A3）。
 
 `--after-go` は先に `cio:checkpoint:sync-live-674`（#D2・customize 非接触）。
 

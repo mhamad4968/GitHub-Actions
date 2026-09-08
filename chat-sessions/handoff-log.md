@@ -6405,3 +6405,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 予実作り直し / 設定タブ実装 / 757 customize
 
 ---
+
+### 2026-09-08 JST — **2026-09-08 日終わり until-pause**
+
+**要約**: 756 rev359 はこのラウンド終了。共有PC金庫は相談のみ。day-close ①②済・③GO待ち。
+
+**話したこと**: 756は9/10レビューまでcustomizeしない。共有PCは同一アカウントのためWin+Lでは守られない。BitLocker VHDXと閉じる.batが正。アイドル切断は保険で明日1から手順書を作って設定する。ラボに個人PC手順を置かない。heal treadmillしない。
+
+**次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。
+
+**Git**: `25cabbd5` — HEAD 25cabbd5 origin同期。SESSION-CLOCK.md と checkpoint は close-git 待ち。
+
+**BUILD**: 756 LIVE 2026-09-08-ver02-summary-himoku-type rev359
+
+**GO待ち**: 夕反省③（全GO／個別指定／見送り）。756は9/10レビュー後の新依頼
+
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 756 customize until 9/10
+
+---
