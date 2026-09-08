@@ -23,6 +23,13 @@ function main() {
   if (!hook.includes('cio-knowledge-wake-stamp.mjs')) {
     issues.push('session-start-autopilot.mjs missing knowledge-wake stamp');
   }
+  const stampSrc = fs.readFileSync(
+    path.join(root, 'scripts/cio-knowledge-wake-stamp.mjs'),
+    'utf8',
+  );
+  if (!stampSrc.includes('knowledgeWakeDigestCanonical') || !stampSrc.includes('digest unchanged')) {
+    issues.push('cio-knowledge-wake-stamp.mjs missing timestamp-only digest skip');
+  }
 
   const { active, issues: needleIssues } = auditActiveNeedles(root);
   for (const i of needleIssues) issues.push(i);

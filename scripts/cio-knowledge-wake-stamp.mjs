@@ -121,9 +121,35 @@ export function writeKnowledgeWakeStamp(repoRoot = root, opts = {}) {
   }
   fs.mkdirSync(path.dirname(DIGEST_MD), { recursive: true });
   const body = `${mdLines.join('\n')}\n`.replace(/\n/g, '\r\n');
-  fs.writeFileSync(DIGEST_MD, body, 'utf8');
+  let digestWritten = true;
+  if (fs.existsSync(DIGEST_MD)) {
+    const prev = fs.readFileSync(DIGEST_MD, 'utf8');
+    if (knowledgeWakeDigestCanonical(prev) === knowledgeWakeDigestCanonical(body)) {
+      digestWritten = false;
+    }
+  }
+  if (digestWritten) {
+    fs.writeFileSync(DIGEST_MD, body, 'utf8');
+  }
 
-  return { line, payload, issues, active, contextBlock: buildKnowledgeWakeContextBlock(repoRoot) };
+  return {
+    line,
+    payload,
+    issues,
+    active,
+    digestWritten,
+    contextBlock: buildKnowledgeWakeContextBlock(repoRoot),
+  };
+}
+
+/**
+ * git 追跡 digest の「自動生成時刻」だけが変わる偽 dirty を無視する（New Chat sessionStart 再発防止）。
+ * @param {string} md
+ */
+export function knowledgeWakeDigestCanonical(md) {
+  return String(md || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/^> 自動生成: [^\n]+$/m, '> 自動生成: (omitted)');
 }
 
 function fail(msg) {
@@ -143,6 +169,9 @@ function main() {
     fail(`${result.issues.length} knowledge needle issue(s)`);
   }
   console.log(`[cio:knowledge:wake-stamp] ✅ OK active=${result.active.length}`);
+  if (result.digestWritten === false) {
+    console.log('[cio:knowledge:wake-stamp] digest unchanged — skip git write');
+  }
   process.stdout.write(`${result.line}\n`);
   process.exit(0);
 }
