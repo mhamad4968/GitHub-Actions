@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-09 21:40 JST — 日終わり⑦前。756 IME 半角 rev361 目視OK。夕反省全GO。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。
 **レーン変更**: 日終わり完了
-**Git**: **`2784184b`** = `origin/main` — push 済（close-git で再同期）
+**Git**: **`f25d177d`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: **closed-day**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-09-ver02-ascii-num-ime` rev**361**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
