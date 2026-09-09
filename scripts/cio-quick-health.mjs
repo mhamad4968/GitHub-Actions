@@ -11,19 +11,40 @@ import { ensureMorningPrep, runNpmScript } from './lib/cio-session-preflight.mjs
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Self-Heal 後にミラー差分を index へ載せ、締め前の「忘れ commit」を減らす（#S-RAG-WAKE-03） */
+const RAG_MIRROR_STAGE_PATHS = [
+  '.rag/extra-docs/',
+  'kintone-apps.md',
+  'RULES-INDEX.md',
+  'AGENTS.md',
+  'WORKFLOW.md',
+];
+
+/** Self-Heal 後、HEAD と差があるときだけ B1。ローカル stale 復元のみなら commit 不要（#S-RAG-WAKE-04） */
+function ragMirrorPathsDirty() {
+  const st = spawnSync('git', ['status', '--porcelain', '--', ...RAG_MIRROR_STAGE_PATHS], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  return Boolean((st.stdout || '').trim());
+}
+
 function stageRagMirrorAfterHeal() {
-  const r = spawnSync(
-    'git',
-    ['add', '--', '.rag/extra-docs/', 'kintone-apps.md', 'RULES-INDEX.md', 'AGENTS.md', 'WORKFLOW.md'],
-    { cwd: root, encoding: 'utf8' },
-  );
+  const r = spawnSync('git', ['add', '--', ...RAG_MIRROR_STAGE_PATHS], {
+    cwd: root,
+    encoding: 'utf8',
+  });
   if (r.status !== 0) {
     console.warn(
       '[cio:quick-health] ⚠ rag-mirror Self-Heal 後の git add 失敗（手動: git add .rag/extra-docs/）',
       (r.stderr || r.stdout || '').trim(),
     );
     return false;
+  }
+  if (!ragMirrorPathsDirty()) {
+    console.log(
+      '[cio:quick-health] ✅ rag-mirror Self-Heal — worktree=HEAD（ローカル stale 復元）。commit 不要',
+    );
+    return true;
   }
   console.warn(
     '[cio:quick-health] ✅ rag-mirror Self-Heal + staged — 同一セッションで commit（B1）すること',

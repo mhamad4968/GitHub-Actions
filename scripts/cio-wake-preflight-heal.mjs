@@ -81,19 +81,25 @@ function healRagMirrorOnce() {
     if (re.err) console.error(re.err);
     process.exit(re.status || 2);
   }
-  const add = git([
-    'add',
-    '--',
+  const ragStagePaths = [
     '.rag/extra-docs/',
     'kintone-apps.md',
     'RULES-INDEX.md',
     'AGENTS.md',
     'WORKFLOW.md',
-  ]);
+  ];
+  const add = git(['add', '--', ...ragStagePaths]);
   if (!add.ok) {
     console.warn('[cio:wake:preflight-heal] ⚠ rag stage 失敗（手動 git add .rag/extra-docs/）', add.err);
   } else {
-    console.log('[cio:wake:preflight-heal] ✅ rag-mirror Self-Heal + staged');
+    const st = git(['status', '--porcelain', '--', ...ragStagePaths]);
+    if (st.ok && !st.out) {
+      console.log(
+        '[cio:wake:preflight-heal] ✅ rag-mirror Self-Heal — worktree=HEAD（ローカル stale 復元）。commit 不要',
+      );
+    } else {
+      console.log('[cio:wake:preflight-heal] ✅ rag-mirror Self-Heal + staged');
+    }
   }
   return true;
 }

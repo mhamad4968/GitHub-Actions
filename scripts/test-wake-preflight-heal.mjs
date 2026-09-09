@@ -62,6 +62,10 @@ const temp = read('scripts/lib/cio-session-close-temp-paths.mjs');
 assert.match(temp, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
 
 const healSrc = read('scripts/cio-wake-preflight-heal.mjs');
+assert.match(healSrc, /worktree=HEAD（ローカル stale 復元）/);
+const quickHealth = read('scripts/cio-quick-health.mjs');
+assert.match(quickHealth, /worktree=HEAD（ローカル stale 復元）/);
+assert.match(quickHealth, /ragMirrorPathsDirty/);
 assert.match(healSrc, /TMP_CLOSE_PURGE_RE/);
 assert.match(healSrc, /tmp-close\(\?:-report\)\?-\\d\{4\}/);
 assert.match(healSrc, /healStuckClosingStatus/);
