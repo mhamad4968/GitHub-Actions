@@ -27,6 +27,7 @@ const outputPath = process.env.JIKKOU_YOSAN_V2_OUTPUT
   : path.join(root, "customize/jikkou-yosan-v2-app1/desktop.js");
 const sourceNames = [
   "decimal.mjs",
+  "ascii-number-input.mjs",
   "calc.mjs",
   "keys.mjs",
   "list-model.mjs",

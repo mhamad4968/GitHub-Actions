@@ -199,6 +199,7 @@
     "756": {
       "label": "実行予算書作成支援ツールver02",
       "customizeDirs": ["jikkou-yosan-v2-app1"],
+      "relatedAppFieldsFrom": ["757", "758"],
       "specRel": "docs/plans/2026-07-21-jikkou-yosan-ver02-3app-field-catalog.md",
       "recordFields": [
         "project_id",
@@ -293,7 +294,7 @@
           "summary_sort_order"
         ]
       },
-      "notes": "Phase6 B: fail-closed read-only shell。App2=757 / App3=758 REST は後続の保存 executor 承認までレコード書込み不可。"
+      "notes": "Phase6 B: fail-closed read-only shell。App1 customize は App2=757 / App3=758 へ REST。live-schema は relatedAppFieldsFrom で 757/758 実機スキーマをマージ監査。"
     },
     "757": {
       "label": "実行予算ver02_内訳明細",

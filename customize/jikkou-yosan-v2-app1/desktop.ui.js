@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-08-ver02-summary-himoku-type
+  // @JY_V2_BUILD 2026-09-09-ver02-ascii-num-input
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2068,6 +2068,7 @@
       ".jy2-num{text-align:right;font-variant-numeric:tabular-nums}",
       ".jy2-amount{text-align:right;background:#F3F8FC;font-variant-numeric:tabular-nums}",
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #e2e8f0;padding:2px 4px;background:#FFFCF3;border-radius:4px;font-size:12px}",
+      ".jy2-input-ascii-num{ime-mode:disabled}",
       ".jy2-input:focus{border-color:#2563eb}",
       ".jy2-input.jy2-combo{background:#F4FAF4}",
       ".jy2-combo-wrap{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;width:100%;min-width:0}",
@@ -2695,6 +2696,11 @@
     } else if (fullTitle) {
       input.addEventListener("input", syncFullTitle);
     }
+    if (opts.asciiNumber) {
+      applyAsciiNumberInput(input, {
+        allowDecimal: opts.asciiDecimal !== false,
+      });
+    }
     return input;
   }
 
@@ -2786,6 +2792,7 @@
         input.value = jy2Comma(cleaned);
       }
     });
+    applyAsciiNumberInput(input, { allowDecimal: true });
     return input;
   }
 
@@ -8125,6 +8132,7 @@
               documentRef,
               line.quantity,
               (value) => commit("quantity")(jy2NormalizeContractQty(value)),
+              { asciiNumber: true },
             ),
           );
           const unitPrice = jy2Cell(documentRef, "td", "jy2-num", "");
@@ -8280,7 +8288,9 @@
         unit.appendChild(jy2UnitSelect(documentRef, line.unit, commit("unit")));
         const quantity = jy2Cell(documentRef, "td", "jy2-num", "");
         quantity.appendChild(
-          jy2TextInput(documentRef, line.quantity, commit("quantity")),
+          jy2TextInput(documentRef, line.quantity, commit("quantity"), {
+            asciiNumber: true,
+          }),
         );
         const unitPrice = jy2Cell(documentRef, "td", "jy2-num", "");
         unitPrice.appendChild(
@@ -10102,6 +10112,7 @@
           documentRef,
           row.quantity,
           commit("quantity"),
+          { asciiNumber: true },
         );
         qtyCtrl.dataset.jy2Field = "quantity";
         quantityCell.appendChild(qtyCtrl);
@@ -10357,10 +10368,15 @@
       tr.appendChild(label);
       if (manual && blockEditable) {
         const amount = jy2Cell(documentRef, "td", "jy2-num", "");
-        const amountCtrl = jy2TextInput(documentRef, footerRow.amount, (value) => {
-          detailModel.updateFooterAmount(block.stableBlockId, kind, value);
-          scheduleRerender();
-        });
+        const amountCtrl = jy2TextInput(
+          documentRef,
+          footerRow.amount,
+          (value) => {
+            detailModel.updateFooterAmount(block.stableBlockId, kind, value);
+            scheduleRerender();
+          },
+          { asciiNumber: true },
+        );
         amountCtrl.dataset.jy2Field = "footerAmount";
         amount.appendChild(amountCtrl);
         tr.appendChild(amount);
@@ -11343,7 +11359,7 @@
           commitDetailField(patch);
         },
       );
-      unitPriceInput.className = "jy2-input jy2-actual-child-unit-price-input";
+      unitPriceInput.classList.add("jy2-actual-child-unit-price-input");
       unitPriceInput.placeholder = "単価";
       unitPriceInput.title =
         "単価（千区切り表示・一時保存で App757 へ）。数量が空なら 1 を自動セット";
@@ -11373,8 +11389,9 @@
         documentRef,
         planQtyInputValue,
         (value) => commitDetailField({ quantity: value }),
+        { asciiNumber: true },
       );
-      planQtyInput.className = "jy2-input jy2-actual-child-qty-input";
+      planQtyInput.classList.add("jy2-actual-child-qty-input");
       planQtyInput.placeholder = "数量";
       planQtyInput.title =
         "計画数量（一時保存で App757 へ）。実行予算額＝ROUND(単価×数量)";
@@ -11431,7 +11448,10 @@
               month,
             )
           : "";
-        const qtyInput = jy2TextInput(documentRef, qtyValue, (value) => {
+        const qtyInput = jy2TextInput(
+          documentRef,
+          qtyValue,
+          (value) => {
           const trimmed = String(value || "").trim();
           if (!monthQtyState) return;
           if (trimmed === "") {
@@ -11455,7 +11475,9 @@
           if (computed != null) {
             commit({ [month]: computed });
           }
-        });
+          },
+          { asciiNumber: true },
+        );
         qtyInput.title =
           "数量（セッション保持・再読込で消える）。金額入力時は空なら 1。違う場合は手直し";
         qtyCell.appendChild(qtyInput);
