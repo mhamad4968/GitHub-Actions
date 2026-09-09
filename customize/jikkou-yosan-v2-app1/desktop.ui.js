@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-09-ver02-ascii-num-input
+  // @JY_V2_BUILD 2026-09-09-ver02-ascii-num-ime
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2068,7 +2068,7 @@
       ".jy2-num{text-align:right;font-variant-numeric:tabular-nums}",
       ".jy2-amount{text-align:right;background:#F3F8FC;font-variant-numeric:tabular-nums}",
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #e2e8f0;padding:2px 4px;background:#FFFCF3;border-radius:4px;font-size:12px}",
-      ".jy2-input-ascii-num{ime-mode:disabled}",
+      ".jy2-input-ascii-num{ime-mode:disabled;-ms-ime-mode:disabled}",
       ".jy2-input:focus{border-color:#2563eb}",
       ".jy2-input.jy2-combo{background:#F4FAF4}",
       ".jy2-combo-wrap{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;width:100%;min-width:0}",

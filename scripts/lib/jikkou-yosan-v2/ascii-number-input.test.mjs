@@ -4,7 +4,9 @@ import test from "node:test";
 import { normalizeAsciiNumberDraft } from "./ascii-number-input.mjs";
 
 test("fullwidth digits map to ascii", () => {
+  assert.equal(normalizeAsciiNumberDraft("３"), "3");
   assert.equal(normalizeAsciiNumberDraft("１２３"), "123");
+  assert.equal(normalizeAsciiNumberDraft("１2３"), "123");
   assert.equal(normalizeAsciiNumberDraft("０９"), "09");
 });
 
