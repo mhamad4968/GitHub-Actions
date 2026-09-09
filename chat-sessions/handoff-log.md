@@ -6420,6 +6420,24 @@ npm run cio:morning:ready
 
 **GO待ち**: 夕反省③（全GO／個別指定／見送り）。756は9/10レビュー後の新依頼
 
-**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 756 customize until 9/10
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 756 追加 customize は新依頼まで
+
+---
+
+### 2026-09-09 JST — **日終わり after-go（756 IME 半角・夕反省全GO）**
+
+**要約**: 756 LIVE `2026-09-09-ver02-ascii-num-ime` rev**361**。数量・単価は全角キーでも半角で入る。目視OK。夕反省全GO（#O1/#M1/#G1）。day-close ④〜⑦。
+
+**話したこと**: 初回の「弾く」表現は誤り。IME で半角入力学。Kimi 404 は残す。黄色 pending は Actions 失敗ではない。
+
+**次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 追加 customize は新しい明示依頼まで作らない。
+
+**Git**: close-git 後に同期
+
+**BUILD**: App **756** — BUILD=`2026-09-09-ver02-ascii-num-ime` rev **361**
+
+**GO待ち**: なし（9/10レビュー後の新依頼）
+
+**触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize
 
 ---

@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-09-09T11:36:09.606Z",
+  "scoredAt": "2026-09-09T12:41:06.283Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。",
+  "topTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。",
   "topTaskKind": "work",
-  "topWorkTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。",
+  "topWorkTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。",
   "tasks": [
     {
       "id": "checkpoint:濱田が_Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。",
-      "text": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。",
+      "text": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。",
       "source": "checkpoint",
       "kind": "work",
       "difficulty": 5,

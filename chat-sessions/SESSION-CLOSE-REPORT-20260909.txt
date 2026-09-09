@@ -1,0 +1,25 @@
+SESSION-CLOSE-REPORT 2026-09-09（本日最終締め・closed-day）
+========================================
+
+■ レーン
+- 夜: 756 数量・単価の半角入力（IME 制御）— 目視OK rev361
+- 夕反省全GO: #O1 / #M1 / #G1。体制・ルール・憲法は見送り
+
+■ 本日できたこと
+- WAKE・credit 12%・rag-mirror 偽B1 是正
+- 756 ascii-num → IME 半角入力学。LIVE BUILD `2026-09-09-ver02-ascii-num-ime` rev **361**
+- relatedAppFieldsFrom 757/758 で live-schema Warning 0
+- 夕反省 GO 反映: 目視文面 / Kimi list-models→DeepSeek / pending≠Actions
+
+■ 触らない（維持）
+- 688 heat外 / 677–679 / SKYSEA / 712 deploy / 736 / 新アプリ=相談・GO後のみ
+- 756 追加 customize は新しい明示依頼まで
+- 閉済9件 / 設定タブ駐車
+
+■ Git
+- 756 IME: `583dd284` / checkpoint heal `2784184b`
+- 本締め: close-git 後の tip
+
+■ 備考
+- closeStatus: **closed-day**
+- 壁時計: session:clock:clear（after-go）

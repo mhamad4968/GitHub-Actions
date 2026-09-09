@@ -14,6 +14,8 @@
 
 本リポジトリは **Mintlify 用 `docs.json` なし**・**Cursor 向け CI 定義なし**のため、これらの App が push ごとに suite だけ作って終わると **永続 pending** になる。
 
+**#G1（2026-09-09）**: AI はコミット横の **黄色 pending を GitHub Actions 失敗と書かない**。EOD は `cio:eod:github` の unresolvedFailures のみ障害とする。
+
 ## 是正（浜田 CEO / リポ管理者）
 
 1. GitHub → **mhamad4968/GitHub-Actions** → **Settings** → **Integrations** → **GitHub Apps**

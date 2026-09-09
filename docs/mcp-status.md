@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-08（夕反省 MCP-opt・使用列再集計）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-09（#M1 list-models 後に DeepSeek 寄せ）
 
 ### §MCP-opt（2026-09-08 JST — 浜田「使うもの残す／不要は消す／ノウハウ活用」）
 
@@ -21,9 +21,9 @@
 
 | 項目 | 状態 |
 |------|------|
-| **切替フラグ** | `kimi_review` が **`moonshot-v1-128k` 404** またはパス **ENOENT** のとき **DeepSeek に寄せる**（第2者は維持） |
-| **チャット** | 経路断を 1 行残す（例: `MCPスキップ: kimi — moonshot-v1-128k 404 → DeepSeek`） |
-| **しない** | mcp.json のモデル ID 独断変更。Kimi 断を隠して単独完結 |
+| **切替フラグ** | `kimi_review` / `kimi_think` / `kimi_research` が **`moonshot-v1-128k` 404** またはパス **ENOENT** のとき、まず **list-models（実在確認）**、だめなら **DeepSeek に寄せる**（第2者は維持） |
+| **チャット** | 経路断を 1 行残す（例: `MCPスキップ: kimi — moonshot-v1-128k 404 → list-models → DeepSeek`） |
+| **しない** | mcp.json のモデル ID 独断変更。必須10からの削除。Kimi 断を隠して単独完結 |
 | **復旧** | モデル ID 更新またはパス経路修復後、Kimi 本人レビュー成功をもってフラグ解除 |
 
 **正本**: `docs/runbooks/cio-ops-2026-09-02-evening-improvements.md` / routing §5.1
