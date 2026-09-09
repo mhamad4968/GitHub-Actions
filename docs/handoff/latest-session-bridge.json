@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-09T11:36:12.959Z",
-  "gitHead": "a6d39a3c",
+  "exportedAt": "2026-09-09T11:38:25.354Z",
+  "gitHead": "a55a68d7",
   "gitStatus": "## main...origin/main",
   "nextTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=a6d39a3c | 次=濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=a55a68d7 | 次=濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
