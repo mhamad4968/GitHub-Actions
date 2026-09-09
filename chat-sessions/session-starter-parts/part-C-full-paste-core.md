@@ -72,11 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-09-08 自動更新）】
-- 次の1手: 共有PCの BitLocker VHDX アイドル切断を、1からの手順書で設定する（ラボ docs に置かない）。756 customize は9/10レビューまで作らない。
-- checkpoint: 2026-09-08 20:04 JST — 日終わり until-pause。756 LIVE `2026-09-08-ver02-summary-himoku-type` rev**359** は9/10待ち。共有PC金庫は相談のみ。
-- 進行中 plan: docs/plans/2026-09-06-jikkou-yosan-v2-salary-staff-settings-tab-parked.md
-- 当日コミット (上位 3):
-  - chore(checkpoint): record 756 close hash for 9/10 review wait
-  - feat(756): close summary cost rows as block x himoku x type
-  - chore(checkpoint): sync Git line after heal
+【今やってる主タスク（2026-09-08 反映・2026-09-09 WAKE同期）】
+- 本日レーン: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。
+- checkpoint: 2026-09-08 20:33 JST — 日終わり⑦済。MCP 試用は自発提案GO。
+- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
+- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
+- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）

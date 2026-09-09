@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-08 20:33 JST — 日終わり⑦済。MCP 試用は自発提案GO。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 customize はレビューまで作らない。
 **レーン変更**: 日終わり完了
-**Git**: **`11c79f64`**
+**Git**: **`a6d39a3c`** = `origin/main` — push 済
 **closeStatus**: **closed**（day-close ⑦済）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-08-ver02-summary-himoku-type` rev**359**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -57,12 +57,14 @@
 - 9/10 関係者レビュー。原価管理・作業者設定は今作らない
 - 正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`
 
+
 ## 2026-09-06
 
 ### 2026-09-06 朝締め（756統括・本セッション）
 - 756 LIVE `2026-09-06-ver02-total-notes` rev**358**。浜田目視OK（計・境・印刷・合計行備考）
 - 実行予算は本日終わり。設定タブは駐車。Mac移行は2027-02
 - closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
+
 
 
 ## 2026-09-05
@@ -79,14 +81,5 @@
 
 
 
-## 2026-09-02
 
-### 2026-09-02 夜締め（day-close）
-- 683 印刷下枠【配線整理】件数。live **rev117**。浜田目視 OK。8月要約再生成（週次四半期誤記は手 PATCH）
-- 夕反省全GO: #S1 GHA healed / #O1 turn-start `--goal` / #M1 Kimi404→DeepSeek / #P1 会計年度四半期固定
-- closeStatus: **closed**
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-08.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-09.md -->
