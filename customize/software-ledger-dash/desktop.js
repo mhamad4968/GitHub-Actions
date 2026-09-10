@@ -8,7 +8,7 @@
   var APP_PC = 674;
   var FC595_PC674_SUB = "pc_ledger_v1_list";
   var FC595_PC674_ID = "pc_674_record_id";
-  var BUILD = "2026-08-19-715-target-filter-chips";
+  var BUILD = "2026-09-10-715-vl-serial-continue";
 
   var DEPT_MASTER_FALLBACK = [
     { dept_name: "役員室", group_name: "honsya", sort_no: 1 },
@@ -1255,6 +1255,63 @@
     }
   }
 
+  function hasSerialNumberSlot(slots) {
+    for (var i = 0; i < slots.length; i++) {
+      if (slots[i].kind === "シリアル番号" && String(slots[i].value || "").trim()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function buildVlContinueSeed(payload) {
+    var seed = {
+      license_type: LICENSE_VOLUME,
+      software_name: payload.software_name,
+      model_number: payload.model_number,
+      install_target: payload.install_target,
+      id_kind_1: "",
+      id_value_1: "",
+      id_kind_2: "",
+      id_value_2: "",
+      id_kind_3: "",
+      id_value_3: "",
+    };
+    var serials = [];
+    var n;
+    for (n = 1; n <= 3; n++) {
+      var kind = String(payload["id_kind_" + n] || "").trim();
+      var value = String(payload["id_value_" + n] || "").trim();
+      if (kind === "シリアル番号" && value) {
+        serials.push({ kind: kind, value: value });
+      }
+    }
+    serials.forEach(function (s, idx) {
+      var slotNum = idx + 1;
+      seed["id_kind_" + slotNum] = s.kind;
+      seed["id_value_" + slotNum] = s.value;
+    });
+    return seed;
+  }
+
+  function askVlContinueAfterSave(payload) {
+    openModal(
+      "保存しました",
+      "<p>既に登録されています。これは VL ライセンスですか？</p>",
+      [
+        { label: "いいえ" },
+        {
+          label: "はい",
+          primary: true,
+          onClick: function (close) {
+            close();
+            openCreateModal(buildVlContinueSeed(payload));
+          },
+        },
+      ],
+    );
+  }
+
   function saveRecordFromModal(box, row, isNew, close) {
     var licenseEl = box.querySelector("#swl-license-type");
     var licenseType = licenseEl ? licenseEl.value : "";
@@ -1407,6 +1464,11 @@
       })
       .then(function () {
         close();
+        if (isNew && payload.license_type === LICENSE_VOLUME && hasSerialNumberSlot(slots)) {
+          return reloadRecords().then(function () {
+            askVlContinueAfterSave(payload);
+          });
+        }
         reloadRecords();
         alert("保存しました");
       })
