@@ -1,8 +1,8 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-10T11:10:43.023Z",
-  "gitHead": "8861801d",
-  "gitStatus": "## main...origin/main [ahead 1]",
+  "exportedAt": "2026-09-10T11:12:45.936Z",
+  "gitHead": "d26ba0dd",
+  "gitStatus": "## main...origin/main",
   "nextTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=8861801d | 次=濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=d26ba0dd | 次=濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
