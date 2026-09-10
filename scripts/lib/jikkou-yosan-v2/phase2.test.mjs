@@ -179,11 +179,16 @@ test("validator requires a non-empty SUBTABLE label (live CB_VA01 regression)", 
   validateProperties("t", subtableWithLabel("請負明細"));
 });
 
-test("app1: all three subtables carry catalog-aligned Japanese labels", () => {
+test("app1: vendor_contract_lines and core subtables carry Japanese labels", () => {
   const p = loadFieldFile("app1");
   assert.equal(p.contract_lines.label, "請負明細");
   assert.equal(p.salary_lines.label, "給与手当");
   assert.equal(p.summary_cost_lines.label, "総括原価投影");
+  assert.equal(p.vendor_contract_lines.label, "業者契約期間");
+  assert.equal(p.vendor_contract_lines.type, "SUBTABLE");
+  assert.equal(p.vendor_contract_lines.fields.vendor_contract_name.type, "SINGLE_LINE_TEXT");
+  assert.equal(p.vendor_contract_lines.fields.vendor_contract_start.type, "DATE");
+  assert.equal(p.vendor_contract_lines.fields.vendor_contract_days.type, "NUMBER");
 });
 
 test("validator rejects non-boolean required/unique and non-string option index", () => {

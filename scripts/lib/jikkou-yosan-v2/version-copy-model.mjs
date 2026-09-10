@@ -44,6 +44,7 @@ export const APP1_COPY_FIELDS = Object.freeze([
   "created_by_name",
   "person_in_charge_name",
   "note",
+  "vendor_contract_lines",
   "contract_lines",
   "salary_lines",
   "summary_cost_lines",
@@ -143,7 +144,10 @@ export function buildVersionCopyInputs({
     const field = oldParent.record[code];
     if (!field || !("value" in field)) continue;
     newParentRecord[code] =
-      code === "contract_lines" || code === "salary_lines" || code === "summary_cost_lines"
+      code === "contract_lines" ||
+      code === "salary_lines" ||
+      code === "summary_cost_lines" ||
+      code === "vendor_contract_lines"
         ? copySubtableValue(field)
         : { value: field.value };
   }

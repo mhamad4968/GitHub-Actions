@@ -203,6 +203,20 @@ function oldParent() {
           },
         ],
       },
+      vendor_contract_lines: {
+        value: [
+          {
+            id: "77",
+            value: {
+              vendor_contract_name: { value: "今岡塗装" },
+              vendor_contract_start: { value: "2026-04-01" },
+              vendor_contract_end: { value: "2026-09-30" },
+              vendor_contract_days: { value: "183" },
+              vendor_contract_note: { value: "" },
+            },
+          },
+        ],
+      },
     },
   };
 }
@@ -236,6 +250,11 @@ test("残B: buildVersionCopyInputs produces a valid planVersionCopy input", () =
   assert.equal(
     newParent.contract_lines.value[0].value.contract_row_key.value,
     "cr-1",
+  );
+  assert.equal(newParent.vendor_contract_lines.value[0].id, undefined);
+  assert.equal(
+    newParent.vendor_contract_lines.value[0].value.vendor_contract_name.value,
+    "今岡塗装",
   );
 
   const copied = inputs.newDetailRecords[1];

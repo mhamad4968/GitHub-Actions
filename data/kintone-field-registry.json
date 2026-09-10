@@ -252,6 +252,13 @@
         "summary_total_notes"
       ],
       "subtables": {
+        "vendor_contract_lines": [
+          "vendor_contract_name",
+          "vendor_contract_start",
+          "vendor_contract_end",
+          "vendor_contract_days",
+          "vendor_contract_note"
+        ],
         "contract_lines": [
           "contract_row_key",
           "contract_section",

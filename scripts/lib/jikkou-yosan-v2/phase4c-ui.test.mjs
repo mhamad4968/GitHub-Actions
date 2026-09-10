@@ -764,6 +764,23 @@ test("U35 start>end: draft save allowed with red warn; version confirm blocked",
   );
 });
 
+test("vendor contract period table on header: list select, auto days, inverted dates block confirm", () => {
+  const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
+  assert.match(source, /function jy2RenderVendorContractTable\b/);
+  assert.match(source, /vendor_contract_lines/);
+  assert.match(source, /業者契約期間/);
+  assert.match(
+    source,
+    /業者契約の開始が終了より後になっています（一時保存は可・版の確定は不可）/,
+  );
+  assert.match(
+    source,
+    /業者契約の開始が終了より後のため、版を確定できません/,
+  );
+  assert.match(source, /jy2CollectVendorContractLines/);
+  assert.match(source, /JY2_VENDOR_SEEDS/);
+});
+
 test("C5 fixed bottom h-rail and viewport-only wrap width", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2MountPaneHScroll\b/);

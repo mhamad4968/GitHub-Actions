@@ -475,6 +475,50 @@
         }
       }
     },
+    "vendor_contract_lines": {
+      "type": "SUBTABLE",
+      "code": "vendor_contract_lines",
+      "label": "業者契約期間",
+      "fields": {
+        "vendor_contract_name": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "vendor_contract_name",
+          "label": "会社名",
+          "required": false,
+          "defaultValue": ""
+        },
+        "vendor_contract_start": {
+          "type": "DATE",
+          "code": "vendor_contract_start",
+          "label": "開始",
+          "required": false,
+          "defaultValue": "",
+          "defaultNowValue": false
+        },
+        "vendor_contract_end": {
+          "type": "DATE",
+          "code": "vendor_contract_end",
+          "label": "終了",
+          "required": false,
+          "defaultValue": "",
+          "defaultNowValue": false
+        },
+        "vendor_contract_days": {
+          "type": "NUMBER",
+          "code": "vendor_contract_days",
+          "label": "契約日数",
+          "required": false,
+          "defaultValue": ""
+        },
+        "vendor_contract_note": {
+          "type": "SINGLE_LINE_TEXT",
+          "code": "vendor_contract_note",
+          "label": "備考",
+          "required": false,
+          "defaultValue": ""
+        }
+      }
+    },
     "contract_lines": {
       "type": "SUBTABLE",
       "code": "contract_lines",

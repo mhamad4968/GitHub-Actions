@@ -64,6 +64,18 @@
 | `person_in_charge_name` | 担当者 | 文字列(1行) | 任意・**手入力**（736同趣旨・C13） |
 | `note` | 備考 | 文字列(複数行) | 任意 |
 
+### 1.2a 業者契約期間サブテーブル `vendor_contract_lines`（2026-09-10）
+
+工事全体の着手日／竣工日とは別。1 行＝1 業者。詳細 `docs/plans/2026-09-10-756-vendor-contract-period-spec.md`。
+
+| コード | ラベル | 型 | 備考 |
+|---|---|---|---|
+| `vendor_contract_name` | 会社名 | 文字列(1行) | UI は協力会社リスト選択 |
+| `vendor_contract_start` | 開始 | 日付 | 任意 |
+| `vendor_contract_end` | 終了 | 日付 | 任意 |
+| `vendor_contract_days` | 契約日数 | 数値 | JS 自動（工期日数と同じ） |
+| `vendor_contract_note` | 備考 | 文字列(1行) | 任意 |
+
 ### 1.3 請負明細サブテーブル `contract_lines`
 
 | コード | ラベル | 型 | 備考 |
