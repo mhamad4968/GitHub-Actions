@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-10 21:50 JST — 日終わり⑦。715 VL連続・756業者契約期間 目視OK。夕反省全GO（#O1 #T1 #R1 #C1 #M1 #M2）。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。
 **レーン変更**: 日終わり完了
-**Git**: close-git が origin へ push（#O1）
+**Git**: **`ca9b3319`** = `origin/main` — push 済（R44 parent）
 **closeStatus**: **closed-day**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-10-ver02-vendor-contract-period` rev**363**。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
