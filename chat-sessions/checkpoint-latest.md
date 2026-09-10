@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-09 21:40 JST — 日終わり⑦前。756 IME 半角 rev361 目視OK。夕反省全GO。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。9/10 は `docs/plans/2026-09-08-jikkou-yosan-v2-summary-910-one-pager.md`。756 の追加 customize は新しい明示依頼まで作らない。
 **レーン変更**: 日終わり完了
-**Git**: **`f25d177d`** = `origin/main` — push 済（R44 parent）
+**Git**: **`dc062b9f`** = `origin/main` — push 済
 **closeStatus**: **closed-day**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-09-ver02-ascii-num-ime` rev**361**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -52,6 +52,7 @@
 - 夕反省全GO: #O1 目視文面 / #M1 Kimi list-models→DeepSeek / #G1 pending≠Actions
 - 9/10 関係者レビュー待ち。設定タブ駐車。共有PC金庫は後日 Desktop Word
 
+
 ## 2026-09-08
 
 ### 2026-09-08 夜（日終わり until-pause）
@@ -65,6 +66,7 @@
 - 正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`
 
 
+
 ## 2026-09-06
 
 ### 2026-09-06 朝締め（756統括・本セッション）
@@ -74,19 +76,5 @@
 
 
 
-## 2026-09-05
 
-### 2026-09-05 朝締め（内訳UX・OpenRouter既定）
-- 756 LIVE `2026-09-05-ver02-locked-fuka-badge` rev**342**。固定セル灰色「不可」目視OK
-- OpenRouter 省略時既定 `openai/gpt-4.1-nano`（クレジット不足ではない）
-- 今晩19:00 統括表検討。アジェンダ `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tab-tonight-agenda.md`。朝は検討・実装しない
-- closeStatus: **closed**（朝区切り）
-
-### 2026-09-05 夜（統括仕様確定・実装は明日）
-- 正本 `docs/plans/2026-09-05-jikkou-yosan-v2-summary-tonight-decisions.md`
-- 原価行13列・給与T/U・請負現行・①⑧⑨維持。customize なし
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-09.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-10.md -->
