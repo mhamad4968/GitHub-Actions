@@ -95,6 +95,8 @@ npm run cio:preflight:<appId> -- --note "4文字以上の一行要約"
 
 **45 分以内**に `deploy:<appId>` を実行（R64）。`--note` 省略時は **exit 2**。
 
+**#M2（2026-09-10 GO）**: このターンで **フォームにフィールドを足した**ときは、JS の `deploy:<app>` の前に `kintone-schema-mcp` の `list_field_codes` で新コードがあるか1回見る。見ているのは **preview**。無いなら JS を載せない。form の本番反映は脚本。live 再取得はしない。目視は残す。
+
 ```bash
 # 1. 編集 → build/bundle
 npm run jikkou-yosan:build-desktop   # 736 の例

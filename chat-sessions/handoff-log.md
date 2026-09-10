@@ -6441,3 +6441,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize
 
 ---
+
+### 2026-09-10 JST — **日終わり after-go（715 VL連続・756業者契約・夕反省全GO）**
+
+**要約**: 715 rev**28**・756 rev**363** 目視OK。夕反省 #O1 #T1 #R1 #C1 #M1 #M2。day-close ④〜⑦。
+
+**話したこと**: MCP を空にしない。Kimi は ENOENT。schema MCP は preview の `list_field_codes`。新 MCP は足さない。
+
+**次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 追加 customize は新しい明示依頼まで作らない。
+
+**Git**: close-git 後に同期
+
+**BUILD**: 715 `2026-09-10-715-vl-serial-continue` rev**28** / 756 `2026-09-10-ver02-vendor-contract-period` rev**363**
+
+**GO待ち**: なし
+
+**触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize
+
+---

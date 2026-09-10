@@ -43,12 +43,14 @@
 |----|-----|------|
 | 1 | DeepSeek | §50-3-8 盲点 3 点（型 / SPEC 乖離 / 差異継承）→ CIO 突合 3 行 → `cio:guard:5038 --stamp` |
 | 2 | CIO | `cio:pre-implement-gate -- --strict` |
-| 3 | Composer | `customize/**` のみ。APP_DB はハードコードを維持（bundle で 0 にしない） |
+| 3 | Composer | `customize/**` のみ。APP_DB はハードコードを維持（bundle で 0 にしない）。**80行超は Composer 必須**（#T1） |
 | 4 | Kimi | レビュー。file が読めないときは think で代替し、CIO がコードで誤 BLOCK を却下する |
 | 5 | CIO | `cio:preflight:<app> -- --note "…" --with-git-diff-line` → `deploy:<app>` |
-| 6 | CIO | R63: **`npm run rag:mirror:canonical-docs` を先に実行** → customize + `kintone-apps.md` + `.rag/extra-docs/kintone-apps.md` + `data/cio-live-builds.json` を **同一 commit**（正本だけ stage すると pre-commit 拒否・#R1） |
+| 6 | CIO | R63: **`npm run rag:mirror:canonical-docs` を先に実行** → customize + `kintone-apps.md` + `.rag/extra-docs/kintone-apps.md` + `data/cio-live-builds.json` を **同一 commit**（正本だけ stage すると pre-commit 拒否・#R1）。**目視OKの同一ターンで origin へ push**（#O1 2026-09-10。commit だけを完了としない） |
 | 7 | 浜田 | **Ctrl+F5** 目視のみ（npm は依頼しない） |
-| 8 | CIO | OK ならレーンクローズ + **当該 SPEC の改定履歴** + checkpoint。NG は同一セッションで直して再 deploy |
+| 8 | CIO | OK ならレーンクローズ + **当該 SPEC の状態行／改定履歴** + checkpoint + **push 済みであること**（#R1）。NG は同一セッションで直して再 deploy |
+
+**#T1（2026-09-10）**: 手順 3 の Composer を飛ばして CIO が 80 行超を直書きしない。
 
 ### 2.1 フォームモーダル（#D1 · 2026-08-24）
 

@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-09（#M1 list-models 後に DeepSeek 寄せ）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-10（#M1 ENOENT ならメダルに Kimi=review と書かない）
 
 ### §MCP-opt（2026-09-08 JST — 浜田「使うもの残す／不要は消す／ノウハウ活用」）
 
@@ -22,8 +22,9 @@
 | 項目 | 状態 |
 |------|------|
 | **切替フラグ** | `kimi_review` / `kimi_think` / `kimi_research` が **`moonshot-v1-128k` 404** またはパス **ENOENT** のとき、まず **list-models（実在確認）**、だめなら **DeepSeek に寄せる**（第2者は維持） |
-| **チャット** | 経路断を 1 行残す（例: `MCPスキップ: kimi — moonshot-v1-128k 404 → list-models → DeepSeek`） |
+| **チャット** | 経路断を 1 行残す。**メダルに `Kimi=review` と書かない**（#M1 2026-09-10。絶対パス指定でも ENOENT なら未使用） |
 | **しない** | mcp.json のモデル ID 独断変更。必須10からの削除。Kimi 断を隠して単独完結 |
+| **実測 2026-09-10** | `kimi_read_file` に `C:/Users/mhamada202408224/kintone-ai-lab/customize/jikkou-yosan-v2-app1/desktop.ui.js` を渡しても ENOENT。Kimi MCP の作業ディレクトリがラボを見ていない |
 | **復旧** | モデル ID 更新またはパス経路修復後、Kimi 本人レビュー成功をもってフラグ解除 |
 
 **正本**: `docs/runbooks/cio-ops-2026-09-02-evening-improvements.md` / routing §5.1
@@ -68,6 +69,9 @@
 |-----|------|------|
 | **`kintone-schema-mcp`** | 実 kintone アプリ form / views / settings を REST で取得（第11層 Linter と実スキーマ突合） | `node mcp/kintone-schema-mcp/index.mjs`（`.env` + `KINTONE_*`） |
 | **`git-history-mcp`** | Git ログから憲法層・4要素コミット・R19/R20 締め儀式を検索 | `node mcp/git-history-mcp/index.mjs`（repo root cwd） |
+
+**#M2（2026-09-10 浜田GO）**: フィールド追加のあと JS deploy の前に `list_field_codes` で新コードがあるか見る。**preview**（`/k/v1/preview/app/form/fields.json`）。form の本番反映は脚本。live 再取得は足さない。目視の代行ではない。  
+**実測 2026-09-10**: `list_field_codes` appId=756 は `vendor_contract_lines` を含む。
 
 **拡張運用（2026-06-14）**: `npm run verify:kintone-live-schema` / `npm run verify:git-history-alignment` — CLI 正本（MCP と同一 REST/git ロジック）
 
