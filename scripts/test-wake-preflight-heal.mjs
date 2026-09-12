@@ -39,6 +39,12 @@ const iLockCall = handoffCommit.indexOf('if (healPackageLockBeforeHandoff())');
 const iAllowCall = handoffCommit.indexOf('const paths = dirtyAllowlist()');
 assert.ok(iLockCall > 0 && iAllowCall > iLockCall, 'order: lock heal before allowlist handoff');
 assert.match(handoffCommit, /re-export bridge after lock heal/);
+assert.match(handoffCommit, /commit OK n=/);
+assert.doesNotMatch(
+  handoffCommit,
+  /commit OK files=\$\{paths\.join/,
+  'do not join all files on one line (PowerShell wrap-spam)',
+);
 
 const pkg = JSON.parse(read('package.json'));
 assert.ok(pkg.scripts['test:wake-handoff-allowlist'], 'package.json test:wake-handoff-allowlist');

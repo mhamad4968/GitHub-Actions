@@ -70,7 +70,16 @@ function commitAllowlist(paths, message) {
     console.error('[cio:wake:handoff-commit] NG commit', commit.err || commit.out);
     process.exit(commit.status || 1);
   }
-  console.log(`[cio:wake:handoff-commit] commit OK files=${paths.join(',')}`);
+  logCommitOk(paths);
+}
+
+/** 1 行 join は PowerShell 折り返しで同一行が多重に見え、失敗行を隠す（2026-09-12 WAKE） */
+function logCommitOk(paths) {
+  const unique = [...new Set(paths.filter(Boolean))];
+  console.log(`[cio:wake:handoff-commit] commit OK n=${unique.length}`);
+  for (const p of unique) {
+    console.log(`[cio:wake:handoff-commit]   + ${p}`);
+  }
 }
 
 /** #S-WAKE-LOCK-01 — allowlist 外の package-lock / package.json 残件を別 commit（SESSION-CLOCK 除外）
