@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-12T10:38:29.338Z",
-  "gitHead": "d218982c",
+  "exportedAt": "2026-09-12T12:28:42.178Z",
+  "gitHead": "42052295",
   "gitStatus": "## main...origin/main",
-  "nextTask": "夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。",
+  "nextTask": "原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=d218982c | 次=夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=42052295 | 次=原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-09-12T12:28:42.729Z",
+  "crosscheckOk": true
 }

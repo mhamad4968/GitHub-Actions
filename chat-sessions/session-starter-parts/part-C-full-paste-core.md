@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-09-12 反映・2026-09-12 WAKE同期）】
-- 本日レーン: 夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。
-- checkpoint: 2026-09-12 11:10 JST — 予実G0昼区切り。夜は1件ずつ。実装しない。
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
-- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
+【今やってる主タスク（2026-09-12 自動更新）】
+- 次の1手: 原価（予実）コードは明日。今夜の 756 内訳・統括レーンは完了。
+- checkpoint: 2026-09-12 21:20 JST — 756 内訳・統括・工種説明 LIVE rev**366** 目視OK。
+- 進行中 plan: docs/plans/2026-08-29-jikkou-yosan-v2-master-g0-decisions.md
+- 当日コミット (上位 3):
+  - chore(checkpoint): sync Git line after heal
+  - chore(checkpoint): 756 rev366 工種説明 目視OK
+  - chore(checkpoint): sync Git line after heal

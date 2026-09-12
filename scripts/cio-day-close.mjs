@@ -58,6 +58,27 @@ function logGitAheadHint() {
   }
 }
 
+function logDirtyHint() {
+  try {
+    const out = execFileSync('git', ['status', '--short'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    const lines = String(out || '').trim();
+    if (!lines) {
+      console.log('[cio:day-close] dirty: なし');
+      return;
+    }
+    console.log(`[cio:day-close] dirty:\n${lines}`);
+    console.log(
+      '[cio:day-close] NOTE: 予実G0 / 夜handoff は close-git に混ぜない（先に stash）。SESSION-CLOCK は clock:clear',
+    );
+  } catch (err) {
+    console.log(`[cio:day-close] dirty: git status 取得失敗 (${err.message || err})`);
+  }
+}
+
 function untilPause() {
   const date = jstDate();
   const gha = runNpmScriptSync(root, 'cio:eod:github');
@@ -83,8 +104,9 @@ function afterGo() {
     console.error(`[cio:day-close] NG GO ファイルなし: ${goPath(date)}`);
     process.exit(2);
   }
-  console.log('[cio:day-close] ④ は CIO が先に実施済みであること。ここから ⑤⑥⑦');
+      console.log('[cio:day-close] ④ は CIO が先に実施済みであること。ここから ⑤⑥⑦');
   logGitAheadHint();
+  logDirtyHint();
   const chain = [
     ['cio:checkpoint:sync-live-674', []],
     ['cio:session:export-handoff', []],

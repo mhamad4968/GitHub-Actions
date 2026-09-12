@@ -1,9 +1,9 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-12 21:20 JST — 756 内訳・統括・工種説明 LIVE rev**366** 目視OK。
-**次の1手**: 原価（予実）コードは明日。今夜の 756 内訳・統括レーンは完了。
-**レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）夜確認**
+**最終更新**: 2026-09-12 21:28 JST — 日終わり after-go。756 LIVE rev**366** 目視OK。
+**次の1手**: 原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+**レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
 **Git**: **`470203e4`** = `origin/main` — push 済
-**closeStatus**: **partial**（夜へ。日終わり⑦ではない）
+**closeStatus**: **full**（日終わり⑦）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実は実装GOまで customize しない
 **本日状態**: **756**=`2026-09-12-ver02-workdesc-wider` rev**366**（本セッション deploy 済）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GOは明日**。内訳・統括は LIVE rev**366**・**目視OK**。夜§13.1は1–7決
+**GO待ち**: 予実の **実装GO**。内訳・統括は LIVE rev**366**・**目視OK**。夜§13.1は1–7決。日終わり⑦ after-go
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -61,7 +61,7 @@
 - 統括 **単位が違うと分ける**。同じ単位は合算。会社名・氏名は空でも保存可。諸経費は塗装工事〜追加工事⑤のみ
 - 諸経費対象 **決**: 10200塗装工事〜14500追加工事⑤（軌道・調査設計・外注試験・交通規制含む）
 - AIチーム第3回 **条件付きGO**。諸経費の母数は **外注費の明細だけ**（決）
-- 内訳・統括 **LIVE** BUILD `2026-09-12-ver02-workdesc-wider` rev **366**。諸経費（外注費があるときだけ）・工種説明幅 **目視OK**。原価コードは明日
+- 内訳・統括 **LIVE** BUILD `2026-09-12-ver02-workdesc-wider` rev **366**。諸経費・工種説明幅 **目視OK**。日終わり after-go。予実は G0 正本のみ
 
 ### 2026-09-12 昼（partial — 予実G0 → 夜）
 - 756 予実を工種単位で G0。正本 commit `fba5f27e`。customize/deploy なし

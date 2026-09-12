@@ -48,8 +48,9 @@ App756 等の見た目レーンで依頼者／浜田レビューに出す前は�
 **#O1（2026-09-10）**: 目視OKの同一ターンで origin へ **push** する。commit だけを完了としない。  
 **#R1（2026-09-10）**: 目視OKの記録は実装・SPEC状態行・push が揃ってから。  
 **#C1（2026-09-10）**: ユーザー規則「push するな」と R63 即 push が衝突したら、採った方を締めに1行残す。  
-**#T1（2026-09-10）**: 80行超 customize は Composer 先。CIO 直書きしない。  
-**#M1（2026-09-10）**: Kimi がリポファイル ENOENT ならメダルに `Kimi=review` と書かない。第2者は DeepSeek。mcp.json から消さない。  
+**#T1（2026-09-10／2026-09-12）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
+**#M1（2026-09-10／2026-09-12）**: Kimi がリポファイル ENOENT なら **経路障害**（WSL が Windows パスを開けない）。medal 固定は変えず、本文に経路障害と書く。第2者は DeepSeek。mcp.json から消さない。  
+**#O1（2026-09-12）**: day-close after-go 前に dirty を印字。予実G0／夜handoff は stash してから close-git。  
 **#M2（2026-09-10）**: フィールド追加のあと JS deploy の前に `kintone-schema-mcp` `list_field_codes`（preview）。form deploy は脚本。live 再取得は足さない。
 
 ### R26 — スコープ分離（2026-06-13 浜田 GO）
