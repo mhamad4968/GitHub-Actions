@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-12 11:10 JST — 予実G0昼区切り。夜は1件ずつ。実装しない。
 **次の1手**: 夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）夜確認**
-**Git**: **`fba5f27e`** 予実G0正本（close 後に stamp）
+**Git**: **`e6cb556a`** = `origin/main` — push 済
 **closeStatus**: **partial**（夜へ。日終わり⑦ではない）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実は実装GOまで customize しない
 **本日状態**: **756**=`2026-09-10-ver02-vendor-contract-period` rev**363**（本セッション deploy なし）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -53,6 +53,7 @@
 - 夜は §13.1 を1件ずつ。第1問は空に戻した月の採用
 - 第1回多角確認（CIO＋DeepSeek）。Kimi ENOENT。日終わり⑦は回していない
 
+
 ## 2026-09-10
 
 ### 2026-09-10 夜（日終わり after-go）
@@ -61,26 +62,13 @@
 - 夕反省全GO: #O1 目視同一ターン push / #T1 Composer / #R1 3点セット / #C1 push衝突1行 / #M1 Kimi ENOENT / #M2 schema MCP preview
 
 
+
 ## 2026-09-09
 
 ### 2026-09-09 夜（日終わり after-go）
 - 756 LIVE `2026-09-09-ver02-ascii-num-ime` rev**361**。数量・単価は半角で入る。目視OK
 - 夕反省全GO: #O1 目視文面 / #M1 Kimi list-models→DeepSeek / #G1 pending≠Actions
 - 9/10 関係者レビュー待ち。設定タブ駐車。共有PC金庫は後日 Desktop Word
-
-
-
-## 2026-09-08
-
-### 2026-09-08 夜（日終わり until-pause）
-- 756 このラウンド終了（rev359・9/10待ち）。customize 追加なし
-- 共有PC金庫: 相談のみ。アイドル切断はタスクスケジューラ。明日1から手順書を作って設定。ラボに手順を置かない
-- day-close ③ 承認待ち。heal treadmill しない
-
-### 2026-09-08 夕（756統括原価行クローズ）
-- 756 LIVE `2026-09-08-ver02-summary-himoku-type` rev**359**。原価行11列・ブロック×費目×種別。浜田目視OK
-- 9/10 関係者レビュー。原価管理・作業者設定は今作らない
-- 正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`
 
 
 
