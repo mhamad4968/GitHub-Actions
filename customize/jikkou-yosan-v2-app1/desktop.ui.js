@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-10-ver02-vendor-contract-period
+  // @JY_V2_BUILD 2026-09-12-ver02-summary-unit-split
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -10579,8 +10579,11 @@
       body.appendChild(addRow);
     }
 
-    // 施工: 諸経費（自動・明細合計×10%）→計。法定福利は明細。保安はフッタ無し。
-    for (const kind of footerKindsForCostCategory(block.costCategory)) {
+    // 施工かつ対象工種: 諸経費（自動・外注費明細合計×10%）→計。保安・対象外は計のみ／無し。
+    for (const kind of footerKindsForCostCategory(
+      block.costCategory,
+      block.workTypeName,
+    )) {
       const footerRow = block.footer[kind];
       const tr = documentRef.createElement("tr");
       tr.className =
@@ -10609,7 +10612,7 @@
           "jy2-num",
           jy2Comma(footerRow.base),
         );
-        unitPriceCell.title = "諸経費の単価は明細金額の合計です";
+        unitPriceCell.title = "諸経費の単価は外注費の明細合計です";
         tr.appendChild(unitPriceCell);
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(footerRow.amount)),
@@ -10618,10 +10621,10 @@
           documentRef,
           "td",
           "jy2-footer-basis",
-          `明細金額合計 ×${footerRow.ratePercent}%（単価は明細金額の合計）`,
+          `外注費明細合計 ×${footerRow.ratePercent}%（単価は外注費の明細合計）`,
         );
         basis.colSpan = 2;
-        basis.title = "諸経費の単価は明細金額の合計です";
+        basis.title = "諸経費の単価は外注費の明細合計です";
         tr.appendChild(basis);
         body.appendChild(tr);
         continue;

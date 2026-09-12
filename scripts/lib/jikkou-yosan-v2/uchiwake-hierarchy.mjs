@@ -371,29 +371,9 @@ export function jy2NextBlockVendorAfterLineCompanies(block) {
   return block && block.vendorName != null ? block.vendorName : null;
 }
 
-function jy2UchiwakeRowLooksUsed(row) {
-  if (!row) return false;
-  const keys = [
-    "name1",
-    "name2",
-    "name3",
-    "nameDetail",
-    "nameItem",
-    "unit",
-    "quantity",
-    "unitPrice",
-    "note",
-    "lineVendorName",
-    "linePersonName",
-  ];
-  return keys.some((key) => jy2HasUchiwakeText(row[key]));
-}
-
 /**
  * Q4: 保存時のみ。保存は止めない。
- * 1. 行会社ありなのにブロックが「－」以外 → 自動側の取りこぼし警告
- * 2. 行会社なし かつ ブロック空または「－」 → ブロック会社を入れてください
- * 3. ブロックが「－」で、会社列対象の使用中行が空 → 行の会社が空
+ * 2026-09-12 夜: 会社空の注意は出さない。残すのは行会社ありなのにブロックが「－」以外。
  */
 export function jy2CollectUchiwakeSaveWarnings(blocks) {
   const warnings = [];
@@ -408,20 +388,6 @@ export function jy2CollectUchiwakeSaveWarnings(blocks) {
     const vendor = String(block.vendorName || "").trim();
     if (anyLineVendor && vendor && vendor !== "－") {
       warnings.push(`${label}: 行に会社名があるためブロックの取引先を「－」にしてください`);
-    }
-    if (!anyLineVendor && (!vendor || vendor === "－")) {
-      warnings.push(`${label}: ブロックの会社名を入れてください`);
-    }
-    if (vendor === "－") {
-      rows.forEach((row, rowIndex) => {
-        if (!jy2UchiwakeRowLooksUsed(row)) return;
-        const himoku = String(row.name1 || "").trim();
-        const typeName = String(row.name2 || "").trim();
-        if (!jy2UchiwakeLineVendorVisible(himoku, typeName)) return;
-        if (!jy2UchiwakeRowHasLineVendor(row)) {
-          warnings.push(`${label} 行${rowIndex + 1}: 会社名が空です`);
-        }
-      });
     }
   });
   return warnings;

@@ -7,6 +7,10 @@ import { add, sum } from "./decimal.mjs";
 import { COMMON_UNITS } from "./contract-salary-model.mjs";
 import { createRowKey, createStableBlockId } from "./keys.mjs";
 import { allowedOperations } from "./lock.mjs";
+import {
+  isOverheadBaseHimoku,
+  workTypeShowsOverheadFooter,
+} from "./overhead-work-types.mjs";
 
 // Phase 4c: offline in-memory 内訳 (App2) block editor. No kintone I/O here;
 // rows only mirror the App2 catalog shape (§2) so a later save layer can map
@@ -46,10 +50,13 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
 // G0 §7.2: 各種保険料は固定フッタから外す（明細として追加）。手入力フッタは無し。
 export const MANUAL_FOOTER_KINDS = Object.freeze([]);
 
-// 施工は諸経費（自動 10%）→計。法定福利は明細。保安はフッタ無し。
-export function footerKindsForCostCategory(costCategory) {
+// 施工かつ対象14工種だけ諸経費（自動 10%）→計。保安・対象外工種は計のみ／無し。
+export function footerKindsForCostCategory(costCategory, workTypeName) {
   if (costCategory !== "施工") return [];
-  return Object.freeze(["overhead", "block_total"]);
+  if (workTypeShowsOverheadFooter(workTypeName)) {
+    return Object.freeze(["overhead", "block_total"]);
+  }
+  return Object.freeze(["block_total"]);
 }
 
 // R-12: 法定福利費の対象費目（name1 厳密一致。外注労務費は含めない）。
@@ -356,7 +363,7 @@ export function createDetailBlockModel({
     return numbers;
   }
 
-  // 施工: 諸経費 = 明細合計×10%（費目「諸経費」は母数から除く）。法定福利は自動しない。
+  // 施工かつ対象工種: 諸経費 = 外注費明細合計×10%（費目「諸経費」は計から除く）。
   function computedTotals(block) {
     const overheadBaseAmounts = [];
     const billedAmounts = [];
@@ -366,10 +373,13 @@ export function createDetailBlockModel({
       if (amount === null) return;
       if (himoku === "諸経費") return;
       billedAmounts.push(amount);
-      overheadBaseAmounts.push(amount);
+      if (isOverheadBaseHimoku(himoku)) overheadBaseAmounts.push(amount);
     });
     const detailSum = billedAmounts.length ? sum(billedAmounts) : null;
-    if (block.costCategory !== "施工") {
+    const showOverhead =
+      block.costCategory === "施工" &&
+      workTypeShowsOverheadFooter(block.workTypeName);
+    if (!showOverhead) {
       return {
         subtotal: detailSum,
         total: detailSum ?? "0",
@@ -378,7 +388,9 @@ export function createDetailBlockModel({
         legalWelfare: null,
       };
     }
-    const overheadBase = overheadBaseAmounts.length ? detailSum : null;
+    const overheadBase = overheadBaseAmounts.length
+      ? sum(overheadBaseAmounts)
+      : null;
     const overhead = overheadFromDetails(overheadBaseAmounts, OVERHEAD_RATE);
     return {
       ...blockTotals({
@@ -429,7 +441,7 @@ export function createDetailBlockModel({
         ),
       ),
       footer: Object.freeze({
-        // R-11: 諸経費は自動(読取専用)。根拠(base=明細合計, rate=10%)も公開。
+        // R-11: 諸経費は自動(読取専用)。根拠(base=外注費明細合計, rate=10%)も公開。
         overhead: Object.freeze({
           rowKey: block.footer.overhead.rowKey,
           amount: totals.overhead,

@@ -82,9 +82,9 @@ test("detail rows carry the ROUND(qty×price) amount", () => {
   const record = detailRowToRecord(detail, KEYS);
   assert.equal(record.amount.value, "15000");
   const blockTotal = rows.find((row) => row.row_kind === "block_total");
-  assert.equal(detailRowToRecord(blockTotal, KEYS).amount.value, "16500");
+  assert.equal(detailRowToRecord(blockTotal, KEYS).amount.value, "15000");
   const overhead = rows.find((row) => row.row_kind === "overhead");
-  assert.equal(detailRowToRecord(overhead, KEYS).amount.value, "1500");
+  assert.equal(detailRowToRecord(overhead, KEYS).amount.value, "");
 });
 
 test("all-new rows become adds; nothing is updated or deleted", () => {

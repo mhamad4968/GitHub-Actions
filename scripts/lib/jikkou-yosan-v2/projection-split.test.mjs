@@ -4,7 +4,6 @@ import test from "node:test";
 import {
   SUMMARY_FOOTER_LEGAL_WELFARE,
   SUMMARY_FOOTER_OVERHEAD,
-  SUMMARY_MIXED_UNIT,
   buildSummaryRowKey,
   regenerateSummaryCostLines,
   summaryPersonColumnVisible,
@@ -99,8 +98,8 @@ test("split: 同じキーは合算し、単位が揃えば数量合計・単価�
   assert.equal(rows[0].summary_person_name, "");
 });
 
-test("split: 単位混在は 式 × 1 × 金額合計", () => {
-  const [row] = regenerateSummaryCostLines([
+test("split: 単位が違うと同じ費目・種別でも別行", () => {
+  const rows = regenerateSummaryCostLines([
     splitBlock({
       total: "30",
       lines: [
@@ -121,10 +120,19 @@ test("split: 単位混在は 式 × 1 × 金額合計", () => {
       ],
     }),
   ]);
-  assert.equal(row.summary_unit, SUMMARY_MIXED_UNIT);
-  assert.equal(row.summary_qty, "1");
-  assert.equal(row.summary_unit_price, "30");
-  assert.equal(row.summary_amount_excl_tax, "30");
+  assert.equal(rows.length, 2);
+  assert.deepEqual(
+    rows.map((row) => [
+      row.summary_unit,
+      row.summary_qty,
+      row.summary_unit_price,
+      row.summary_amount_excl_tax,
+    ]),
+    [
+      ["缶", "1", "10", "10"],
+      ["L", "2", "10", "20"],
+    ],
+  );
 });
 
 test("split: 施工は諸経費フッタを足す。法定福利は明細だけ。費目諸経費の明細は出さない", () => {
@@ -237,6 +245,7 @@ test("split: 備考は summary_row_key 単位。隣の行へ流さない", () =>
     blockId: "blk-a",
     himoku: "材料費",
     typeName: "塗料",
+    unit: "缶",
   });
   const rows = regenerateSummaryCostLines(
     [
@@ -373,7 +382,7 @@ test("split: ブロック内は費目×種別で合算。会社・人が違っ�
   assert.equal(summaryPersonColumnVisible("仮設機械経費", "レンタル"), false);
 });
 
-test("split: 旧6欄 row_key の備考は新4欄へ引き継ぎ。衝突は先の備考", () => {
+test("split: 旧6欄 row_key の備考は単位空の新キーへ引き継ぎ。衝突は先の備考", () => {
   const rows = regenerateSummaryCostLines(
     [
       splitBlock({
@@ -385,7 +394,7 @@ test("split: 旧6欄 row_key の備考は新4欄へ引き継ぎ。衝突は先�
             lineVendorName: "A社",
             linePersonName: "山田",
             amount: "1",
-            unit: "人",
+            unit: "",
             quantity: "1",
           },
           {
@@ -394,7 +403,7 @@ test("split: 旧6欄 row_key の備考は新4欄へ引き継ぎ。衝突は先�
             lineVendorName: "B社",
             linePersonName: "佐藤",
             amount: "2",
-            unit: "人",
+            unit: "",
             quantity: "1",
           },
         ],
@@ -422,6 +431,64 @@ test("split: 旧6欄 row_key の備考は新4欄へ引き継ぎ。衝突は先�
   assert.equal(rows.length, 1);
   assert.equal(rows[0].summary_note, "先メモ");
   assert.equal(rows[0].summary_amount_excl_tax, "3");
+});
+
+test("split: 単位が空同士は同じ単位として合算", () => {
+  const [row] = regenerateSummaryCostLines([
+    splitBlock({
+      total: "30",
+      lines: [
+        { himoku: "材料費", typeName: "回数", unit: "", quantity: "1", amount: "10" },
+        { himoku: "材料費", typeName: "回数", unit: "", quantity: "2", amount: "20" },
+      ],
+    }),
+  ]);
+  assert.equal(row.summary_unit, "");
+  assert.equal(row.summary_qty, "3");
+  assert.equal(row.summary_amount_excl_tax, "30");
+});
+
+test("split: 対象外工種は諸経費行を出さない", () => {
+  const rows = regenerateSummaryCostLines([
+    splitBlock({
+      workTypeName: "材料費",
+      total: "1100",
+      overheadAmount: "100",
+      lines: [
+        {
+          himoku: "材料費",
+          typeName: "塗料",
+          amount: "1000",
+          unit: "缶",
+          quantity: "1",
+        },
+      ],
+    }),
+  ]);
+  assert.deepEqual(
+    rows.map((row) => row.summary_line_type),
+    ["塗料"],
+  );
+});
+
+test("split: 画面の（塗）は保存名として照合し諸経費を出す", () => {
+  const rows = regenerateSummaryCostLines([
+    splitBlock({
+      workTypeName: "（塗）塗装工事",
+      total: "1100",
+      overheadAmount: "100",
+      lines: [
+        {
+          himoku: "外注費",
+          typeName: "材料費",
+          amount: "1000",
+          unit: "式",
+          quantity: "1",
+        },
+      ],
+    }),
+  ]);
+  assert.ok(rows.some((row) => row.summary_line_type === SUMMARY_FOOTER_OVERHEAD));
 });
 
 test("split: lines が無いブロックは現行どおり 1 行のまま", () => {

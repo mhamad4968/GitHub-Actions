@@ -92,16 +92,13 @@ test("行会社ありならブロック取引先は－", () => {
   );
 });
 
-test("保存警告は止めない・空行は無視", () => {
+test("保存警告は会社空では出さない。不整合だけ残す", () => {
   const emptyBlock = {
     workTypeName: "塗装工事",
     vendorName: "",
     detailRows: [{ name1: null }],
   };
-  assert.match(
-    jy2CollectUchiwakeSaveWarnings([emptyBlock])[0],
-    /ブロックの会社名/,
-  );
+  assert.deepEqual(jy2CollectUchiwakeSaveWarnings([emptyBlock]), []);
   const mixed = {
     workTypeName: "レンタル",
     vendorName: "－",
@@ -110,10 +107,15 @@ test("保存警告は止めない・空行は無視", () => {
       { name1: "外注費", name2: "仮設機械経費", unit: "式" },
     ],
   };
-  const warns = jy2CollectUchiwakeSaveWarnings([mixed]);
-  assert.equal(
-    warns.some((w) => /行2: 会社名が空/.test(w)),
-    true,
+  assert.deepEqual(jy2CollectUchiwakeSaveWarnings([mixed]), []);
+  const mismatch = {
+    workTypeName: "塗装工事",
+    vendorName: "元請け",
+    detailRows: [{ name1: "外注費", name2: "労務費", lineVendorName: "A社" }],
+  };
+  assert.match(
+    jy2CollectUchiwakeSaveWarnings([mismatch])[0],
+    /行に会社名があるためブロックの取引先を「－」/,
   );
 });
 

@@ -1,5 +1,6 @@
 import { displayInteger, ratio, taxInclusive } from "./calc.mjs";
 import { add, divideAndRound, sum } from "./decimal.mjs";
+import { workTypeShowsOverheadFooter } from "./overhead-work-types.mjs";
 
 // P-21/P-33/P-39 (schema §3.3): App2 block_total is the single source of truth.
 // summary_cost_lines is a regenerable display cache in App1. Amounts must never
@@ -26,26 +27,28 @@ function textOrEmpty(value) {
   return presentValue(value) ? String(value).trim() : "";
 }
 
-/** 2026-09-08 統括原価行 — 備考引き継ぎ用。ジャンプ用 ID とは別。 */
-export const SUMMARY_ROW_KEY_PARTS = 4;
+/** 2026-09-12 統括原価行 — 備考引き継ぎ用。ジャンプ用 ID とは別。 */
+export const SUMMARY_ROW_KEY_PARTS = 5;
 export const SUMMARY_ROW_KEY_PARTS_LEGACY = 6;
 
 export function buildSummaryRowKey({
   blockId,
   himoku = "",
   typeName = "",
+  unit = "",
   footerKind = "",
 }) {
   return [
     textOrEmpty(blockId),
     textOrEmpty(himoku),
     textOrEmpty(typeName),
+    textOrEmpty(unit),
     textOrEmpty(footerKind),
   ].join("\t");
 }
 
 /**
- * 読取時に 4 欄へ正規化。旧 6 欄（会社・氏名込み）は落とす。
+ * 読取時に 5 欄へ正規化。旧 6 欄（会社・氏名込み）と旧 4 欄は単位空で埋める。
  * kintone SINGLE_LINE_TEXT が末尾タブを落とすので不足欄は空で埋める。
  */
 export function normalizeSummaryRowKey(key) {
@@ -55,16 +58,21 @@ export function normalizeSummaryRowKey(key) {
       textOrEmpty(parts[0]),
       textOrEmpty(parts[1]),
       textOrEmpty(parts[2]),
+      "",
       textOrEmpty(parts[5]),
     ].join("\t");
   }
   if (parts.length === 5) {
-    return [
-      textOrEmpty(parts[0]),
-      textOrEmpty(parts[1]),
-      textOrEmpty(parts[2]),
-      "",
-    ].join("\t");
+    if (parts[3] === "overhead") {
+      return [
+        textOrEmpty(parts[0]),
+        textOrEmpty(parts[1]),
+        textOrEmpty(parts[2]),
+        "",
+        "overhead",
+      ].join("\t");
+    }
+    return parts.slice(0, 5).map(textOrEmpty).join("\t");
   }
   if (parts.length === 4) {
     if (parts[3] === "overhead") {
@@ -72,6 +80,7 @@ export function normalizeSummaryRowKey(key) {
         textOrEmpty(parts[0]),
         textOrEmpty(parts[1]),
         textOrEmpty(parts[2]),
+        "",
         "overhead",
       ].join("\t");
     }
@@ -80,6 +89,7 @@ export function normalizeSummaryRowKey(key) {
       textOrEmpty(parts[1]),
       textOrEmpty(parts[2]),
       "",
+      textOrEmpty(parts[3]),
     ].join("\t");
   }
   while (parts.length < SUMMARY_ROW_KEY_PARTS) parts.push("");
@@ -121,15 +131,18 @@ function numericQuantity(value) {
 function aggregateQtyUnitPrice(unitSamples, qtySamples, amountExcl) {
   const units = unitSamples.map((unit) => textOrEmpty(unit));
   const firstUnit = units[0] || "";
-  const allUnitsSame = firstUnit !== "" && units.every((unit) => unit === firstUnit);
+  const allUnitsSame = units.every((unit) => unit === firstUnit);
   const qtys = qtySamples.map((qty) => numericQuantity(qty));
   const allQtyNumeric = qtys.every((qty) => qty !== null);
-  if (!allUnitsSame || !allQtyNumeric) {
-    return { unit: SUMMARY_MIXED_UNIT, qty: "1", unitPrice: amountExcl };
+  if (!allUnitsSame) {
+    return { unit: firstUnit, qty: "1", unitPrice: amountExcl };
+  }
+  if (!allQtyNumeric) {
+    return { unit: firstUnit, qty: "1", unitPrice: amountExcl };
   }
   const qtyTotal = sum(qtys);
   if (!presentValue(qtyTotal) || qtyTotal === "0") {
-    return { unit: SUMMARY_MIXED_UNIT, qty: "1", unitPrice: amountExcl };
+    return { unit: firstUnit, qty: "1", unitPrice: amountExcl };
   }
   return {
     unit: firstUnit,
@@ -290,10 +303,12 @@ function projectSplitBlock(block, blockNo, options) {
     if (!himoku && !typeName && amount === null) {
       continue;
     }
+    const unit = textOrEmpty(line.unit);
     const key = buildSummaryRowKey({
       blockId: block.stableBlockId,
       himoku,
       typeName,
+      unit,
       footerKind: "",
     });
     let group = indexByKey.get(key);
@@ -301,6 +316,7 @@ function projectSplitBlock(block, blockNo, options) {
       group = {
         himoku,
         typeName,
+        unit,
         materials: [],
         units: [],
         qtys: [],
@@ -323,6 +339,7 @@ function projectSplitBlock(block, blockNo, options) {
       blockId: block.stableBlockId,
       himoku: group.himoku,
       typeName: group.typeName,
+      unit: group.unit,
       footerKind: "",
     });
     const previous = previousByRowKey.get(normalizeSummaryRowKey(rowKey)) || {};
@@ -346,13 +363,17 @@ function projectSplitBlock(block, blockNo, options) {
     );
   });
 
-  if (block.costCategory === "施工") {
+  if (
+    block.costCategory === "施工" &&
+    workTypeShowsOverheadFooter(block.workTypeName)
+  ) {
     const amount = displayInteger(block.overheadAmount);
     if (amount !== null && amount !== "0") {
       const rowKey = buildSummaryRowKey({
         blockId: block.stableBlockId,
         himoku: "",
         typeName: SUMMARY_FOOTER_OVERHEAD,
+        unit: "",
         footerKind: "overhead",
       });
       const previous = previousByRowKey.get(normalizeSummaryRowKey(rowKey)) || {};
@@ -383,7 +404,7 @@ function projectSplitBlock(block, blockNo, options) {
 // Read-only output: rows are frozen and contain only summary_* field codes.
 // - retired blocks are excluded (P-39: current budget 0)
 // - 内訳№ / sort order are renumbered from display order (U14)
-// - mixed-unit blocks project as 式 × 1 × block_total (Q8)
+// - split groups by unit; mixed units are separate rows (2026-09-12)
 // - previousLines carries 備考（split は summary_row_key、legacy は block id）
 // - `block.lines` があるときだけ 2026-09-05 複合キー分割（段階1）。無いときは現行1行。
 export function regenerateSummaryCostLines(

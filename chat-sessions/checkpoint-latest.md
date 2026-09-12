@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-12 11:10 JST — 予実G0昼区切り。夜は1件ずつ。実装しない。
-**次の1手**: 夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。
+**最終更新**: 2026-09-12 20:50 JST — 内訳・統括は実装済（deploy は目視後）。原価コードは明日。
+**次の1手**: 浜田が 756 内訳・統括を目視。deploy してよいかは目視後に1問。原価（予実）コードは明日。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）夜確認**
 **Git**: **`d218982c`** = `origin/main` — push 済
 **closeStatus**: **partial**（夜へ。日終わり⑦ではない）
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の実装GO（夜の1件ずつ決定のあと）。1番は未決
+**GO待ち**: 予実の **実装GOは明日**。内訳・統括は実装済・**LIVE deploy は目視後**。夜§13.1は1–7決
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -47,6 +47,21 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-09-12
+
+### 2026-09-12 夜（進行中 — 予実G0 1件ずつ）
+- §13.1 の1番 **決**: 空に戻したら円の採用は実績予想に戻す。入力ミスは正しい数字へ修正
+- §13.1 の2番 **決**: 実績がある月の実績予想は無効（未来の見込み）。数字は残す
+- §13.1 の3番 **決**: 契約が違うとき同じ会社を2行可。集計は合算
+- §13.1 の4番 **決**: 当初は版確定まで（今まで通り）。次の版は1つ前をコピー（当初含む）。集計に別ボタンは置かない
+- §13.1 の5番 **決**: マスタに工種が増えたら既存工事の集計にも行を足す（リスト選択のため）
+- §13.1 の6番 **決**: 現予算は入力者判断。月は横12。レイアウトは案 Excel を正
+- §13.1 の7番 **決**: 旧予実データは破棄。新しい表へ移さない
+- **予実の実装は明日。今日はしない。** 予実 customize なし
+- AIチーム第2回 **条件付きGO**（§4.7）。Kimi 404
+- 統括 **単位が違うと分ける**。同じ単位は合算。会社名・氏名は空でも保存可。諸経費は塗装工事〜追加工事⑤のみ
+- 諸経費対象 **決**: 10200塗装工事〜14500追加工事⑤（軌道・調査設計・外注試験・交通規制含む）
+- AIチーム第3回 **条件付きGO**。諸経費の母数は **外注費の明細だけ**（決）
+- 内訳・統括 **実装済**（BUILD `2026-09-12-ver02-summary-unit-split`）。LIVE deploy は目視後。原価コードは明日
 
 ### 2026-09-12 昼（partial — 予実G0 → 夜）
 - 756 予実を工種単位で G0。正本 commit `fba5f27e`。customize/deploy なし

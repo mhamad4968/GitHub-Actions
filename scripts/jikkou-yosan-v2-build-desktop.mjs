@@ -38,6 +38,7 @@ const sourceNames = [
   "executor.mjs",
   "client-adapter.mjs",
   "ui-model.mjs",
+  "overhead-work-types.mjs",
   "projection.mjs",
   "projection-consistency.mjs",
   "contract-salary-model.mjs",
