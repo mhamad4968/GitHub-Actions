@@ -6495,3 +6495,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize / 予実 customize は実装GOまで
 
 ---
+
+### 2026-09-12 JST — **756一時保存 CB_NO02 ACL復帰**
+
+**要約**: 756/757/758 の everyone が閲覧のみだったため一時保存 bulkRequest が CB_NO02。一般書込 ACL を復帰。JS BUILD 不変。予実G0テーブルは未着手。
+
+**話したこと**: 一時保存が CB_NO02。原因は app ACL。予実保存も同じ権限で落ちる。735/736 は触らない。目視は一般ユーザで。
+
+**次の1手**: 浜田が一般ユーザで 756 一時保存を目視。その後 予実 G0 実装GO。
+
+**Git**: `15d4c1cc` — 
+
+**BUILD**: 756 2026-09-12-ver02-workdesc-wider rev367 / 757 rev33 / 758 rev31
+
+**GO待ち**: 一時保存目視。予実実装GOは別
+
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA実deploy / 閉済9件 / 設定タブ / 757 customize / 予実 customize は実装GOまで
+
+---

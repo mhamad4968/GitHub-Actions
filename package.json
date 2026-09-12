@@ -203,6 +203,7 @@
     "jikkou-yosan:v2-phasec:test": "node --test scripts/lib/jikkou-yosan-v2/phasec-executor.test.mjs scripts/lib/jikkou-yosan-v2/phasec-adapter.test.mjs scripts/lib/jikkou-yosan-v2/phasec-save-model.test.mjs scripts/lib/jikkou-yosan-v2/phasec-remaining.test.mjs scripts/lib/jikkou-yosan-v2/phasec-list-actuals.test.mjs",
     "jikkou-yosan:v2-open-admin-write-acl": "node scripts/jikkou-yosan-v2-open-admin-write-acl.mjs",
     "jikkou-yosan:v2-open-general-acl": "node scripts/jikkou-yosan-v2-open-general-acl.mjs",
+    "verify:jikkou-yosan-v2-write-acl": "node scripts/verify-jikkou-yosan-v2-write-acl.mjs",
     "jikkou-yosan:v2-seed-test-record": "node scripts/jikkou-yosan-v2-seed-test-record.mjs",
     "jikkou-yosan:v2-migrate-from-736": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-migrate-from-736.mjs",
     "cio:quality-gate": "node scripts/cio-quality-gate.mjs",
