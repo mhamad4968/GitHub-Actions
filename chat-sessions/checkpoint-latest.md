@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-12 21:18 JST — 756 総括・請負の工種説明列を拡幅。LIVE rev**366**。
-**次の1手**: 浜田が 756 総括の工種説明幅を目視。原価（予実）コードは明日。
+**最終更新**: 2026-09-12 21:20 JST — 756 内訳・統括・工種説明 LIVE rev**366** 目視OK。
+**次の1手**: 原価（予実）コードは明日。今夜の 756 内訳・統括レーンは完了。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）夜確認**
 **Git**: **`7794dfeb`** = `origin/main` — push 済
 **closeStatus**: **partial**（夜へ。日終わり⑦ではない）
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GOは明日**。内訳・統括は LIVE rev**366**・**浜田目視（工種説明幅）**。夜§13.1は1–7決
+**GO待ち**: 予実の **実装GOは明日**。内訳・統括は LIVE rev**366**・**目視OK**。夜§13.1は1–7決
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -61,7 +61,7 @@
 - 統括 **単位が違うと分ける**。同じ単位は合算。会社名・氏名は空でも保存可。諸経費は塗装工事〜追加工事⑤のみ
 - 諸経費対象 **決**: 10200塗装工事〜14500追加工事⑤（軌道・調査設計・外注試験・交通規制含む）
 - AIチーム第3回 **条件付きGO**。諸経費の母数は **外注費の明細だけ**（決）
-- 内訳・統括 **LIVE** BUILD `2026-09-12-ver02-workdesc-wider` rev **366**。諸経費は外注費があるときだけ（目視OK）。工種説明列を拡幅。原価コードは明日
+- 内訳・統括 **LIVE** BUILD `2026-09-12-ver02-workdesc-wider` rev **366**。諸経費（外注費があるときだけ）・工種説明幅 **目視OK**。原価コードは明日
 
 ### 2026-09-12 昼（partial — 予実G0 → 夜）
 - 756 予実を工種単位で G0。正本 commit `fba5f27e`。customize/deploy なし
