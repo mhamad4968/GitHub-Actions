@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-10 21:50 JST — 日終わり⑦。715 VL連続・756業者契約期間 目視OK。夕反省全GO（#O1 #T1 #R1 #C1 #M1 #M2）。
 **次の1手**: 濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。
 **レーン変更**: 日終わり完了
-**Git**: **`ca9b3319`** = `origin/main` — push 済（R44 parent）
+**Git**: **`fe2d2c4c`** = `origin/main` — push 済
 **closeStatus**: **closed-day**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない
 **本日状態**: **756**=`2026-09-10-ver02-vendor-contract-period` rev**363**。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -53,12 +53,14 @@
 - 756 LIVE `2026-09-10-ver02-vendor-contract-period` rev**363**。業者契約期間。目視OK
 - 夕反省全GO: #O1 目視同一ターン push / #T1 Composer / #R1 3点セット / #C1 push衝突1行 / #M1 Kimi ENOENT / #M2 schema MCP preview
 
+
 ## 2026-09-09
 
 ### 2026-09-09 夜（日終わり after-go）
 - 756 LIVE `2026-09-09-ver02-ascii-num-ime` rev**361**。数量・単価は半角で入る。目視OK
 - 夕反省全GO: #O1 目視文面 / #M1 Kimi list-models→DeepSeek / #G1 pending≠Actions
 - 9/10 関係者レビュー待ち。設定タブ駐車。共有PC金庫は後日 Desktop Word
+
 
 
 ## 2026-09-08
@@ -75,14 +77,5 @@
 
 
 
-## 2026-09-06
 
-### 2026-09-06 朝締め（756統括・本セッション）
-- 756 LIVE `2026-09-06-ver02-total-notes` rev**358**。浜田目視OK（計・境・印刷・合計行備考）
-- 実行予算は本日終わり。設定タブは駐車。Mac移行は2027-02
-- closeStatus: **closed**（本セッション締め。day-close は今夜最終ならそのとき）
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-10.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-12.md -->
