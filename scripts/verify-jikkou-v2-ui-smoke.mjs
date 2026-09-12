@@ -29,7 +29,7 @@ const checks = [
   ['給与氏名保存', /salary_person_name/],
   ['給与氏名全角空白正規化', /normalizedSalaryPersonName/],
   ['給与空白警告停止', /SALARY_PERSON_MASTER/],
-  ['総括11列', /emptyCell\.colSpan = 11/],
+  ['総括11列', /emptyCell\.colSpan = 11 \+ deltaCols/],
   ['総括種別自動列', /種別（自動）/],
   ['原価行№境ライン', /jy2-block-break>td\{border-top:1px solid #cbd5e1\}/],
   ['内訳№ごとの計', /jy2-projection-block-total/],

@@ -709,6 +709,10 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /jy2-warning/);
   assert.match(source, /createDetailBlockModel/);
   assert.match(source, /jy2RenderDetailPane/);
+  assert.match(source, /function jy2AmountDeltaCell/);
+  assert.match(source, /function jy2LoadAmountDeltaIndex/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta/);
+  assert.match(source, /金額増減（自動）/);
   // 内訳セル編集は総括を dirty 遅延（タブ表示/保存時に refreshSummary(true)）。
   assert.match(source, /refreshSummary\(false\)/);
   assert.match(source, /refreshSummary\(true\)/);
@@ -1036,6 +1040,9 @@ test("rebuild bundles detail-block-model before the UI, 736 untouched", () => {
       "DETAIL_ROW_KINDS",
       "jy2RenderDetailPane",
       "jy2DetailBlock",
+      "buildAmountDeltaIndex",
+      "compareAmountDelta",
+      "jy2AmountDeltaCell",
     ]) {
       assert.match(bundle, new RegExp(symbol));
     }

@@ -359,7 +359,7 @@ test("App 1 summary tab renders 請負/給与/投影 tables and ①⑧⑨ footer
   assert.match(source, /jy2-projection-table/);
   assert.doesNotMatch(source, /会社名（自動）/);
   assert.match(source, /種別（自動）/);
-  assert.match(source, /emptyCell.colSpan = 11/);
+  assert.match(source, /emptyCell.colSpan = 11 \+ deltaCols/);
   assert.match(source, /jy2-block-break/);
   assert.match(
     source,

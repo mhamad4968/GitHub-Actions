@@ -48,6 +48,7 @@ const sourceNames = [
   "save-model.mjs",
   "version-series-model.mjs",
   "version-copy-model.mjs",
+  "amount-delta-model.mjs",
 ];
 
 function stripEsm(source, name) {

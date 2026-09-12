@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-detail-tab-next
+  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2069,6 +2069,12 @@
       ".jy2-total-row td,.jy2-block-total-row td{background:#f5ebe0!important;color:#44372a;font-weight:700;border-color:#d4b896!important;border-top:2px solid #c4a574!important}",
       ".jy2-num{text-align:right;font-variant-numeric:tabular-nums}",
       ".jy2-amount{text-align:right;background:#F3F8FC;font-variant-numeric:tabular-nums}",
+      ".jy2-delta-cell{text-align:right;line-height:1.2;vertical-align:middle}",
+      ".jy2-delta-amt{font-weight:600;font-variant-numeric:tabular-nums}",
+      ".jy2-delta-label{display:block;font-size:11px;font-weight:500;color:#64748b}",
+      ".jy2-delta-plus{color:#0f766e}",
+      ".jy2-delta-minus{color:#b45309}",
+      ".jy2-delta-na{color:#94a3b8;font-weight:500}",
       ".jy2-input{width:100%;box-sizing:border-box;border:1px solid #e2e8f0;padding:2px 4px;background:#FFFCF3;border-radius:4px;font-size:12px}",
       ".jy2-input-ascii-num{ime-mode:disabled;-ms-ime-mode:disabled}",
       ".jy2-input:focus{border-color:#2563eb}",
@@ -2578,6 +2584,81 @@
     } catch {
       return "";
     }
+  }
+
+  function jy2ShowAmountDelta(index) {
+    return Boolean(index && index.enabled);
+  }
+
+  function jy2FormatDeltaDisplay(result) {
+    if (!result || result.kind !== "delta") return "－";
+    const body = jy2AmountDisplay(result.signed);
+    if (!body) return "－";
+    if (String(body).startsWith("-") || String(body).startsWith("+")) return body;
+    return `+${body}`;
+  }
+
+  function jy2AmountDeltaCell(documentRef, result, { showLabel = true } = {}) {
+    const td = documentRef.createElement("td");
+    td.className = "jy2-amount jy2-delta-cell";
+    if (!result) {
+      td.textContent = "";
+      return td;
+    }
+    if (result.title) td.title = result.title;
+    const amt = documentRef.createElement("span");
+    amt.className = "jy2-delta-amt";
+    if (result.kind === "delta") {
+      amt.classList.add(
+        compare(result.signed, "0") > 0 ? "jy2-delta-plus" : "jy2-delta-minus",
+      );
+      amt.textContent = jy2FormatDeltaDisplay(result);
+    } else {
+      amt.classList.add("jy2-delta-na");
+      amt.textContent = "－";
+    }
+    td.appendChild(amt);
+    if (showLabel && result.label) {
+      const lab = documentRef.createElement("span");
+      lab.className = "jy2-delta-label";
+      lab.textContent = result.label;
+      td.appendChild(lab);
+    }
+    return td;
+  }
+
+  function jy2RecordIdOf(record) {
+    const raw = jy2FieldValue(record, "$id");
+    return raw === null || raw === undefined ? "" : String(raw).trim();
+  }
+
+  async function jy2LoadAmountDeltaIndex(api, record, versions) {
+    const sourceId = String(jy2FieldValue(record, "source_record_id") || "").trim();
+    const selfId = jy2RecordIdOf(record);
+    if (!sourceId || sourceId === selfId) return null;
+    let prevParent =
+      (versions || []).find((row) => jy2RecordIdOf(row) === sourceId) || null;
+    if (!prevParent && typeof api === "function" && /^\d+$/.test(sourceId)) {
+      const response = await api("/k/v1/records.json", "GET", {
+        app: APP1_ID,
+        query: `$id = ${sourceId} limit 1`,
+      });
+      prevParent = Array.isArray(response.records) ? response.records[0] : null;
+    }
+    if (!prevParent) return null;
+    const prevVersionId = String(
+      jy2FieldValue(prevParent, "budget_version_id") || "",
+    ).trim();
+    if (!prevVersionId) return null;
+    const prevDetails = await fetchExistingDetailRows(api, APP2_ID, prevVersionId, {
+      fields: null,
+    });
+    const summaryLines = app1RecordToSummaryLines(prevParent);
+    return buildAmountDeltaIndex({
+      contractLines: (summaryLines.contractLines || []).filter((line) => line.section),
+      salaryLines: summaryLines.salaryLines || [],
+      blocks: app2RecordsToBlocks(prevDetails),
+    });
   }
 
   // D-31/D-32: 率(÷①) = 金額÷①。画面ラベルは「消化率」（浜田 2026-07-23）。
@@ -8383,8 +8464,10 @@
 
   // 請負金額 (§7.1a): 施工/保安 bands, amount = auto decimal shown as integer,
   // 消化率列（÷①）= 行金額÷①（D-31/D-32: ①=0 → 0, 金額なし → 「－」）.
-  function jy2ContractTable(documentRef, summaryModel, editable, rerender) {
+  function jy2ContractTable(documentRef, summaryModel, editable, rerender, amountDeltaIndex) {
     const snapshot = summaryModel.snapshot();
+    const showDelta = jy2ShowAmountDelta(amountDeltaIndex);
+    const deltaCols = showDelta ? 1 : 0;
     const rateTo1 = (amount) =>
       amount === null || amount === undefined
         ? null
@@ -8392,20 +8475,18 @@
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-contract-table";
     const body = documentRef.createElement("tbody");
-    body.appendChild(
-      jy2HeadRow(documentRef, [
-        "区分",
-        "契約工種（選択）",
-        "工種説明（入力）",
-        "単位（選択）",
-        "数量（入力）",
-        "単価（入力）",
-        "金額（自動）",
-        "消化率（自動）",
-        "備考（入力）",
-        "",
-      ]),
-    );
+    const contractHeads = [
+      "区分",
+      "契約工種（選択）",
+      "工種説明（入力）",
+      "単位（選択）",
+      "数量（入力）",
+      "単価（入力）",
+      "金額（自動）",
+    ];
+    if (showDelta) contractHeads.push("金額増減（自動）");
+    contractHeads.push("消化率（自動）", "備考（入力）", "");
+    body.appendChild(jy2HeadRow(documentRef, contractHeads));
 
     const sectionTotals = {
       施工: snapshot.totals.construction,
@@ -8415,7 +8496,7 @@
       const bandRow = documentRef.createElement("tr");
       bandRow.className = "jy2-band-row";
       const bandHead = jy2Cell(documentRef, "th", "", section);
-      bandHead.colSpan = 9;
+      bandHead.colSpan = 9 + deltaCols;
       bandRow.appendChild(bandHead);
       const bandAction = jy2Cell(documentRef, "th", "", "");
       if (editable) {
@@ -8478,6 +8559,18 @@
           row.appendChild(
             jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
           );
+          if (showDelta) {
+            row.appendChild(
+              jy2AmountDeltaCell(
+                documentRef,
+                lookupAmountDelta(amountDeltaIndex, "contract", line.rowKey, {
+                  quantity: line.quantity,
+                  unitPrice: line.unitPrice,
+                  amount: line.amount,
+                }),
+              ),
+            );
+          }
           row.appendChild(
             jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(line.amount))),
           );
@@ -8513,6 +8606,18 @@
           row.appendChild(
             jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
           );
+          if (showDelta) {
+            row.appendChild(
+              jy2AmountDeltaCell(
+                documentRef,
+                lookupAmountDelta(amountDeltaIndex, "contract", line.rowKey, {
+                  quantity: line.quantity,
+                  unitPrice: line.unitPrice,
+                  amount: line.amount,
+                }),
+              ),
+            );
+          }
           row.appendChild(
             jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(line.amount))),
           );
@@ -8535,6 +8640,19 @@
           jy2AmountDisplay(sectionTotals[section]),
         ),
       );
+      if (showDelta) {
+        totalRow.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupTotalsDelta(
+              amountDeltaIndex,
+              section === "施工" ? "construction" : "safety",
+              sectionTotals[section],
+            ),
+            { showLabel: false },
+          ),
+        );
+      }
       const totalTail = jy2Cell(documentRef, "td", "", "");
       totalTail.colSpan = 3;
       totalRow.appendChild(totalTail);
@@ -8544,7 +8662,7 @@
     const grandRow = documentRef.createElement("tr");
     grandRow.className = "jy2-total-row jy2-contract-total-1";
     const grandLabel = jy2Cell(documentRef, "td", "", "合計 ①");
-    grandLabel.colSpan = 5;
+    grandLabel.colSpan = 6;
     grandRow.appendChild(grandLabel);
     grandRow.appendChild(
       jy2Cell(
@@ -8554,6 +8672,15 @@
         jy2AmountDisplay(snapshot.totals.total1),
       ),
     );
+    if (showDelta) {
+      grandRow.appendChild(
+        jy2AmountDeltaCell(
+          documentRef,
+          lookupTotalsDelta(amountDeltaIndex, "total1", snapshot.totals.total1),
+          { showLabel: false },
+        ),
+      );
+    }
     const grandTail = jy2Cell(documentRef, "td", "", "");
     grandTail.colSpan = 3;
     grandRow.appendChild(grandTail);
@@ -8566,23 +8693,24 @@
 
   // 給与手当 (D-30/X7/Imp-04): 総括直入力。消費税率・金額税込列は非表示（依頼者 2026-07-29）。
   // 氏名は専用列（複数人は行追加運用）。at least 1 row.
-  function jy2SalaryTable(documentRef, summaryModel, editable, rerender) {
+  function jy2SalaryTable(documentRef, summaryModel, editable, rerender, amountDeltaIndex) {
     const snapshot = summaryModel.snapshot();
+    const showDelta = jy2ShowAmountDelta(amountDeltaIndex);
+    const deltaCols = showDelta ? 1 : 0;
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-salary-table";
     const body = documentRef.createElement("tbody");
-    body.appendChild(
-      jy2HeadRow(documentRef, [
-        "名称（選択）",
-        "氏名（選択）",
-        "単位（選択）",
-        "数量（入力）",
-        "単価（入力）",
-        "金額（自動）",
-        "備考（入力）",
-        "",
-      ]),
-    );
+    const salaryHeads = [
+      "名称（選択）",
+      "氏名（選択）",
+      "単位（選択）",
+      "数量（入力）",
+      "単価（入力）",
+      "金額（自動）",
+    ];
+    if (showDelta) salaryHeads.push("金額増減（自動）");
+    salaryHeads.push("備考（入力）", "");
+    body.appendChild(jy2HeadRow(documentRef, salaryHeads));
 
     for (const line of snapshot.salaryLines) {
       const row = documentRef.createElement("tr");
@@ -8635,6 +8763,18 @@
         row.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
+        if (showDelta) {
+          row.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupAmountDelta(amountDeltaIndex, "salary", line.rowKey, {
+                quantity: line.quantity,
+                unitPrice: line.unitPrice,
+                amount: line.amount,
+              }),
+            ),
+          );
+        }
         row.appendChild(note);
         const action = jy2Cell(documentRef, "td", "", "");
         action.appendChild(
@@ -8667,6 +8807,18 @@
         row.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(line.amount)),
         );
+        if (showDelta) {
+          row.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupAmountDelta(amountDeltaIndex, "salary", line.rowKey, {
+                quantity: line.quantity,
+                unitPrice: line.unitPrice,
+                amount: line.amount,
+              }),
+            ),
+          );
+        }
         row.appendChild(jy2Cell(documentRef, "td", "", line.note));
         row.appendChild(jy2Cell(documentRef, "td", "", ""));
       }
@@ -8686,6 +8838,19 @@
         jy2AmountDisplay(summaryModel.snapshot().totals.salary),
       ),
     );
+    if (showDelta) {
+      totalRow.appendChild(
+        jy2AmountDeltaCell(
+          documentRef,
+          lookupTotalsDelta(
+            amountDeltaIndex,
+            "salary",
+            summaryModel.snapshot().totals.salary,
+          ),
+          { showLabel: false },
+        ),
+      );
+    }
     const totalTail = jy2Cell(documentRef, "td", "", "");
     totalTail.colSpan = 2;
     totalRow.appendChild(totalTail);
@@ -8693,7 +8858,7 @@
 
     const footRow = documentRef.createElement("tr");
     const footCell = jy2Cell(documentRef, "td", "", "");
-    footCell.colSpan = 8;
+    footCell.colSpan = 8 + deltaCols;
     if (editable) {
       footCell.appendChild(
         jy2RowButton(documentRef, "行追加", () => {
@@ -8824,25 +8989,28 @@
     totals = null,
     totalNotes = null,
     onTotalNotePatch = null,
+    amountDeltaIndex = null,
   ) {
+    const showDelta = jy2ShowAmountDelta(amountDeltaIndex);
+    const deltaCols = showDelta ? 1 : 0;
     const table = documentRef.createElement("table");
     table.className = "jy2-table jy2-projection-table";
     const body = documentRef.createElement("tbody");
-    body.appendChild(
-      jy2HeadRow(documentRef, [
-        "内訳№（自動）",
-        "区分（自動）",
-        "工種番号（自動）",
-        "システム工種（自動）",
-        "種別（自動）",
-        "材料（自動）",
-        "単位（自動）",
-        "数量（自動）",
-        "単価（自動）",
-        "金額（自動）",
-        "備考（入力）",
-      ]),
-    );
+    const projectionHeads = [
+      "内訳№（自動）",
+      "区分（自動）",
+      "工種番号（自動）",
+      "システム工種（自動）",
+      "種別（自動）",
+      "材料（自動）",
+      "単位（自動）",
+      "数量（自動）",
+      "単価（自動）",
+      "金額（自動）",
+    ];
+    if (showDelta) projectionHeads.push("金額増減（自動）");
+    projectionHeads.push("備考（入力）");
+    body.appendChild(jy2HeadRow(documentRef, projectionHeads));
     if (projectionRows.length === 0) {
       const emptyRow = documentRef.createElement("tr");
       const emptyCell = jy2Cell(
@@ -8851,7 +9019,7 @@
         "jy2-empty",
         "内訳ブロックなし（内訳タブで追加すると自動反映されます）",
       );
-      emptyCell.colSpan = 11;
+      emptyCell.colSpan = 11 + deltaCols;
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
     }
@@ -8919,6 +9087,23 @@
           jy2AmountDisplay(line.summary_amount_excl_tax),
         ),
       );
+      if (showDelta) {
+        row.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupAmountDelta(
+              amountDeltaIndex,
+              "projection",
+              line.summary_row_key || "",
+              {
+                quantity: line.summary_qty,
+                unitPrice: line.summary_unit_price,
+                amount: line.summary_amount_excl_tax,
+              },
+            ),
+          ),
+        );
+      }
       const noteCell = jy2Cell(documentRef, "td", "", "");
       if (editable) {
         noteCell.appendChild(
@@ -8960,6 +9145,21 @@
       );
       row.appendChild(label);
       row.appendChild(amountCell);
+      if (showDelta) {
+        row.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupAmountDelta(
+              amountDeltaIndex,
+              "projectionKei",
+              blockId,
+              { amount: jy2SumProjectionAmounts(groupLines) },
+              { labels: false },
+            ),
+            { showLabel: false },
+          ),
+        );
+      }
       const keiKey = jy2KeiNoteKey(groupLines);
       const keiNote =
         keiKey && totalNotes && totalNotes.kei ? totalNotes.kei[keiKey] || "" : "";
@@ -8995,7 +9195,7 @@
           onTotalNotePatch({ field, value });
         }
       };
-      const appendCostTotal = (label, amount, noteField) => {
+      const appendCostTotal = (label, amount, noteField, totalsField) => {
         const totalRow = documentRef.createElement("tr");
         totalRow.className = "jy2-total-row";
         const totalLabel = jy2Cell(documentRef, "td", "", label);
@@ -9004,6 +9204,15 @@
         totalRow.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(amount)),
         );
+        if (showDelta) {
+          totalRow.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupTotalsDelta(amountDeltaIndex, totalsField, amount),
+              { showLabel: false },
+            ),
+          );
+        }
         totalRow.appendChild(
           jy2TotalNoteCell(
             documentRef,
@@ -9014,30 +9223,44 @@
         );
         body.appendChild(totalRow);
       };
-      appendCostTotal("原価・施工計", totals.costConstruction, "costConstruction");
-      appendCostTotal("原価・保安計", totals.costSafety, "costSafety");
+      appendCostTotal("原価・施工計", totals.costConstruction, "costConstruction", "costConstruction");
+      appendCostTotal("原価・保安計", totals.costSafety, "costSafety", "costSafety");
+      const costGrand = add(
+        totals.costConstruction == null || totals.costConstruction === ""
+          ? "0"
+          : String(totals.costConstruction),
+        totals.costSafety == null || totals.costSafety === ""
+          ? "0"
+          : String(totals.costSafety),
+      );
       const grand = documentRef.createElement("tr");
       grand.className = "jy2-total-row jy2-grand-total-row";
       const grandLabel = jy2Cell(documentRef, "td", "", "原価行合計");
       grandLabel.colSpan = 9;
       grand.appendChild(grandLabel);
       grand.appendChild(
-        jy2Cell(
-          documentRef,
-          "td",
-          "jy2-amount",
-          jy2AmountDisplay(
-            add(
-              totals.costConstruction == null || totals.costConstruction === ""
-                ? "0"
-                : String(totals.costConstruction),
-              totals.costSafety == null || totals.costSafety === ""
-                ? "0"
-                : String(totals.costSafety),
-            ),
-          ),
-        ),
+        jy2Cell(documentRef, "td", "jy2-amount", jy2AmountDisplay(costGrand)),
       );
+      if (showDelta) {
+        const prevCostGrand =
+          amountDeltaIndex && amountDeltaIndex.totals
+            ? add(
+                amountDeltaIndex.totals.costConstruction || "0",
+                amountDeltaIndex.totals.costSafety || "0",
+              )
+            : null;
+        grand.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            compareAmountDelta(
+              { amount: costGrand },
+              prevCostGrand == null ? null : { amount: prevCostGrand },
+              { labels: false },
+            ),
+            { showLabel: false },
+          ),
+        );
+      }
       grand.appendChild(
         jy2TotalNoteCell(
           documentRef,
@@ -9054,7 +9277,8 @@
   }
 
   // D-31 + Ver.01 区分別サマリー: ①⑧⑨主表示＋区分マトリクス（同テイスト）
-  function jy2SummaryFooter(documentRef, totals) {
+  function jy2SummaryFooter(documentRef, totals, amountDeltaIndex) {
+    const showDelta = jy2ShowAmountDelta(amountDeltaIndex);
     const rateTo1 = (amount) => ratio(amount, totals.total1, { zero: "zero" });
     const profitOf = (sales, cost) => subtract(sales || "0", cost || "0");
     const profitRate = (sales, cost) =>
@@ -9075,24 +9299,40 @@
     const keys = documentRef.createElement("table");
     keys.className = "jy2-budget-summary-keys";
     const keysBody = documentRef.createElement("tbody");
-    keysBody.appendChild(jy2HeadRow(documentRef, ["項目", "金額（税抜）", "消化率"]));
+    keysBody.appendChild(
+      jy2HeadRow(
+        documentRef,
+        showDelta
+          ? ["項目", "金額（税抜）", "金額増減", "消化率"]
+          : ["項目", "金額（税抜）", "消化率"],
+      ),
+    );
     const keyRows = [
-      ["① 請負金額合計", totals.total1, "jy2-key-row"],
-      ["請負・施工計", totals.construction, "jy2-sub-row"],
-      ["請負・保安計", totals.safety, "jy2-sub-row"],
-      ["原価・施工計", totals.costConstruction, "jy2-sub-row"],
-      ["原価・保安計", totals.costSafety, "jy2-sub-row"],
-      ["給与計", totals.salary, "jy2-sub-row"],
-      ["⑧ 工事原価合計", totals.total8, "jy2-key-row"],
-      ["⑨ 粗利（①－⑧）", totals.profit9, "jy2-key-row"],
+      ["① 請負金額合計", totals.total1, "jy2-key-row", "total1"],
+      ["請負・施工計", totals.construction, "jy2-sub-row", "construction"],
+      ["請負・保安計", totals.safety, "jy2-sub-row", "safety"],
+      ["原価・施工計", totals.costConstruction, "jy2-sub-row", "costConstruction"],
+      ["原価・保安計", totals.costSafety, "jy2-sub-row", "costSafety"],
+      ["給与計", totals.salary, "jy2-sub-row", "salary"],
+      ["⑧ 工事原価合計", totals.total8, "jy2-key-row", "total8"],
+      ["⑨ 粗利（①－⑧）", totals.profit9, "jy2-key-row", "profit9"],
     ];
-    for (const [label, amount, className] of keyRows) {
+    for (const [label, amount, className, totalsField] of keyRows) {
       const row = documentRef.createElement("tr");
       row.className = className;
       row.appendChild(jy2Cell(documentRef, "td", "jy2-budget-col-label", label));
       row.appendChild(
         jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(amount)),
       );
+      if (showDelta) {
+        row.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupTotalsDelta(amountDeltaIndex, totalsField, amount),
+            { showLabel: false },
+          ),
+        );
+      }
       row.appendChild(
         jy2Cell(documentRef, "td", "jy2-num", jy2Percent(rateTo1(amount))),
       );
@@ -9713,6 +9953,7 @@
     projectionManual,
     totalNotes,
     persistTotalNotes,
+    amountDeltaIndex,
   ) {
     const scroll = jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
@@ -9727,6 +9968,7 @@
         projectionManual,
         totalNotes,
         persistTotalNotes,
+        amountDeltaIndex,
       );
       if (onMutated) onMutated();
     };
@@ -9764,7 +10006,7 @@
     const scroller = jy2MountPaneHScroll(documentRef, pane, { minWidth: 1400 });
     scroller.append(
       contractTitle,
-      jy2ContractTable(documentRef, summaryModel, editable, rerender),
+      jy2ContractTable(documentRef, summaryModel, editable, rerender, amountDeltaIndex),
       projectionTitle,
       jy2ProjectionTable(
         documentRef,
@@ -9790,10 +10032,11 @@
           if (typeof persistTotalNotes === "function") persistTotalNotes(notes);
           rerender();
         },
+        amountDeltaIndex,
       ),
       salaryTitle,
-      jy2SalaryTable(documentRef, summaryModel, editable, rerender),
-      jy2SummaryFooter(documentRef, totals),
+      jy2SalaryTable(documentRef, summaryModel, editable, rerender, amountDeltaIndex),
+      jy2SummaryFooter(documentRef, totals, amountDeltaIndex),
     );
     jy2ApplyScroll(documentRef, pane, scroll);
   }
@@ -9869,7 +10112,10 @@
     rerender,
     suggestions,
     masterLists,
+    amountDeltaIndex,
   ) {
+    const showDelta = jy2ShowAmountDelta(amountDeltaIndex);
+    const deltaCols = showDelta ? 1 : 0;
     const section = documentRef.createElement("section");
     section.className = "jy2-detail-block";
     section.dataset.stableBlockId = block.stableBlockId;
@@ -10137,6 +10383,7 @@
     appendDetailHead("数量（入力）");
     appendDetailHead("単価（入力）");
     appendDetailHead("金額（自動）");
+    if (showDelta) appendDetailHead("金額増減（自動）");
     appendDetailHead("備考（入力）", "jy2-col-note");
     appendDetailHead("");
     body.appendChild(headerRow);
@@ -10517,6 +10764,23 @@
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
+        if (showDelta) {
+          tr.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupAmountDelta(
+                amountDeltaIndex,
+                "detail",
+                detailDeltaKey(block.stableBlockId, row.rowKey),
+                {
+                  quantity: row.quantity,
+                  unitPrice: row.unitPrice,
+                  amount: row.amount,
+                },
+              ),
+            ),
+          );
+        }
         const note = jy2Cell(documentRef, "td", "jy2-col-note", "");
         const noteCtrl = jy2TextInput(documentRef, row.note, commit("note"), {
           fullTitle: true,
@@ -10642,6 +10906,23 @@
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(row.amount)),
         );
+        if (showDelta) {
+          tr.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupAmountDelta(
+                amountDeltaIndex,
+                "detail",
+                detailDeltaKey(block.stableBlockId, row.rowKey),
+                {
+                  quantity: row.quantity,
+                  unitPrice: row.unitPrice,
+                  amount: row.amount,
+                },
+              ),
+            ),
+          );
+        }
         {
           const noteRo = jy2Cell(documentRef, "td", "jy2-col-note", row.note);
           const noteText =
@@ -10659,7 +10940,7 @@
     if (blockEditable) {
       const addRow = documentRef.createElement("tr");
       const addCell = jy2Cell(documentRef, "td", "", "");
-      addCell.colSpan = 9 + extraCount;
+      addCell.colSpan = 9 + extraCount + deltaCols;
       addCell.appendChild(
         jy2RowButton(documentRef, "明細行追加", () => {
           detailModel.addDetailRow(block.stableBlockId);
@@ -10710,6 +10991,25 @@
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(footerRow.amount)),
         );
+        if (showDelta) {
+          tr.appendChild(
+            jy2AmountDeltaCell(
+              documentRef,
+              lookupAmountDelta(
+                amountDeltaIndex,
+                "footer",
+                detailDeltaKey(block.stableBlockId, kind),
+                {
+                  quantity: String(footerRow.ratePercent ?? ""),
+                  unitPrice: footerRow.base,
+                  amount: footerRow.amount,
+                },
+                { labels: false },
+              ),
+              { showLabel: false },
+            ),
+          );
+        }
         const basis = jy2Cell(
           documentRef,
           "td",
@@ -10751,6 +11051,21 @@
       } else {
         tr.appendChild(
           jy2Cell(documentRef, "td", "jy2-amount", jy2Comma(footerRow.amount)),
+        );
+      }
+      if (showDelta) {
+        tr.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupAmountDelta(
+              amountDeltaIndex,
+              "footer",
+              detailDeltaKey(block.stableBlockId, kind),
+              { amount: footerRow.amount },
+              { labels: false },
+            ),
+            { showLabel: false },
+          ),
         );
       }
       const tail = jy2Cell(documentRef, "td", "", "");
@@ -10839,6 +11154,7 @@
         rerender,
         collectPaneSuggestions(),
         masterLists,
+        options.amountDeltaIndex,
       );
       old.replaceWith(next);
       if (scroll) jy2ApplyScroll(documentRef, pane, scroll);
@@ -10861,6 +11177,7 @@
       }
       jy2RenderDetailPane(documentRef, pane, detailModel, refreshSummary, masterLists, {
         focusBlockId: opts.focusBlockId,
+        amountDeltaIndex: options.amountDeltaIndex,
       });
       notifySummary();
     }
@@ -10902,6 +11219,7 @@
           rerender,
           paneSuggestions,
           masterLists,
+          options.amountDeltaIndex,
         ),
       );
     }
@@ -14540,8 +14858,20 @@
         controller.loadActuals(),
         jy2LoadMasterLists(kintone.api.bind(kintone)),
       ])
-        .then(([detailBlocks, versions, actualRows, masterLists]) => {
+        .then(async ([detailBlocks, versions, actualRows, masterLists]) => {
           const summaryLines = app1RecordToSummaryLines(record || {});
+          let amountDeltaIndex = null;
+          try {
+            amountDeltaIndex = await jy2LoadAmountDeltaIndex(
+              kintone.api.bind(kintone),
+              record,
+              versions,
+            );
+          } catch (error) {
+            if (typeof console !== "undefined" && console.error) {
+              console.error("JY2 直前版の増減読込に失敗:", error);
+            }
+          }
           render({
             detailBlocks,
             versions,
@@ -14553,6 +14883,7 @@
             projectionPreviousLines: app1RecordToProjectionPreviousLines(record || {}),
             saveController: controller,
             projectId: controller.keys.projectId,
+            amountDeltaIndex,
           });
         })
         .catch((error) => {
@@ -15310,6 +15641,7 @@
         projectionManual,
         totalNotes,
         persistTotalNotes,
+        summaryData.amountDeltaIndex || null,
       );
       summaryDirty = false;
     };
@@ -15375,6 +15707,7 @@
           refreshSummary(false);
         },
         summaryData.masterLists || null,
+        { amountDeltaIndex: summaryData.amountDeltaIndex || null },
       );
       detailDirty = false;
     };
@@ -15437,7 +15770,10 @@
           refreshSummary(false);
         },
         summaryData.masterLists || null,
-        { focusBlockId: id },
+        {
+          focusBlockId: id,
+          amountDeltaIndex: summaryData.amountDeltaIndex || null,
+        },
       );
       refreshSummary(false);
       activate("detail");
