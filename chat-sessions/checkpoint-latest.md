@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-13 08:12 JST — 内訳 Tab 次項目 LIVE。泊クラス洞=0。
 **次の1手**: 浜田が 756 内訳で Tab（▼に止まらず次欄へ）を目視。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
-**Git**: **`a35c767f`** = `origin/main` — push 済
+**Git**: **`13b4dc7c`** = `origin/main` — push 済
 **closeStatus**: **partial**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
 **本日状態**: **756**=`2026-09-13-ver02-detail-tab-next` rev**369** fileKey `1625f225-e756-4e4f-9ff2-2977429aeb9a`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
