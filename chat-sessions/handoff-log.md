@@ -6522,25 +6522,7 @@ npm run cio:morning:ready
 
 **次の1手**: 浜田が一般ユーザで 756 一時保存を目視（単位「泊」を含む行）。その後 予実 G0 実装GO。
 
-**Git**: （本コミット後に stamp）
-
-**BUILD**: 756 2026-09-12-ver02-workdesc-wider rev368 / 757 rev34 / 758 rev31
-
-**GO待ち**: 一時保存目視。予実実装GOは別
-
-**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA実deploy / 閉済9件 / 設定タブ / 757 customize / 予実 customize は実装GOまで
-
----
-
-### 2026-09-13 JST — **756一時保存 CB_VA01 泊**
-
-**要約**: App757 `unit` に「泊」が無く一時保存 bulkRequest results[1] が CB_VA01。757.unit と 756 contract_unit/salary_unit を ㎡+COMMON_UNITS 20項へ拡張。JS BUILD 不変。予実G0テーブルは未着手。
-
-**話したこと**: 一時保存が「泊は選択肢にありません」。原因は DROP_DOWN と画面 COMMON_UNITS のずれ。泊は日に寄せない。735/736 不触。目視は一般ユーザで。
-
-**次の1手**: 浜田が一般ユーザで 756 一時保存を目視（単位「泊」を含む行）。その後 予実 G0 実装GO。
-
-**Git**: （本コミット後に stamp）
+**Git**: `a35c767f` — `fix(757): expand unit dropdown so temporary save accepts 泊`
 
 **BUILD**: 756 2026-09-12-ver02-workdesc-wider rev368 / 757 rev34 / 758 rev31
 
