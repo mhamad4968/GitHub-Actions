@@ -1,9 +1,9 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-12T00:32:54.062Z",
-  "gitHead": "2cda2dfe",
-  "gitStatus": "## main...origin/main",
-  "nextTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。",
+  "exportedAt": "2026-09-12T02:12:32.563Z",
+  "gitHead": "fba5f27e",
+  "gitStatus": "## main...origin/main [ahead 1]",
+  "nextTask": "夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。",
   "nextFiles": [
     "chat-sessions/checkpoint-latest.md",
     "chat-sessions/handoff-log.md",
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=2cda2dfe | 次=濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=fba5f27e | 次=夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-09-12T02:12:33.039Z",
+  "crosscheckOk": true
 }

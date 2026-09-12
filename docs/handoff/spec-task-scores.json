@@ -1,18 +1,18 @@
 {
-  "scoredAt": "2026-09-12T00:19:10.490Z",
+  "scoredAt": "2026-09-12T02:12:32.009Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。",
+  "topTask": "夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。",
   "topTaskKind": "work",
-  "topWorkTask": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。",
+  "topWorkTask": "夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。",
   "tasks": [
     {
-      "id": "checkpoint:濱田が_Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。",
-      "text": "濱田が Desktop「共有PC_部長金庫_手順書.docx」で設定（後日可）。756 の追加 customize は新しい明示依頼まで作らない。",
+      "id": "checkpoint:夜セッションで_G0_**§13.1_の1番**（空に戻した月の採用は実績予想に",
+      "text": "夜セッションで G0 **§13.1 の1番**（空に戻した月の採用は実績予想に戻すか）。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md` と `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。コード着手は実装GO後。",
       "source": "checkpoint",
       "kind": "work",
-      "difficulty": 5,
-      "tokens": "高",
-      "tokenScore": 3,
+      "difficulty": 2,
+      "tokens": "低",
+      "tokenScore": 1,
       "impact": 5,
       "priority": 0,
       "status": "pending"
