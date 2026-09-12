@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-12T22:06:49.692Z",
-  "gitHead": "2c847e7a",
+  "exportedAt": "2026-09-12T22:17:12.298Z",
+  "gitHead": "440285a1",
   "gitStatus": "## main...origin/main",
   "nextTask": "原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=2c847e7a | 次=原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=440285a1 | 次=原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
