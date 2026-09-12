@@ -6531,3 +6531,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA実deploy / 閉済9件 / 設定タブ / 757 customize / 予実 customize は実装GOまで
 
 ---
+
+### 2026-09-13 JST — **756一時保存 一般ユーザ目視OK**
+
+**要約**: admin 以外で 756「一時保存」1回が成功。CB_NO02（ACL）と CB_VA01（泊）は閉じ。予実G0は実装GO待ち。customize なし。
+
+**話したこと**: 浜田が一般ユーザで一時保存を目視し OK。予実テーブルは実装GOまで触らない。
+
+**次の1手**: 予実 G0 実装GO。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+
+**Git**: `a35c767f` 系（単位DD）— 本記録 commit 後に stamp
+
+**BUILD**: 756 2026-09-12-ver02-workdesc-wider rev368 / 757 rev34 / 758 rev31
+
+**GO待ち**: 予実の実装GO
+
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA実deploy / 閉済9件 / 設定タブ / 757 customize / 予実 customize は実装GOまで
+
+---

@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 07:40 JST — 一時保存 CB_VA01（泊は選択肢にありません）を 757/756 単位DD拡張で是正。
-**次の1手**: 浜田が一般ユーザで 756「一時保存」目視（単位「泊」を含む行）。その後 原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+**最終更新**: 2026-09-13 07:47 JST — 一時保存を一般ユーザで目視OK（CB_NO02/CB_VA01 閉じ）。
+**次の1手**: 予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。GO まで customize しない。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
 **Git**: **`a35c767f`** = `origin/main` — push 済
 **closeStatus**: **partial**
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GO**。内訳・統括は LIVE rev**366**・**目視OK**。夜§13.1は1–7決。日終わり⑦ after-go
+**GO待ち**: 予実の **実装GO**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳・統括は LIVE rev**366**・**目視OK**。夜§13.1は1–7決。日終わり⑦ after-go
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev368 · 757 rev34 · 758 rev31 · everyone 書込。757 unit / 756 contract_unit+salary_unit は 20項（2026-09-13）。757 customize 未deploy |
+| **756/757/758** | 756 LIVE rev368 · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**（2026-09-13）。757 customize 未deploy |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -52,7 +52,7 @@
 - 原因: 画面 COMMON_UNITS に「泊」があるが App757 `unit` が短い DROP_DOWN。一時保存 bulkRequest results[1] が CB_VA01
 - 対応: 757.unit と 756 contract_unit/salary_unit を UNIT_FIELD_VALUES 20項へ PUT+deploy。既存選択肢は維持。泊→日に寄せない。757 customize JS 不触。735/736 不触
 - 検証: preview GET で 757.unit に **泊**。contract_lines 11欄 / salary_lines 10欄。756 rev **368** / 757 **34**
-- 次=浜田が一般ユーザで一時保存目視。予実 G0 テーブルは未着手（実装GO待ち）
+- **目視OK**: 2026-09-13 浜田が admin 以外で 756「一時保存」1回 → 成功。CB_NO02/CB_VA01 閉じ
 
 ### 2026-09-13 朝（一時保存 CB_NO02）
 - 原因: 756/757/758 app ACL が admin のみ書込・everyone 閲覧。一時保存 bulkRequest 先頭 PUT が CB_NO02
