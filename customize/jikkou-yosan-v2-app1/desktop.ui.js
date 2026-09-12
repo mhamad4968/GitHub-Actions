@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-12-ver02-summary-unit-split
+  // @JY_V2_BUILD 2026-09-12-ver02-overhead-gaichu-only
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -10579,10 +10579,11 @@
       body.appendChild(addRow);
     }
 
-    // 施工かつ対象工種: 諸経費（自動・外注費明細合計×10%）→計。保安・対象外は計のみ／無し。
+    // 施工かつ対象工種かつ外注費明細あり: 諸経費（自動）→計。無ければ計のみ。保安は無し。
     for (const kind of footerKindsForCostCategory(
       block.costCategory,
       block.workTypeName,
+      { hasOverheadBase: block.footer?.overhead?.base != null },
     )) {
       const footerRow = block.footer[kind];
       const tr = documentRef.createElement("tr");

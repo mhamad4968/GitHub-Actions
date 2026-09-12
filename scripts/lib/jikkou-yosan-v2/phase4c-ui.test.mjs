@@ -98,9 +98,12 @@ test("row_kind / unit / status catalogs match the App2 field catalog (§2, U16)"
   assert.deepEqual(MANUAL_FOOTER_KINDS, []);
   assert.deepEqual(footerKindsForCostCategory("施工"), ["block_total"]);
   assert.deepEqual(footerKindsForCostCategory("施工", "塗装工事"), [
-    "overhead",
     "block_total",
   ]);
+  assert.deepEqual(
+    footerKindsForCostCategory("施工", "塗装工事", { hasOverheadBase: true }),
+    ["overhead", "block_total"],
+  );
   assert.deepEqual(footerKindsForCostCategory("施工", "材料費"), [
     "block_total",
   ]);
@@ -702,6 +705,7 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
     /外注費明細合計 ×\$\{footerRow\.ratePercent\}%（単価は外注費の明細合計）/,
   );
   assert.match(source, /諸経費の単価は外注費の明細合計です/);
+  assert.match(source, /hasOverheadBase:\s*block\.footer\?\.overhead\?\.base\s*!=\s*null/);
   assert.match(source, /jy2-warning/);
   assert.match(source, /createDetailBlockModel/);
   assert.match(source, /jy2RenderDetailPane/);
