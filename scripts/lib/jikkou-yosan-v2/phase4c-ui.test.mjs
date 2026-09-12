@@ -835,6 +835,11 @@ test("U4 name1/name2 are combo (select+input); name3 is free text input", () => 
   assert.match(source, /詳細（入力）／材料（選択）/);
   assert.match(source, /契約工種（選択）/);
   assert.match(source, /工種説明（入力）/);
+  assert.match(
+    source,
+    /\.jy2-contract-table th:nth-child\(3\),\.jy2-contract-table td:nth-child\(3\)\{min-width:22rem\}/,
+  );
+  assert.match(source, /jy2-pr-contract-table/);
   assert.match(source, /footerKindsForCostCategory/);
   assert.match(source, /JY2_GAICHU_TYPE_MENU/);
   assert.match(source, /jy2DisplayWorkTypeName/);

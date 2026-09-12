@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-12-ver02-overhead-gaichu-only
+  // @JY_V2_BUILD 2026-09-12-ver02-workdesc-wider
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2054,6 +2054,8 @@
       ".jy2-contract-table .jy2-select,.jy2-salary-table .jy2-select,.jy2-projection-table .jy2-select{min-width:4.25rem}",
       ".jy2-contract-table th:nth-child(2),.jy2-contract-table td:nth-child(2){min-width:14rem}",
       ".jy2-contract-table td:nth-child(2) .jy2-input{min-width:14rem}",
+      ".jy2-contract-table th:nth-child(3),.jy2-contract-table td:nth-child(3){min-width:22rem}",
+      ".jy2-contract-table td:nth-child(3) .jy2-input{min-width:22rem}",
       ".jy2-contract-table th:nth-child(4),.jy2-contract-table td:nth-child(4){min-width:3.25rem;max-width:4.5rem}",
       ".jy2-contract-table td:nth-child(4) .jy2-input{min-width:3.25rem;max-width:4.5rem}",
       ".jy2-contract-table th:nth-child(5),.jy2-contract-table td:nth-child(5){min-width:3.25rem;max-width:4.5rem}",
@@ -2092,6 +2094,7 @@
       ".jy2-pr-section{margin-bottom:3px}",
       ".jy2-pr-sec-head{font-size:11pt;font-weight:700;margin:0 0 2px;padding:2px 6px;background:#e8eef4;border-left:4px solid #2563eb;line-height:1.25}",
       ".jy2-pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;line-height:1.25}",
+      ".jy2-pr-contract-table th:nth-child(3),.jy2-pr-contract-table td:nth-child(3){width:24%}",
       ".jy2-pr-table th,.jy2-pr-table td{border:1px solid #cbd5e1;padding:1px 3px;vertical-align:top;white-space:normal;overflow-wrap:anywhere;word-break:break-word}",
       ".jy2-pr-table td{text-align:left}",
       ".jy2-pr-table th{background:#f1f5f9;font-weight:600;text-align:center;color:#475569;font-size:9pt;padding:2px 3px;vertical-align:middle;white-space:nowrap;overflow-wrap:normal;word-break:normal}",
@@ -9298,6 +9301,7 @@
       "備考",
     ]);
     const contractTable = contractStarted.table;
+    contractTable.classList.add("jy2-pr-contract-table");
     const contractBody = contractStarted.tbody;
     for (const section of CONTRACT_SECTIONS) {
       for (const line of snapshot.contractSections[section] || []) {
