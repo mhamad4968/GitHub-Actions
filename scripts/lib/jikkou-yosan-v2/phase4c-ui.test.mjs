@@ -826,6 +826,9 @@ test("U32 内訳№ jumps between summary projection and detail block", () => {
 test("U4 name1/name2 are combo (select+input); name3 is free text input", () => {
   const source = read("customize/jikkou-yosan-v2-app1/desktop.ui.js");
   assert.match(source, /function jy2ComboInput\b/);
+  assert.match(source, /function jy2FocusNextAfterCombo\b/);
+  assert.match(source, /function jy2SnapshotComboTabJump\b/);
+  assert.match(source, /select\.tabIndex = -1/);
   assert.match(source, /jy2-input jy2-combo/);
   assert.match(source, /jy2-combo-select/);
   assert.match(source, /jy2AppendModeLabel/);

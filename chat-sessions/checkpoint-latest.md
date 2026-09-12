@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 07:47 JST — 一時保存を一般ユーザで目視OK（CB_NO02/CB_VA01 閉じ）。
-**次の1手**: 予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。GO まで customize しない。
+**最終更新**: 2026-09-13 08:12 JST — 内訳 Tab 次項目 LIVE。泊クラス洞=0。
+**次の1手**: 浜田が 756 内訳で Tab（▼に止まらず次欄へ）を目視。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
-**Git**: **`33058078`** = `origin/main` — push 済
+**Git**: **`a35c767f`** = `origin/main` — push 済
 **closeStatus**: **partial**
-**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実は実装GOまで customize しない
-**本日状態**: **756**=`2026-09-12-ver02-workdesc-wider` rev**368**（単位DD 20項。JS BUILD/fileKey 不変）。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
+**本日状態**: **756**=`2026-09-13-ver02-detail-tab-next` rev**369** fileKey `1625f225-e756-4e4f-9ff2-2977429aeb9a`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-09-13）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-12-ver02-workdesc-wider` | **368** |
+| **756** | `2026-09-13-ver02-detail-tab-next` | **369** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev368 · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**（2026-09-13）。757 customize 未deploy |
+| **756/757/758** | 756 LIVE rev369 Tab次項目 · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -47,6 +47,12 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-09-13
+
+### 2026-09-13 朝（内訳 Tab 次項目＋泊クラス横断）
+- 洞: `verify:jikkou-yosan-v2-dropdown-ui-live` holes=0。UI単位19 vs LIVE 20（LIVEのみ㎡）。税は save-model で映射
+- Tab: combo▼ `tabIndex=-1`。▼選択後は commit 前 snapshot → rAF×2 で次欄。Enter自動送りなし。757 customize / 736 / 予実G0 不触
+- LIVE: 756 BUILD `2026-09-13-ver02-detail-tab-next` rev **369** fileKey `1625f225-…`
+- 次=浜田が内訳で Tab 目視
 
 ### 2026-09-13 朝（一時保存 CB_VA01 泊）
 - 原因: 画面 COMMON_UNITS に「泊」があるが App757 `unit` が短い DROP_DOWN。一時保存 bulkRequest results[1] が CB_VA01

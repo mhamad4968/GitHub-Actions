@@ -204,6 +204,7 @@
     "jikkou-yosan:v2-open-admin-write-acl": "node scripts/jikkou-yosan-v2-open-admin-write-acl.mjs",
     "jikkou-yosan:v2-open-general-acl": "node scripts/jikkou-yosan-v2-open-general-acl.mjs",
     "jikkou-yosan:v2-expand-unit-dropdowns": "node scripts/jikkou-yosan-v2-expand-unit-dropdowns.mjs",
+    "verify:jikkou-yosan-v2-dropdown-ui-live": "node scripts/jikkou-yosan-v2-verify-dropdown-ui-live.mjs",
     "verify:jikkou-yosan-v2-write-acl": "node scripts/verify-jikkou-yosan-v2-write-acl.mjs",
     "jikkou-yosan:v2-seed-test-record": "node scripts/jikkou-yosan-v2-seed-test-record.mjs",
     "jikkou-yosan:v2-migrate-from-736": "npx dotenv -e .env -e .env.proxy -- node scripts/jikkou-yosan-v2-migrate-from-736.mjs",

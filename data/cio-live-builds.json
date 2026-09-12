@@ -434,12 +434,12 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-12-ver02-workdesc-wider",
-      "fileKey": "3303929f-0d1c-4672-992b-4d5ed8fad221",
-      "revision": "368",
+      "build": "2026-09-13-ver02-detail-tab-next",
+      "fileKey": "1625f225-e756-4e4f-9ff2-2977429aeb9a",
+      "revision": "369",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-12T12:17:22.555Z",
-      "note": "2026-09-13 form: contract_unit/salary_unit を UNIT_FIELD_VALUES 20項へ。JS fileKey 不変"
+      "deployedAt": "2026-09-12T23:11:13.389Z",
+      "note": null
     },
     "757": {
       "build": "2026-07-21-ver02-phase6-app2-readonly-guard",

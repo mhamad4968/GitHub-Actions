@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-12-ver02-workdesc-wider
+  // @JY_V2_BUILD 2026-09-13-ver02-detail-tab-next
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2833,10 +2833,95 @@
       badge.className = "jy2-locked-badge";
       badge.textContent = "不可";
       badge.setAttribute("aria-hidden", "true");
-      wrap.appendChild(input);
-      wrap.appendChild(badge);
-      return wrap;
+    wrap.appendChild(input);
+    wrap.appendChild(badge);
+    return wrap;
+  }
+  function jy2IsTabStopControl(el) {
+    if (!el || el.disabled) return false;
+    if (Number(el.tabIndex) === -1) return false;
+    if (el.classList.contains("jy2-combo-select")) return false;
+    return true;
+  }
+  function jy2CollectTabStops(root) {
+    const nodes = root.querySelectorAll(
+      "input.jy2-input, select.jy2-select, textarea.jy2-input",
+    );
+    const list = [];
+    for (const el of nodes) {
+      if (jy2IsTabStopControl(el)) list.push(el);
     }
+    return list;
+  }
+  function jy2FocusControl(el) {
+    if (!el || typeof el.focus !== "function") return;
+    try {
+      el.focus();
+      if (typeof el.select === "function" && el.tagName === "INPUT" && !el.readOnly) {
+        el.select();
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  function jy2AttrSelectorValue(value) {
+    return String(value == null ? "" : value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+  /** commit 前に位置を取る（統括は同期 rerender で wrap が即切れる）。 */
+  function jy2SnapshotComboTabJump(wrap) {
+    const doc = wrap && wrap.ownerDocument;
+    if (!doc) return null;
+    const pane =
+      (wrap.closest && (wrap.closest(".jy2-pane") || wrap.closest(".jy2-shell"))) || null;
+    const row = wrap.closest && wrap.closest("tr");
+    const rowKey = row && row.dataset ? String(row.dataset.rowKey || "") : "";
+    const input = wrap.querySelector("input.jy2-input");
+    const list = jy2CollectTabStops(pane || doc);
+    const idx = list.indexOf(input);
+    const nextNow = idx >= 0 ? list[idx + 1] : null;
+    const nextTd = nextNow && nextNow.closest && nextNow.closest("td");
+    const tdIndex = nextTd && row ? Array.prototype.indexOf.call(row.children, nextTd) : -1;
+    return { doc, pane, rowKey, tdIndex, nextNow };
+  }
+  /** 内訳の▼はマウス専用。Tab は次の入力欄へ。▼選択後は再描画後に次欄へ。 */
+  function jy2FocusNextAfterCombo(snap) {
+    if (!snap || !snap.doc) return;
+    const apply = () => {
+      const scope =
+        snap.pane && snap.pane.isConnected
+          ? snap.pane
+          : snap.doc.querySelector(".jy2-shell") || snap.doc;
+      let target = null;
+      if (snap.rowKey && snap.tdIndex >= 0) {
+        const newRow = scope.querySelector(
+          `tr[data-row-key="${jy2AttrSelectorValue(snap.rowKey)}"]`,
+        );
+        if (newRow) {
+          for (let i = snap.tdIndex; i < newRow.children.length; i += 1) {
+            const cell = newRow.children[i];
+            const cand = cell.querySelectorAll(
+              "input.jy2-input, select.jy2-select, textarea.jy2-input",
+            );
+            for (const el of cand) {
+              if (jy2IsTabStopControl(el)) {
+                target = el;
+                break;
+              }
+            }
+            if (target) break;
+          }
+        }
+      }
+      if (!target && snap.nextNow && snap.nextNow.isConnected) target = snap.nextNow;
+      jy2FocusControl(target);
+    };
+    const view = snap.doc.defaultView;
+    if (view && typeof view.requestAnimationFrame === "function") {
+      view.requestAnimationFrame(() => view.requestAnimationFrame(apply));
+    } else {
+      setTimeout(apply, 0);
+    }
+  }
     function jy2ComboInput(documentRef, value, options, onCommit, opts = {}) {
     const wrap = documentRef.createElement("span");
     wrap.className = "jy2-combo-wrap";
@@ -2875,6 +2960,7 @@
     input.setAttribute("list", listId);
     const select = documentRef.createElement("select");
     select.className = "jy2-combo-select";
+    select.tabIndex = -1;
     select.title = "リストから選択";
     select.setAttribute("aria-label", "リストから選択");
     const blank = documentRef.createElement("option");
@@ -3029,6 +3115,7 @@
       const picked = select.value;
       revealed = true;
       clearMiss();
+      const jumpSnap = jy2SnapshotComboTabJump(wrap);
       // 空クリアはプレースホルダ▼ではなくリスト項目「（空）」。selectedIndex=0 リセット後も change が飛ぶ。
       if (picked === JY2_COMBO_CLEAR_VALUE) {
         input.value = "";
@@ -3057,6 +3144,7 @@
       if (fullTitle) syncFullTitle();
       onCommit(picked);
       select.selectedIndex = 0;
+      jy2FocusNextAfterCombo(jumpSnap);
       if (
         useDittoDisplay &&
         (picked === JY2_DITTO_MARK || picked === revealValue)
