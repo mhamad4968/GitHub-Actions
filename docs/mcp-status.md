@@ -1,6 +1,6 @@
 # 📊 MCP 状態管理台帳
 
-**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-10（#M1 ENOENT ならメダルに Kimi=review と書かない）
+**初版作成**: 2026-04-23 (Thu) / **最終更新**: 2026-09-12（#M1-mid lab wrapper `mcp-kimi-wsl-path` + `kimi-k2.6`）
 
 ### §MCP-opt（2026-09-08 JST — 浜田「使うもの残す／不要は消す／ノウハウ活用」）
 
@@ -22,10 +22,10 @@
 | 項目 | 状態 |
 |------|------|
 | **切替フラグ** | `kimi_review` / `kimi_think` / `kimi_research` が **`moonshot-v1-128k` 404** またはパス **ENOENT** のとき、まず **list-models（実在確認）**、だめなら **DeepSeek に寄せる**（第2者は維持） |
-| **チャット** | 経路断を 1 行残す。**メダルに `Kimi=review` と書かない**（#M1 2026-09-10。絶対パス指定でも ENOENT なら未使用） |
-| **しない** | mcp.json のモデル ID 独断変更。必須10からの削除。Kimi 断を隠して単独完結 |
-| **実測 2026-09-10** | `kimi_read_file` に `C:/Users/mhamada202408224/kintone-ai-lab/customize/jikkou-yosan-v2-app1/desktop.ui.js` を渡しても ENOENT。Kimi MCP の作業ディレクトリがラボを見ていない |
-| **復旧** | モデル ID 更新またはパス経路修復後、Kimi 本人レビュー成功をもってフラグ解除 |
+| **チャット** | 経路断を 1 行残す。レーン固定 medal は `Kimi=review`。本文に経路障害と書く |
+| **しない** | 必須10からの削除。新 MCP。Kimi 断を隠して単独完結。夕反省まで修理を先送り |
+| **実測 2026-09-10** | `kimi_read_file` に `C:/Users/.../desktop.ui.js` を渡しても ENOENT（当時は upstream が Windows パスを開けない） |
+| **復旧 2026-09-12** | lab wrapper `scripts/mcp-kimi-wsl-path/entry.mjs`。Windows パスを `/mnt/<drive>/` に変換。モデル既定 **`kimi-k2.6`**（list-models 実測。`moonshot-v1-128k` は欠落）。検査 `npm run verify:kimi-mcp-wsl-path`。**#M1-mid**: 依頼途中でも直す |
 
 **正本**: `docs/runbooks/cio-ops-2026-09-02-evening-improvements.md` / routing §5.1
 

@@ -50,6 +50,7 @@ App756 等の見た目レーンで依頼者／浜田レビューに出す前は�
 **#C1（2026-09-10）**: ユーザー規則「push するな」と R63 即 push が衝突したら、採った方を締めに1行残す。  
 **#T1（2026-09-10／2026-09-12）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
 **#M1（2026-09-10／2026-09-12）**: Kimi がリポファイル ENOENT なら **経路障害**（WSL が Windows パスを開けない）。medal 固定は変えず、本文に経路障害と書く。第2者は DeepSeek。mcp.json から消さない。  
+**#M1-mid（2026-09-12）**: ENOENT / `moonshot-v1-128k` 404 は依頼途中でも直す。恒久は `scripts/mcp-kimi-wsl-path`（`kimi` のまま。新 MCP 足さない）。既定モデル `kimi-k2.6`。  
 **#O1（2026-09-12）**: day-close after-go 前に dirty を印字。予実G0／夜handoff は stash してから close-git。  
 **#M2（2026-09-10）**: フィールド追加のあと JS deploy の前に `kintone-schema-mcp` `list_field_codes`（preview）。form deploy は脚本。live 再取得は足さない。
 

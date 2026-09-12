@@ -35,7 +35,7 @@ globs: "**/*"
 
 - **deepseek** / **user-deepseek**: **§50-3-8**・着手前盲点3点・仕様乖離の第2視点（方式B ④）。
 - **kimi** / **user-kimi**: **長文・大差分レビュー**・`kimi_review`（方式B ③）。**コード diff の主担当ではない**（② Composer 2.5）。
-- **Kimi ローカルファイル（Windows Cursor）**: Kimi MCP は **WSL Ubuntu 内で起動**するため、`path` / `workFolder` に `C:\...` を渡さない。変換は **ドライブ文字を小文字の `/mnt/<drive>/` に置換し、`\` を `/` にする**（例: `C:\Users\...\repo\...` → `/mnt/c/Users/.../repo/...`）。手順は ① `path` と `workFolder` を同じ WSL 形式へ変換 ② `kimi_read_file`（必要時は `kimi_shell` の `test -e`）で存在確認 ③ `kimi_review`。Windows パスの `ENOENT` は変換して1回だけ再試行し、**変換済み `/mnt/...` でも `ENOENT` なら実ファイル欠落またはマウント障害として DeepSeek へフォールバック**する。`EACCES` 等はパス変換で再試行せず権限エラーとして報告する。
+- **Kimi ローカルファイル（Windows Cursor）**: 起動は lab wrapper **`scripts/mcp-kimi-wsl-path/entry.mjs`**（サーバ名 `kimi`）。WSL 内なので Windows `C:\...` はラッパーが `/mnt/<drive>/...` に変換する。CIO は `/mnt/c/...` を渡してもよい。`ENOENT` / `moonshot-v1-128k` 404 は **依頼途中でも** 同一ターンで変換再試行・ラッパー確認・実在モデル（既定 `kimi-k2.6`）まで直す。夕反省へ先送りしない。変換済み `/mnt/...` でも `ENOENT` なら実ファイル欠落またはマウント障害として DeepSeek へフォールバック。`EACCES` はパス変換で再試行せず権限エラー。正本 `docs/runbooks/ai-team-tool-routing-v2.md` §5.1。
 - **MCP 失敗時フォールバック（2026-06-19 GO）**: **Kimi** がパス解決・initialize・TIMEOUT で使えない → **DeepSeek（§50-3-8）** → 不可なら **OpenRouter**。**いずれも不可**のときだけチャットに **`MCPスキップ: kimi — <理由>`** を 1 行残す。**締め・GO 報告を第2者なしで完走しない**。
 - **UI 目視反復（2026-08-21 #R1）**: 列幅・色・余白など **浜田目視で微調整だけ**のターンは、着手冒頭に **`MCPスキップ: UI目視反復`** を **1 行**出す（DeepSeek/Kimi 未挟みの可視化）。スキーマ破壊・deploy 方針変更があるならスキップ不可。
 

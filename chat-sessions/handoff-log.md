@@ -6477,3 +6477,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize / 予実 customize は実装GOまで
 
 ---
+
+### 2026-09-12 JST — **756予実G0夜（日終わり after-go）**
+
+**要約**: 756 LIVE rev366目視OK。夜§13.1の1–7決。予実customizeなし。Kimi WSL wrapperは未コミット残件として朝に載せる。
+
+**話したこと**: 夜は§13.1を1件ずつ決めた。空戻しは実績予想へ戻す。実績月の実績予想は無効。同じ会社2行は契約違いで可。当初は版確定まで。次版は1つ前をコピー。マスタ増分は既存工事にも足す。現予算は入力者判断。月は横12。旧予実は破棄。実装は明日。諸経費の母数は外注費明細だけ。内訳・統括はrev366目視OK。
+
+**次の1手**: 原価（予実）コード。G0 正本は docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md。実装GOまで customize しない。
+
+**Git**: `59b61456` — WAKE HEAD 59b61456。Kimi wrapper 等は未コミット残件
+
+**BUILD**: App 756 BUILD=2026-09-12-ver02-workdesc-wider rev 366
+
+**GO待ち**: 予実の実装GO
+
+**触らない**: 736 / 688 WBGT以外 / 677–679 / SKYSEA実deploy / 閉済9件 / 設定タブ実装 / 757 customize / 予実 customize は実装GOまで
+
+---

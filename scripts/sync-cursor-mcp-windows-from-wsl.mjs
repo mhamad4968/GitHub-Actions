@@ -211,11 +211,20 @@ export function buildWindowsMcp(S) {
     "export DDG_REGION=jp-ja PATH=/home/mhamada202408224/.local/bin:$PATH && exec /home/mhamada202408224/.local/bin/uvx duckduckgo-mcp-server",
   );
 
-  out.mcpServers.kimi = aiWindowsServer(
-    S.kimi,
-    "MOONSHOT_API_KEY",
-    "npx -y kimi-api-mcp@latest",
-  );
+  out.mcpServers.kimi = {
+    ...wslBash(
+      `set -a && source ${AI_SECRET_FILE} && set +a && ` +
+        `export PATH=/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:$PATH ` +
+        `MOONSHOT_MODEL=kimi-k2.6 MOONSHOT_MAX_TOKENS=2048 && ` +
+        `exec node /mnt/c/Users/mhamada202408224/kintone-ai-lab/scripts/mcp-kimi-wsl-path/entry.mjs`,
+    ),
+    env: {
+      PATH: "/home/mhamada202408224/.nvm/versions/node/v25.8.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      MOONSHOT_MODEL: "kimi-k2.6",
+      MOONSHOT_MAX_TOKENS: "2048",
+      ...(withoutSensitiveEnv(S.kimi, "MOONSHOT_API_KEY").env || {}),
+    },
+  };
   // 2026-07-25: upstream mcp-deepseek@latest defaults to deepseek-chat (API 400).
   // Lab wrapper defaults to deepseek-v4-flash — sync で Windows を旧 npx に戻さない。
   // #S-DS-EMPTY-01: DEEPSEEK_THINKING_DEFAULT=disabled（thinking ON + max_tokens≈400 → content空「无响应」）。

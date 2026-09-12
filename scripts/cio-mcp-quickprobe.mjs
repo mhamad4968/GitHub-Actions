@@ -180,9 +180,13 @@ const TARGETS = {
     },
   },
   kimi: {
-    cmd: "npx",
-    args: ["-y", "kimi-api-mcp@latest"],
-    env: { MOONSHOT_API_KEY: process.env.MOONSHOT_API_KEY },
+    cmd: process.execPath,
+    args: [path.join(root, "scripts", "mcp-kimi-wsl-path", "entry.mjs")],
+    env: {
+      MOONSHOT_API_KEY: process.env.MOONSHOT_API_KEY,
+      MOONSHOT_MODEL: process.env.MOONSHOT_MODEL || "kimi-k2.6",
+      MOONSHOT_MAX_TOKENS: process.env.MOONSHOT_MAX_TOKENS || "2048",
+    },
   },
   openrouter: {
     cmd: "npx",

@@ -124,13 +124,14 @@ MCP 失敗時（DeepSeek 合意 2026-06-19）:
 Windows Cursor から Kimi の `kimi_read_file` / `kimi_review` / `kimi_shell` を使う場合、
 Kimi MCP は WSL Ubuntu 内で動作するため、Windows パスを直接渡さない。
 
-1. `C:\Users\...\repo\...` を `/mnt/c/Users/.../repo/...` に変換し、`path` と `workFolder` を統一する。
+1. 起動は **`scripts/mcp-kimi-wsl-path/entry.mjs`**（サーバ名は `kimi` のまま。新 MCP は足さない）。Windows `C:\...` はラッパーが `/mnt/<drive>/...` に変換する。CIO が `/mnt/c/...` を渡してもよい。
 2. `kimi_read_file`、必要時は `kimi_shell` の `test -e` で対象を確認する。
 3. 指定された Kimi レビューを実行する。
-4. Windows パスの `ENOENT` は **経路障害**、代替AIの結果は **代替レビュー** と記録する。
-5. 代替レビュー後も経路を修復し、Kimi本人の読取＋レビュー成功を **復旧完了** とする。
+4. Windows パスの `ENOENT` は **経路障害**。**依頼途中でも** ①ラッパー経由か確認 ②`/mnt/...` に直して同一ターン再試行 ③まだ壊れていればラッパーを直す。夕反省まで先送りしない。
+5. 代替AIの結果は **代替レビュー** と記録する。代替後も経路を修復し、Kimi本人の読取＋レビュー成功を **復旧完了** とする。
 6. `/mnt/...` でも `ENOENT` なら実ファイル欠落またはマウント障害として fallback。`EACCES` は権限エラーとして扱う。
-7. **#M1（2026-09-02／2026-09-09）**: `kimi_review` / `kimi_think` / `kimi_research` が `moonshot-v1-128k` **404** のとき、まず実在モデルを確認（list-models）。だめなら ENOENT と同じく **DeepSeek へ寄せ**、チャットに `MCPスキップ: kimi — <理由> → DeepSeek` を 1 行。切替フラグは `docs/mcp-status.md`。mcp.json のモデル ID は独断変更しない。必須10は消さない。
+7. **#M1（2026-09-02／2026-09-09／2026-09-12）**: `kimi_review` / `kimi_think` / `kimi_research` が `moonshot-v1-128k` **404** のとき、まず実在モデルを確認（list-models）。ラッパー既定は **`kimi-k2.6`**（2026-09-12 実測）。だめなら **DeepSeek へ寄せ**、チャットに `MCPスキップ: kimi — <理由> → DeepSeek` を 1 行。切替フラグは `docs/mcp-status.md`。mcp.json から Kimi を消さない。必須10は消さない。
+8. **#M1-mid（2026-09-12 浜田）**: 経路障害は **依頼の途中でもそのターンで直す**。medal 固定は `Kimi=review` のまま。
 
 ---
 
