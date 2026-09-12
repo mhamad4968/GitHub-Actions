@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-13 07:30 JST — 一時保存 CB_NO02 を ACL 復帰で是正。
 **次の1手**: 浜田が一般ユーザで 756「一時保存」目視。その後 原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
-**Git**: 未push（本ターン ACL+台帳）
+**Git**: **`7f73d7bc`** = `origin/main` — push 済
 **closeStatus**: **partial**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実は実装GOまで customize しない
 **本日状態**: **756**=`2026-09-12-ver02-workdesc-wider` rev**367**（ACL everyone 書込。JS BUILD/fileKey 不変）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
