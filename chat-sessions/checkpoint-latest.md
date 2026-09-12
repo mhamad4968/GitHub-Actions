@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-12 21:28 JST — 日終わり after-go。756 LIVE rev**366** 目視OK。
 **次の1手**: 原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
-**Git**: **`2a8e5d49`** = `origin/main` — push 済（R44 parent）
+**Git**: **`06bd78b0`** = `origin/main` — push 済
 **closeStatus**: **full**（日終わり⑦）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実は実装GOまで customize しない
 **本日状態**: **756**=`2026-09-12-ver02-workdesc-wider` rev**366**（本セッション deploy 済）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
