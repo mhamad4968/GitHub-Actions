@@ -30,6 +30,13 @@ export const COMMON_UNITS = Object.freeze([
   "㎏",
   "－",
 ]);
+/** kintone DROP_DOWN 用。既存レコードの ㎡ を残し COMMON_UNITS を足す。 */
+export const UNIT_FIELD_VALUES = Object.freeze(["㎡", ...COMMON_UNITS]);
+export function unitDropdownOptions() {
+  return Object.fromEntries(
+    UNIT_FIELD_VALUES.map((label, index) => [label, { label, index: String(index) }]),
+  );
+}
 export const CONTRACT_SECTIONS = Object.freeze(["施工", "保安"]);
 export const SALARY_DEFAULT_UNIT = "箇月";
 // X7: 給与手当は消費税・税込とも「－」表示.

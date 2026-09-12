@@ -77,7 +77,8 @@ const COMMON_UNITS = [
   "㎏",
   "－",
 ];
-const DETAIL_UNITS = [...COMMON_UNITS];
+const UNIT_FIELD_VALUES = ["㎡", ...COMMON_UNITS];
+const DETAIL_UNITS = [...UNIT_FIELD_VALUES];
 
 function optionKeysInIndexOrder(field) {
   return Object.values(field.options)
@@ -336,11 +337,11 @@ test("app1: subtable unit dropdowns use the common unit list (A2)", () => {
   const contractUnit = p.contract_lines.fields.contract_unit;
   const salaryUnit = p.salary_lines.fields.salary_unit;
   const summaryUnit = p.summary_cost_lines.fields.summary_unit;
-  assert.deepEqual(optionKeysInIndexOrder(contractUnit), COMMON_UNITS);
-  assert.deepEqual(optionKeysInIndexOrder(salaryUnit), COMMON_UNITS);
+  assert.deepEqual(optionKeysInIndexOrder(contractUnit), UNIT_FIELD_VALUES);
+  assert.deepEqual(optionKeysInIndexOrder(salaryUnit), UNIT_FIELD_VALUES);
   assert.equal(salaryUnit.defaultValue, "箇月");
   assert.equal(summaryUnit.type, "DROP_DOWN");
-  assert.deepEqual(optionKeysInIndexOrder(summaryUnit), COMMON_UNITS);
+  assert.deepEqual(optionKeysInIndexOrder(summaryUnit), UNIT_FIELD_VALUES);
 });
 
 test("app1: tax rate options use fullwidth ％ and default 10％ (A5)", () => {
