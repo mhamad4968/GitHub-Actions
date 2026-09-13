@@ -50,14 +50,17 @@ export const BLOCK_FOOTER_LABELS = Object.freeze({
 // G0 §7.2: 各種保険料は固定フッタから外す（明細として追加）。手入力フッタは無し。
 export const MANUAL_FOOTER_KINDS = Object.freeze([]);
 
-// 施工かつ対象14工種かつ外注費明細があるときだけ諸経費。保安はフッタ無し。
+// 諸経費は施工かつ対象工種かつ外注費明細があるときだけ。計は施工・保安とも出す。
 export function footerKindsForCostCategory(
   costCategory,
   workTypeName,
   { hasOverheadBase = false } = {},
 ) {
-  if (costCategory !== "施工") return [];
-  if (workTypeShowsOverheadFooter(workTypeName) && hasOverheadBase) {
+  if (
+    costCategory === "施工" &&
+    workTypeShowsOverheadFooter(workTypeName) &&
+    hasOverheadBase
+  ) {
     return Object.freeze(["overhead", "block_total"]);
   }
   return Object.freeze(["block_total"]);

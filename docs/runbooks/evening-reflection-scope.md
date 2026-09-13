@@ -46,12 +46,15 @@ App756 等の見た目レーンで依頼者／浜田レビューに出す前は�
 **OPS-IT（2026-09-08）**: 個人PC等のラボ外相談は、終わりに濱田が実行するチェックリストを1枚（チャットまたは Desktop。**kintone-ai-lab には置かない**）。  
 **#O1（2026-09-09）**: 数量・単価など数値欄の目視依頼は **「弾く／拒否」ではなく「半角で入る」** と書く（IME 制御の取り違え防止）。
 **#O1（2026-09-10）**: 目視OKの同一ターンで origin へ **push** する。commit だけを完了としない。  
+**#O1（2026-09-13）**: 目視OKの同一ターンで commit/push **要否を浜田に1問**する。Yes なら同一ターンで push。聞かずに push しない（ユーザー規則）。R63 は「そのターンで1問する」ことで充足する。  
 **#R1（2026-09-10）**: 目視OKの記録は実装・SPEC状態行・push が揃ってから。  
+**#R1（2026-09-13）**: 色・見た目は先にチャットで1案を出し、GO後に **1回 LIVE** する（青→緑の往復 LIVE 禁止）。  
 **#C1（2026-09-10）**: ユーザー規則「push するな」と R63 即 push が衝突したら、採った方を締めに1行残す。  
-**#T1（2026-09-10／2026-09-12）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
+**#T1（2026-09-10／2026-09-12／2026-09-13）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
 **#M1（2026-09-10／2026-09-12）**: Kimi がリポファイル ENOENT なら **経路障害**（WSL が Windows パスを開けない）。medal 固定は変えず、本文に経路障害と書く。第2者は DeepSeek。mcp.json から消さない。  
 **#M1-mid（2026-09-12）**: ENOENT / `moonshot-v1-128k` 404 は依頼途中でも直す。恒久は `scripts/mcp-kimi-wsl-path`（`kimi` のまま。新 MCP 足さない）。既定モデル `kimi-k2.6`。  
-**#O1（2026-09-12）**: day-close after-go 前に dirty を印字。予実G0／夜handoff は stash してから close-git。  
+**#O1（2026-09-12）**: day-close after-go 前に dirty を印字。SESSION-CLOCK は clock:clear。  
+**#O1（2026-09-13 stash）**: LIVE した customize は stash しない。未実装の別レーン dirty だけ stash。  
 **#M2（2026-09-10）**: フィールド追加のあと JS deploy の前に `kintone-schema-mcp` `list_field_codes`（preview）。form deploy は脚本。live 再取得は足さない。
 
 ### R26 — スコープ分離（2026-06-13 浜田 GO）

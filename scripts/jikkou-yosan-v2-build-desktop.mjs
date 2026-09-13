@@ -45,6 +45,8 @@ const sourceNames = [
   "detail-block-model.mjs",
   "uchiwake-hierarchy.mjs",
   "actuals-matrix.mjs",
+  "cost-mgmt-v2-master.mjs",
+  "cost-mgmt-v2-model.mjs",
   "save-model.mjs",
   "version-series-model.mjs",
   "version-copy-model.mjs",

@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-zero-ok
+  // @JY_V2_BUILD 2026-09-13-ver02-cmv2-forecast-green
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2086,6 +2086,8 @@
       ".jy2-locked-wrap>.jy2-locked-badge{flex:0 0 2rem;width:2rem;max-width:2rem;display:flex;align-items:center;justify-content:center;padding:0;margin:0;border:1px solid #cbd5e1;border-left:0;border-radius:0 4px 4px 0;background:#e2e8f0;color:#64748b;font-size:10px;line-height:1;cursor:default;user-select:none}",
       "@media print{.jy2-locked-badge{display:none!important}}",
       "#jy2-print-portal{display:none}",
+      "#jy2-print-portal.jy2-print-measure{display:block!important;position:absolute;left:0;top:0;width:287mm;visibility:hidden;pointer-events:none;z-index:-1}",
+      "@media print{.jy2-pr-mode-detail{zoom:0.9}}",
       "@media print{@page{size:A4 landscape;margin:5mm}html,body{margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}body.jy2-printing>:not(#jy2-print-portal){display:none!important}#jy2-print-portal{display:block!important;position:static!important;width:100%!important;height:auto!important;overflow:visible!important}.jy2-pr{-webkit-print-color-adjust:exact;print-color-adjust:exact}.jy2-pr-mode-summary{zoom:0.9}.jy2-pr-mode-summary .jy2-pr-doc-title{font-size:14pt;margin:0 0 0.5mm;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-project-banner{margin:0 0 2px;padding:2px 0 1px}.jy2-pr-mode-summary .jy2-pr-project-name{font-size:11pt;line-height:1.25}.jy2-pr-mode-summary .jy2-pr-project-sub{font-size:8.5pt;margin-top:0;line-height:1.2}.jy2-pr-mode-summary .jy2-pr-sheet-title{font-size:10pt;margin:0 0 2px;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-meta{grid-template-columns:repeat(6,minmax(0,1fr));gap:1px 6px;margin-bottom:2px;padding:2px 5px;font-size:8pt;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-meta-label{font-size:7.5pt}.jy2-pr-mode-summary .jy2-pr-section{margin-bottom:6px}.jy2-pr-mode-summary .jy2-pr-sec-head{font-size:9.5pt;margin:0 0 1px;padding:1px 5px;line-height:1.2}.jy2-pr-mode-summary .jy2-pr-table{font-size:8.5pt;line-height:1.25}.jy2-pr-mode-summary .jy2-pr-table th{font-size:8pt;padding:1px 2px}.jy2-pr-mode-summary .jy2-pr-table th,.jy2-pr-mode-summary .jy2-pr-table td{padding:1px 2px}.jy2-pr-mode-summary .jy2-pr-table tfoot td{padding:1px 2px}.jy2-pr-mode-summary .jy2-budget-summary-head{font-size:9pt;padding:2px 6px}.jy2-pr-mode-summary .jy2-budget-summary-table th,.jy2-pr-mode-summary .jy2-budget-summary-table td,.jy2-pr-mode-summary .jy2-budget-summary-keys th,.jy2-pr-mode-summary .jy2-budget-summary-keys td{padding:1px 4px;font-size:8pt}.jy2-pr-mode-summary .jy2-budget-summary-note{font-size:7.5pt}}",
       ".jy2-pr{font-family:'Segoe UI',Meiryo,sans-serif;color:#1e293b;font-size:11pt;line-height:1.3}",
       ".jy2-pr-doc-title{font-size:16pt;font-weight:700;text-align:center;letter-spacing:.15em;margin:0 0 1mm;line-height:1.2}",
@@ -2114,6 +2116,7 @@
       ".jy2-pr-table tr.jy2-pr-sub,.jy2-pr-table tfoot tr{break-inside:avoid;page-break-inside:avoid;break-before:avoid;page-break-before:avoid}",
       ".jy2-pr-sec-head{break-after:avoid;page-break-after:avoid}",
       ".jy2-pr-section-keep{break-inside:avoid;page-break-inside:avoid}",
+      ".jy2-pr-mode-detail .jy2-pr-section.jy2-pr-section-keep,.jy2-pr-mode-detail .jy2-pr-section.jy2-pr-section-keep .jy2-pr-table{break-inside:avoid;page-break-inside:avoid}",
       ".jy2-pr-doc-title,.jy2-pr-project-banner,.jy2-pr-sheet-title,.jy2-pr-meta{break-inside:avoid;page-break-inside:avoid}",
       ".jy2-pr .jy2-budget-summary{break-inside:avoid;page-break-inside:avoid;break-before:auto;page-break-before:auto}",
       ".jy2-pr-table tr.jy2-pr-block-break>td{border-top:1px solid #cbd5e1}",
@@ -2175,7 +2178,7 @@
       ".jy2-nav-flash{outline:3px solid #2563eb!important;box-shadow:0 0 0 4px rgba(37,99,235,.28)!important}",
       "tr.jy2-nav-flash>td{background:#dbeafe!important}",
       ".jy2-detail-block.jy2-nav-flash{background:#eff6ff}",
-      ".jy2-block-actions{margin-left:auto;display:flex;gap:4px}",
+      ".jy2-block-actions{margin-left:0;display:flex;gap:4px;flex:0 0 auto}",
       ".jy2-detail-table{margin:0}",
       ".jy2-hscroll-inner>.jy2-detail-block{width:100%;min-width:0;max-width:none;box-sizing:border-box}",
       ".jy2-hscroll-inner>.jy2-budget-summary{width:100%;min-width:0;max-width:none;box-sizing:border-box}",
@@ -2206,6 +2209,28 @@
       // 予実: 横スクロール1本のみ（縦はページスクロール。二重縦スクロール禁止＝C7）
       ".jy2-pane[data-tab-id='actual']{overflow-x:clip;overflow-y:visible;padding:8px 8px 8px 8px}",
       /* 右息抜き ~10px（6px基準から左へ+4px＝浜田意図。2pxは逆方向だった） */
+      ".jy2-cmv2-tabs{display:flex;gap:4px;margin:8px 0 10px;flex-wrap:wrap}",
+      ".jy2-cmv2-tab{border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:600;color:#475569}",
+      ".jy2-cmv2-tab[aria-selected='true']{background:#fffbeb;border-color:#d97706;color:#92400e;font-weight:800}",
+      ".jy2-cmv2-table{font-size:12px;white-space:nowrap;width:max-content;min-width:max-content;table-layout:auto}",
+      ".jy2-cmv2-table th,.jy2-cmv2-table td{padding:4px 6px;vertical-align:middle;border:1px solid #e2e8f0}",
+      ".jy2-cmv2-table th{background:#f1f5f9;font-weight:600;text-align:center}",
+      ".jy2-cmv2-table td.jy2-num{text-align:right;font-variant-numeric:tabular-nums}",
+      ".jy2-cmv2-table tr.jy2-cmv2-system-row td{background:#fef3c7;font-weight:700}",
+      ".jy2-cmv2-table tr.jy2-cmv2-subtotal td{background:#f0f9ff;font-weight:700}",
+      ".jy2-cmv2-table tr.jy2-cmv2-grand td{background:#efe3d4;font-weight:800}",
+      ".jy2-cmv2-wt-link{color:#1d4ed8;cursor:pointer;text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;font:inherit}",
+      ".jy2-cmv2-table th.jy2-cmv2-col-forecast,.jy2-cmv2-table td.jy2-cmv2-col-forecast{min-width:5.75rem;width:5.75rem;box-sizing:border-box}",
+      ".jy2-cmv2-table td.jy2-cmv2-col-forecast .jy2-input.jy2-actual-month{width:100%;min-width:5.4rem;max-width:none}",
+      ".jy2-cmv2-table td.jy2-cmv2-forecast-filled{background:#dcfce7;color:#166534}",
+      ".jy2-cmv2-table td.jy2-cmv2-forecast-filled .jy2-input{background:#dcfce7;color:#166534}",
+      ".jy2-cmv2-table td.jy2-cmv2-forecast-locked,.jy2-cmv2-table td.jy2-cmv2-forecast-locked .jy2-input,.jy2-cmv2-table td.jy2-cmv2-forecast-locked .jy2-num{background:#f1f5f9;color:#64748b;cursor:default}",
+      ".jy2-cmv2-table th.jy2-cmv2-col-actual,.jy2-cmv2-table td.jy2-cmv2-col-actual{min-width:4.75rem;width:4.75rem;box-sizing:border-box}",
+      ".jy2-cmv2-table th.jy2-cmv2-col-count-plan,.jy2-cmv2-table td.jy2-cmv2-col-count-plan{min-width:4.75rem;width:4.75rem;box-sizing:border-box}",
+      ".jy2-cmv2-table th.jy2-cmv2-col-count,.jy2-cmv2-table td.jy2-cmv2-col-count{min-width:4.25rem;width:4.25rem;box-sizing:border-box}",
+      ".jy2-cmv2-table td.jy2-cmv2-col-count-plan .jy2-input,.jy2-cmv2-table td.jy2-cmv2-col-count .jy2-input{width:100%;min-width:3.5rem;max-width:none;position:relative;z-index:2;pointer-events:auto;cursor:text}",
+      ".jy2-cmv2-detail-block{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 12px;background:#fff}",
+      ".jy2-cmv2-detail-head{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:700}",
       ".jy2-actual-scroll{display:block;overflow-x:auto;overflow-y:visible;border:1px solid #e2e8f0;border-radius:6px;background:#fff;max-width:100%;width:100%;min-width:0;max-height:none;box-sizing:border-box;padding:0 10px 10px 0;margin:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;contain:inline-size;scrollbar-width:none}",
       ".jy2-actual-scroll::-webkit-scrollbar{width:0;height:0;display:none}",
       ".jy2-actual-table{white-space:nowrap;margin:0;border-collapse:separate;border-spacing:0;font-size:13px;width:100%;min-width:0;max-width:none;box-sizing:border-box}",
@@ -8018,8 +8043,9 @@
     version: "バージョン管理",
   };
 
-  // G0 S4: 工事原価管理タブは非表示のみ。actuals / 758 書込ロジックは残置。
-  const JY2_HIDE_COST_MGMT_TAB = true;
+  // G0 S4: 工事原価管理 v2（G0 工種UI）を表示。旧 ENSURE 本体は dead code として残置。
+  const JY2_HIDE_COST_MGMT_TAB = false;
+  const JY2_COST_MGMT_V2 = true;
 
   function jy2ShellTabList(model) {
     const tabs = [];
@@ -8507,19 +8533,18 @@
     for (const section of CONTRACT_SECTIONS) {
       const bandRow = documentRef.createElement("tr");
       bandRow.className = "jy2-band-row";
-      const bandHead = jy2Cell(documentRef, "th", "", section);
-      bandHead.colSpan = 9 + deltaCols;
-      bandRow.appendChild(bandHead);
-      const bandAction = jy2Cell(documentRef, "th", "", "");
+      const bandHead = jy2Cell(documentRef, "th", "", "");
+      bandHead.colSpan = 10 + deltaCols;
+      bandHead.appendChild(documentRef.createTextNode(section));
       if (editable) {
-        bandAction.appendChild(
-          jy2RowButton(documentRef, "行追加", () => {
-            summaryModel.addContractLine(section);
-            rerender();
-          }),
-        );
+        const addBtn = jy2RowButton(documentRef, "行追加", () => {
+          summaryModel.addContractLine(section);
+          rerender();
+        });
+        addBtn.style.marginLeft = "8px";
+        bandHead.appendChild(addBtn);
       }
-      bandRow.appendChild(bandAction);
+      bandRow.appendChild(bandHead);
       body.appendChild(bandRow);
 
       for (const line of snapshot.contractSections[section]) {
@@ -9968,14 +9993,19 @@
   }
 
   function jy2OpenSummaryPrint(documentRef, payload) {
+    jy2OpenPrintPortal(documentRef, jy2BuildPrintSummaryDoc(documentRef, payload));
+  }
+
+  function jy2OpenPrintPortal(documentRef, root) {
     const win = documentRef.defaultView;
     if (!win || typeof win.print !== "function") return;
     const portal = jy2EnsurePrintPortal(documentRef);
     portal.textContent = "";
-    portal.appendChild(jy2BuildPrintSummaryDoc(documentRef, payload));
+    portal.appendChild(root);
     documentRef.body.classList.add("jy2-printing");
     const run = () => {
       try {
+        jy2PrepareDetailPrintKeep(documentRef, portal, root);
         win.print();
       } catch (error) {
         documentRef.body.classList.remove("jy2-printing");
@@ -9988,6 +10018,198 @@
     } else {
       run();
     }
+  }
+
+  function jy2PrintDetailPageLimitPx() {
+    const pageInnerMm = 210 - 5 - 5;
+    const pxPerMm = 96 / 25.4;
+    const detailZoom = 0.9;
+    return (pageInnerMm * pxPerMm) / detailZoom - 8;
+  }
+
+  function jy2MarkDetailPrintKeep(root, pageLimitPx) {
+    if (!root || !root.classList || !root.classList.contains("jy2-pr-mode-detail")) {
+      return;
+    }
+    const limit = Number(pageLimitPx);
+    for (const section of root.querySelectorAll(":scope > .jy2-pr-section")) {
+      section.classList.remove("jy2-pr-section-keep");
+      const height = section.offsetHeight;
+      if (height > 0 && height <= limit) {
+        section.classList.add("jy2-pr-section-keep");
+      }
+    }
+  }
+
+  function jy2PrepareDetailPrintKeep(documentRef, portal, root) {
+    if (!portal || !root || !root.classList.contains("jy2-pr-mode-detail")) return;
+    portal.classList.add("jy2-print-measure");
+    root.style.width = "287mm";
+    void portal.offsetHeight;
+    jy2MarkDetailPrintKeep(root, jy2PrintDetailPageLimitPx());
+    root.style.width = "";
+    portal.classList.remove("jy2-print-measure");
+  }
+
+  function jy2PrintDittoText(rowValue, prevResolved) {
+    if (jy2ShowDitto(rowValue, prevResolved)) return JY2_DITTO_MARK;
+    return jy2HasText(rowValue) ? String(rowValue).trim() : "";
+  }
+
+  function jy2BuildPrintDetailDoc(documentRef, { record, blocks }) {
+    const root = documentRef.createElement("div");
+    root.className = "jy2-pr jy2-pr-doc jy2-pr-mode-detail";
+
+    const title = documentRef.createElement("h1");
+    title.className = "jy2-pr-doc-title";
+    title.textContent = `実${JY2_IDEO}行${JY2_IDEO}予${JY2_IDEO}算${JY2_IDEO}書`;
+    root.appendChild(title);
+
+    const name = jy2NormalizeFiscalYearText(
+      jy2HeaderFieldValue(record, "project_name"),
+    );
+    const official = jy2NormalizeFiscalYearText(
+      jy2HeaderFieldValue(record, "project_official_name"),
+    );
+    const code = jy2HeaderFieldValue(record, "project_code");
+    if (name || official || code) {
+      const banner = documentRef.createElement("div");
+      banner.className = "jy2-pr-project-banner";
+      if (name) {
+        banner.appendChild(
+          jy2Cell(documentRef, "div", "jy2-pr-project-name", name),
+        );
+      }
+      const sub = [];
+      if (code) sub.push(`工事コード：${code}`);
+      if (official && official !== name) sub.push(official);
+      if (sub.length) {
+        banner.appendChild(
+          jy2Cell(documentRef, "div", "jy2-pr-project-sub", sub.join("　")),
+        );
+      }
+      root.appendChild(banner);
+    }
+
+    const sheet = documentRef.createElement("p");
+    sheet.className = "jy2-pr-sheet-title";
+    sheet.textContent = `（${JY2_SHEET_LABELS.detail}）`;
+    root.appendChild(sheet);
+
+    const meta = documentRef.createElement("div");
+    meta.className = "jy2-pr-meta";
+    for (const [label, fieldCode] of JY2_PRINT_META_FIELDS) {
+      const item = documentRef.createElement("div");
+      item.className = "jy2-pr-meta-item";
+      item.appendChild(jy2Cell(documentRef, "span", "jy2-pr-meta-label", label));
+      item.appendChild(
+        jy2Cell(
+          documentRef,
+          "span",
+          "jy2-pr-meta-val",
+          jy2PrintMetaValue(record, fieldCode),
+        ),
+      );
+      meta.appendChild(item);
+    }
+    root.appendChild(meta);
+
+    const list = Array.isArray(blocks) ? blocks : [];
+    if (!list.length) {
+      root.appendChild(
+        jy2Cell(documentRef, "p", "jy2-pr-sheet-title", "内訳ブロックがありません"),
+      );
+      return root;
+    }
+
+    const heads = [
+      "費目",
+      "種別",
+      "詳細",
+      "品名",
+      "会社名",
+      "氏名",
+      "単位",
+      "数量",
+      "単価",
+      "金額",
+      "備考",
+    ];
+
+    for (const block of list) {
+      const section = documentRef.createElement("div");
+      section.className = "jy2-pr-section";
+      const noLabel = block.status === "retired" ? "廃止" : `No.${block.blockNo}`;
+      const headParts = [
+        noLabel,
+        block.workTypeCode,
+        jy2DisplayWorkTypeName(block.workTypeName),
+        block.costCategory,
+        block.vendorName,
+      ].filter((text) => jy2HasText(text));
+      section.appendChild(
+        jy2Cell(documentRef, "div", "jy2-pr-sec-head", headParts.join("　")),
+      );
+      const started = jy2PrStartTable(documentRef, heads);
+      const rows = Array.isArray(block.detailRows) ? block.detailRows : [];
+      for (let i = 0; i < rows.length; i += 1) {
+        const row = rows[i];
+        const empty =
+          !jy2HasText(row.name1) &&
+          !jy2HasText(row.name2) &&
+          !jy2HasText(row.nameDetail) &&
+          !jy2HasText(row.nameItem) &&
+          !jy2HasText(row.quantity) &&
+          !jy2HasText(row.unitPrice) &&
+          (row.amount === null || row.amount === undefined || row.amount === "");
+        if (empty) continue;
+        const tr = documentRef.createElement("tr");
+        const cells = [
+          ["", jy2PrintDittoText(row.name1, jy2PrevResolved(rows, i, "name1"))],
+          ["", jy2PrintDittoText(row.name2, jy2PrevResolved(rows, i, "name2"))],
+          ["", row.nameDetail],
+          ["", row.nameItem],
+          ["", row.lineVendorName],
+          ["", row.linePersonName],
+          ["jy2-pr-center", row.unit],
+          ["jy2-num", row.quantity],
+          ["jy2-num", jy2Comma(row.unitPrice)],
+          ["jy2-amount", jy2AmountDisplay(row.amount)],
+          ["", row.note],
+        ];
+        for (const [cls, value] of cells) {
+          tr.appendChild(
+            jy2Cell(
+              documentRef,
+              "td",
+              cls,
+              value === null || value === undefined ? "" : String(value),
+            ),
+          );
+        }
+        started.tbody.appendChild(tr);
+      }
+
+      const footerKinds = footerKindsForCostCategory(
+        block.costCategory,
+        block.workTypeName,
+        { hasOverheadBase: block.footer?.overhead?.base != null },
+      );
+      for (const kind of footerKinds) {
+        const footerRow = block.footer && block.footer[kind];
+        if (!footerRow) continue;
+        let label = BLOCK_FOOTER_LABELS[kind] || kind;
+        if (kind === "overhead" && footerRow.ratePercent != null) {
+          label = `${label} ${footerRow.ratePercent}%`;
+        }
+        started.tbody.appendChild(
+          jy2PrFootRow(documentRef, label, footerRow.amount, 9),
+        );
+      }
+      section.appendChild(started.table);
+      root.appendChild(section);
+    }
+    return root;
   }
 
   // onMutated: 総括 edits (請負/給与) change ①, which the 予実 BC率/EC率
@@ -10238,6 +10460,41 @@
       head.appendChild(label);
     };
     if (blockEditable) {
+      const actions = documentRef.createElement("div");
+      actions.className = "jy2-block-actions";
+      actions.appendChild(
+        jy2RowButton(documentRef, "↑", () => {
+          detailModel.moveBlock(block.stableBlockId, -1);
+          rerenderFull();
+        }),
+      );
+      actions.appendChild(
+        jy2RowButton(documentRef, "↓", () => {
+          detailModel.moveBlock(block.stableBlockId, 1);
+          rerenderFull();
+        }),
+      );
+      // P-39: blocks with actuals are retired, never physically deleted.
+      if (block.hasActuals) {
+        actions.appendChild(
+          jy2RowButton(documentRef, "廃止", () => {
+            detailModel.retireBlock(block.stableBlockId);
+            rerenderFull();
+          }),
+        );
+      } else {
+        actions.appendChild(
+          jy2RowButton(documentRef, "ブロック削除", () => {
+            const id = block.stableBlockId;
+            detailModel.removeBlock(id);
+            // 先に DOM から外し、古い partial 差し替えが残像を作らないようにする。
+            if (typeof section.remove === "function") section.remove();
+            else if (section.parentNode) section.parentNode.removeChild(section);
+            rerenderFull();
+          }),
+        );
+      }
+      head.appendChild(actions);
       const commitWorkTypeCode = (value) => {
         const id = block.stableBlockId;
         detailModel.updateBlockHeader(id, { workTypeCode: value });
@@ -10338,41 +10595,6 @@
         ),
       );
       headerField("取引先（選択）", vendorWrap);
-      const actions = documentRef.createElement("div");
-      actions.className = "jy2-block-actions";
-      actions.appendChild(
-        jy2RowButton(documentRef, "↑", () => {
-          detailModel.moveBlock(block.stableBlockId, -1);
-          rerenderFull();
-        }),
-      );
-      actions.appendChild(
-        jy2RowButton(documentRef, "↓", () => {
-          detailModel.moveBlock(block.stableBlockId, 1);
-          rerenderFull();
-        }),
-      );
-      // P-39: blocks with actuals are retired, never physically deleted.
-      if (block.hasActuals) {
-        actions.appendChild(
-          jy2RowButton(documentRef, "廃止", () => {
-            detailModel.retireBlock(block.stableBlockId);
-            rerenderFull();
-          }),
-        );
-      } else {
-        actions.appendChild(
-          jy2RowButton(documentRef, "ブロック削除", () => {
-            const id = block.stableBlockId;
-            detailModel.removeBlock(id);
-            // 先に DOM から外し、古い partial 差し替えが残像を作らないようにする。
-            if (typeof section.remove === "function") section.remove();
-            else if (section.parentNode) section.parentNode.removeChild(section);
-            rerenderFull();
-          }),
-        );
-      }
-      head.appendChild(actions);
     } else {
       head.appendChild(
         jy2Cell(
@@ -11001,7 +11223,7 @@
       body.appendChild(addRow);
     }
 
-    // 施工かつ対象工種かつ外注費明細あり: 諸経費（自動）→計。無ければ計のみ。保安は無し。
+    // 施工かつ対象工種かつ外注費明細あり: 諸経費（自動）→計。それ以外は計のみ（保安含む）。
     for (const kind of footerKindsForCostCategory(
       block.costCategory,
       block.workTypeName,
@@ -13482,6 +13704,991 @@
   // できるようにする。両引数は optional（省略時は Phase2c-a 相当の表示専用
   // 動作）。書き込みは常に detailModel（App757）に限定し、actualsModel／
   // App758 の書込経路には触れない。
+  function jy2Cmv2FormatYen(value) {
+    if (value === null || value === undefined) return "";
+    return jy2FormatCommaNumber(String(value));
+  }
+
+  function jy2Cmv2FormatRate(rate) {
+    if (rate === null || rate === undefined) return "";
+    return `${(rate * 100).toFixed(1)}%`;
+  }
+
+  function jy2Cmv2FormatCount(value) {
+    if (value === null || value === undefined) return "";
+    return jy2FormatCommaNumber(String(value));
+  }
+
+  function jy2Cmv2PersistBudget(record, budget) {
+    const json = cmv2SerializeBudget(budget);
+    jy2ApplyHeaderField(record, "cost_mgmt_v2_budget", json);
+  }
+
+  function jy2Cmv2SystemsInSection(section) {
+    const out = [];
+    const seen = new Set();
+    for (const item of CMV2_MASTER_ITEMS) {
+      if (item.section !== section) continue;
+      if (seen.has(item.systemWorkType)) continue;
+      seen.add(item.systemWorkType);
+      out.push(item.systemWorkType);
+    }
+    return out;
+  }
+
+  function jy2Cmv2ItemsForSystem(section, systemWorkType) {
+    return CMV2_MASTER_ITEMS.filter(
+      (item) => item.section === section && item.systemWorkType === systemWorkType,
+    );
+  }
+
+  function jy2Cmv2MasterMap() {
+    if (!jy2Cmv2MasterMap._cache) {
+      jy2Cmv2MasterMap._cache = new Map(
+        CMV2_MASTER_ITEMS.map((item) => [item.workTypeKey, item]),
+      );
+    }
+    return jy2Cmv2MasterMap._cache;
+  }
+
+  function jy2Cmv2EnsureCountActual(actuals, workTypeKey) {
+    if (!actuals.countActual[workTypeKey]) {
+      actuals.countActual[workTypeKey] = cmv2EmptyMonths();
+    }
+    return actuals.countActual[workTypeKey];
+  }
+
+  function jy2Cmv2DetailSystems(pane, section, actuals) {
+    const systems = new Set();
+    const extra = pane._cmv2ExtraSystems && pane._cmv2ExtraSystems[section];
+    if (extra) for (const name of extra) systems.add(name);
+    for (const row of actuals.companies || []) {
+      const master = jy2Cmv2MasterMap().get(row.workTypeKey);
+      if (master && master.section === section) systems.add(master.systemWorkType);
+    }
+    return jy2Cmv2SystemsInSection(section).filter((name) => systems.has(name));
+  }
+
+  function jy2Cmv2EnsureOpenSystems(pane, actuals) {
+    if (!pane._cmv2OpenSystems) {
+      pane._cmv2OpenSystems = new Set();
+      for (const section of ["施工", "保安"]) {
+        for (const systemWorkType of jy2Cmv2SystemsInSection(section)) {
+          if (cmv2SystemHasActual(CMV2_MASTER_ITEMS, actuals, systemWorkType, section)) {
+            pane._cmv2OpenSystems.add(`${section}|${systemWorkType}`);
+          }
+        }
+      }
+    }
+    return pane._cmv2OpenSystems;
+  }
+
+  function jy2Cmv2YenInput(documentRef, value, onCommit, editable, opts = {}) {
+    if (!editable) {
+      const span = documentRef.createElement("span");
+      span.className = "jy2-num";
+      span.textContent = jy2Cmv2FormatYen(value);
+      return span;
+    }
+    return jy2CommaNumberInput(
+      documentRef,
+      value === null || value === undefined ? "" : String(value),
+      (raw) => {
+        const text = jy2StripCommaNumber(raw);
+        onCommit(text === "" ? null : cmv2ParseYen(text));
+      },
+      { ...opts, asciiDecimal: false, className: "jy2-input jy2-actual-month" },
+    );
+  }
+
+  function jy2Cmv2CountInput(documentRef, value, onCommit, editable) {
+    if (!editable) {
+      const span = documentRef.createElement("span");
+      span.className = "jy2-num";
+      span.textContent = jy2Cmv2FormatCount(value);
+      return span;
+    }
+    return jy2CommaNumberInput(
+      documentRef,
+      value === null || value === undefined ? "" : String(value),
+      (raw) => {
+        const text = jy2StripCommaNumber(raw);
+        onCommit(text === "" ? null : cmv2ParseYen(text));
+      },
+      { asciiDecimal: false, className: "jy2-input jy2-actual-month" },
+    );
+  }
+
+  function jy2Cmv2FillCellInput(td, input) {
+    td.appendChild(input);
+    if (input && input.tagName === "INPUT") {
+      td.style.cursor = "text";
+      td.addEventListener("mousedown", (event) => {
+        if (event.target === input) return;
+        if (typeof input.focus === "function") input.focus();
+      });
+    }
+    return td;
+  }
+
+  function jy2RenderCostMgmtV2(documentRef, pane, saveController, paneOpts) {
+    const scroll = jy2CaptureScroll(documentRef, pane);
+    pane.textContent = "";
+    const record = paneOpts && paneOpts.record;
+    const editable = Boolean(paneOpts && paneOpts.editable && saveController);
+    const view = documentRef.defaultView;
+
+    if (!pane._cmv2State) {
+      const rawBudget = jy2FieldValue(record, "cost_mgmt_v2_budget");
+      pane._cmv2State = {
+        budget: cmv2SeedIncludedWorkTypes(cmv2MergeMasterWorkTypes(rawBudget, CMV2_MASTER_ITEMS)),
+        actuals: cmv2ParseActuals({}),
+        loaded: !saveController,
+      };
+    }
+    const state = pane._cmv2State;
+    const rerender = () => jy2RenderCostMgmtV2(documentRef, pane, saveController, paneOpts);
+
+    if (!state.loaded && saveController) {
+      const loading = documentRef.createElement("p");
+      loading.className = "jy2-actual-note";
+      loading.textContent = "予実データを読込中…";
+      pane.appendChild(loading);
+      if (!pane._cmv2Loading) {
+        pane._cmv2Loading = true;
+        saveController
+          .loadCostMgmtV2Actuals()
+          .then((actuals) => {
+            state.actuals = actuals;
+            state.loaded = true;
+            pane._cmv2Loading = false;
+            rerender();
+          })
+          .catch((error) => {
+            pane._cmv2Loading = false;
+            if (typeof console !== "undefined" && console.error) {
+              console.error("loadCostMgmtV2Actuals failed:", error);
+            }
+            state.loaded = true;
+            rerender();
+          });
+      }
+      jy2ApplyScroll(documentRef, pane, scroll);
+      return;
+    }
+
+    const openSystems = jy2Cmv2EnsureOpenSystems(pane, state.actuals);
+    const innerTab = pane._cmv2InnerTab || "summary";
+    const persistBudget = () => jy2Cmv2PersistBudget(record, state.budget);
+
+    const titleRow = documentRef.createElement("div");
+    titleRow.style.display = "flex";
+    titleRow.style.alignItems = "center";
+    titleRow.style.gap = "12px";
+    titleRow.appendChild(
+      jy2Cell(documentRef, "h3", "jy2-section-title", "工事原価管理"),
+    );
+    if (saveController && editable) {
+      const saveButton = documentRef.createElement("button");
+      saveButton.type = "button";
+      saveButton.className = "jy2-save-button";
+      saveButton.textContent = "予実を保存";
+      saveButton.title = "工種別予算・予実（756 cost_mgmt_v2_budget / 758 cost_mgmt_v2_json）を保存";
+      saveButton.addEventListener("mousedown", (event) => {
+        jy2FlushActiveInputBeforeSave(documentRef);
+        if (typeof event.preventDefault === "function") event.preventDefault();
+      });
+      saveButton.addEventListener("click", async () => {
+        if (saveButton.disabled) return;
+        jy2FlushActiveInputBeforeSave(documentRef);
+        saveButton.disabled = true;
+        saveButton.textContent = "保存中…";
+        try {
+          const result = await saveController.saveCostMgmtV2(state.budget, state.actuals);
+          if (view && typeof view.alert === "function") {
+            view.alert(`予実を保存しました（${result.requestCount}リクエスト）`);
+          }
+          jy2ReloadPreservingTab(view, "actual", documentRef);
+        } catch (error) {
+          const message = `予実保存に失敗しました: ${(error && error.message) || error}`;
+          if (view && typeof view.alert === "function") view.alert(message);
+          saveButton.disabled = false;
+          saveButton.textContent = "予実を保存";
+        }
+      });
+      titleRow.appendChild(saveButton);
+    }
+    pane.appendChild(titleRow);
+
+    const tabBar = documentRef.createElement("div");
+    tabBar.className = "jy2-cmv2-tabs";
+    const tabDefs = [
+      ["summary", "集計"],
+      ["detail-seko", "詳細入力（施工）"],
+      ["detail-hoan", "詳細入力（保安）"],
+    ];
+    for (const [tabId, label] of tabDefs) {
+      const btn = documentRef.createElement("button");
+      btn.type = "button";
+      btn.className = "jy2-cmv2-tab";
+      btn.textContent = label;
+      btn.setAttribute("aria-selected", innerTab === tabId ? "true" : "false");
+      btn.addEventListener("click", () => {
+        pane._cmv2InnerTab = tabId;
+        rerender();
+      });
+      tabBar.appendChild(btn);
+    }
+    pane.appendChild(tabBar);
+
+    const jumpToDetail = (masterItem) => {
+      const section = masterItem.section;
+      const tabId = section === "施工" ? "detail-seko" : "detail-hoan";
+      const systems = jy2Cmv2DetailSystems(pane, section, state.actuals);
+      const hasBlock = systems.includes(masterItem.systemWorkType);
+      if (!hasBlock && editable) {
+        const ok =
+          view && typeof view.confirm === "function"
+            ? view.confirm("該当するブロックがないので追加しますか？")
+            : true;
+        if (!ok) {
+          pane._cmv2InnerTab = tabId;
+          rerender();
+          return;
+        }
+        if (!pane._cmv2ExtraSystems) pane._cmv2ExtraSystems = {};
+        if (!pane._cmv2ExtraSystems[section]) pane._cmv2ExtraSystems[section] = new Set();
+        pane._cmv2ExtraSystems[section].add(masterItem.systemWorkType);
+        cmv2SeedSingleChildRow(section, masterItem.systemWorkType);
+      }
+      pane._cmv2InnerTab = tabId;
+      pane._cmv2ScrollToSystem = masterItem.systemWorkType;
+      rerender();
+    };
+
+    const cmv2SystemHasCompanyRows = (section, systemWorkType) =>
+      (state.actuals.companies || []).some((row) => {
+        const master = jy2Cmv2MasterMap().get(row.workTypeKey);
+        return (
+          master &&
+          master.section === section &&
+          master.systemWorkType === systemWorkType
+        );
+      });
+
+    const cmv2SeedSingleChildRow = (section, systemWorkType) => {
+      if (cmv2SystemHasCompanyRows(section, systemWorkType)) return;
+      const childItems = jy2Cmv2ItemsForSystem(section, systemWorkType);
+      if (childItems.length !== 1) return;
+      state.actuals.companies.push({
+        workTypeKey: childItems[0].workTypeKey,
+        company: "",
+        months: cmv2EmptyMonths(),
+      });
+    };
+
+    const cmv2AddExtraSystem = (section, name) => {
+      const trimmed = String(name || "").trim();
+      if (!trimmed) return;
+      const used = new Set(jy2Cmv2DetailSystems(pane, section, state.actuals));
+      const candidates = jy2Cmv2SystemsInSection(section).filter((item) => !used.has(item));
+      if (!candidates.includes(trimmed)) return;
+      if (!pane._cmv2ExtraSystems) pane._cmv2ExtraSystems = {};
+      if (!pane._cmv2ExtraSystems[section]) pane._cmv2ExtraSystems[section] = new Set();
+      pane._cmv2ExtraSystems[section].add(trimmed);
+      cmv2SeedSingleChildRow(section, trimmed);
+      rerender();
+    };
+
+    const renderSummary = () => {
+      const scrollWrap = documentRef.createElement("div");
+      scrollWrap.className = "jy2-actual-scroll";
+      const table = documentRef.createElement("table");
+      table.className = "jy2-table jy2-actual-table jy2-cmv2-table";
+
+      const thead = documentRef.createElement("thead");
+      const headTop = documentRef.createElement("tr");
+      const monthVisibleCols = 3;
+      const fixedLabels = [
+        "",
+        "システム工種",
+        "工種",
+        "当初",
+        "現予算",
+        "残",
+        "率",
+        "予定回数",
+        "残回数",
+      ];
+      for (const label of fixedLabels) {
+        const th = documentRef.createElement("th");
+        th.textContent = label;
+        if (label === "") th.style.width = "2rem";
+        if (label === "予定回数") th.className = "jy2-cmv2-col-count-plan";
+        if (label === "残回数") th.className = "jy2-cmv2-col-count-remain";
+        headTop.appendChild(th);
+      }
+      for (const month of CMV2_MONTHS) {
+        const th = documentRef.createElement("th");
+        th.colSpan = monthVisibleCols;
+        th.textContent = `${month}月`;
+        headTop.appendChild(th);
+      }
+      thead.appendChild(headTop);
+      const headSub = documentRef.createElement("tr");
+      for (let i = 0; i < fixedLabels.length; i += 1) {
+        const th = documentRef.createElement("th");
+        headSub.appendChild(th);
+      }
+      for (let m = 0; m < 12; m += 1) {
+        const monthColLabels = [
+          ["見込", "実績が入る前の月次見込。実績がある月は変更できません", "jy2-cmv2-col-forecast"],
+          ["実績", "詳細入力の会社×月の合計。ここは直さない", "jy2-cmv2-col-actual"],
+          ["回数", "昼夜工種の実績回数。集計で直接入力", "jy2-cmv2-col-count"],
+        ];
+        for (const [label, title, className] of monthColLabels) {
+          const th = documentRef.createElement("th");
+          th.textContent = label;
+          th.title = title;
+          th.className = className;
+          headSub.appendChild(th);
+        }
+      }
+      thead.appendChild(headSub);
+      table.appendChild(thead);
+
+      const tbody = documentRef.createElement("tbody");
+      const sectionTotals = { 施工: { current: 0, adopted: 0, remaining: 0, has: false }, 保安: { current: 0, adopted: 0, remaining: 0, has: false } };
+      const grand = { current: 0, adopted: 0, remaining: 0, has: false };
+
+      const appendSubtotal = (label, totals, className) => {
+        const tr = documentRef.createElement("tr");
+        tr.className = className;
+        const tdLabel = documentRef.createElement("td");
+        tdLabel.colSpan = 3;
+        tdLabel.textContent = label;
+        tr.appendChild(tdLabel);
+        tr.appendChild(documentRef.createElement("td"));
+        for (const key of ["current", "remaining"]) {
+          const td = documentRef.createElement("td");
+          td.className = "jy2-num";
+          td.textContent = totals.has ? jy2Cmv2FormatYen(totals[key]) : "";
+          tr.appendChild(td);
+        }
+        const rateTd = documentRef.createElement("td");
+        rateTd.className = "jy2-num";
+        rateTd.textContent =
+          totals.has && totals.current
+            ? jy2Cmv2FormatRate(totals.adopted / totals.current)
+            : "";
+        tr.appendChild(rateTd);
+        const pad = 2 + 12 * monthVisibleCols;
+        for (let i = 0; i < pad; i += 1) tr.appendChild(documentRef.createElement("td"));
+        tbody.appendChild(tr);
+      };
+
+      for (const section of ["施工", "保安"]) {
+        for (const systemWorkType of jy2Cmv2SystemsInSection(section)) {
+          const items = jy2Cmv2ItemsForSystem(section, systemWorkType);
+          const rows = items
+            .map((item) => cmv2WorkTypeRow(item, state.budget, state.actuals))
+            .filter((row) => cmv2WorkTypeIsListed(row.workTypeKey, state.budget, state.actuals));
+          const sysKey = `${section}|${systemWorkType}`;
+          const isOpen = openSystems.has(sysKey);
+          const sysTotals = rows.reduce(
+            (acc, row) => {
+              if (row.current !== null) {
+                acc.current += row.current;
+                acc.hasCurrent = true;
+              }
+              acc.adopted += row.adoptedSum;
+              if (row.remaining !== null) {
+                acc.remaining += row.remaining;
+                acc.hasRemaining = true;
+              }
+              if (row.dayNight && row.countRemaining !== null) {
+                acc.countRemaining += row.countRemaining;
+                acc.hasCountRemaining = true;
+              }
+              return acc;
+            },
+            { current: 0, adopted: 0, remaining: 0, hasCurrent: false, hasRemaining: false, countRemaining: 0, hasCountRemaining: false },
+          );
+
+          const sysTr = documentRef.createElement("tr");
+          sysTr.className = "jy2-cmv2-system-row";
+          const toggleTd = documentRef.createElement("td");
+          const toggleBtn = documentRef.createElement("button");
+          toggleBtn.type = "button";
+          toggleBtn.className = "jy2-row-button";
+          toggleBtn.textContent = isOpen ? "▼" : "▶";
+          toggleBtn.addEventListener("click", () => {
+            if (isOpen) openSystems.delete(sysKey);
+            else openSystems.add(sysKey);
+            rerender();
+          });
+          toggleTd.appendChild(toggleBtn);
+          sysTr.appendChild(toggleTd);
+          const sysNameTd = documentRef.createElement("td");
+          sysNameTd.colSpan = 2;
+          sysNameTd.textContent = systemWorkType;
+          sysTr.appendChild(sysNameTd);
+          sysTr.appendChild(documentRef.createElement("td"));
+          const sysCurrentTd = documentRef.createElement("td");
+          sysCurrentTd.className = "jy2-num";
+          sysCurrentTd.textContent = sysTotals.hasCurrent ? jy2Cmv2FormatYen(sysTotals.current) : "";
+          sysTr.appendChild(sysCurrentTd);
+          const sysRemTd = documentRef.createElement("td");
+          sysRemTd.className = "jy2-num";
+          sysRemTd.textContent = sysTotals.hasRemaining ? jy2Cmv2FormatYen(sysTotals.remaining) : "";
+          sysTr.appendChild(sysRemTd);
+          sysTr.appendChild(documentRef.createElement("td"));
+          const countRemTd = documentRef.createElement("td");
+          countRemTd.colSpan = 2;
+          countRemTd.className = "jy2-num";
+          countRemTd.textContent = sysTotals.hasCountRemaining
+            ? jy2Cmv2FormatCount(sysTotals.countRemaining)
+            : "";
+          sysTr.appendChild(countRemTd);
+          for (let i = 0; i < 12 * monthVisibleCols; i += 1) sysTr.appendChild(documentRef.createElement("td"));
+          tbody.appendChild(sysTr);
+
+          for (const row of rows) {
+            if (row.current !== null) {
+              sectionTotals[section].current += row.current;
+              sectionTotals[section].has = true;
+            }
+            sectionTotals[section].adopted += row.adoptedSum;
+            if (row.remaining !== null) sectionTotals[section].remaining += row.remaining;
+          }
+
+          if (!isOpen) continue;
+
+          for (const row of rows) {
+            const tr = documentRef.createElement("tr");
+            tr.appendChild(documentRef.createElement("td"));
+            tr.appendChild(documentRef.createElement("td"));
+            const wtTd = documentRef.createElement("td");
+            const link = documentRef.createElement("button");
+            link.type = "button";
+            link.className = "jy2-cmv2-wt-link";
+            link.textContent = row.workType;
+            link.addEventListener("click", () => jumpToDetail(row));
+            wtTd.appendChild(link);
+            tr.appendChild(wtTd);
+            const initialTd = documentRef.createElement("td");
+            initialTd.className = "jy2-num";
+            initialTd.textContent = jy2Cmv2FormatYen(row.initial);
+            tr.appendChild(initialTd);
+            const currentTd = documentRef.createElement("td");
+            currentTd.className = "jy2-num";
+            const wtKey = row.workTypeKey;
+            if (!state.budget.workTypes[wtKey]) {
+              state.budget = cmv2IncludeWorkType(state.budget, wtKey);
+            }
+            const wtBudget = state.budget.workTypes[wtKey];
+            currentTd.appendChild(
+              jy2Cmv2YenInput(documentRef, row.current, (next) => {
+                wtBudget.current = next;
+                state.budget = cmv2IncludeWorkType(state.budget, wtKey);
+                persistBudget();
+                rerender();
+              }, editable),
+            );
+            tr.appendChild(currentTd);
+            const remTd = documentRef.createElement("td");
+            remTd.className = "jy2-num";
+            remTd.textContent = jy2Cmv2FormatYen(row.remaining);
+            tr.appendChild(remTd);
+            const rateTd = documentRef.createElement("td");
+            rateTd.className = "jy2-num";
+            rateTd.textContent = jy2Cmv2FormatRate(row.rate);
+            tr.appendChild(rateTd);
+            if (row.dayNight) {
+              const planTd = documentRef.createElement("td");
+              planTd.className = "jy2-num jy2-cmv2-col-count-plan";
+              jy2Cmv2FillCellInput(
+                planTd,
+                jy2Cmv2CountInput(documentRef, row.countPlan, (next) => {
+                  wtBudget.countPlan = next;
+                  state.budget = cmv2IncludeWorkType(state.budget, wtKey);
+                  persistBudget();
+                  rerender();
+                }, editable),
+              );
+              tr.appendChild(planTd);
+              const countRemCell = documentRef.createElement("td");
+              countRemCell.className = "jy2-num";
+              countRemCell.textContent = jy2Cmv2FormatCount(row.countRemaining);
+              tr.appendChild(countRemCell);
+            } else {
+              tr.appendChild(documentRef.createElement("td"));
+              tr.appendChild(documentRef.createElement("td"));
+            }
+            for (let mi = 0; mi < 12; mi += 1) {
+              const monthActual = row.actualsByMonth[mi];
+              const forecastTd = documentRef.createElement("td");
+              forecastTd.className = "jy2-num jy2-cmv2-col-forecast";
+              const forecastValue = wtBudget.forecast[mi];
+              const forecastEditable =
+                editable && cmv2ForecastMonthEditable(monthActual.has);
+              if (cmv2ForecastMonthFilled(forecastValue)) {
+                forecastTd.classList.add("jy2-cmv2-forecast-filled");
+              }
+              if (!forecastEditable && monthActual.has) {
+                forecastTd.classList.add("jy2-cmv2-forecast-locked");
+                forecastTd.title = "実績がある月の見込は変えられません";
+              }
+              forecastTd.appendChild(
+                jy2Cmv2YenInput(documentRef, forecastValue, (next) => {
+                  wtBudget.forecast[mi] = next;
+                  state.budget = cmv2IncludeWorkType(state.budget, wtKey);
+                  persistBudget();
+                  rerender();
+                }, forecastEditable),
+              );
+              tr.appendChild(forecastTd);
+              const actualTd = documentRef.createElement("td");
+              actualTd.className = "jy2-num jy2-cmv2-col-actual";
+              actualTd.textContent = monthActual.has ? jy2Cmv2FormatYen(monthActual.value) : "";
+              tr.appendChild(actualTd);
+              if (row.dayNight) {
+                const caTd = documentRef.createElement("td");
+                caTd.className = "jy2-num jy2-cmv2-col-count";
+                const countMonths = jy2Cmv2EnsureCountActual(state.actuals, wtKey);
+                jy2Cmv2FillCellInput(
+                  caTd,
+                  jy2Cmv2CountInput(documentRef, countMonths[mi], (next) => {
+                    countMonths[mi] = next;
+                    rerender();
+                  }, editable),
+                );
+                tr.appendChild(caTd);
+              } else {
+                const emptyCount = documentRef.createElement("td");
+                emptyCount.className = "jy2-cmv2-col-count";
+                tr.appendChild(emptyCount);
+              }
+            }
+            tbody.appendChild(tr);
+          }
+
+          if (editable) {
+            const candidates = items.filter(
+              (item) => !cmv2WorkTypeIsListed(item.workTypeKey, state.budget, state.actuals),
+            );
+            if (candidates.length > 0) {
+              const addTr = documentRef.createElement("tr");
+              addTr.className = "jy2-cmv2-add-wt";
+              addTr.appendChild(documentRef.createElement("td"));
+              addTr.appendChild(documentRef.createElement("td"));
+              const addTd = documentRef.createElement("td");
+              addTd.colSpan = 7 + 12 * monthVisibleCols;
+              const pick = documentRef.createElement("select");
+              pick.className = "jy2-select";
+              const blank = documentRef.createElement("option");
+              blank.value = "";
+              blank.textContent = "見込を入れる工種を選択";
+              pick.appendChild(blank);
+              for (const item of candidates) {
+                const opt = documentRef.createElement("option");
+                opt.value = item.workTypeKey;
+                opt.textContent = item.workType;
+                pick.appendChild(opt);
+              }
+              const addBtn = documentRef.createElement("button");
+              addBtn.type = "button";
+              addBtn.className = "jy2-btn";
+              addBtn.textContent = "＋ 工種";
+              addBtn.style.marginLeft = "8px";
+              const doAdd = () => {
+                const key = pick.value;
+                if (!key) return;
+                state.budget = cmv2IncludeWorkType(state.budget, key);
+                persistBudget();
+                openSystems.add(sysKey);
+                rerender();
+              };
+              addBtn.addEventListener("click", doAdd);
+              pick.addEventListener("change", () => {
+                if (pick.value) doAdd();
+              });
+              addTd.appendChild(pick);
+              addTd.appendChild(addBtn);
+              addTr.appendChild(addTd);
+              tbody.appendChild(addTr);
+            }
+          }
+        }
+        appendSubtotal(`${section}小計`, sectionTotals[section], "jy2-cmv2-subtotal");
+        if (sectionTotals[section].has) {
+          grand.current += sectionTotals[section].current;
+          grand.has = true;
+        }
+        grand.adopted += sectionTotals[section].adopted;
+        grand.remaining += sectionTotals[section].remaining;
+      }
+      appendSubtotal("全体合計", grand, "jy2-cmv2-grand");
+      table.appendChild(tbody);
+      scrollWrap.appendChild(table);
+      pane.appendChild(scrollWrap);
+    };
+
+    const renderDetailSection = (section) => {
+      const toolbar = documentRef.createElement("div");
+      toolbar.style.margin = "0 0 8px";
+      if (editable) {
+        const used = new Set(jy2Cmv2DetailSystems(pane, section, state.actuals));
+        const candidates = jy2Cmv2SystemsInSection(section).filter((name) => !used.has(name));
+        const pick = documentRef.createElement("select");
+        pick.className = "jy2-select";
+        const blank = documentRef.createElement("option");
+        blank.value = "";
+        blank.textContent = "システム工種を選択";
+        pick.appendChild(blank);
+        for (const name of candidates) {
+          const opt = documentRef.createElement("option");
+          opt.value = name;
+          opt.textContent = name;
+          pick.appendChild(opt);
+        }
+        const addBtn = documentRef.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "jy2-btn";
+        addBtn.textContent = "＋ ブロック追加";
+        addBtn.disabled = candidates.length === 0;
+        const doAdd = () => {
+          cmv2AddExtraSystem(section, pick.value);
+          pick.value = "";
+        };
+        addBtn.addEventListener("click", doAdd);
+        pick.addEventListener("change", () => {
+          if (pick.value) doAdd();
+        });
+        toolbar.appendChild(pick);
+        toolbar.appendChild(addBtn);
+      }
+      pane.appendChild(toolbar);
+
+      const systems = jy2Cmv2DetailSystems(pane, section, state.actuals);
+      for (const systemWorkType of systems) {
+        const block = documentRef.createElement("div");
+        block.className = "jy2-cmv2-detail-block";
+        block.dataset.systemWorkType = systemWorkType;
+        const head = documentRef.createElement("div");
+        head.className = "jy2-cmv2-detail-head";
+        head.textContent = systemWorkType;
+        if (editable) {
+          const delBtn = documentRef.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "jy2-row-button";
+          delBtn.textContent = "ブロック削除";
+          delBtn.style.marginLeft = "auto";
+          delBtn.addEventListener("click", () => {
+            const items = jy2Cmv2ItemsForSystem(section, systemWorkType);
+            const keys = new Set(items.map((item) => item.workTypeKey));
+            const hasRows = (state.actuals.companies || []).some((row) =>
+              keys.has(row.workTypeKey),
+            );
+            if (hasRows) {
+              const ok =
+                view && typeof view.confirm === "function"
+                  ? view.confirm("詳細行がありますが消しますか？")
+                  : true;
+              if (!ok) return;
+              state.actuals.companies = state.actuals.companies.filter(
+                (row) => !keys.has(row.workTypeKey),
+              );
+            }
+            if (pane._cmv2ExtraSystems && pane._cmv2ExtraSystems[section]) {
+              pane._cmv2ExtraSystems[section].delete(systemWorkType);
+            }
+            rerender();
+          });
+          head.appendChild(delBtn);
+        }
+        block.appendChild(head);
+
+        const scrollWrap = documentRef.createElement("div");
+        scrollWrap.className = "jy2-actual-scroll";
+        const table = documentRef.createElement("table");
+        table.className = "jy2-table jy2-cmv2-table";
+        const thead = documentRef.createElement("thead");
+        const headRow = documentRef.createElement("tr");
+        for (const label of ["工種", "会社", ...CMV2_MONTHS.map((m) => `${m}月`), "操作"]) {
+          const th = documentRef.createElement("th");
+          th.textContent = label;
+          headRow.appendChild(th);
+        }
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbody = documentRef.createElement("tbody");
+
+        const items = jy2Cmv2ItemsForSystem(section, systemWorkType);
+        const grouped = new Map();
+        state.actuals.companies.forEach((row, index) => {
+          const master = jy2Cmv2MasterMap().get(row.workTypeKey);
+          if (!master || master.section !== section || master.systemWorkType !== systemWorkType) {
+            return;
+          }
+          if (!grouped.has(row.workTypeKey)) {
+            grouped.set(row.workTypeKey, { item: master, companies: [] });
+          }
+          grouped.get(row.workTypeKey).companies.push({ row, index });
+        });
+        const sortedGroups = items
+          .filter((item) => grouped.has(item.workTypeKey))
+          .map((item) => grouped.get(item.workTypeKey));
+        const hasSystemRows = cmv2SystemHasCompanyRows(section, systemWorkType);
+
+        const removeExtraSystemIfEmpty = () => {
+          if (cmv2SystemHasCompanyRows(section, systemWorkType)) return;
+          if (pane._cmv2ExtraSystems && pane._cmv2ExtraSystems[section]) {
+            pane._cmv2ExtraSystems[section].delete(systemWorkType);
+          }
+        };
+
+        if (editable && !hasSystemRows) {
+          const tr = documentRef.createElement("tr");
+          tr.className = "jy2-cmv2-starter-row";
+          let activeRow = null;
+          const getOrCreateRow = (workTypeKey) => {
+            const key = String(workTypeKey || "").trim();
+            if (!key) return null;
+            if (activeRow) {
+              activeRow.workTypeKey = key;
+              return activeRow;
+            }
+            activeRow = {
+              workTypeKey: key,
+              company: "",
+              months: cmv2EmptyMonths(),
+            };
+            state.actuals.companies.push(activeRow);
+            return activeRow;
+          };
+
+          const wtTd = documentRef.createElement("td");
+          const wtSelect = documentRef.createElement("select");
+          wtSelect.className = "jy2-select";
+          const blankWt = documentRef.createElement("option");
+          blankWt.value = "";
+          blankWt.textContent = "工種を選択";
+          wtSelect.appendChild(blankWt);
+          for (const item of items) {
+            const opt = documentRef.createElement("option");
+            opt.value = item.workTypeKey;
+            opt.textContent = item.workType;
+            wtSelect.appendChild(opt);
+          }
+          wtSelect.addEventListener("change", () => {
+            getOrCreateRow(wtSelect.value);
+            rerender();
+          });
+          wtTd.appendChild(wtSelect);
+          tr.appendChild(wtTd);
+
+          const companyTd = documentRef.createElement("td");
+          companyTd.appendChild(
+            jy2ComboInput(
+              documentRef,
+              "",
+              jy2SelectOptions(JY2_VENDOR_SEEDS, "", true),
+              (next) => {
+                const row = getOrCreateRow(wtSelect.value);
+                if (row) row.company = String(next || "").trim();
+              },
+              { listOnly: true },
+            ),
+          );
+          tr.appendChild(companyTd);
+
+          for (let mi = 0; mi < 12; mi += 1) {
+            const td = documentRef.createElement("td");
+            td.className = "jy2-num";
+            td.appendChild(
+              jy2Cmv2YenInput(documentRef, null, (next) => {
+                const row = getOrCreateRow(wtSelect.value);
+                if (row) row.months[mi] = next;
+              }, editable),
+            );
+            tr.appendChild(td);
+          }
+
+          const actTd = documentRef.createElement("td");
+          const del = documentRef.createElement("button");
+          del.type = "button";
+          del.className = "jy2-row-button";
+          del.textContent = "削除";
+          del.addEventListener("click", () => {
+            if (activeRow) {
+              const idx = state.actuals.companies.indexOf(activeRow);
+              if (idx >= 0) state.actuals.companies.splice(idx, 1);
+            }
+            removeExtraSystemIfEmpty();
+            rerender();
+          });
+          actTd.appendChild(del);
+          tr.appendChild(actTd);
+          tbody.appendChild(tr);
+        }
+
+        for (const { item, companies } of sortedGroups) {
+          let first = true;
+          const renderCompanyRow = (entry) => {
+            const tr = documentRef.createElement("tr");
+            if (first) {
+              const wtTd = documentRef.createElement("td");
+              wtTd.rowSpan = companies.length + (editable ? 1 : 0);
+              wtTd.textContent = item.workType;
+              tr.appendChild(wtTd);
+              first = false;
+            }
+            const companyTd = documentRef.createElement("td");
+            if (editable) {
+              const combo = jy2ComboInput(
+                documentRef,
+                entry.row.company,
+                jy2SelectOptions(JY2_VENDOR_SEEDS, entry.row.company, true),
+                (next) => {
+                  entry.row.company = String(next || "").trim();
+                },
+                { listOnly: true },
+              );
+              companyTd.appendChild(combo);
+            } else {
+              companyTd.textContent = entry.row.company;
+            }
+            tr.appendChild(companyTd);
+            for (let mi = 0; mi < 12; mi += 1) {
+              const td = documentRef.createElement("td");
+              td.className = "jy2-num";
+              td.appendChild(
+                jy2Cmv2YenInput(documentRef, entry.row.months[mi], (next) => {
+                  entry.row.months[mi] = next;
+                }, editable),
+              );
+              tr.appendChild(td);
+            }
+            const actTd = documentRef.createElement("td");
+            if (editable) {
+              const del = documentRef.createElement("button");
+              del.type = "button";
+              del.className = "jy2-row-button";
+              del.textContent = "削除";
+              del.addEventListener("click", () => {
+                const idx = state.actuals.companies.indexOf(entry.row);
+                if (idx >= 0) state.actuals.companies.splice(idx, 1);
+                removeExtraSystemIfEmpty();
+                rerender();
+              });
+              actTd.appendChild(del);
+            }
+            tr.appendChild(actTd);
+            tbody.appendChild(tr);
+          };
+
+          for (const entry of companies) renderCompanyRow(entry);
+
+          if (editable) {
+            const addTr = documentRef.createElement("tr");
+            const td = documentRef.createElement("td");
+            td.colSpan = 14;
+            const addCo = documentRef.createElement("button");
+            addCo.type = "button";
+            addCo.className = "jy2-row-button";
+            addCo.textContent = `＋ ${item.workType} に会社行`;
+            addCo.addEventListener("click", () => {
+              state.actuals.companies.push({
+                workTypeKey: item.workTypeKey,
+                company: "",
+                months: cmv2EmptyMonths(),
+              });
+              rerender();
+            });
+            td.appendChild(addCo);
+            addTr.appendChild(td);
+            tbody.appendChild(addTr);
+          }
+        }
+
+        if (editable && hasSystemRows) {
+          const usedKeys = new Set(
+            (state.actuals.companies || [])
+              .filter((row) => {
+                const master = jy2Cmv2MasterMap().get(row.workTypeKey);
+                return master && master.systemWorkType === systemWorkType;
+              })
+              .map((row) => row.workTypeKey),
+          );
+          const unusedItems = items.filter((item) => !usedKeys.has(item.workTypeKey));
+          if (unusedItems.length > 0) {
+            const pickTr = documentRef.createElement("tr");
+            const pickTd = documentRef.createElement("td");
+            pickTd.colSpan = 15;
+            const pick = documentRef.createElement("select");
+            pick.className = "jy2-select";
+            const blank = documentRef.createElement("option");
+            blank.value = "";
+            blank.textContent = "別の工種を追加";
+            pick.appendChild(blank);
+            for (const item of unusedItems) {
+              const opt = documentRef.createElement("option");
+              opt.value = item.workTypeKey;
+              opt.textContent = item.workType;
+              pick.appendChild(opt);
+            }
+            const addWorkTypeRow = () => {
+              const key = pick.value;
+              if (!key) return;
+              state.actuals.companies.push({
+                workTypeKey: key,
+                company: "",
+                months: cmv2EmptyMonths(),
+              });
+              pick.value = "";
+              rerender();
+            };
+            pick.addEventListener("change", () => {
+              if (pick.value) addWorkTypeRow();
+            });
+            const addFirst = documentRef.createElement("button");
+            addFirst.type = "button";
+            addFirst.className = "jy2-row-button";
+            addFirst.textContent = "追加";
+            addFirst.style.marginLeft = "8px";
+            addFirst.addEventListener("click", addWorkTypeRow);
+            pickTd.appendChild(pick);
+            pickTd.appendChild(addFirst);
+            pickTr.appendChild(pickTd);
+            tbody.appendChild(pickTr);
+          }
+        }
+
+        table.appendChild(tbody);
+        scrollWrap.appendChild(table);
+        block.appendChild(scrollWrap);
+        pane.appendChild(block);
+      }
+
+      if (pane._cmv2ScrollToSystem && view) {
+        const target = pane.querySelector(
+          `[data-system-work-type="${pane._cmv2ScrollToSystem}"]`,
+        );
+        pane._cmv2ScrollToSystem = null;
+        if (target && typeof target.scrollIntoView === "function") {
+          view.requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+        }
+      }
+    };
+
+    if (innerTab === "summary") renderSummary();
+    else if (innerTab === "detail-seko") renderDetailSection("施工");
+    else renderDetailSection("保安");
+
+    jy2ApplyScroll(documentRef, pane, scroll);
+  }
+
   function jy2RenderActualPane(
     documentRef,
     pane,
@@ -13496,6 +14703,9 @@
     onDetailStructureChanged,
     paneOpts,
   ) {
+    if (JY2_COST_MGMT_V2) {
+      return jy2RenderCostMgmtV2(documentRef, pane, saveController, paneOpts);
+    }
     const scroll = jy2CaptureScroll(documentRef, pane);
     pane.textContent = "";
     const editable = actualsModel.allowedOperations.editActuals;
@@ -15027,10 +16237,102 @@
         return app2RecordsToBlocks(records);
       },
       async loadActuals() {
+        if (JY2_COST_MGMT_V2) return [];
         const records = await fetchExistingActualRows(api, APP3_ID, keys.projectId, {
           fields: null,
         });
         return app3RecordsToActualRows(records);
+      },
+      async loadCostMgmtV2Actuals() {
+        const recordKey = cmv2ActualRecordKey(keys.projectId);
+        if (recordKey.includes('"')) {
+          throw new RangeError("projectId must not contain double quotes");
+        }
+        const response = await api("/k/v1/records.json", "GET", {
+          app: APP3_ID,
+          query: `actual_record_key = "${recordKey}" limit 1`,
+          fields: ["cost_mgmt_v2_json"],
+        });
+        const rec =
+          Array.isArray(response.records) && response.records.length
+            ? response.records[0]
+            : null;
+        return cmv2ParseActuals(rec ? jy2FieldValue(rec, "cost_mgmt_v2_json") : {});
+      },
+      async saveCostMgmtV2(budget, actuals) {
+        const versionRecords = await this.loadVersions();
+        const openVersion = pickOpenVersion(
+          versionRecords.map((row) => ({
+            status: jy2FieldValue(row, "status"),
+            version_seq: jy2FieldValue(row, "version_seq"),
+            budget_version_id: jy2FieldValue(row, "budget_version_id"),
+          })),
+        );
+        if (
+          !openVersion ||
+          String(openVersion.budget_version_id) !== keys.budgetVersionId
+        ) {
+          throw new Error("現行版以外からは予実保存不可");
+        }
+        let requestCount = 0;
+        const budgetJson = cmv2SerializeBudget(budget);
+        const putParent = await api("/k/v1/record.json", "PUT", {
+          app: APP1_ID,
+          id: String(recordId),
+          revision: parentRevision,
+          record: {
+            cost_mgmt_v2_budget: { value: budgetJson },
+          },
+        });
+        requestCount += 1;
+        if (putParent && putParent.revision) {
+          parentRevision = String(putParent.revision);
+          if (!record.$revision) record.$revision = { value: parentRevision };
+          else record.$revision.value = parentRevision;
+        }
+        jy2ApplyHeaderField(record, "cost_mgmt_v2_budget", budgetJson);
+
+        const recordKey = cmv2ActualRecordKey(keys.projectId);
+        const get758 = await api("/k/v1/records.json", "GET", {
+          app: APP3_ID,
+          query: `actual_record_key = "${recordKey}" limit 1`,
+          fields: ["$id", "$revision"],
+        });
+        const actualsJson = cmv2SerializeActuals(actuals);
+        const existing758 =
+          Array.isArray(get758.records) && get758.records.length
+            ? get758.records[0]
+            : null;
+        if (existing758) {
+          await api("/k/v1/record.json", "PUT", {
+            app: APP3_ID,
+            id: existing758.$id.value,
+            revision: existing758.$revision.value,
+            record: {
+              cost_mgmt_v2_json: { value: actualsJson },
+            },
+          });
+        } else {
+          const sentinel = cmv2Sentinel758Fields(keys);
+          const postRecord = {
+            actual_record_key: { value: sentinel.actual_record_key },
+            project_id: { value: sentinel.project_id },
+            project_business_key: { value: sentinel.project_business_key },
+            record_kind: { value: sentinel.record_kind },
+            amount: { value: sentinel.amount },
+            stable_block_id: { value: sentinel.stable_block_id },
+            source_kind: { value: sentinel.source_kind },
+            write_channel: { value: sentinel.write_channel },
+            cost_category_key: { value: sentinel.cost_category_key },
+            cost_mgmt_v2_json: { value: actualsJson },
+          };
+          await api("/k/v1/record.json", "POST", {
+            app: APP3_ID,
+            record: postRecord,
+          });
+        }
+        requestCount += 1;
+        return { requestCount };
       },
       // 残B: 同一工事の版一覧（App1 レコード）を LIVE から読む。
       async loadVersions() {
@@ -15106,6 +16408,26 @@
             previousLines: projectionManual.previousLines(),
           });
           Object.assign(parentRecord, projectionRowsToSubtable(projectionRows));
+        }
+        if (JY2_COST_MGMT_V2) {
+          const rawCmv2Budget = jy2FieldValue(record, "cost_mgmt_v2_budget");
+          let cmv2Budget = rawCmv2Budget
+            ? cmv2ParseBudget(rawCmv2Budget)
+            : cmv2MergeMasterWorkTypes({}, CMV2_MASTER_ITEMS);
+          if (
+            isVersionConfirmAttempt &&
+            options.confirmingVersion &&
+            !projectionRepaired
+          ) {
+            cmv2Budget = cmv2ApplyFirstConfirmLock(cmv2Budget);
+            const lockedJson = cmv2SerializeBudget(cmv2Budget);
+            jy2ApplyHeaderField(record, "cost_mgmt_v2_budget", lockedJson);
+            parentRecord.cost_mgmt_v2_budget = { value: lockedJson };
+          } else {
+            parentRecord.cost_mgmt_v2_budget = {
+              value: cmv2SerializeBudget(cmv2Budget),
+            };
+          }
         }
         // 初期表示で取得済みのApp2行を再利用し、保存直前の重複GETを省く。
         // 各行revisionと親revisionはbulk保存時に検証されるため、競合検知は維持される。
@@ -15529,6 +16851,10 @@
       addBlockBtn.hidden = tabId !== "detail";
       // 給与行は総括専用。
       addSalaryBtn.hidden = tabId !== "summary";
+      printButton.title =
+        tabId === "detail"
+          ? "内訳を帳票で印刷します（工事基本情報・各工種ブロック／A4横）"
+          : "総括を ver.01 同型の帳票で印刷します（請負・原価・給与・①⑧⑨／A4横）";
     }
 
     let actualsDirty = true;
@@ -15575,10 +16901,22 @@
     }
     shell._jy2ActivateTab = activate;
     printButton.addEventListener("click", () => {
-      activate("summary");
       const win = documentRef.defaultView;
       if (!win || typeof win.print !== "function") return;
+      const tabId = sticky.dataset.activeTab || "header";
       try {
+        if (tabId === "detail") {
+          flushDetailIfDirty();
+          jy2OpenPrintPortal(
+            documentRef,
+            jy2BuildPrintDetailDoc(documentRef, {
+              record,
+              blocks: detailModel.snapshot().blocks,
+            }),
+          );
+          return;
+        }
+        activate("summary");
         const blocks = currentBlocks();
         const printTotals = summaryModel.totals(blocks);
         const previousLines =
@@ -15720,6 +17058,15 @@
         actualsDirty = false;
         return;
       }
+      const versionRows = (summaryData.versions || []).map((rec) => ({
+        status: jy2FieldValue(rec, "status"),
+        version_seq: jy2FieldValue(rec, "version_seq"),
+        budget_version_id: jy2FieldValue(rec, "budget_version_id"),
+      }));
+      const openVersion = pickOpenVersion(versionRows);
+      const currentBv = jy2FieldValue(record, "budget_version_id");
+      const isOpenVersion =
+        openVersion && String(openVersion.budget_version_id) === String(currentBv);
       jy2RenderActualPane(
         documentRef,
         actualPane,
@@ -15734,7 +17081,14 @@
         onDetailStructureChanged,
         {
           hasPendingDetailEdits: () => detailSavePending,
-          budgetVersionId: jy2FieldValue(record, "budget_version_id"),
+          budgetVersionId: currentBv,
+          record,
+          editable: Boolean(
+            saveController &&
+              canEditBudget &&
+              isOpenVersion &&
+              actualsModel.allowedOperations.editActuals,
+          ),
         },
       );
       actualsDirty = false;

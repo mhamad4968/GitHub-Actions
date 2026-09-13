@@ -72,7 +72,7 @@ function logDirtyHint() {
     }
     console.log(`[cio:day-close] dirty:\n${lines}`);
     console.log(
-      '[cio:day-close] NOTE: 予実G0 / 夜handoff は close-git に混ぜない（先に stash）。SESSION-CLOCK は clock:clear',
+      '[cio:day-close] NOTE: LIVE した customize は stash しない。未実装の別レーン dirty だけ stash。SESSION-CLOCK は clock:clear',
     );
   } catch (err) {
     console.log(`[cio:day-close] dirty: git status 取得失敗 (${err.message || err})`);

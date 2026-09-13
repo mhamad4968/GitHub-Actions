@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 10:28 JST — 朝セッション **full CLOSE**。金額増減 目視OK完了。原価管理は今晩。
-**次の1手**: **今晩・新チャット** WAKE → `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md` と G0 §0・§13。**実装GOが出るまで customize しない**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
-**レーン変更**: 朝 756 金額増減完了 → **夜 756 予実 G0（工種単位）**
-**Git**: **`236383e5`** = `origin/main` — push 済
-**closeStatus**: **full**（朝チャット終了。夜は別チャット。日終わり⑦は夜のあと）
-**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
-**本日状態**: **756**=`2026-09-13-ver02-amount-delta-zero-ok` rev**375** fileKey `5b1f5809-48cf-46d8-8e96-eeab384e7da2`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**最終更新**: 2026-09-13 19:30 JST — 夜 ③全GO。④配線済。⑤⑥⑦ after-go。
+**次の1手**: **明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。
+**レーン変更**: 夜 756 予実集計目視OK → **明朝 印刷・Excel 意見交換**
+**Git**: **`354ffeac`** ahead 1 + dirty（close-git 実行中）
+**closeStatus**: **full 進行中**（after-go）
+**制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
+**本日状態**: **756**=`2026-09-13-ver02-cmv2-forecast-green` rev**392** fileKey `9bdf7a8e-1b10-4864-9fba-4215a5741960`。**757**=rev**34**（unit に泊）。**758**=rev**31**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-09-13）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-13-ver02-amount-delta-zero-ok` | **375** |
+| **756** | `2026-09-13-ver02-cmv2-forecast-green` | **392** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
@@ -20,8 +20,8 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 今夜引継ぎ `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md`。予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GO（今晩の新チャット）**。一時保存・内訳 Tab・**金額増減は目視OK完了**。夜§13.1は1–7決。日終わり⑦は夜のあと
+**継続メモ**: 印刷・Excelは意見交換から。集計 LIVE は rev392。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
+**GO待ち**: なし（③全GO済）。印刷・Excelの実装GOは意見交換のあと
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev375 金額増減 **目視OK** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。原価管理は今晩 |
+| **756/757/758** | 756 LIVE rev**392** 予実集計（見込ロック・薄緑）**目視OK** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。金額増減完了。印刷・Excelは意見交換から |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -47,6 +47,11 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-09-13
+
+### 2026-09-13 夜 until-pause（③GO待ち）
+- 予実集計 LIVE rev **392** BUILD `2026-09-13-ver02-cmv2-forecast-green`。見込ロック・薄緑目視OK
+- 次の1手は印刷と Excel の意見交換。customize は実装GOまでしない
+- Git `354ffeac` ahead 1 + dirty。⑤⑥⑦は ③GO 後
 
 ### 2026-09-13 朝締め（full CLOSE）
 - 金額増減 目視OK完了 rev375。原価管理は今晩の新チャット。実装GOまで customize しない

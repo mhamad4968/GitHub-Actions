@@ -6567,3 +6567,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 閉済9件 / 設定タブ / 757 customize / 金額増減 / 予実customizeは実装GOまで
 
 ---
+
+### 2026-09-13 JST — **夜 until-pause（予実集計目視OK）**
+
+**要約**: 756 工事原価管理集計を LIVE。見込ロック・薄緑目視OK rev392。日終わりは ①②済・③GO待ち。dirty と ahead 1 は ⑤で close-git。
+
+**話したこと**: 見込は実績がある月はグレーで変更不可（0は実績、空に戻したら再開、数字は残す）。見込入力済は薄緑。回数は昼夜工種のみ。印刷と Excel は次チャットで意見交換から。customize はそのあと実装GOまでしない。736・757 customize・金額増減・統括11列・設定タブは不触。commit はユーザー規則を採り R63 は未充足。
+
+**次の1手**: **明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。
+
+**Git**: `354ffeac` — ahead 1 + dirty 756 LIVE（close-git は ③GO 後）
+
+**BUILD**: App 756 BUILD=`2026-09-13-ver02-cmv2-forecast-green` rev **392** fileKey `9bdf7a8e-1b10-4864-9fba-4215a5741960`
+
+**GO待ち**: ③改善案（#O1 #T1 #R1）。印刷・Excelの実装GOは意見交換のあと
+
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 閉済9件 / 設定タブ / 757 customize / 金額増減
+
+---

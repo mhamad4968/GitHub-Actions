@@ -107,7 +107,7 @@ test("row_kind / unit / status catalogs match the App2 field catalog (§2, U16)"
   assert.deepEqual(footerKindsForCostCategory("施工", "材料費"), [
     "block_total",
   ]);
-  assert.deepEqual(footerKindsForCostCategory("保安"), []);
+  assert.deepEqual(footerKindsForCostCategory("保安"), ["block_total"]);
   assert.equal(BLOCK_FOOTER_LABELS.block_total, "計");
 });
 
@@ -713,7 +713,18 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /body === "0"\) return "－"/);
   assert.match(source, /function jy2LoadAmountDeltaIndex/);
   assert.match(source, /applyAmountDeltaFallbacks/);
-  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta-zero-ok/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-cmv2-forecast-green/);
+  assert.match(source, /function jy2MarkDetailPrintKeep/);
+  assert.match(source, /function jy2PrepareDetailPrintKeep/);
+  assert.match(source, /jy2-print-measure/);
+  assert.match(source, /jy2PrepareDetailPrintKeep\(documentRef, portal, root\)/);
+  assert.match(source, /function jy2Cmv2FillCellInput/);
+  assert.match(source, /\.jy2-cmv2-table\{[^}]*width:max-content/);
+  assert.match(source, /jy2-cmv2-col-count-plan/);
+  assert.match(source, /cmv2ForecastMonthEditable\(monthActual\.has\)/);
+  assert.match(source, /jy2-cmv2-forecast-locked/);
+  assert.match(source, /cmv2ForecastMonthFilled\(forecastValue\)/);
+  assert.match(source, /jy2-cmv2-forecast-filled\{background:#dcfce7;color:#166534\}/);
   assert.match(source, /売上（①）[\s\S]*金額増減[\s\S]*原価（⑧）/);
   assert.match(source, /金額増減（自動）/);
   // 内訳セル編集は総括を dirty 遅延（タブ表示/保存時に refreshSummary(true)）。

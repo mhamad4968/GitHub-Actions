@@ -8,6 +8,9 @@ export const SESSION_CLOSE_TEMP_PATTERNS = [
   /^data\/tmp-.*\.(txt|json)$/,
   /^docs\/approved-changes\/pending\//,
   /^chat-sessions\/tmp-close(?:-report)?-\d{4}-\d{2}-\d{2}\.md$/,
+  /^chat-sessions\/tmp-/,
+  /^scripts\/tmp-/,
+  /^logs\/cio-report-draft/,
 ];
 
 export function isSessionCloseTempPath(rel) {
