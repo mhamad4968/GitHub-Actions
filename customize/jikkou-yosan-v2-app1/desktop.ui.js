@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-cat
+  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-prev
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2641,14 +2641,18 @@
     const sourceId = String(jy2FieldValue(record, "source_record_id") || "").trim();
     const selfId = jy2RecordIdOf(record);
     if (!sourceId || sourceId === selfId) return null;
-    let prevParent =
-      (versions || []).find((row) => jy2RecordIdOf(row) === sourceId) || null;
-    if (!prevParent && typeof api === "function" && /^\d+$/.test(sourceId)) {
+    // 版一覧の一括 GET は SUBTABLE を落とすことがある。直前版は $id で取り直す。
+    let prevParent = null;
+    if (typeof api === "function" && /^\d+$/.test(sourceId)) {
       const response = await api("/k/v1/records.json", "GET", {
         app: APP1_ID,
         query: `$id = ${sourceId} limit 1`,
       });
       prevParent = Array.isArray(response.records) ? response.records[0] : null;
+    }
+    if (!prevParent) {
+      prevParent =
+        (versions || []).find((row) => jy2RecordIdOf(row) === sourceId) || null;
     }
     if (!prevParent) return null;
     const prevVersionId = String(
@@ -2659,11 +2663,14 @@
       fields: null,
     });
     const summaryLines = app1RecordToSummaryLines(prevParent);
-    return buildAmountDeltaIndex({
-      contractLines: (summaryLines.contractLines || []).filter((line) => line.section),
-      salaryLines: summaryLines.salaryLines || [],
-      blocks: app2RecordsToBlocks(prevDetails),
-    });
+    return applyAmountDeltaFallbacks(
+      buildAmountDeltaIndex({
+        contractLines: (summaryLines.contractLines || []).filter((line) => line.section),
+        salaryLines: summaryLines.salaryLines || [],
+        blocks: app2RecordsToBlocks(prevDetails),
+      }),
+      prevParent,
+    );
   }
 
   // D-31/D-32: 率(÷①) = 金額÷①。画面ラベルは「消化率」（浜田 2026-07-23）。

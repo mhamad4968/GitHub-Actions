@@ -7,7 +7,7 @@ import { displayInteger, detailLineAmount, decimalLineAmount } from "./calc.mjs"
 import { LOCK_STATES } from "./lock.mjs";
 import { createContractSalaryModel } from "./contract-salary-model.mjs";
 import { createDetailBlockModel } from "./detail-block-model.mjs";
-import { regenerateSummaryCostLines } from "./projection.mjs";
+import { normalizeSummaryRowKey, regenerateSummaryCostLines } from "./projection.mjs";
 
 function presentDelta(value) {
   return value !== undefined && value !== null && value !== "";
@@ -248,5 +248,116 @@ export function buildAmountDeltaIndex({
       costConstruction: totals.costConstruction,
       costSafety: totals.costSafety,
     }),
+  });
+}
+
+function recordCell(record, code) {
+  const field = record?.[code];
+  const value = field && typeof field === "object" && "value" in field ? field.value : field;
+  if (value === undefined || value === null || value === "") return null;
+  return String(value).trim();
+}
+
+function isZeroYen(value) {
+  const yen = displayInteger(asDec(value) ?? "0") ?? "0";
+  return compare(yen, "0") === 0;
+}
+
+const STORED_TOTAL_FIELDS = Object.freeze({
+  construction: "contract_construction_total",
+  safety: "contract_safety_total",
+  total1: "contract_total_1",
+  salary: "salary_total",
+  total8: "cost_total_8",
+  profit9: "profit_9",
+  costConstruction: "cost_construction_total",
+  costSafety: "cost_safety_total",
+});
+
+export function summaryCostLinesToDeltaRows(record) {
+  const field = record?.summary_cost_lines;
+  const rows = Array.isArray(field?.value) ? field.value : [];
+  const cell = (row, code) => {
+    const value = row?.value?.[code]?.value;
+    return value === undefined || value === null || value === "" ? null : String(value);
+  };
+  return rows.map((row) =>
+    Object.freeze({
+      summary_row_key: cell(row, "summary_row_key"),
+      summary_stable_block_id: cell(row, "summary_stable_block_id"),
+      summary_qty: cell(row, "summary_qty"),
+      summary_unit_price: cell(row, "summary_unit_price"),
+      summary_amount_excl_tax: cell(row, "summary_amount_excl_tax"),
+      summary_cost_category: cell(row, "summary_cost_category"),
+    }),
+  );
+}
+
+/**
+ * 版一覧 GET は SUBTABLE を落とすことがある。再計算が 0 のときだけ
+ * 親の保存合計と summary_cost_lines を使う（実データ 0 は上書きしない）。
+ */
+export function applyAmountDeltaFallbacks(index, prevParent) {
+  if (!index || !index.enabled || !prevParent) return index;
+  const totals = { ...index.totals };
+  for (const [key, code] of Object.entries(STORED_TOTAL_FIELDS)) {
+    const stored = recordCell(prevParent, code);
+    if (stored && isZeroYen(totals[key]) && !isZeroYen(stored)) {
+      totals[key] = asDec(stored) ?? stored;
+    }
+  }
+
+  let projection = index.projection;
+  let projectionKei = index.projectionKei;
+  const cached = summaryCostLinesToDeltaRows(prevParent);
+  if (projection.size === 0 && cached.some((row) => row.summary_row_key || row.summary_amount_excl_tax)) {
+    projection = new Map();
+    projectionKei = new Map();
+    const keiSums = new Map();
+    let costConstruction = "0";
+    let costSafety = "0";
+    for (const line of cached) {
+      const rowKey = normalizeSummaryRowKey(line.summary_row_key || "");
+      const blockId = String(line.summary_stable_block_id || "").trim();
+      if (rowKey) {
+        projection.set(
+          rowKey,
+          tripleFromLine({
+            quantity: line.summary_qty,
+            unitPrice: line.summary_unit_price,
+            amount: line.summary_amount_excl_tax,
+          }),
+        );
+      }
+      const part = asDec(line.summary_amount_excl_tax) ?? "0";
+      if (blockId) keiSums.set(blockId, add(keiSums.get(blockId) || "0", part));
+      if (line.summary_cost_category === "施工") {
+        costConstruction = add(costConstruction, part);
+      } else if (line.summary_cost_category === "保安") {
+        costSafety = add(costSafety, part);
+      }
+    }
+    for (const [blockId, amount] of keiSums) {
+      projectionKei.set(blockId, { quantity: null, unitPrice: null, amount });
+    }
+    if (isZeroYen(totals.costConstruction) && !isZeroYen(costConstruction)) {
+      totals.costConstruction = costConstruction;
+    }
+    if (isZeroYen(totals.costSafety) && !isZeroYen(costSafety)) {
+      totals.costSafety = costSafety;
+    }
+    if (isZeroYen(totals.total8)) {
+      totals.total8 = add(add(totals.costConstruction || "0", totals.costSafety || "0"), totals.salary || "0");
+    }
+    if (isZeroYen(totals.profit9) && !isZeroYen(totals.total1)) {
+      totals.profit9 = subtract(totals.total1 || "0", totals.total8 || "0");
+    }
+  }
+
+  return Object.freeze({
+    ...index,
+    projection,
+    projectionKei,
+    totals: Object.freeze(totals),
   });
 }

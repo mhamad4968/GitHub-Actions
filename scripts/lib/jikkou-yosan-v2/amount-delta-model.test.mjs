@@ -5,6 +5,7 @@ import { LOCK_STATES } from "./lock.mjs";
 import { createContractSalaryModel } from "./contract-salary-model.mjs";
 import { createDetailBlockModel } from "./detail-block-model.mjs";
 import {
+  applyAmountDeltaFallbacks,
   buildAmountDeltaIndex,
   compareAmountDelta,
   detailDeltaKey,
@@ -224,4 +225,43 @@ test("totals omit qty/price labels and include new plus deleted", () => {
 test("lookup returns null when index is hidden", () => {
   assert.equal(lookupAmountDelta(null, "contract", "x", { amount: "1" }), null);
   assert.equal(lookupTotalsDelta({ enabled: false, totals: {} }, "total1", "1"), null);
+});
+
+test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
+  const empty = buildAmountDeltaIndex({ contractLines: [], salaryLines: [], blocks: [] });
+  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").display, "+46910000");
+
+  const filled = applyAmountDeltaFallbacks(empty, {
+    contract_construction_total: { value: "46910000" },
+    contract_safety_total: { value: "4856700" },
+    contract_total_1: { value: "51766700" },
+    salary_total: { value: "1200000" },
+    summary_cost_lines: {
+      value: [
+        {
+          value: {
+            summary_row_key: { value: "blk-a\t材料費\t\t式\t" },
+            summary_stable_block_id: { value: "blk-a" },
+            summary_qty: { value: "1" },
+            summary_unit_price: { value: "50000" },
+            summary_amount_excl_tax: { value: "50000" },
+            summary_cost_category: { value: "施工" },
+          },
+        },
+      ],
+    },
+  });
+  assert.equal(lookupTotalsDelta(filled, "construction", "46910000").display, "－");
+  assert.equal(lookupTotalsDelta(filled, "safety", "4856700").display, "－");
+  assert.equal(lookupTotalsDelta(filled, "total1", "51766700").display, "－");
+  assert.equal(lookupTotalsDelta(filled, "salary", "1200000").display, "－");
+  assert.equal(lookupTotalsDelta(filled, "costConstruction", "50000").display, "－");
+  const line = lookupAmountDelta(
+    filled,
+    "projection",
+    "blk-a\t材料費\t\t式\t",
+    { amount: "50000", quantity: "1", unitPrice: "50000" },
+    { labels: false },
+  );
+  assert.equal(line.kind, "same");
 });

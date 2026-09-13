@@ -41,7 +41,7 @@
 
 ## 計算と読込
 
-- 詳細画面を開いたとき **直前版を 1 回だけ**読む（App1 は版一覧の `$id` 優先。無ければ `GET /k/v1/records.json`。App2 は既存 `fetchExistingDetailRows`）。行ごとの REST 禁止。
+- 詳細画面を開いたとき **直前版を 1 回だけ**読む。App1 は `source_record_id` の **`$id` で `GET /k/v1/records.json`**（版一覧の一括 GET は SUBTABLE を落とすことがあり、前版0＝現行全額が＋になる）。取れなければ版一覧を使う。App2 は既存 `fetchExistingDetailRows`。App2 が空なら `summary_cost_lines`。行ごとの REST 禁止。
 - 取れた前版は **不変スナップショット**。現行はメモリ上の請負／給与／内訳から再計算するので、下書き編集中も増減が追従する。
 - 数量・単価の同値判定は `decimal.compare`（文字列小数。カンマ除去）。
 - 金額差は整数円（既存 `displayInteger`／画面のカンマ表示と同じ）。
