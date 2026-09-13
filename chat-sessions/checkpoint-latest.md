@@ -1,6 +1,6 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 09:35 JST — 756 金額増減 空前版は－ LIVE rev374。
-**次の1手**: 浜田が **2版**を開き直し、請負の施工計／保安計／①が「－」かを目視。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+**最終更新**: 2026-09-13 09:42 JST — 756 ①=0確定は確認・次版は＋（仕様のみ）。LIVE rev374。
+**次の1手**: 浜田が **2版を版確定 → 次版作成 → 3版**を開き、金額そのままなら「－」かを目視。①=0確認ダイアログは **実装GO待ち**。予実 G0 も **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
 **Git**: **`19eb42ba`** = `origin/main` — push 済
 **closeStatus**: **partial**
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GO**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版の施工計「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
+**GO待ち**: 予実の **実装GO**。①=0 版確定確認＋空前版「－」解除も **実装GO待ち**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版確定→3版の「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -47,6 +47,10 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-09-13
+
+### 2026-09-13 朝（①=0 版確定は確認・次版は＋）
+- **決**: 請負①が 0 円でも版確定は止めず確認。作成者 OK なら前版 0 が正。次版に金額があれば＋。給与 0 だけでは聞かない。空前版「－」は暫定。確認ダイアログは実装 GO 待ち。customize なし
+- 次=2版確定→次版作成→3版で差なしなら「－」を目視
 
 ### 2026-09-13 朝（金額増減・空前版は－）
 - 1版 App1 の請負・給与・保存合計が空のため、GET $id しても前版0＝全額＋になっていた。比較不能なら計も行も「－」（列は出す）。LIVE rev **374** BUILD `2026-09-13-ver02-amount-delta-empty`
