@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-empty
+  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-zero-ok
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -16010,9 +16010,19 @@
       confirmButton.addEventListener("click", async () => {
         if (confirmButton.disabled) return;
         const view = documentRef.defaultView;
+        if (!view || typeof view.confirm !== "function") return;
+        jy2FlushActiveInputBeforeSave(documentRef);
+        flushSummaryIfDirty();
+        if (isZeroYenAmount(contractTotal1())) {
+          if (
+            !view.confirm(
+              "請負合計が 0 円です。入力漏れの可能性があります。このまま確定しますか？",
+            )
+          ) {
+            return;
+          }
+        }
         if (
-          !view ||
-          typeof view.confirm !== "function" ||
           !view.confirm(
             "版を確定します。確定後も編集は可能ですが、ステータスは「版確定」になります。よろしいですか？",
           )

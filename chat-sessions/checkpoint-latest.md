@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 09:42 JST — 756 ①=0確定は確認・次版は＋（仕様のみ）。LIVE rev374。
-**次の1手**: 浜田が **2版を版確定 → 次版作成 → 3版**を開き、金額そのままなら「－」かを目視。①=0確認ダイアログは **実装GO待ち**。予実 G0 も **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+**最終更新**: 2026-09-13 09:50 JST — 756 ①=0確定確認＋前版0は＋ LIVE rev375。
+**次の1手**: 浜田が **2版を版確定 → 次版作成 → 3版**を開き、金額そのままなら「－」かを目視。①=0の確認は下書きで請負が空のとき。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
 **Git**: **`19eb42ba`** = `origin/main` — push 済
 **closeStatus**: **partial**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
-**本日状態**: **756**=`2026-09-13-ver02-amount-delta-empty` rev**374** fileKey `a3d5e9e5-7a7b-4743-ab8f-cdc3574596a4`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: **756**=`2026-09-13-ver02-amount-delta-zero-ok` rev**375** fileKey `5b1f5809-48cf-46d8-8e96-eeab384e7da2`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-09-13）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-13-ver02-amount-delta-empty` | **374** |
+| **756** | `2026-09-13-ver02-amount-delta-zero-ok` | **375** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GO**。①=0 版確定確認＋空前版「－」解除も **実装GO待ち**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版確定→3版の「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
+**GO待ち**: 予実の **実装GO**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版確定→3版の「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev374 金額増減（空前版は－） · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy |
+| **756/757/758** | 756 LIVE rev375 ①=0確定確認・前版0は＋ · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -49,7 +49,7 @@
 ## 2026-09-13
 
 ### 2026-09-13 朝（①=0 版確定は確認・次版は＋）
-- **決**: 請負①が 0 円でも版確定は止めず確認。作成者 OK なら前版 0 が正。次版に金額があれば＋。給与 0 だけでは聞かない。空前版「－」は暫定。確認ダイアログは実装 GO 待ち。customize なし
+- **決＋LIVE**: 請負①が 0 円でも版確定は止めず確認。作成者 OK なら前版 0 が正。次版の計は＋。給与 0 だけでは聞かない。LIVE rev **375** BUILD `2026-09-13-ver02-amount-delta-zero-ok`
 - 次=2版確定→次版作成→3版で差なしなら「－」を目視
 
 ### 2026-09-13 朝（金額増減・空前版は－）

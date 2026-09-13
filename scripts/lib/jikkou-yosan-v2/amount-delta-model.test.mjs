@@ -10,6 +10,7 @@ import {
   compareAmountDelta,
   detailDeltaKey,
   formatSignedYen,
+  isZeroYenAmount,
   lookupAmountDelta,
   lookupTotalsDelta,
 } from "./amount-delta-model.mjs";
@@ -229,12 +230,11 @@ test("lookup returns null when index is hidden", () => {
 
 test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
   const empty = buildAmountDeltaIndex({ contractLines: [], salaryLines: [], blocks: [] });
-  assert.equal(empty.unusablePrevious, true);
-  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").display, "－");
-  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").kind, "new");
-  assert.equal(lookupTotalsDelta(empty, "safety", "4856700").display, "－");
-  assert.equal(lookupTotalsDelta(empty, "total1", "51766700").display, "－");
-  assert.equal(lookupTotalsDelta(empty, "salary", "1200000").display, "－");
+  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").display, "+46910000");
+  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").kind, "delta");
+  assert.equal(lookupTotalsDelta(empty, "safety", "4856700").display, "+4856700");
+  assert.equal(lookupTotalsDelta(empty, "total1", "51766700").display, "+51766700");
+  assert.equal(lookupTotalsDelta(empty, "salary", "1200000").display, "+1200000");
 
   const filled = applyAmountDeltaFallbacks(empty, {
     contract_construction_total: { value: "46910000" },
@@ -256,7 +256,7 @@ test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
       ],
     },
   });
-  assert.equal(filled.unusablePrevious, false);
+  assert.equal(filled.unusablePrevious, undefined);
   assert.equal(lookupTotalsDelta(filled, "construction", "46910000").display, "－");
   assert.equal(lookupTotalsDelta(filled, "safety", "4856700").display, "－");
   assert.equal(lookupTotalsDelta(filled, "total1", "51766700").display, "－");
@@ -272,7 +272,7 @@ test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
   assert.equal(line.kind, "same");
 });
 
-test("empty previous parent without stored totals stays unusable dash", () => {
+test("confirmed empty previous totals show plus on next version", () => {
   const empty = buildAmountDeltaIndex({ contractLines: [], salaryLines: [], blocks: [] });
   const stillEmpty = applyAmountDeltaFallbacks(empty, {
     contract_construction_total: { value: "" },
@@ -280,10 +280,9 @@ test("empty previous parent without stored totals stays unusable dash", () => {
     salary_total: { value: "" },
     summary_cost_lines: { value: [] },
   });
-  assert.equal(stillEmpty.unusablePrevious, true);
-  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").kind, "new");
-  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").display, "－");
-  assert.equal(lookupTotalsDelta(stillEmpty, "total1", "51766700").display, "－");
+  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").kind, "delta");
+  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").display, "+46910000");
+  assert.equal(lookupTotalsDelta(stillEmpty, "total1", "51766700").display, "+51766700");
   const line = lookupAmountDelta(
     stillEmpty,
     "contract",
@@ -292,4 +291,7 @@ test("empty previous parent without stored totals stays unusable dash", () => {
   );
   assert.equal(line.kind, "new");
   assert.equal(line.display, "－");
+  assert.equal(isZeroYenAmount("0"), true);
+  assert.equal(isZeroYenAmount("0.4"), true);
+  assert.equal(isZeroYenAmount("1"), false);
 });

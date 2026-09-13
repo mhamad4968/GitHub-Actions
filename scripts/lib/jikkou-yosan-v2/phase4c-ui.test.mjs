@@ -713,7 +713,7 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /body === "0"\) return "－"/);
   assert.match(source, /function jy2LoadAmountDeltaIndex/);
   assert.match(source, /applyAmountDeltaFallbacks/);
-  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta-empty/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta-zero-ok/);
   assert.match(source, /売上（①）[\s\S]*金額増減[\s\S]*原価（⑧）/);
   assert.match(source, /金額増減（自動）/);
   // 内訳セル編集は総括を dirty 遅延（タブ表示/保存時に refreshSummary(true)）。
@@ -756,6 +756,8 @@ test("C13/C14 person names are hand input; temp-save and confirm buttons", () =>
   assert.match(source, /版を確定/);
   assert.match(source, /jy2-confirm-button/);
   assert.match(source, /confirmingVersion: true/);
+  assert.match(source, /請負合計が 0 円です。入力漏れの可能性があります。このまま確定しますか？/);
+  assert.match(source, /isZeroYenAmount\(contractTotal1\(\)\)/);
 });
 
 test("C15 project days display appends 日 while saving numeric value", () => {
