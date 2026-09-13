@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta
+  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-dash
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2592,8 +2592,12 @@
 
   function jy2FormatDeltaDisplay(result) {
     if (!result || result.kind !== "delta") return "－";
+    const rounded = displayInteger(result.signed);
+    if (rounded === null || rounded === undefined || compare(rounded, "0") === 0) {
+      return "－";
+    }
     const body = jy2AmountDisplay(result.signed);
-    if (!body) return "－";
+    if (!body || body === "0") return "－";
     if (String(body).startsWith("-") || String(body).startsWith("+")) return body;
     return `+${body}`;
   }
@@ -2606,13 +2610,14 @@
       return td;
     }
     if (result.title) td.title = result.title;
+    const shown = jy2FormatDeltaDisplay(result);
     const amt = documentRef.createElement("span");
     amt.className = "jy2-delta-amt";
-    if (result.kind === "delta") {
+    if (result.kind === "delta" && shown !== "－") {
       amt.classList.add(
         compare(result.signed, "0") > 0 ? "jy2-delta-plus" : "jy2-delta-minus",
       );
-      amt.textContent = jy2FormatDeltaDisplay(result);
+      amt.textContent = shown;
     } else {
       amt.classList.add("jy2-delta-na");
       amt.textContent = "－";

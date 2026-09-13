@@ -66,7 +66,9 @@ export function compareAmountDelta(current, previous, { labels = true } = {}) {
   const prevAmt = asDec(previous?.amount);
   const curZ = curAmt ?? "0";
   const prevZ = prevAmt ?? "0";
-  if (sameDec(curZ, prevZ)) {
+  const curYen = displayInteger(curZ) ?? "0";
+  const prevYen = displayInteger(prevZ) ?? "0";
+  if (compare(curYen, prevYen) === 0) {
     return Object.freeze({
       kind: "same",
       display: "－",
@@ -75,7 +77,17 @@ export function compareAmountDelta(current, previous, { labels = true } = {}) {
       title: "変化なし",
     });
   }
-  const signed = subtract(curZ, prevZ);
+  const signed = subtract(curYen, prevYen);
+  const display = formatSignedYen(signed);
+  if (display === "－") {
+    return Object.freeze({
+      kind: "same",
+      display: "－",
+      signed: "0",
+      label: "",
+      title: "変化なし",
+    });
+  }
   let label = "";
   if (labels) {
     const qtyChanged = !sameDec(current?.quantity, previous?.quantity);
@@ -94,7 +106,7 @@ export function compareAmountDelta(current, previous, { labels = true } = {}) {
     .join("\n");
   return Object.freeze({
     kind: "delta",
-    display: formatSignedYen(signed),
+    display,
     signed,
     label,
     title,

@@ -29,6 +29,68 @@ test("new row and unchanged amount both show dash with distinct titles", () => {
   assert.equal(same.title, "変化なし");
 });
 
+test("integer yen 0 on totals is dash not plus-zero", () => {
+  const rounded = compareAmountDelta({ amount: "100.4" }, { amount: "100" });
+  assert.equal(rounded.kind, "same");
+  assert.equal(rounded.display, "－");
+  assert.equal(formatSignedYen("0.4"), "－");
+  assert.equal(formatSignedYen("0"), "－");
+  const zeroTotal = lookupTotalsDelta(
+    { enabled: true, totals: { costConstruction: "0" } },
+    "costConstruction",
+    "0",
+  );
+  assert.equal(zeroTotal.kind, "same");
+  assert.equal(zeroTotal.display, "－");
+  const roundedTotal = lookupTotalsDelta(
+    { enabled: true, totals: { costConstruction: "100.2" } },
+    "costConstruction",
+    "100",
+  );
+  assert.equal(roundedTotal.kind, "same");
+  const payload = {
+    contractLines: [
+      {
+        rowKey: "c1",
+        section: "施工",
+        workName: "塗装",
+        unit: "式",
+        quantity: "1",
+        unitPrice: "100000",
+      },
+    ],
+    salaryLines: [],
+    blocks: [
+      {
+        stableBlockId: "blk-a",
+        costCategory: "施工",
+        workTypeName: "塗装工事",
+        detailRows: [
+          {
+            rowKey: "d1",
+            name1: "材料費",
+            unit: "式",
+            quantity: "1",
+            unitPrice: "50000",
+          },
+        ],
+      },
+    ],
+  };
+  const prev = buildAmountDeltaIndex(payload);
+  const current = createDetailBlockModel({
+    lockState: LOCK_STATES.FULL_LOCKED,
+    blocks: payload.blocks,
+  });
+  const currentTotals = createContractSalaryModel({
+    lockState: LOCK_STATES.FULL_LOCKED,
+    contractLines: payload.contractLines,
+  }).totals(current.projectionBlocks());
+  const cost = lookupTotalsDelta(prev, "costConstruction", currentTotals.costConstruction);
+  assert.equal(cost.kind, "same");
+  assert.equal(cost.display, "－");
+});
+
 test("qty / price / both labels only when amount changes", () => {
   const qty = compareAmountDelta(
     { amount: "20000", quantity: "2", unitPrice: "10000" },
