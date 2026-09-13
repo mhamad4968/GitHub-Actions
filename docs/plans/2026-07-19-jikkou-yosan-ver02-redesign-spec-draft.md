@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-13（金額増減 目視OK完了）**: ①=0確定は確認。前版0の次版は計が＋。LIVE BUILD `2026-09-13-ver02-amount-delta-zero-ok` rev **375**。修正・追加なし。夜は原価管理。正本 `docs/plans/2026-09-13-jikkou-yosan-v2-amount-delta-spec.md`。  
 **2026-09-13（①=0 版確定は確認・次版は＋）**: 請負①が 0 円でも版確定は止めず確認。作成者 OK なら前版 0 が正。次版に金額があれば計は＋。LIVE BUILD `2026-09-13-ver02-amount-delta-zero-ok`。  
 **2026-09-13（金額増減・空前版は－）**: 直前版の請負・給与が空（保存合計も空）なら全額＋にせず「－」。列は出す。LIVE BUILD `2026-09-13-ver02-amount-delta-empty`。  
 **2026-09-13（金額増減・前版フルGET）**: 2版の施工計等が前版0扱い（全額＋）にならないよう、直前版は `$id` で取り直す。LIVE BUILD `2026-09-13-ver02-amount-delta-prev`。  

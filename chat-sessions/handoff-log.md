@@ -6549,3 +6549,21 @@ npm run cio:morning:ready
 **触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA実deploy / 閉済9件 / 設定タブ / 757 customize / 予実 customize は実装GOまで
 
 ---
+
+### 2026-09-13 JST — **756朝full CLOSE**
+
+**要約**: 金額増減目視OK rev375。原価管理は今晩の新チャット。実装GOまでcustomizeしない。
+
+**話したこと**: 朝は一時保存一般ユーザOK、内訳Tab次項目OK、金額増減v1目視OK完了。請負合計0円は確認して確定可。前版0の次版は計がプラス。夜は予実G0。G0ファイルは実装GOではない。13.1の1-7は決済済で再質問禁止。金額増減は再開しない。736と757customizeと統括11列と設定タブは不触。
+
+**次の1手**: **今晩・新チャット** WAKE → `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md` と G0 §0・§13。**実装GOが出るまで customize しない**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+
+**Git**: `ca8f6fee` — close-git pending
+
+**BUILD**: 756 2026-09-13-ver02-amount-delta-zero-ok rev375
+
+**GO待ち**: 予実の実装GO（今晩の新チャットで浜田が明示）
+
+**触らない**: 736 / 688 WBGT以外 / 677-679 / SKYSEA / 閉済9件 / 設定タブ / 757 customize / 金額増減 / 予実customizeは実装GOまで
+
+---

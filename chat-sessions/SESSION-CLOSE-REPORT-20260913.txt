@@ -1,0 +1,29 @@
+SESSION-CLOSE-REPORT 2026-09-13（朝セッション full CLOSE）
+========================================
+
+■ レーン
+- 朝: 756 一時保存（everyone ACL＋泊）目視OK、内訳 Tab 次項目 目視OK、金額増減 v1 目視OK完了 rev375
+- 夜（新チャット）: 工事原価管理（予実）G0。実装GOが出るまで customize / deploy しない
+
+■ 本日できたこと
+- 一時保存: CB_NO02（ACL）と CB_VA01（泊）を閉じ。一般ユーザ目視OK
+- 内訳 Tab: BUILD `2026-09-13-ver02-detail-tab-next` 目視OK
+- 金額増減: BUILD `2026-09-13-ver02-amount-delta-zero-ok` rev **375**。①=0 は確認して確定可。前版0の次版は計が＋
+- 仕様正本: `docs/plans/2026-09-13-jikkou-yosan-v2-amount-delta-spec.md`（目視OK完了）
+- 夜引継ぎ: `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md`
+
+■ 触らない（維持）
+- 金額増減の再改修（完了）
+- 予実 customize は実装GOまで
+- 736 / 757 customize JS / 統括11列 / 設定タブ
+- 688 heat外 / 677–679 / SKYSEA / 712 deploy / 閉済9件
+
+■ Git
+- 機能 tip: `77d5f684`（①=0確認＋空前版は＋）
+- checkpoint visual-OK: `ca8f6fee`
+- 本締め: close-git 後の tip
+
+■ 備考
+- closeStatus: **full**（朝チャット終了。夜は別チャット。日終わり⑦は夜のあと）
+- 壁時計: session:clock:clear
+- 実装GOの判定: 浜田が今夜の新チャットで明示した言葉だけ。G0 ファイルがあるだけでは GO ではない

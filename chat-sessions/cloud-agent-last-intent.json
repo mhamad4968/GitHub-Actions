@@ -1,10 +1,12 @@
 {
-  "closedAt": "2026-08-15T09:30:00.000+09:00",
+  "closedAt": "2026-09-13T10:40:00.000+09:00",
   "closeStatus": "full",
-  "closeNote": "Morning session closed: 715 software ledger UX complete, Hamada visual OK (rev24). 714 remains view-only. Affiliation master 680 for future work only. Night session = different app (Hamada will specify). Do not resume 715.",
+  "closeNote": "Morning session full CLOSE. 756 amount-delta visual OK complete (rev375 BUILD 2026-09-13-ver02-amount-delta-zero-ok). Temporary save and detail-tab next-item also visual OK. Night = new chat, cost-mgmt G0 only after Hamada 実装GO. G0 file existence is not GO. Do not resume amount-delta. Do not touch 736 / 757 customize / summary 11-col / settings tab.",
   "nextSessionFocus": [
-    "Night: different kintone app improvement — wait for Hamada item -0. Do not continue 715."
+    "Night new chat: WAKE then chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md then G0 §0 · §4.7 · §13",
+    "Wait for Hamada 実装GO before any customize/deploy/field add",
+    "Do not reopen amount-delta. Do not re-ask §13.1 items 1-7"
   ],
-  "gitHead": "09f6aaeb",
+  "gitHead": "ca8f6fee",
   "specAckPending": null
 }

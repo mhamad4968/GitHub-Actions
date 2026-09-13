@@ -156,6 +156,16 @@
 ---
 
 <!-- CIO-DEBUG-TIPS:AUTO -->
+## [2026-09-13] セッション解体時知恵ストック
+
+**前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
+**手順**: `npm run verify:jikkou-yosan-v2-write-acl` → `npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:close-report-verify-response -- --file <下` → `npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:close-report-verify-response -- --file <下`
+**禁止**: customize/deploy 凍結中の無断 save・上位憲法 §50-3-11 非置換違反・本体単独完結
+**exit**: npm run verify:cio-mcp-registry && verify:cio-env-integrity exit 0 を最低合格線
+
+<!-- errors: npm run verify:jikkou-yosan-v2-write-acl` OK。次=浜田が一般ユーザで一時保存目視 | npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:c | npm run cio:report-verify-response -- --file <下書き>`**、締め・GO 仰ぎは **`npm run cio:c -->
+
+
 ## [2026-09-12] セッション解体時知恵ストック
 
 **前提**: 15ターン解体 export-handoff 時点の handoff-log / checkpoint / bug-latest / logs から Kimi 職分で自動抽出
