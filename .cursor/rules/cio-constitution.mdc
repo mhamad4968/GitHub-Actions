@@ -61,6 +61,7 @@ alwaysApply: true
 | **バックアップ** | OpenRouter | 不通時 |
 
 - **Composer 単独 GO なし save/deploy 禁止**（CIO/DeepSeek 経由後のみ）。仕様に触れる編集は **本体＋第2者**。`SPEC_TOUCHED: yes` なら **`SECOND_REVIEWER:` 必須**。**CEO は第2者の代替にしない**。
+- **実装判定に条件付きは禁止**（2026-09-13 浜田 · #R-IMPL-GO-UNCOND-01）: G2 前の合議は **GO / NO-GO のみ**。第2者が条件付きと書いても不合格。正本 `docs/constitution/28-ceo-go-phases-charter.md`。
 
 ## Cloud Agent（Cmd+E 等）— 言語規律＋「再開可能」SLO（CEO 承認済み）
 

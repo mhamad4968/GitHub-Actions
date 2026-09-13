@@ -109,7 +109,7 @@
 | ドメイン特化・その他 | [`autonomous-with-mandatory-asks.mdc`](.cursor/rules/autonomous-with-mandatory-asks.mdc) | 開発は自律実行するが、確認が必要なら着手前に浜田へ聞く（浜田指示） |
 | ドメイン特化・その他 | [`creation-timing-ask.mdc`](.cursor/rules/creation-timing-ask.mdc) | アプリ新規作成前に「今すぐ／後日」と配置先スペースを浜田へ確認。未決なら作成に着手しない（浜田指示 2026-04-28） |
 | ドメイン特化・その他 | [`persist-policies.mdc`](.cursor/rules/persist-policies.mdc) | 恒久方針の永続化 — 正本は .rag/extra-docs/persist-policies.md |
-| ドメイン特化・その他 | [`spec-round-ai-agreement.mdc`](.cursor/rules/spec-round-ai-agreement.mdc) | 仕様ラウンド無条件合意・依頼者リスト4見出し（#R-SPEC-01/#R-REQ-01） |
+| ドメイン特化・その他 | [`spec-round-ai-agreement.mdc`](.cursor/rules/spec-round-ai-agreement.mdc) | 仕様ラウンド無条件合意・実装判定は条件付き禁止（#R-SPEC-01/#R-IMPL-GO-UNCOND-01） |
 | ドメイン特化・その他 | [`constitution.mdc`](.cursor/rules/constitution.mdc) | 網羅統合版 — 憲法・索引・WORKFLOW・全mdc・予実・plans・chat・handoff・docs全（plans除く重複）・security-next・yojitsu README等（再生成=本スクリプト）。Cursor 常時枠の |
 
 索引: [`.cursor/rules/README.md`](.cursor/rules/README.md) / [`data/cursor-rules-topic-index.json`](data/cursor-rules-topic-index.json)
@@ -335,7 +335,7 @@ _他 107 件は `data/constitution-section-genre-map.json` を参照_
 | [`25-constitution-no-replacement-charter.md`](docs/constitution/25-constitution-no-replacement-charter.md) | §57 |
 | [`26-formalization-lifecycle-charter.md`](docs/constitution/26-formalization-lifecycle-charter.md) | §2 · §57 |
 | [`27-constitution-navigation-charter.md`](docs/constitution/27-constitution-navigation-charter.md) | §0 |
-| [`28-ceo-go-phases-charter.md`](docs/constitution/28-ceo-go-phases-charter.md) | §50-3-8 · §51 · §57 |
+| [`28-ceo-go-phases-charter.md`](docs/constitution/28-ceo-go-phases-charter.md) | §50-3-8 · §51 · §57 · #R-IMPL-GO-UNCOND-01 |
 
 <!-- RULES-INDEX:SECTION-GENRE-AUTO:END -->
 

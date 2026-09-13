@@ -8,6 +8,7 @@
 確認A（compose OK）＝依頼文の確定のみ。コード変更・deploy・commit 禁止。
 G0（「調査から」）＝読取・報告・修正案のみ。実装・deploy・commit 禁止。
 G2（「実装GO」明示）＝当該スコープの実装・gate・deploy 可。確認Aや調査だけでは入らない。
+実装の合議判定は GO か NO-GO のみ。条件付きはいかなる理由でも認めない（#R-IMPL-GO-UNCOND-01）。
 
 正本ポインタ: docs/constitution/28-ceo-go-phases-charter.md（本文は非置換）
 計画: docs/plans/2026-08-08-request-efficiency-v02-and-go-boundary.md

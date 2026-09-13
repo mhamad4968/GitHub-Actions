@@ -48,6 +48,10 @@
     {
       "id": "I12",
       "summary": "2026-07-11 R3-1: CEO GO段階分離 — 合議GO(G0)≠spec GO(G1)≠実装GO(G2)≠commit/push GO(G3) · 合議・verify緑だけではコード/data/hooks変更不可 · 正本28-ceo-go-phases-charter.md · I7はタイミングと併読"
+    },
+    {
+      "id": "I13",
+      "summary": "2026-09-13 #R-IMPL-GO-UNCOND-01: 実装判定はGOかNO-GOのみ · 条件付きGOはいかなる理由でも認めない · 穴は先に決へ落とすかNO-GO · 正本28-ceo-go-phases-charter.md · #R-SPEC-01は仕様ラウンド明示時"
     }
   ]
 }
