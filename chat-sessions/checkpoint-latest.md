@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-13 09:00 JST — 756 金額増減 計の差0は－ LIVE rev371。
-**次の1手**: 浜田が **2版**で原価・施工計等の増減が差なしなら「－」かを目視。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+**最終更新**: 2026-09-13 09:10 JST — 756 区分別サマリー①⑧⑨差0は－ LIVE rev372。
+**次の1手**: 浜田が **2版**で区分別サマリー（左①⑧⑨と右マトリクス売上①・原価⑧・粗利）が差なしなら「－」かを目視。予実 G0 は **実装GO待ち**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 共有PC後日／756追加customize待ち → **756 予実 G0（工種単位）実装**
-**Git**: **`37ecac59`** = `origin/main` — push 済
+**Git**: **（push 後に origin と揃える）**
 **closeStatus**: **partial**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
-**本日状態**: **756**=`2026-09-13-ver02-amount-delta-dash` rev**371** fileKey `47cd5d46-bfe3-480c-beb2-1f0d70ff4667`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
+**本日状態**: **756**=`2026-09-13-ver02-amount-delta-cat` rev**372** fileKey `8fe3ebe9-5094-4dba-8704-aa5a99b01a41`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-09-13）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-13-ver02-amount-delta-dash` | **371** |
+| **756** | `2026-09-13-ver02-amount-delta-cat` | **372** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
@@ -21,7 +21,7 @@
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
 **継続メモ**: 予実G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（§13が夜の順）。夜引継ぎ `chat-sessions/2026-09-12-jikkou-yosan-v2-cost-mgmt-night-handoff.md`。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。共有PC金庫は Desktop Word（ラボ外）。**MCP 試用は自発提案してよい**（足すのは GO 後）。Mac Studio は継続メモどおり
-**GO待ち**: 予実の **実装GO**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版の施工計「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
+**GO待ち**: 予実の **実装GO**。一時保存は一般ユーザ目視OK（2026-09-13）。内訳 Tab 目視OK。金額増減は **2版の区分別サマリー「－」目視待ち**。夜§13.1は1–7決。日終わり⑦ after-go
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev371 金額増減（計の差0は－） · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy |
+| **756/757/758** | 756 LIVE rev372 金額増減（区分別①⑧⑨差0は－） · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
@@ -47,6 +47,10 @@
 **項番 -1** Desktop `C:\Users\mhamada202408224\Desktop\AI緊急用` **`00-NEW-SESSION-STARTER_yyyymmdd.txt`** **貼付推奨** | **項番 -0** **OK が返るまで** **着手しない** | **項番 0** **`npm run session:bootstrap`**（**Read より前** `verify:constitution-handoff` / `mandatory-read-gate.mjs` / `verify:session-clock-health` / `session-starter:sync-desktop` / `verify:desktop-ai-emergency-sync`）| **項番 0.9** | **日終わり** `cio:session:close-git` / `23-AI緊急用-README.txt` / `SESSION-CLOCK.md` / `session:clock:set` / `session:clock:watch` / `session:split-check` / `SESSION-SPLIT-REMINDER.md` / §35-6 / §35-7 / `HANDOFF-AI-FIVE-BLOCKS` / TSB-031  
 **L2** bootstrap NG → `NEW-SESSION-STARTER.md` 6 部（1 回）| **CLOSE** export-handoff → sync-desktop → clock:clear → close-git | **bootstrap 3c** `verify:session-close-git-warn` 1 行報告必須（OK/NG）| **履歴** `chat-sessions/checkpoints/checkpoint-archive-YYYY-MM-DD.md`
 ## 2026-09-13
+
+### 2026-09-13 朝（金額増減・区分別①⑧⑨）
+- 区分別サマリーの①⑧⑨と右マトリクス（売上①・原価⑧・粗利）も整数円差0は「－」。LIVE rev **372** BUILD `2026-09-13-ver02-amount-delta-cat`
+- 次=浜田が2版の区分別サマリーを目視
 
 ### 2026-09-13 朝（金額増減・計の差0は－）
 - 統括の原価・施工計等が差なしでも + になっていた。整数円0は「－」。LIVE rev **371** BUILD `2026-09-13-ver02-amount-delta-dash`

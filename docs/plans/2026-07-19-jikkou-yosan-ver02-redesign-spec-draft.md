@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-13（金額増減・区分別①⑧⑨）**: 区分別サマリーの①⑧⑨とマトリクス（売上①・原価⑧・粗利）も整数円差0は「－」。LIVE BUILD `2026-09-13-ver02-amount-delta-cat`。  
 **2026-09-13（金額増減・計の差0）**: 統括の原価・施工計／保安計／原価行合計も、画面の整数円が同じなら「－」（+0 にしない）。LIVE BUILD `2026-09-13-ver02-amount-delta-dash`。  
 **2026-09-13（金額増減・#R-SPEC-01）**: 2版以降、金額の直後に直前版との差（符号付き円＋単価/数量ラベル）。第1版は列なし。突合は rowKey。備考へ自動書込しない。帳票・予実・736 不触。正本 `docs/plans/2026-09-13-jikkou-yosan-v2-amount-delta-spec.md`。LIVE BUILD `2026-09-13-ver02-amount-delta`。  
 **2026-09-13（内訳 Tab で次項目）**: 選択コンボの▼はマウス専用（`tabIndex=-1`）。Tab は次の入力欄へ。▼で選んだあとも次欄へフォーカス。単位・数量の素の select/input は従来どおり。LIVE BUILD `2026-09-13-ver02-detail-tab-next`。  

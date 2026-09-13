@@ -89,6 +89,9 @@ test("integer yen 0 on totals is dash not plus-zero", () => {
   const cost = lookupTotalsDelta(prev, "costConstruction", currentTotals.costConstruction);
   assert.equal(cost.kind, "same");
   assert.equal(cost.display, "－");
+  assert.equal(lookupTotalsDelta(prev, "total1", currentTotals.total1).display, "－");
+  assert.equal(lookupTotalsDelta(prev, "total8", currentTotals.total8).display, "－");
+  assert.equal(lookupTotalsDelta(prev, "profit9", currentTotals.profit9).display, "－");
 });
 
 test("qty / price / both labels only when amount changes", () => {

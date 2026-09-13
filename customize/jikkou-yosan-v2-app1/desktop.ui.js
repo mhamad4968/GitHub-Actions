@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-dash
+  // @JY_V2_BUILD 2026-09-13-ver02-amount-delta-cat
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -9346,32 +9346,66 @@
     keys.appendChild(keysBody);
     wrap.appendChild(keys);
 
-    // 区分マトリクス（Ver.01 同趣旨: 施工/保安）
+    // 区分マトリクス（Ver.01 同趣旨: 施工/保安）。増減は整数円差0なら「－」。
     const matrix = documentRef.createElement("table");
     matrix.className = "jy2-budget-summary-table";
     const matrixBody = documentRef.createElement("tbody");
     matrixBody.appendChild(
-      jy2HeadRow(documentRef, [
-        "区分",
-        "売上（①）",
-        "原価（⑧）",
-        "粗利",
-        "粗利率",
-      ]),
+      jy2HeadRow(
+        documentRef,
+        showDelta
+          ? [
+              "区分",
+              "売上（①）",
+              "金額増減",
+              "原価（⑧）",
+              "金額増減",
+              "粗利",
+              "金額増減",
+              "粗利率",
+            ]
+          : ["区分", "売上（①）", "原価（⑧）", "粗利", "粗利率"],
+      ),
     );
+    const appendYenAndDelta = (row, amount, totalsField) => {
+      row.appendChild(
+        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(amount)),
+      );
+      if (showDelta) {
+        row.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            lookupTotalsDelta(amountDeltaIndex, totalsField, amount),
+            { showLabel: false },
+          ),
+        );
+      }
+    };
+    const prevTotals =
+      amountDeltaIndex && amountDeltaIndex.totals ? amountDeltaIndex.totals : null;
+    const profitDelta = (salesField, costField, sales, cost) =>
+      compareAmountDelta(
+        { amount: profitOf(sales, cost) },
+        prevTotals
+          ? { amount: profitOf(prevTotals[salesField], prevTotals[costField]) }
+          : null,
+        { labels: false },
+      );
     const categoryRows = [
-      ["施工", totals.construction, totals.costConstruction],
-      ["保安", totals.safety, totals.costSafety],
+      [
+        "施工",
+        totals.construction,
+        totals.costConstruction,
+        "construction",
+        "costConstruction",
+      ],
+      ["保安", totals.safety, totals.costSafety, "safety", "costSafety"],
     ];
-    for (const [label, sales, cost] of categoryRows) {
+    for (const [label, sales, cost, salesField, costField] of categoryRows) {
       const row = documentRef.createElement("tr");
       row.appendChild(jy2Cell(documentRef, "td", "jy2-budget-col-label", label));
-      row.appendChild(
-        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(sales)),
-      );
-      row.appendChild(
-        jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(cost)),
-      );
+      appendYenAndDelta(row, sales, salesField);
+      appendYenAndDelta(row, cost, costField);
       row.appendChild(
         jy2Cell(
           documentRef,
@@ -9380,6 +9414,15 @@
           jy2AmountDisplay(profitOf(sales, cost)),
         ),
       );
+      if (showDelta) {
+        row.appendChild(
+          jy2AmountDeltaCell(
+            documentRef,
+            profitDelta(salesField, costField, sales, cost),
+            { showLabel: false },
+          ),
+        );
+      }
       row.appendChild(
         jy2Cell(
           documentRef,
@@ -9395,15 +9438,9 @@
     totalRow.appendChild(
       jy2Cell(documentRef, "td", "jy2-budget-col-label", "合計 …⑨"),
     );
-    totalRow.appendChild(
-      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.total1)),
-    );
-    totalRow.appendChild(
-      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.total8)),
-    );
-    totalRow.appendChild(
-      jy2Cell(documentRef, "td", "jy2-num", jy2AmountDisplay(totals.profit9)),
-    );
+    appendYenAndDelta(totalRow, totals.total1, "total1");
+    appendYenAndDelta(totalRow, totals.total8, "total8");
+    appendYenAndDelta(totalRow, totals.profit9, "profit9");
     totalRow.appendChild(
       jy2Cell(
         documentRef,
