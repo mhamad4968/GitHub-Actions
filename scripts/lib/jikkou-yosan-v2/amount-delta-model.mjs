@@ -129,8 +129,15 @@ function tripleFromLine(line, { percentUnit = false } = {}) {
   });
 }
 
+function previousAmountUnusable(index) {
+  return Boolean(index?.unusablePrevious);
+}
+
 export function lookupAmountDelta(index, bucket, key, current, options = {}) {
   if (!index || !index.enabled) return null;
+  if (previousAmountUnusable(index)) {
+    return compareAmountDelta(current, null, options);
+  }
   const map = index[bucket];
   const previous =
     map && typeof map.get === "function" ? map.get(String(key || "")) : undefined;
@@ -139,6 +146,9 @@ export function lookupAmountDelta(index, bucket, key, current, options = {}) {
 
 export function lookupTotalsDelta(index, field, currentAmount) {
   if (!index || !index.enabled) return null;
+  if (previousAmountUnusable(index)) {
+    return compareAmountDelta({ amount: currentAmount }, null, { labels: false });
+  }
   const previousAmount = index.totals ? index.totals[field] : undefined;
   return compareAmountDelta(
     { amount: currentAmount },
@@ -230,6 +240,16 @@ export function buildAmountDeltaIndex({
     projectionKei.set(blockId, { quantity: null, unitPrice: null, amount });
   }
 
+  const nextTotals = Object.freeze({
+    total1: totals.total1,
+    construction: totals.construction,
+    safety: totals.safety,
+    salary: totals.salary,
+    total8: totals.total8,
+    profit9: totals.profit9,
+    costConstruction: totals.costConstruction,
+    costSafety: totals.costSafety,
+  });
   return Object.freeze({
     enabled: true,
     contract,
@@ -238,16 +258,8 @@ export function buildAmountDeltaIndex({
     footer,
     projection,
     projectionKei,
-    totals: Object.freeze({
-      total1: totals.total1,
-      construction: totals.construction,
-      safety: totals.safety,
-      salary: totals.salary,
-      total8: totals.total8,
-      profit9: totals.profit9,
-      costConstruction: totals.costConstruction,
-      costSafety: totals.costSafety,
-    }),
+    totals: nextTotals,
+    unusablePrevious: contractSalaryTotalsEmpty(nextTotals),
   });
 }
 
@@ -261,6 +273,15 @@ function recordCell(record, code) {
 function isZeroYen(value) {
   const yen = displayInteger(asDec(value) ?? "0") ?? "0";
   return compare(yen, "0") === 0;
+}
+
+function contractSalaryTotalsEmpty(totals) {
+  return (
+    isZeroYen(totals?.construction) &&
+    isZeroYen(totals?.safety) &&
+    isZeroYen(totals?.total1) &&
+    isZeroYen(totals?.salary)
+  );
 }
 
 const STORED_TOTAL_FIELDS = Object.freeze({
@@ -354,10 +375,14 @@ export function applyAmountDeltaFallbacks(index, prevParent) {
     }
   }
 
-  return Object.freeze({
+  const next = Object.freeze({
     ...index,
     projection,
     projectionKei,
     totals: Object.freeze(totals),
+  });
+  return Object.freeze({
+    ...next,
+    unusablePrevious: contractSalaryTotalsEmpty(totals),
   });
 }

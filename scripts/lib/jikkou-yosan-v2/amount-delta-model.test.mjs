@@ -229,7 +229,12 @@ test("lookup returns null when index is hidden", () => {
 
 test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
   const empty = buildAmountDeltaIndex({ contractLines: [], salaryLines: [], blocks: [] });
-  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").display, "+46910000");
+  assert.equal(empty.unusablePrevious, true);
+  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").display, "－");
+  assert.equal(lookupTotalsDelta(empty, "construction", "46910000").kind, "new");
+  assert.equal(lookupTotalsDelta(empty, "safety", "4856700").display, "－");
+  assert.equal(lookupTotalsDelta(empty, "total1", "51766700").display, "－");
+  assert.equal(lookupTotalsDelta(empty, "salary", "1200000").display, "－");
 
   const filled = applyAmountDeltaFallbacks(empty, {
     contract_construction_total: { value: "46910000" },
@@ -251,6 +256,7 @@ test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
       ],
     },
   });
+  assert.equal(filled.unusablePrevious, false);
   assert.equal(lookupTotalsDelta(filled, "construction", "46910000").display, "－");
   assert.equal(lookupTotalsDelta(filled, "safety", "4856700").display, "－");
   assert.equal(lookupTotalsDelta(filled, "total1", "51766700").display, "－");
@@ -264,4 +270,26 @@ test("empty rebuilt previous uses stored totals and summary_cost_lines", () => {
     { labels: false },
   );
   assert.equal(line.kind, "same");
+});
+
+test("empty previous parent without stored totals stays unusable dash", () => {
+  const empty = buildAmountDeltaIndex({ contractLines: [], salaryLines: [], blocks: [] });
+  const stillEmpty = applyAmountDeltaFallbacks(empty, {
+    contract_construction_total: { value: "" },
+    contract_total_1: { value: "" },
+    salary_total: { value: "" },
+    summary_cost_lines: { value: [] },
+  });
+  assert.equal(stillEmpty.unusablePrevious, true);
+  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").kind, "new");
+  assert.equal(lookupTotalsDelta(stillEmpty, "construction", "46910000").display, "－");
+  assert.equal(lookupTotalsDelta(stillEmpty, "total1", "51766700").display, "－");
+  const line = lookupAmountDelta(
+    stillEmpty,
+    "contract",
+    "c1",
+    { amount: "24300000", quantity: "1", unitPrice: "24300000" },
+  );
+  assert.equal(line.kind, "new");
+  assert.equal(line.display, "－");
 });

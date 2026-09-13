@@ -18,7 +18,7 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta-prev/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-amount-delta-empty/);
   assert.match(source, /asciiNumber:\s*true/);
   assert.match(source, /applyAsciiNumberInput/);
   assert.match(source, /jy2LockedValueControl/);
