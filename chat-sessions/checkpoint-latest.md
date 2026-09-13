@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-13 10:28 JST — 朝セッション **full CLOSE**。金額増減 目視OK完了。原価管理は今晩。
 **次の1手**: **今晩・新チャット** WAKE → `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md` と G0 §0・§13。**実装GOが出るまで customize しない**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 朝 756 金額増減完了 → **夜 756 予実 G0（工種単位）**
-**Git**: **`aec93f82`** = `origin/main` — push 済
+**Git**: **`236383e5`** = `origin/main` — push 済
 **closeStatus**: **full**（朝チャット終了。夜は別チャット。日終わり⑦は夜のあと）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
 **本日状態**: **756**=`2026-09-13-ver02-amount-delta-zero-ok` rev**375** fileKey `5b1f5809-48cf-46d8-8e96-eeab384e7da2`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
