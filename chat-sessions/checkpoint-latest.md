@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-13 10:28 JST — 朝セッション **full CLOSE**。金額増減 目視OK完了。原価管理は今晩。
 **次の1手**: **今晩・新チャット** WAKE → `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md` と G0 §0・§13。**実装GOが出るまで customize しない**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 朝 756 金額増減完了 → **夜 756 予実 G0（工種単位）**
-**Git**: **`1a059b74`** = `origin/main` — push 済（R44 parent）
+**Git**: **`8a3c7860`** = `origin/main` — push 済
 **closeStatus**: **full**（朝チャット終了。夜は別チャット。日終わり⑦は夜のあと）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／予実 G0 は実装GOまで customize しない（内訳 Tab は浜田依頼で実施済）
 **本日状態**: **756**=`2026-09-13-ver02-amount-delta-zero-ok` rev**375** fileKey `5b1f5809-48cf-46d8-8e96-eeab384e7da2`。**757**=`2026-07-21-ver02-phase6-app2-readonly-guard` rev**34**（unit に泊）。**715**=`2026-09-10-715-vl-serial-continue` rev**28**。749=`2026-08-29-749-ux-toolbar-copy-pill-print` rev**18**。696=`2026-08-24-696-modal-keep-open` rev**18**。682=`2026-08-23-682-banner-label-clarify` rev**30**。683=`2026-09-02-683-wiring-print-box` rev**117**。721=`2026-08-23-jr-ipad-dash-p2-vux` rev**17**
@@ -99,6 +99,7 @@
 - 検証: `npm run verify:jikkou-yosan-v2-write-acl` OK。次=浜田が一般ユーザで一時保存目視
 - 予実 G0 テーブルは未着手（実装GO待ち）
 
+
 ## 2026-09-12
 
 ### 2026-09-12 夜（進行中 — 予実G0 1件ずつ）
@@ -122,6 +123,7 @@
 - 第1回多角確認（CIO＋DeepSeek）。Kimi ENOENT。日終わり⑦は回していない
 
 
+
 ## 2026-09-10
 
 ### 2026-09-10 夜（日終わり after-go）
@@ -131,14 +133,5 @@
 
 
 
-## 2026-09-09
 
-### 2026-09-09 夜（日終わり after-go）
-- 756 LIVE `2026-09-09-ver02-ascii-num-ime` rev**361**。数量・単価は半角で入る。目視OK
-- 夕反省全GO: #O1 目視文面 / #M1 Kimi list-models→DeepSeek / #G1 pending≠Actions
-- 9/10 関係者レビュー待ち。設定タブ駐車。共有PC金庫は後日 Desktop Word
-
-
-
-
-<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-12.md -->
+<!-- 古い履歴: chat-sessions/checkpoints/checkpoint-archive-2026-09-13.md -->

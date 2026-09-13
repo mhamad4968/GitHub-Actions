@@ -72,9 +72,9 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-09-12 反映・2026-09-13 WAKE同期）】
-- 本日レーン: 原価（予実）コード。G0 正本は `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
-- checkpoint: 2026-09-12 21:28 JST — 日終わり after-go。756 LIVE rev**366** 目視OK。
+【今やってる主タスク（2026-09-13 反映・2026-09-13 WAKE同期）】
+- 本日レーン: **今晩・新チャット** WAKE → `chat-sessions/2026-09-13-jikkou-yosan-v2-night-handoff.md` と G0 §0・§13。**実装GOが出るまで customize しない**。正本 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
+- checkpoint: 2026-09-13 10:28 JST — 朝セッション **full CLOSE**。金額増減 目視OK完了。原価管理は今晩。
 - 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
 - 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
 - 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
