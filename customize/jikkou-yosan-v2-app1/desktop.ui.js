@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-14-ver02-gaichu-overhead-legal
+  // @JY_V2_BUILD 2026-09-14-ver02-print-code-branch
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -9534,7 +9534,16 @@
     }
   }
 
+  function jy2PrintProjectCodeDisplay(record) {
+    const code = String(jy2HeaderFieldValue(record, "project_code") || "").trim();
+    const branch = String(jy2HeaderFieldValue(record, "project_branch") || "").trim();
+    if (!code) return "";
+    if (!branch) return code;
+    return `${code}-${branch}`;
+  }
+
   function jy2PrintMetaValue(record, code) {
+    if (code === "project_code") return jy2PrintProjectCodeDisplay(record);
     if (code === "project_official_name" || code === "project_name") {
       return jy2NormalizeFiscalYearText(jy2HeaderFieldValue(record, code));
     }
@@ -9614,7 +9623,7 @@
     const official = jy2NormalizeFiscalYearText(
       jy2HeaderFieldValue(record, "project_official_name"),
     );
-    const code = jy2HeaderFieldValue(record, "project_code");
+    const code = jy2PrintProjectCodeDisplay(record);
     if (name || official || code) {
       const banner = documentRef.createElement("div");
       banner.className = "jy2-pr-project-banner";
@@ -10078,7 +10087,7 @@
     const official = jy2NormalizeFiscalYearText(
       jy2HeaderFieldValue(record, "project_official_name"),
     );
-    const code = jy2HeaderFieldValue(record, "project_code");
+    const code = jy2PrintProjectCodeDisplay(record);
     if (name || official || code) {
       const banner = documentRef.createElement("div");
       banner.className = "jy2-pr-project-banner";
@@ -13763,7 +13772,7 @@
     const name = jy2NormalizeFiscalYearText(
       jy2HeaderFieldValue(record, "project_name"),
     );
-    const code = jy2HeaderFieldValue(record, "project_code");
+    const code = jy2PrintProjectCodeDisplay(record);
     const ver = jy2HeaderFieldValue(record, "version_seq");
     if (name || code || ver) {
       const banner = documentRef.createElement("div");
