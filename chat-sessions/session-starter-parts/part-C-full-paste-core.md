@@ -77,6 +77,6 @@
 - checkpoint: 2026-09-14 18:16 JST — 印刷目視OK。日締め until-pause。
 - 進行中 plan: docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md
 - 当日コミット (上位 3):
-  - feat(756): add cost-mgmt yen and count print sheets
+  - chore(756): record LIVE rev395 print-code-branch after deploy
   - chore(checkpoint): sync Git line after commit
-  - chore(handoff): point checkpoint at print-spec commit
+  - feat(756): 帳票ヘッダの工事コードに枝番をハイフンで付ける

@@ -1,4 +1,4 @@
-# 🌙 本日のまとめ・反省 — 2026-09-14 (Mon) 18:17
+# 🌙 本日のまとめ・反省 — 2026-09-14 (Mon) 20:02
 
 > 本ファイルは `scripts/evening-reflect.mjs` が生成した雛形です。
 > AI（私）はこの内容を読み、要因分析と改善提案（#R1/#S1/#D1...）を追記してユーザーへ提示します。
@@ -11,11 +11,20 @@
 ### 1-A. git の状態
 **`git status`（未コミット）**:
 ```text
-M chat-sessions/checkpoint-latest.md
+M chat-sessions/SESSION-CLOCK.md
 ```
 
 **今日のコミット**:
 ```text
+b2cf1788 chore(756): record LIVE rev395 print-code-branch after deploy
+4849a4bd chore(checkpoint): sync Git line after commit
+4b9f2c99 feat(756): 帳票ヘッダの工事コードに枝番をハイフンで付ける
+05933750 chore(756): record LIVE rev394 gaichu-overhead-legal after deploy
+cad10f1e chore(checkpoint): sync Git line after commit
+de05f757 fix(756): 法定福利費追記先を運用Excelに固定し見本xlsxを拾わない
+d5cf7fa2 feat(756): 内訳の諸経費母数を外注5費目にし、法定福利費をその他費用の種別に載せる
+31c6f16a chore(session): sync checkpoint Git + handoff bridge
+106db6b6 chore(close): day-close after evening GO
 0bf10513 feat(756): add cost-mgmt yen and count print sheets
 632b1f78 chore(checkpoint): sync Git line after commit
 084e6222 chore(handoff): point checkpoint at print-spec commit
@@ -25,8 +34,8 @@ cb7644c1 chore(handoff): sync bridge + WAKE artifacts after cold-start
 ```
 
 ### 1-B. kintone-apps.md 本日の追記
-- 756 / `2026-09-14-ver02-cmv2-print-p2` / **393** / `b1faa69f-80c1-41ac-8348-9bfb45ddb980` / Ver.02 App1／単位DD 20項（2026-09-13 泊 CB_VA01） / 
-- **実行予算書作成支援ツールver02**（App1・read-only shell） / **756** / `customize/jikkou-yosan-v2-app1/desktop.js` / [https://jbis-kintone.cybozu.com/k/756/](https://jbis-kintone.cybozu.com/k/756/) **Space 56 / thread 60**・3アプリ版メインUI・**app ACL everyone 追加/編集/削除可**（一時保存・予実保存。import/export 不可。JS は標準画面のまま）。**BUILD=`2026-09-14-ver02-cmv2-print-p2` rev **393** / fileKey **`b1faa69f-80c1-41ac-8348-9bfb45ddb980`** / 
+- 756 / `2026-09-14-ver02-print-code-branch` / **395** / `a90c5678-ef10-45bf-a2b8-5f748562c761` / Ver.02 App1／単位DD 20項（2026-09-13 泊 CB_VA01） / 
+- **実行予算書作成支援ツールver02**（App1・read-only shell） / **756** / `customize/jikkou-yosan-v2-app1/desktop.js` / [https://jbis-kintone.cybozu.com/k/756/](https://jbis-kintone.cybozu.com/k/756/) **Space 56 / thread 60**・3アプリ版メインUI・**app ACL everyone 追加/編集/削除可**（一時保存・予実保存。import/export 不可。JS は標準画面のまま）。**BUILD=`2026-09-14-ver02-print-code-branch` rev **395** / fileKey **`a90c5678-ef10-45bf-a2b8-5f748562c761`** / 
 
 ### 1-C. 朝ブリーフィングの警告
 - ⚠️ 本文に ## 1 件の TSB セクションがあるが目次にない (drift)
@@ -41,7 +50,7 @@ cb7644c1 chore(handoff): sync bridge + WAKE artifacts after cold-start
 ### 1-E. 会話履歴の量
 本日更新された transcripts（参考）:
 ```text
-C:\Users\mhamada202408224\.cursor\projects\1787562992945\agent-transcripts\b2636697-bce3-41ab-bba9-e021dc9f813a\b2636697-bce3-41ab-bba9-e021dc9f813a.jsonl (249454 bytes)
+C:\Users\mhamada202408224\.cursor\projects\1787562992945\agent-transcripts\b2636697-bce3-41ab-bba9-e021dc9f813a\b2636697-bce3-41ab-bba9-e021dc9f813a.jsonl (459980 bytes)
 ```
 
 ### 1-F. 保留中の改善提案
@@ -88,11 +97,11 @@ C:\Users\mhamada202408224\.cursor\projects\1787562992945\agent-transcripts\b2636
 
 > **2026-05-06 明文化（CEO 指示）**: 夜の反省会（**§44**）で **毎回** 次を **口頭または同一チャットで扱う**（飛ばさない）。議論したら **§2 または §4 に「今日の結論」1 行以上** 残す（形骸化防止）。
 
-- [x] **CIO 二人体制**: 印刷仕様は DeepSeek＋Kimi。実装GO前も DeepSeek。締め until-pause 前も DeepSeek 1問。本体だけで締めていない
-- [x] **§1c（仕様・検証）**: 印刷は仕様ロックのあと実装GO。目視OKは浜田。未決を確定と言い換えていない
-- [x] **MCP**: triggers を読んで DeepSeek / Kimi / sequential-thinking / git-history を使った。MCPスキップは実装ターンではない
-- [x] **「直った」検証不足**: 736 誤buildは restore 済み・未deploy。LIVE は 756 のみ
-- [x] **ルールと実態のズレ**: `jikkou-yosan:build-desktop` は 736。756 は `v2-build-desktop`。今日ほつれた点はこれ
+- [ ] **CIO 二人体制**: その日 **第2者（DeepSeek/Kimi）** を実際に挟んだか／**§50-3-8 スキップ理由**は妥当か／**本体だけで締めていないか**
+- [ ] **§1c（仕様・検証）**: **`[仕様状態:]`** / **`[検証2者:]`** を出すべき場面で出しているか／**未決・仮決を確定と言い換えていないか**
+- [ ] **MCP**: **`mcp-server-use-triggers.mdc`** を Read してから止まっているか／**`MCPスキップ:`** は理由付きか／**`npm run mcp:chat-stamp`** を使う場面で使ったか
+- [ ] **「直った」検証不足**: 再発の芽がないか（具体例 0〜1 件でよい）
+- [ ] **ルールと実態のズレ**: **`constitution-brief-card.mdc`** / **`every-turn-rules-confirm.mdc`** について、今日 **ほつれた点があれば 1 点** だけメモしたか
 
 ### 1-G. 直近 TSB（参考）
 直近の TSB（参考・学習リソース）:
@@ -109,19 +118,16 @@ _(出力から未参照ルール行を抽出できず)_
 
 <!-- 浜田チェック不要・自己申告用。AI が埋める。 -->
 
-- [x] **§55-4/§55-5 整合**: 本日 AGENTS.md / RULES-INDEX の [BREAKING] 更新なし
+- [x] **§55-4/§55-5 整合**: 本日 AGENTS.md / RULES-INDEX を [BREAKING] 更新した場合、セーフモード・解除条件と矛盾がないかを 1 行で確認した
 - 該当なし → `_（該当なし）_`
 
 ---
 
 ## 📝 2. 今日やったこと（AI が記入）
 
-- 原価管理印刷の意見交換 → SPEC `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md` → 実装GO → LIVE 756 rev **393** BUILD `2026-09-14-ver02-cmv2-print-p2`
-- 浜田目視 **OK**。Excel はこのラウンド見送り
-- 統括・内訳の印刷箱は混ぜていない。専用 `#jy2-cmv2-print-root`
-- **§1-N 今日の結論**: 第2者（DeepSeek/Kimi）を仕様と実装前に挟んだ。736 は誤って旧 bundle を叩いたが restore・未deploy
+日中: 原価管理印刷 P2 LIVE、一度目の day-close（#S1 736束ね警告）。夜の緊急: 内訳の諸経費母数を外注5費目へ、法定福利費をその他費用の種別に、運用 Excel 14行追記、帳票ヘッダを工事コード-枝番。LIVE 756 rev **395**。736 不触。
 
----
+§1-N 結論: 第2者は DeepSeek。Kimi は80行超なしで未使用。LIVE 旧 BUILD のまま目視させたのが本日の検証不足。
 
 ## ✅ 3. うまくいったこと（AI が記入）
 
@@ -129,35 +135,34 @@ _(出力から未参照ルール行を抽出できず)_
 
 _（候補なし — metrics 閾値内 or 週上限）_
 
-- タブごとに印刷先を分け、回数は対象行0でボタンを消した
-- 金額の残は実績ベース。注記2行で画面との差を説明した
-- GHA ① green。origin 同期
-
----
+現場連絡を同じ夜に LIVE まで載せた。Excel 見本誤拾いは glob 修正で止めた。
 
 ## ⚠️ 4. 詰まった・失敗したこと（AI が記入）
 
-- **`npm run jikkou-yosan:build-desktop` は 736 用**。756 のつもりで一度叩いた。`customize/736/desktop.js` が 4 行変わった。即 `git restore`。**deploy していない**
-- 学び: 756 の束ねは **`npm run jikkou-yosan:v2-build-desktop` だけ**
-- Composer Subagent を 80 行超の印刷 DOM に使わず CIO が入れた。切り分け優先。次の大 Diff は Composer 初回に戻す
+| # | 失敗 | 原因 |
+|---|------|------|
+| 1 | 一度目の締め `clock:clear` のあと deploy が硬拒否。浜田が旧 BUILD の内訳を目視した | 同一日再開でも壁時計セットを浜田の文言待ちにした |
+| 2 | 運用 Excel 追記が見本 xlsx に逃げた | glob が「システム工種」を含む先頭ファイルを拾った |
+| 3 | customize を CIO が直書いた | #T1（Composer 先）を行数が少ないとして外した |
 
----
+学び: 目視依頼より先に LIVE を載せる。glob は本番ファイル名を固定する。
 
 ## 🚀 5. 改善提案（**ミス削減限定**・AI が記入。ユーザー承認待ち）
 
-> **2026-05-30（浜田）**: 夕反省のアップデート案は **AI の失敗を減らすものだけ**。明日のレーン・第1手・タスク計画は **書かない**（→ checkpoint / 当日 -0）。正本: `docs/runbooks/evening-reflection-scope.md`
-
 | ID | カテゴリ | 提案（どの失敗を防ぐか） | 想定リスク | 翌朝自動実施可? |
 |---|---|---|---|---|
-| #S1 | S | `jikkou-yosan-build-desktop.mjs` 起動時に「これは App736。756 は `jikkou-yosan:v2-build-desktop`」を1行出す。今日の誤 bundle の再発を止める | 低 | × 手動 |
+| #O2 | R | 同一日に締め後再開し deploy が要るときは CIO が `session:clock:set` する。旧 BUILD 目視を防ぐ。常時セットにはしない | 中（常態化） | × 手動 |
+| #T2 | R | customize は行数に関係なく Composer 先（#T1 再発） | 低 | × 手動 |
 
-**浜田GO（2026-09-14）**: すべて承認。#S1 実施。`docs/approved-changes/2026-09-14-evening-reflection-hamada-go.md`
+Excel glob の見本除外は `de05f757` で実施済。新スクリプト案は出さない。
 
 > カテゴリ: **R**=ルール改善 / **S**=スクリプト改善 / **D**=ドキュメント / **C**=customize 改修(deploy 除く) / **K**=kintone API 操作
 
+**承認結果（2026-09-14 再締め）**: 「すべて承認します」→ **#O2 #T2 全GO**。記録追記: `docs/approved-changes/2026-09-14-evening-reflection-hamada-go.md`。
+
 ### ユーザー応答方法
-- 個別: 「#R1 承認」「#S1 却下」「#D1 修正して: <修正内容>」
-- 一括: 「全部承認」「Rカテゴリだけ承認」
+- 個別: 「#O2 承認」「#T2 却下」
+- 一括: 「全部承認」「見送り」
 
 ---
 

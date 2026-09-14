@@ -50,11 +50,13 @@ App756 等の見た目レーンで依頼者／浜田レビューに出す前は�
 **#R1（2026-09-10）**: 目視OKの記録は実装・SPEC状態行・push が揃ってから。  
 **#R1（2026-09-13）**: 色・見た目は先にチャットで1案を出し、GO後に **1回 LIVE** する（青→緑の往復 LIVE 禁止）。  
 **#C1（2026-09-10）**: ユーザー規則「push するな」と R63 即 push が衝突したら、採った方を締めに1行残す。  
-**#T1（2026-09-10／2026-09-12／2026-09-13）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
+**#T1（2026-09-10／2026-09-12／2026-09-13／2026-09-14）**: customize は行数に関係なく Composer 先。CIO 直書きしない。  
+**#T2（2026-09-14）**: 「行数が少ない／往復が遅い」は例外にしない（#T1 再発防止）。  
 **#M1（2026-09-10／2026-09-12）**: Kimi がリポファイル ENOENT なら **経路障害**（WSL が Windows パスを開けない）。medal 固定は変えず、本文に経路障害と書く。第2者は DeepSeek。mcp.json から消さない。  
 **#M1-mid（2026-09-12）**: ENOENT / `moonshot-v1-128k` 404 は依頼途中でも直す。恒久は `scripts/mcp-kimi-wsl-path`（`kimi` のまま。新 MCP 足さない）。既定モデル `kimi-k2.6`。  
 **#O1（2026-09-12）**: day-close after-go 前に dirty を印字。SESSION-CLOCK は clock:clear。  
 **#O1（2026-09-13 stash）**: LIVE した customize は stash しない。未実装の別レーン dirty だけ stash。  
+**#O2（2026-09-14）**: 同一日に締め後再開し **deploy が要る**ときは CIO が `session:clock:set` する（浜田の文言待ちにしない）。旧 BUILD 目視を防ぐ。**常時セットにはしない**。`SESSION-CLOCK.md` の HEADER には書かない（`clock:set` で消える）。  
 **#M2（2026-09-10）**: フィールド追加のあと JS deploy の前に `kintone-schema-mcp` `list_field_codes`（preview）。form deploy は脚本。live 再取得は足さない。
 
 ### R26 — スコープ分離（2026-06-13 浜田 GO）

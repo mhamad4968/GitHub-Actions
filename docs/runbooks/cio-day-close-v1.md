@@ -27,4 +27,6 @@ npm run cio:day-close -- --after-go
 
 `--after-go` は先に `cio:checkpoint:sync-live-674`（#D2・customize 非接触）。
 
+**#O2（2026-09-14）**: 同一日に締め後再開し **deploy が要る**ときは、`clock:clear` のあと CIO が `session:clock:set` する。常時セットしない。
+
 **しない**: ③の実装を GO 前にやる。夕反省に明日の1手を書く。途中セッションでこの7手を回す。cold-start の必須ゲート化。新 MCP 追加。AGENTS 大改訂。

@@ -43,14 +43,14 @@
 |----|-----|------|
 | 1 | DeepSeek | §50-3-8 盲点 3 点（型 / SPEC 乖離 / 差異継承）→ CIO 突合 3 行 → `cio:guard:5038 --stamp` |
 | 2 | CIO | `cio:pre-implement-gate -- --strict` |
-| 3 | Composer | `customize/**` のみ。APP_DB はハードコードを維持（bundle で 0 にしない）。**80行超は Composer 必須**（#T1） |
+| 3 | Composer | `customize/**` のみ。APP_DB はハードコードを維持（bundle で 0 にしない）。**行数不問で Composer 必須**（#T1／#T2） |
 | 4 | Kimi | レビュー。file が読めないときは think で代替し、CIO がコードで誤 BLOCK を却下する |
 | 5 | CIO | `cio:preflight:<app> -- --note "…" --with-git-diff-line` → `deploy:<app>` |
 | 6 | CIO | R63: **`npm run rag:mirror:canonical-docs` を先に実行** → customize + `kintone-apps.md` + `.rag/extra-docs/kintone-apps.md` + `data/cio-live-builds.json` を **同一 commit**（正本だけ stage すると pre-commit 拒否）。**目視OKの同一ターンで commit/push 要否を1問**（#O1 2026-09-13）。Yes なら origin へ push。聞かずに push しない |
 | 7 | 浜田 | **Ctrl+F5** 目視のみ（npm は依頼しない） |
 | 8 | CIO | OK ならレーンクローズ + **当該 SPEC の状態行／改定履歴** + checkpoint + **push 済みであること**（#R1 2026-09-10。push は #O1 の1問が Yes のとき）。NG は同一セッションで直して再 deploy |
 
-**#T1（2026-09-10／2026-09-13）**: 手順 3 の Composer を飛ばして CIO が customize を直書きしない（行数不問）。
+**#T1（2026-09-10／2026-09-13／2026-09-14）／#T2**: 手順 3 の Composer を飛ばして CIO が customize を直書きしない（行数不問。「少ないから」は例外にしない）。
 
 ### 2.1 フォームモーダル（#D1 · 2026-08-24）
 

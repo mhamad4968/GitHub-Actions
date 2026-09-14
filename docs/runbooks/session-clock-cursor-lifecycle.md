@@ -66,6 +66,8 @@ npm run session:clock:web    # 前景で web（ログに URL）
 
 URL 正本: `logs/session-clock-web.url`（web 起動後）
 
+**#O2（2026-09-14）**: 同一日に day-close の `clock:clear` のあと、同じチャットで **deploy が要る**再開なら CIO が `session:clock:set` する（浜田の「セットして」待ちにしない）。**常時セットしない**。手順は本ファイルに置く（`SESSION-CLOCK.md` HEADER は `clock:set` で消える）。
+
 ---
 
 ## 浜田 CEO
