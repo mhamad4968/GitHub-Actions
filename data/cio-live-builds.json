@@ -434,11 +434,11 @@
       "note": null
     },
     "756": {
-      "build": "2026-09-14-ver02-gaichu-overhead-legal",
-      "fileKey": "e0d0a7ee-91c6-4f05-9596-1c0d61f3fc94",
-      "revision": "394",
+      "build": "2026-09-14-ver02-print-code-branch",
+      "fileKey": "a90c5678-ef10-45bf-a2b8-5f748562c761",
+      "revision": "395",
       "relPath": "customize/jikkou-yosan-v2-app1/desktop.js",
-      "deployedAt": "2026-09-14T10:51:38.309Z",
+      "deployedAt": "2026-09-14T10:59:20.419Z",
       "note": null
     },
     "757": {
