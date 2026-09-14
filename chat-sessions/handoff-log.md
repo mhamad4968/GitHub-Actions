@@ -6574,7 +6574,7 @@ npm run cio:morning:ready
 
 **話したこと**: 見込は実績がある月はグレーで変更不可（0は実績、空に戻したら再開、数字は残す）。見込入力済は薄緑。回数は昼夜工種のみ。印刷と Excel は次チャットで意見交換から。customize はそのあと実装GOまでしない。736・757 customize・金額増減・統括11列・設定タブは不触。commit はユーザー規則を採り R63 は未充足。
 
-**次の1手**: **明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。
+**次の1手**: **明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
 
 **Git**: `354ffeac` — ahead 1 + dirty 756 LIVE（close-git は ③GO 後）
 

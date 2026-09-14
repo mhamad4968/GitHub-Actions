@@ -72,9 +72,11 @@
 - §51 並列処理禁止 / 1 タスク 1 操作原則（&& 連結禁止 / batch 集約禁止）
 - §51-2 浜田からの複数指示受領時は 1 つ目だけ実施 → 「次の○○ 進めますか？」確認
 
-【今やってる主タスク（2026-09-13 反映・2026-09-14 WAKE同期）】
-- 本日レーン: **明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。
-- checkpoint: 2026-09-13 19:30 JST — 夜 ③全GO。④配線済。⑤⑥⑦ after-go。
-- 正本: `chat-sessions/checkpoint-latest.md` · closures は同ファイルのクローズ表
-- 触らない: checkpoint「保留・その他の制約」表を正（688 / 677–679 / SKYSEA実配信 / 712 / 736 等）
-- 詳細 BUILD/rev: checkpoint「本日アクティブ」表を正（本ブロックは要約のみ）
+【今やってる主タスク（2026-09-14 自動更新）】
+- 次の1手: **明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
+- checkpoint: 2026-09-14 18:16 JST — 印刷目視OK。日締め until-pause。
+- 進行中 plan: docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md
+- 当日コミット (上位 3):
+  - feat(756): add cost-mgmt yen and count print sheets
+  - chore(checkpoint): sync Git line after commit
+  - chore(handoff): point checkpoint at print-spec commit

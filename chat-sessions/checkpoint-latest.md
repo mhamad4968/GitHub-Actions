@@ -1,7 +1,7 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-14 18:15 JST — 原価管理印刷 LIVE。目視待ち。
-**次の1手**: 浜田が [756](https://jbis-kintone.cybozu.com/k/756/) で印刷を目視。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。Excel はこのラウンド見送り。
-**レーン変更**: 印刷仕様ロック → **LIVE rev393 目視待ち**
+**最終更新**: 2026-09-14 18:16 JST — 印刷目視OK。日締め until-pause。
+**次の1手**: **明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
+**レーン変更**: 印刷 LIVE 目視待ち → **印刷目視OK / バージョン管理は翌営業以降**
 **Git**: **`084e6222`** = `origin/main` — push 済
 **closeStatus**: **full 進行中**（after-go）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
@@ -20,7 +20,7 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 印刷 LIVE rev393 目視待ち。Excel はこのラウンド見送り。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
+**継続メモ**: 印刷 LIVE rev393 **目視OK**。Excel 見送り。次はバージョン管理の見直し（GOまで不触）。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
 **GO待ち**: なし（③全GO済）。印刷・Excelの実装GOは意見交換のあと
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev**393** 印刷P2（金額A4横・回数A4縦）**目視待ち** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。金額増減完了。Excelはこのラウンド見送り |
+| **756/757/758** | 756 LIVE rev**393** 印刷P2 **目視OK** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。金額増減完了。Excel見送り。バージョン管理見直しは翌営業以降 |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->
