@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-14 17:51 JST — 原価管理印刷仕様ロック。実装GO待ち。
 **次の1手**: 浜田の **実装GO** まで customize / deploy しない。印刷正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。Excel 出力はこのラウンド見送り。G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
 **レーン変更**: 印刷・Excel 意見交換 → **印刷仕様ロック / 実装GO待ち**
-**Git**: **`ee214390`** = `origin/main` へ push 予定
+**Git**: **`084e6222`** = `origin/main` — push 済
 **closeStatus**: **full 進行中**（after-go）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
 **本日状態**: **756**=`2026-09-13-ver02-cmv2-forecast-green` rev**392** fileKey `9bdf7a8e-1b10-4864-9fba-4215a5741960`。**757**=rev**34**（unit に泊）。**758**=rev**31**
