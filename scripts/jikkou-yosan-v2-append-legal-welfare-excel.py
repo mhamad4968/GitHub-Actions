@@ -23,7 +23,9 @@ d = Path(r"C:\tmp\実行予算ver2")
 cands = [
     x
     for x in d.glob("*.xlsx")
-    if "システム工種" in x.name and not x.name.startswith("~$")
+    if "システム工種" in x.name
+    and "見本" not in x.name
+    and not x.name.startswith("~$")
 ]
 if not cands:
     raise SystemExit("xlsx not found")
