@@ -286,3 +286,38 @@ export function cmv2IncludeWorkType(budget, workTypeKey) {
   }
   return next;
 }
+
+/** 印刷（金額）: 実績がある月の合計。未入力月は足さない（0円の実績月は足す）。 */
+export function cmv2PrintActualSum(row) {
+  let sum = 0;
+  let has = false;
+  for (const month of row?.actualsByMonth || []) {
+    if (month && month.has) {
+      has = true;
+      sum += Number(month.value) || 0;
+    }
+  }
+  return { sum, has };
+}
+
+export function cmv2PrintYenKeep(row) {
+  if (row?.initial !== null && row?.initial !== undefined) return true;
+  if (row?.current !== null && row?.current !== undefined) return true;
+  return cmv2PrintActualSum(row).has;
+}
+
+export function cmv2PrintCountKeep(row) {
+  if (!row?.dayNight) return false;
+  if (row.countPlan !== null && row.countPlan !== undefined) return true;
+  return (row.countActual || []).some((value) => value !== null && value !== undefined);
+}
+
+export function cmv2PrintYenRemaining(current, actualSum) {
+  if (current === null || current === undefined) return null;
+  return current - actualSum;
+}
+
+export function cmv2PrintYenRate(current, actualSum) {
+  if (current === null || current === undefined || current === 0) return null;
+  return actualSum / current;
+}

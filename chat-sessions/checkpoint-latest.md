@@ -1,16 +1,16 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-14 17:51 JST — 原価管理印刷仕様ロック。実装GO待ち。
-**次の1手**: 浜田の **実装GO** まで customize / deploy しない。印刷正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。Excel 出力はこのラウンド見送り。G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`。
-**レーン変更**: 印刷・Excel 意見交換 → **印刷仕様ロック / 実装GO待ち**
+**最終更新**: 2026-09-14 18:15 JST — 原価管理印刷 LIVE。目視待ち。
+**次の1手**: 浜田が [756](https://jbis-kintone.cybozu.com/k/756/) で印刷を目視。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。Excel はこのラウンド見送り。
+**レーン変更**: 印刷仕様ロック → **LIVE rev393 目視待ち**
 **Git**: **`084e6222`** = `origin/main` — push 済
 **closeStatus**: **full 進行中**（after-go）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
-**本日状態**: **756**=`2026-09-13-ver02-cmv2-forecast-green` rev**392** fileKey `9bdf7a8e-1b10-4864-9fba-4215a5741960`。**757**=rev**34**（unit に泊）。**758**=rev**31**
+**本日状態**: **756**=`2026-09-14-ver02-cmv2-print-p2` rev**393** fileKey `b1faa69f-80c1-41ac-8348-9bfb45ddb980`。**757**=rev**34**（unit に泊）。**758**=rev**31**
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
 ### 本日アクティブ（BUILD/rev — 2026-09-13）
 | App | BUILD | rev |
 |-----|-------|-----|
-| **756** | `2026-09-13-ver02-cmv2-forecast-green` | **392** |
+| **756** | `2026-09-14-ver02-cmv2-print-p2` | **393** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
 | **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
@@ -20,7 +20,7 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 印刷・Excelは意見交換から。集計 LIVE は rev392。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
+**継続メモ**: 印刷 LIVE rev393 目視待ち。Excel はこのラウンド見送り。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
 **GO待ち**: なし（③全GO済）。印刷・Excelの実装GOは意見交換のあと
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
@@ -37,7 +37,7 @@
 | **677–679** | 触らない |
 | **SKYSEA** | **案件外**（2026-08-10）— 手動インストール。kintone登録は浜田指示時のみ |
 | **736** | 現行版保持・触らない |
-| **756/757/758** | 756 LIVE rev**392** 予実集計（見込ロック・薄緑）**目視OK** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。金額増減完了。印刷・Excelは意見交換から |
+| **756/757/758** | 756 LIVE rev**393** 印刷P2（金額A4横・回数A4縦）**目視待ち** · 757 rev34 · 758 rev31 · everyone 書込。単位DD 20項。**一時保存 一般ユーザ目視OK**。洞0。757 customize 未deploy。金額増減完了。Excelはこのラウンド見送り |
 | **712** | 削除済 — deploy 禁止 |
 
 <!-- freeze-zone minChars pad (244+ chars; keep for mandatory-read-gate) ·······································································································································································-->

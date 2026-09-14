@@ -12,7 +12,7 @@
   // Phase2c-actual-auto-link-on: 浜田GO・Excel空枠を元通り。ENSURE/PLACE再開。MANUAL_ONLY・カタログ非表示は維持。#R-EXCEL-LINK-00
   // Phase2c-actual-himoku-fold-persist: 費目▶開閉をsessionStorageへ。一時保存reload後も現状維持。#R-EXCEL-UI-16
   // Phase2c-actual-unlink-catalog-fix: カタログ除外は未revealのみ。＋手入力は材料費種別下でも残す。#R-EXCEL-LINK-00
-  // @JY_V2_BUILD 2026-09-13-ver02-cmv2-forecast-green
+  // @JY_V2_BUILD 2026-09-14-ver02-cmv2-print-p2
   // G0 §9.1: 外注費は「－」固定禁止 → 種別5件（材料費／労務費／仮設機械経費／現場経費／その他費用）。
   // Phase2c-actual-unlink-catalog: 内訳品名カタログのみ非表示。手入力・その他leafは再表示。#R-EXCEL-LINK-00
   // Phase2c-actual-unlink-reveal: 内訳leafの自動reveal停止（過剰→catalog除外へ修正）。#R-EXCEL-LINK-00
@@ -2087,6 +2087,12 @@
       "@media print{.jy2-locked-badge{display:none!important}}",
       "#jy2-print-portal{display:none}",
       "#jy2-print-portal.jy2-print-measure{display:block!important;position:absolute;left:0;top:0;width:287mm;visibility:hidden;pointer-events:none;z-index:-1}",
+      "#jy2-cmv2-print-root{display:none}",
+      "@media print{body.jy2-cmv2-printing>:not(#jy2-cmv2-print-root){display:none!important}#jy2-cmv2-print-root{display:block!important;position:static!important;width:100%!important;height:auto!important;overflow:visible!important}.jy2-cmv2-pr{-webkit-print-color-adjust:exact;print-color-adjust:exact}}",
+      "#jy2-cmv2-print-root .jy2-cmv2-pr-yen .jy2-pr-table{font-size:7.5pt}",
+      "#jy2-cmv2-print-root .jy2-cmv2-pr-yen .jy2-pr-table th,#jy2-cmv2-print-root .jy2-cmv2-pr-yen .jy2-pr-table td{padding:1px 2px}",
+      "#jy2-cmv2-print-root .jy2-cmv2-pr-note{margin:3mm 0 0;font-size:9pt;line-height:1.45}",
+      "#jy2-cmv2-print-root .jy2-cmv2-pr-note-warn{font-weight:700}",
       "@media print{.jy2-pr-mode-detail{zoom:0.9}}",
       "@media print{@page{size:A4 landscape;margin:5mm}html,body{margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}body.jy2-printing>:not(#jy2-print-portal){display:none!important}#jy2-print-portal{display:block!important;position:static!important;width:100%!important;height:auto!important;overflow:visible!important}.jy2-pr{-webkit-print-color-adjust:exact;print-color-adjust:exact}.jy2-pr-mode-summary{zoom:0.9}.jy2-pr-mode-summary .jy2-pr-doc-title{font-size:14pt;margin:0 0 0.5mm;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-project-banner{margin:0 0 2px;padding:2px 0 1px}.jy2-pr-mode-summary .jy2-pr-project-name{font-size:11pt;line-height:1.25}.jy2-pr-mode-summary .jy2-pr-project-sub{font-size:8.5pt;margin-top:0;line-height:1.2}.jy2-pr-mode-summary .jy2-pr-sheet-title{font-size:10pt;margin:0 0 2px;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-meta{grid-template-columns:repeat(6,minmax(0,1fr));gap:1px 6px;margin-bottom:2px;padding:2px 5px;font-size:8pt;line-height:1.15}.jy2-pr-mode-summary .jy2-pr-meta-label{font-size:7.5pt}.jy2-pr-mode-summary .jy2-pr-section{margin-bottom:6px}.jy2-pr-mode-summary .jy2-pr-sec-head{font-size:9.5pt;margin:0 0 1px;padding:1px 5px;line-height:1.2}.jy2-pr-mode-summary .jy2-pr-table{font-size:8.5pt;line-height:1.25}.jy2-pr-mode-summary .jy2-pr-table th{font-size:8pt;padding:1px 2px}.jy2-pr-mode-summary .jy2-pr-table th,.jy2-pr-mode-summary .jy2-pr-table td{padding:1px 2px}.jy2-pr-mode-summary .jy2-pr-table tfoot td{padding:1px 2px}.jy2-pr-mode-summary .jy2-budget-summary-head{font-size:9pt;padding:2px 6px}.jy2-pr-mode-summary .jy2-budget-summary-table th,.jy2-pr-mode-summary .jy2-budget-summary-table td,.jy2-pr-mode-summary .jy2-budget-summary-keys th,.jy2-pr-mode-summary .jy2-budget-summary-keys td{padding:1px 4px;font-size:8pt}.jy2-pr-mode-summary .jy2-budget-summary-note{font-size:7.5pt}}",
       ".jy2-pr{font-family:'Segoe UI',Meiryo,sans-serif;color:#1e293b;font-size:11pt;line-height:1.3}",
@@ -13719,6 +13725,288 @@
     return jy2FormatCommaNumber(String(value));
   }
 
+  const JY2_CMV2_PRINT_ROOT_ID = "jy2-cmv2-print-root";
+  const JY2_CMV2_PRINT_PAGE_STYLE_ID = "jy2-cmv2-print-page-style";
+
+  function jy2Cmv2PrintCollect(budget, actuals, keepFn) {
+    const out = [];
+    for (const section of ["施工", "保安"]) {
+      const systems = [];
+      for (const systemWorkType of jy2Cmv2SystemsInSection(section)) {
+        const rows = jy2Cmv2ItemsForSystem(section, systemWorkType)
+          .map((item) => cmv2WorkTypeRow(item, budget, actuals))
+          .filter(
+            (row) =>
+              cmv2WorkTypeIsListed(row.workTypeKey, budget, actuals) &&
+              keepFn(row),
+          );
+        if (!rows.length) continue;
+        systems.push({ systemWorkType, rows });
+      }
+      if (systems.length) out.push({ section, systems });
+    }
+    return out;
+  }
+
+  function jy2Cmv2HasPrintCountRows(budget, actuals) {
+    return jy2Cmv2PrintCollect(budget, actuals, cmv2PrintCountKeep).length > 0;
+  }
+
+  function jy2Cmv2BuildPrintChrome(documentRef, record, sheetTitle) {
+    const root = documentRef.createElement("div");
+    root.className = "jy2-pr jy2-cmv2-pr";
+    const title = documentRef.createElement("h1");
+    title.className = "jy2-pr-doc-title";
+    title.textContent = `実${JY2_IDEO}行${JY2_IDEO}予${JY2_IDEO}算${JY2_IDEO}書`;
+    root.appendChild(title);
+    const name = jy2NormalizeFiscalYearText(
+      jy2HeaderFieldValue(record, "project_name"),
+    );
+    const code = jy2HeaderFieldValue(record, "project_code");
+    const ver = jy2HeaderFieldValue(record, "version_seq");
+    if (name || code || ver) {
+      const banner = documentRef.createElement("div");
+      banner.className = "jy2-pr-project-banner";
+      if (name) {
+        banner.appendChild(
+          jy2Cell(documentRef, "div", "jy2-pr-project-name", name),
+        );
+      }
+      const sub = [];
+      if (code) sub.push(`工事コード：${code}`);
+      if (ver) sub.push(`版：${ver}`);
+      if (sub.length) {
+        banner.appendChild(
+          jy2Cell(documentRef, "div", "jy2-pr-project-sub", sub.join("　")),
+        );
+      }
+      root.appendChild(banner);
+    }
+    const sheet = documentRef.createElement("p");
+    sheet.className = "jy2-pr-sheet-title";
+    sheet.textContent = sheetTitle;
+    root.appendChild(sheet);
+    return root;
+  }
+
+  function jy2Cmv2OpenPrint(documentRef, root, pageSize) {
+    const win = documentRef.defaultView;
+    if (!win || typeof win.print !== "function") return;
+    let host = documentRef.getElementById(JY2_CMV2_PRINT_ROOT_ID);
+    if (!host) {
+      host = documentRef.createElement("div");
+      host.id = JY2_CMV2_PRINT_ROOT_ID;
+      documentRef.body.appendChild(host);
+    }
+    host.textContent = "";
+    host.appendChild(root);
+    let pageStyle = documentRef.getElementById(JY2_CMV2_PRINT_PAGE_STYLE_ID);
+    if (!pageStyle) {
+      pageStyle = documentRef.createElement("style");
+      pageStyle.id = JY2_CMV2_PRINT_PAGE_STYLE_ID;
+      documentRef.head.appendChild(pageStyle);
+    }
+    pageStyle.textContent = `@media print{@page{size:${pageSize};margin:5mm}}`;
+    documentRef.body.classList.add("jy2-cmv2-printing");
+    const cleanup = () => {
+      win.removeEventListener("afterprint", cleanup);
+      host.textContent = "";
+      if (pageStyle && pageStyle.parentNode) pageStyle.parentNode.removeChild(pageStyle);
+      if (documentRef.body) documentRef.body.classList.remove("jy2-cmv2-printing");
+    };
+    win.addEventListener("afterprint", cleanup);
+    const run = () => {
+      try {
+        win.print();
+      } catch (error) {
+        cleanup();
+        if (typeof win.alert === "function") {
+          win.alert(`印刷を開始できませんでした: ${error.message || error}`);
+        }
+      }
+    };
+    if (typeof win.requestAnimationFrame === "function") {
+      win.requestAnimationFrame(() => win.requestAnimationFrame(run));
+    } else {
+      run();
+    }
+  }
+
+  function jy2Cmv2BuildPrintYenDoc(documentRef, { record, budget, actuals }) {
+    const root = jy2Cmv2BuildPrintChrome(documentRef, record, "工事原価管理（金額）");
+    root.classList.add("jy2-cmv2-pr-yen");
+    const sections = jy2Cmv2PrintCollect(budget, actuals, cmv2PrintYenKeep);
+    const labels = [
+      "システム工種",
+      "工種",
+      "当初",
+      "現予算",
+      "残",
+      "率",
+      ...CMV2_MONTHS.map((month) => `${month}月`),
+    ];
+    const started = jy2PrStartTable(documentRef, labels);
+    const addNum = (tr, value) => {
+      tr.appendChild(
+        jy2Cell(documentRef, "td", "jy2-num", jy2Cmv2FormatYen(value)),
+      );
+    };
+    const grand = { current: 0, remaining: 0, actual: 0, has: false };
+    for (const section of sections) {
+      const sec = { current: 0, remaining: 0, actual: 0, has: false };
+      for (const system of section.systems) {
+        let first = true;
+        for (const row of system.rows) {
+          const actual = cmv2PrintActualSum(row);
+          const remaining = cmv2PrintYenRemaining(row.current, actual.sum);
+          const rate = cmv2PrintYenRate(row.current, actual.sum);
+          if (row.current !== null) {
+            sec.current += row.current;
+            grand.current += row.current;
+            sec.has = true;
+            grand.has = true;
+          }
+          if (remaining !== null) {
+            sec.remaining += remaining;
+            grand.remaining += remaining;
+          }
+          sec.actual += actual.sum;
+          grand.actual += actual.sum;
+          const tr = documentRef.createElement("tr");
+          tr.appendChild(
+            jy2Cell(
+              documentRef,
+              "td",
+              first ? "" : "jy2-pr-ditto",
+              first ? system.systemWorkType : "〃",
+            ),
+          );
+          first = false;
+          tr.appendChild(jy2Cell(documentRef, "td", "", row.workType));
+          addNum(tr, row.initial);
+          addNum(tr, row.current);
+          addNum(tr, remaining);
+          tr.appendChild(
+            jy2Cell(documentRef, "td", "jy2-num", jy2Cmv2FormatRate(rate)),
+          );
+          for (const month of row.actualsByMonth) {
+            tr.appendChild(
+              jy2Cell(
+                documentRef,
+                "td",
+                "jy2-num",
+                month && month.has ? jy2Cmv2FormatYen(month.value) : "",
+              ),
+            );
+          }
+          started.tbody.appendChild(tr);
+        }
+      }
+      const sub = documentRef.createElement("tr");
+      sub.className = "jy2-pr-sub";
+      const subLabel = jy2Cell(
+        documentRef,
+        "td",
+        "jy2-pr-sub-label",
+        `${section.section}計`,
+      );
+      subLabel.colSpan = 3;
+      sub.appendChild(subLabel);
+      addNum(sub, sec.has ? sec.current : null);
+      addNum(sub, sec.has ? sec.remaining : null);
+      sub.appendChild(
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-num",
+          sec.has ? jy2Cmv2FormatRate(cmv2PrintYenRate(sec.current, sec.actual)) : "",
+        ),
+      );
+      for (let i = 0; i < 12; i += 1) sub.appendChild(documentRef.createElement("td"));
+      started.tbody.appendChild(sub);
+    }
+    if (grand.has) {
+      const tot = documentRef.createElement("tr");
+      tot.className = "jy2-pr-grand";
+      const totLabel = jy2Cell(documentRef, "td", "jy2-pr-total-label", "総合計");
+      totLabel.colSpan = 3;
+      tot.appendChild(totLabel);
+      addNum(tot, grand.current);
+      addNum(tot, grand.remaining);
+      tot.appendChild(
+        jy2Cell(
+          documentRef,
+          "td",
+          "jy2-num",
+          jy2Cmv2FormatRate(cmv2PrintYenRate(grand.current, grand.actual)),
+        ),
+      );
+      for (let i = 0; i < 12; i += 1) tot.appendChild(documentRef.createElement("td"));
+      started.tbody.appendChild(tot);
+    }
+    root.appendChild(started.table);
+    const note = documentRef.createElement("div");
+    note.className = "jy2-cmv2-pr-note";
+    note.appendChild(
+      jy2Cell(
+        documentRef,
+        "div",
+        "",
+        "この帳票は月次・残・率を実績で出しています。",
+      ),
+    );
+    note.appendChild(
+      jy2Cell(documentRef, "div", "jy2-cmv2-pr-note-warn", "（注意）見込は載せていません。"),
+    );
+    root.appendChild(note);
+    return root;
+  }
+
+  function jy2Cmv2BuildPrintCountDoc(documentRef, { record, budget, actuals }) {
+    const root = jy2Cmv2BuildPrintChrome(documentRef, record, "工事原価管理（回数）");
+    root.classList.add("jy2-cmv2-pr-count");
+    const sections = jy2Cmv2PrintCollect(budget, actuals, cmv2PrintCountKeep);
+    const labels = [
+      "システム工種",
+      "工種",
+      "予定回数",
+      "残回数",
+      ...CMV2_MONTHS.map((month) => `${month}月`),
+    ];
+    const started = jy2PrStartTable(documentRef, labels);
+    const addCount = (tr, value) => {
+      tr.appendChild(
+        jy2Cell(documentRef, "td", "jy2-num", jy2Cmv2FormatCount(value)),
+      );
+    };
+    for (const section of sections) {
+      for (const system of section.systems) {
+        let first = true;
+        for (const row of system.rows) {
+          const tr = documentRef.createElement("tr");
+          tr.appendChild(
+            jy2Cell(
+              documentRef,
+              "td",
+              first ? "" : "jy2-pr-ditto",
+              first ? system.systemWorkType : "〃",
+            ),
+          );
+          first = false;
+          tr.appendChild(jy2Cell(documentRef, "td", "", row.workType));
+          addCount(tr, row.countPlan);
+          addCount(tr, row.countRemaining);
+          for (const value of row.countActual || []) {
+            addCount(tr, value);
+          }
+          started.tbody.appendChild(tr);
+        }
+      }
+    }
+    root.appendChild(started.table);
+    return root;
+  }
+
   function jy2Cmv2PersistBudget(record, budget) {
     const json = cmv2SerializeBudget(budget);
     jy2ApplyHeaderField(record, "cost_mgmt_v2_budget", json);
@@ -13872,6 +14160,9 @@
             state.loaded = true;
             rerender();
           });
+      }
+      if (paneOpts && typeof paneOpts.onCmv2Chrome === "function") {
+        paneOpts.onCmv2Chrome();
       }
       jy2ApplyScroll(documentRef, pane, scroll);
       return;
@@ -14686,6 +14977,9 @@
     else if (innerTab === "detail-seko") renderDetailSection("施工");
     else renderDetailSection("保安");
 
+    if (paneOpts && typeof paneOpts.onCmv2Chrome === "function") {
+      paneOpts.onCmv2Chrome();
+    }
     jy2ApplyScroll(documentRef, pane, scroll);
   }
 
@@ -16736,6 +17030,20 @@
     printButton.title =
       "総括を ver.01 同型の帳票で印刷します（請負・原価・給与・①⑧⑨／A4横）";
 
+    const printYenButton = documentRef.createElement("button");
+    printYenButton.type = "button";
+    printYenButton.className = "jy2-btn jy2-print-button";
+    printYenButton.textContent = "印刷（金額）";
+    printYenButton.hidden = true;
+    printYenButton.title = "工事原価管理の金額帳票を印刷します（A4横・実績）";
+
+    const printCountButton = documentRef.createElement("button");
+    printCountButton.type = "button";
+    printCountButton.className = "jy2-btn jy2-print-button";
+    printCountButton.textContent = "印刷（回数）";
+    printCountButton.hidden = true;
+    printCountButton.title = "工事原価管理の回数帳票を印刷します（A4縦）";
+
     const lastSavedEl = documentRef.createElement("span");
     lastSavedEl.className = "jy2-last-saved";
     const initLastSaved = jy2ResolveLastSavedDisplayText(documentRef.defaultView, record);
@@ -16768,6 +17076,8 @@
     rightGroup.append(
       lastSavedEl,
       printButton,
+      printYenButton,
+      printCountButton,
       saveButton,
       confirmButton,
       addBlockBtn,
@@ -16851,10 +17161,23 @@
       addBlockBtn.hidden = tabId !== "detail";
       // 給与行は総括専用。
       addSalaryBtn.hidden = tabId !== "summary";
+      const innerTab = (actualPane && actualPane._cmv2InnerTab) || "summary";
+      const showClassic = tabId === "summary" || tabId === "detail";
+      printButton.hidden = !showClassic;
       printButton.title =
         tabId === "detail"
           ? "内訳を帳票で印刷します（工事基本情報・各工種ブロック／A4横）"
           : "総括を ver.01 同型の帳票で印刷します（請負・原価・給与・①⑧⑨／A4横）";
+      const showCmv2 =
+        tabId === "actual" && innerTab === "summary";
+      printYenButton.hidden = !showCmv2;
+      const state = actualPane && actualPane._cmv2State;
+      printCountButton.hidden = !(
+        showCmv2 &&
+        state &&
+        state.loaded &&
+        jy2Cmv2HasPrintCountRows(state.budget, state.actuals)
+      );
     }
 
     let actualsDirty = true;
@@ -16916,6 +17239,7 @@
           );
           return;
         }
+        if (tabId !== "summary") return;
         activate("summary");
         const blocks = currentBlocks();
         const printTotals = summaryModel.totals(blocks);
@@ -16938,6 +17262,49 @@
         win.alert(`印刷の準備に失敗しました: ${error.message || error}`);
       }
     });
+
+    const runCmv2Print = (kind) => {
+      const win = documentRef.defaultView;
+      if (!win || typeof win.print !== "function") return;
+      try {
+        flushActualsIfDirty();
+        const state = actualPane && actualPane._cmv2State;
+        if (!state || !state.loaded) {
+          if (typeof win.alert === "function") {
+            win.alert("予実データを読込中です。少し待ってから印刷してください。");
+          }
+          return;
+        }
+        if (kind === "yen") {
+          jy2Cmv2OpenPrint(
+            documentRef,
+            jy2Cmv2BuildPrintYenDoc(documentRef, {
+              record,
+              budget: state.budget,
+              actuals: state.actuals,
+            }),
+            "A4 landscape",
+          );
+          return;
+        }
+        if (!jy2Cmv2HasPrintCountRows(state.budget, state.actuals)) return;
+        jy2Cmv2OpenPrint(
+          documentRef,
+          jy2Cmv2BuildPrintCountDoc(documentRef, {
+            record,
+            budget: state.budget,
+            actuals: state.actuals,
+          }),
+          "A4 portrait",
+        );
+      } catch (error) {
+        if (typeof win.alert === "function") {
+          win.alert(`印刷の準備に失敗しました: ${error.message || error}`);
+        }
+      }
+    };
+    printYenButton.addEventListener("click", () => runCmv2Print("yen"));
+    printCountButton.addEventListener("click", () => runCmv2Print("count"));
 
     let headerPane = null;
     let holidayPane = null;
@@ -17089,6 +17456,8 @@
               isOpenVersion &&
               actualsModel.allowedOperations.editActuals,
           ),
+          onCmv2Chrome: () =>
+            syncStickyActions(sticky.dataset.activeTab || "actual"),
         },
       );
       actualsDirty = false;

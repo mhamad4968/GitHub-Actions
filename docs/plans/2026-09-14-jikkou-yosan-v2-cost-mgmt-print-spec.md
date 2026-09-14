@@ -1,7 +1,7 @@
 # 756 工事原価管理 — 印刷仕様（P2）
 
 **日付**: 2026-09-14  
-**状態**: **仕様ロック**。**customize / deploy / 印刷コードは浜田の実装GOまで禁止**。本ファイルがあるだけでは実装しない。  
+**状態**: **実装済（LIVE）** BUILD `2026-09-14-ver02-cmv2-print-p2` rev **393**。**浜田目視待ち**。Excel は見送り。  
 **親（機能合意）**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（G0 当時の P2 は実装ラウンド対象外だった。印刷の正本は本ファイル）  
 **実装仕様（G1・予実本体）**: `docs/plans/2026-09-13-jikkou-yosan-v2-cost-mgmt-implement-spec.md`（予実の置換は別GO。本ファイルは印刷だけ）  
 **対象**: App756 実行予算書 ver.02 の **画面印刷**。経路 `customize/jikkou-yosan-v2-app1/`（実装GO後）  
@@ -143,3 +143,4 @@ AIチーム（2026-09-14）: CIO 合意。DeepSeek 合意OK。Kimi 既決の再�
 | 日付 | 内容 |
 |------|------|
 | 2026-09-14 | 初版。浜田合意＋AIチーム確認。仕様ロック。実装GO待ち |
+| 2026-09-14 | 実装GO。LIVE rev 393 BUILD `2026-09-14-ver02-cmv2-print-p2`。目視待ち |

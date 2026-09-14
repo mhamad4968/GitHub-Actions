@@ -713,7 +713,7 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /body === "0"\) return "－"/);
   assert.match(source, /function jy2LoadAmountDeltaIndex/);
   assert.match(source, /applyAmountDeltaFallbacks/);
-  assert.match(source, /@JY_V2_BUILD 2026-09-13-ver02-cmv2-forecast-green/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-14-ver02-cmv2-print-p2/);
   assert.match(source, /function jy2MarkDetailPrintKeep/);
   assert.match(source, /function jy2PrepareDetailPrintKeep/);
   assert.match(source, /jy2-print-measure/);

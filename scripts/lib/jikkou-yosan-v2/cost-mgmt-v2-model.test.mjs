@@ -14,6 +14,11 @@ import {
   cmv2ParseBudget,
   cmv2SeedIncludedWorkTypes,
   cmv2Sentinel758Fields,
+  cmv2PrintActualSum,
+  cmv2PrintCountKeep,
+  cmv2PrintYenKeep,
+  cmv2PrintYenRate,
+  cmv2PrintYenRemaining,
   cmv2WorkTypeIsListed,
   cmv2WorkTypeRow,
 } from "./cost-mgmt-v2-model.mjs";
@@ -145,4 +150,61 @@ test("count adopted ignores countForecast; listed only with actuals or include",
   assert.equal(cmv2WorkTypeIsListed("10100|塗料", emptyBudget, withActual), true);
   const included = cmv2IncludeWorkType(emptyBudget, "20100|昼間");
   assert.equal(cmv2WorkTypeIsListed("20100|昼間", included, cmv2ParseActuals({})), true);
+});
+
+test("print yen remaining uses actuals not forecast; 0 stays 0", () => {
+  const budget = cmv2ParseBudget({
+    workTypes: {
+      "10100|塗料": {
+        current: 1000,
+        forecast: [null, 400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      },
+    },
+  });
+  const actuals = cmv2ParseActuals({
+    companies: [
+      {
+        workTypeKey: "10100|塗料",
+        company: "A",
+        months: [0, null, null, null, null, null, null, null, null, null, null, null],
+      },
+    ],
+  });
+  const row = cmv2WorkTypeRow(masterItem, budget, actuals);
+  const actual = cmv2PrintActualSum(row);
+  assert.equal(actual.has, true);
+  assert.equal(actual.sum, 0);
+  assert.equal(cmv2PrintYenRemaining(row.current, actual.sum), 1000);
+  assert.equal(cmv2PrintYenRate(row.current, actual.sum), 0);
+  assert.equal(row.remaining, 600);
+  assert.equal(cmv2PrintYenKeep(row), true);
+  const emptyRow = cmv2WorkTypeRow(
+    masterItem,
+    cmv2ParseBudget({}),
+    cmv2ParseActuals({}),
+  );
+  assert.equal(cmv2PrintYenKeep(emptyRow), false);
+});
+
+test("print count keep is dayNight with plan or actual count", () => {
+  const nightItem = {
+    ...masterItem,
+    workType: "昼間",
+    workTypeKey: "20100|昼間",
+    dayNight: true,
+  };
+  const withPlan = cmv2WorkTypeRow(
+    nightItem,
+    cmv2ParseBudget({ workTypes: { "20100|昼間": { countPlan: 0 } } }),
+    cmv2ParseActuals({}),
+  );
+  assert.equal(cmv2PrintCountKeep(withPlan), true);
+  const withActual = cmv2WorkTypeRow(
+    nightItem,
+    cmv2ParseBudget({}),
+    cmv2ParseActuals({ countActual: { "20100|昼間": [0] } }),
+  );
+  assert.equal(cmv2PrintCountKeep(withActual), true);
+  const paint = cmv2WorkTypeRow(masterItem, cmv2ParseBudget({}), cmv2ParseActuals({}));
+  assert.equal(cmv2PrintCountKeep(paint), false);
 });
