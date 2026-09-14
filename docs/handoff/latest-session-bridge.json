@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-14T07:48:35.990Z",
-  "gitHead": "03e71280",
+  "exportedAt": "2026-09-14T07:51:17.070Z",
+  "gitHead": "261734d3",
   "gitStatus": "## main...origin/main",
   "nextTask": "**明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。",
   "nextFiles": [
@@ -17,6 +17,6 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=03e71280 | 次=**明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "promptBlock": "【SESSION-BRIDGE】git=261734d3 | 次=**明朝・新チャット** 原価管理の**印刷と Excel 出力の意見交換**から。customize / deploy は意見交換のあとの実装GOまでしない。正本 G0 `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`（P2印刷は今夜実装対象外だった。明朝は議論から）。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
   "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
 }
