@@ -240,11 +240,11 @@ test("施工の諸経費は外注費明細合計×10%。法定福利は自動し
   });
   block = model.snapshot().blocks[0];
   assert.equal(block.footer.legal_welfare.amount, null);
-  // 外注費 2000 が母数。労務費111・外注労務費999は母数に入れない。費目諸経費311は計から除く。
-  assert.equal(block.footer.overhead.amount, "200");
-  assert.equal(block.footer.overhead.base, "2000");
-  assert.equal(block.footer.subtotal.amount, "3310");
-  assert.equal(block.footer.block_total.amount, "3310");
+  // 外注費2000＋労務費111が母数。外注労務費999は母数に入れない。費目諸経費311は計から除く。
+  assert.equal(block.footer.overhead.amount, "211");
+  assert.equal(block.footer.overhead.base, "2111");
+  assert.equal(block.footer.subtotal.amount, "3321");
+  assert.equal(block.footer.block_total.amount, "3321");
 
   assert.throws(
     () => model.updateFooterAmount(blockId, "overhead", "1"),
@@ -262,6 +262,46 @@ test("施工の諸経費は外注費明細合計×10%。法定福利は自動し
     () => model.updateFooterAmount(blockId, "block_total", "1"),
     /not manually editable/,
   );
+});
+
+test("施工の諸経費は外注5費目。法定福利と各種保険料は母数外", () => {
+  const model = editableModel();
+  const blockId = model.addBlock();
+  model.updateBlockHeader(blockId, {
+    costCategory: "施工",
+    workTypeName: "塗装工事",
+  });
+  const rowKey = model.snapshot().blocks[0].detailRows[0].rowKey;
+  model.updateDetailRow(blockId, rowKey, {
+    name1: "材料費",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "1000",
+  });
+  let block = model.snapshot().blocks[0];
+  assert.equal(block.footer.overhead.base, "1000");
+  assert.equal(block.footer.overhead.amount, "100");
+
+  const legalKey = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, legalKey, {
+    name1: "その他費用",
+    name2: "法定福利費",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "400",
+  });
+  const insKey = model.addDetailRow(blockId);
+  model.updateDetailRow(blockId, insKey, {
+    name1: "その他費用",
+    name2: "各種保険料(任意保険）",
+    unit: "式",
+    quantity: "1",
+    unitPrice: "50",
+  });
+  block = model.snapshot().blocks[0];
+  assert.equal(block.footer.overhead.base, "1000");
+  assert.equal(block.footer.overhead.amount, "100");
+  assert.equal(block.footer.block_total.amount, "1550");
 });
 
 test("明細が無い施工ブロックの諸経費は空欄。端数は四捨五入で 0", () => {
@@ -713,7 +753,7 @@ test("App 1 detail tab renders jy2-* block editor wired to the summary refresh",
   assert.match(source, /body === "0"\) return "－"/);
   assert.match(source, /function jy2LoadAmountDeltaIndex/);
   assert.match(source, /applyAmountDeltaFallbacks/);
-  assert.match(source, /@JY_V2_BUILD 2026-09-14-ver02-cmv2-print-p2/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-14-ver02-gaichu-overhead-legal/);
   assert.match(source, /function jy2MarkDetailPrintKeep/);
   assert.match(source, /function jy2PrepareDetailPrintKeep/);
   assert.match(source, /jy2-print-measure/);

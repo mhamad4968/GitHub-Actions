@@ -18,7 +18,7 @@ function readUi() {
 
 test("内訳階層: UI が純関数と新フィールドを接続する", () => {
   const source = readUi();
-  assert.match(source, /@JY_V2_BUILD 2026-09-14-ver02-cmv2-print-p2/);
+  assert.match(source, /@JY_V2_BUILD 2026-09-14-ver02-gaichu-overhead-legal/);
   assert.match(source, /asciiNumber:\s*true/);
   assert.match(source, /applyAsciiNumberInput/);
   assert.match(source, /jy2LockedValueControl/);
@@ -34,6 +34,7 @@ test("内訳階層: UI が純関数と新フィールドを接続する", () => 
   assert.match(source, /（空）/);
   assert.match(source, /__JY2_CLEAR__/);
   assert.match(source, /jy2FilterSystemWorkNamesForPicker/);
+  assert.match(source, /その他費用: Object\.freeze\(\[[\s\S]*?"法定福利費"/);
   assert.match(source, /jy2HimokuFromSystemWork/);
   assert.match(source, /jy2IsGaichuHimoku/);
   assert.match(source, /jy2GaichuItemUsesMaterialMaster/);

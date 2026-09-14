@@ -433,7 +433,7 @@
       ],
       "materials": {},
       "excludeFromUchiwakeWorkTypeList": true,
-      "reason": "footer-auto-only (G0 §7.1 / Q7 B)"
+      "reason": "内訳工種一覧不出（Q7）。金額は塗装工事〜追加工事⑤の費目その他費用・種別法定福利費で手入力。docs/plans/2026-09-14-jikkou-yosan-v2-uchiwake-gaichu-overhead-legal-welfare-spec.md"
     },
     {
       "section": "保安",
@@ -518,7 +518,7 @@
     }
   ],
   "notes": {
-    "法定福利費": "Excel上は費目=その他費用のメモとして残す。内訳システム工種一覧には出さない（Q7）。金額は作成者が明細で追加（フッタ自動廃止・2026-09-06）。",
+    "法定福利費": "独立行は原価管理用・内訳一覧不出（Q7）。内訳では塗装工事〜追加工事⑤の費目その他費用の種別として手入力。正本 docs/plans/2026-09-14-jikkou-yosan-v2-uchiwake-gaichu-overhead-legal-welfare-spec.md",
     "aiReviewQ1toQ8": "docs/plans/2026-09-04-jikkou-yosan-v2-uchiwake-hierarchy-spec.md §6"
   }
 }

@@ -1,6 +1,6 @@
 {
   "sourceFile": "マスタ整理（システム工種）.xlsx",
-  "decidedAt": "2026-09-13",
+  "decidedAt": "2026-09-14",
   "rowKey": "workType",
   "months": [
     "4",
@@ -91,11 +91,29 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "10200",
+      "systemWorkType": "塗装工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "10200|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "10300",
       "systemWorkType": "足場工事",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "10300|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10300",
+      "systemWorkType": "足場工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "10300|法定福利費",
       "dayNight": false
     },
     {
@@ -109,6 +127,15 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "10400",
+      "systemWorkType": "塗装及び足場工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "10400|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "10600",
       "systemWorkType": "修繕等工事",
       "himoku": "外注費",
@@ -118,11 +145,29 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "10600",
+      "systemWorkType": "修繕等工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "10600|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "10700",
       "systemWorkType": "塗装付帯工事",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "10700|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "10700",
+      "systemWorkType": "塗装付帯工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "10700|法定福利費",
       "dayNight": false
     },
     {
@@ -137,10 +182,28 @@
     {
       "section": "施工",
       "workTypeCode": "",
+      "systemWorkType": "軌道工事",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "軌道工事|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "",
       "systemWorkType": "調査設計費",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "調査設計費|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "",
+      "systemWorkType": "調査設計費",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "調査設計費|法定福利費",
       "dayNight": false
     },
     {
@@ -155,10 +218,28 @@
     {
       "section": "施工",
       "workTypeCode": "",
+      "systemWorkType": "外注試験費",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "外注試験費|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "",
       "systemWorkType": "交通規制費",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "交通規制費|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "",
+      "systemWorkType": "交通規制費",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "交通規制費|法定福利費",
       "dayNight": false
     },
     {
@@ -172,11 +253,29 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "14100",
+      "systemWorkType": "追加工事①",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "14100|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "14200",
       "systemWorkType": "追加工事②",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "14200|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14200",
+      "systemWorkType": "追加工事②",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "14200|法定福利費",
       "dayNight": false
     },
     {
@@ -190,6 +289,15 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "14300",
+      "systemWorkType": "追加工事③",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "14300|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "14400",
       "systemWorkType": "追加工事④",
       "himoku": "外注費",
@@ -199,11 +307,29 @@
     },
     {
       "section": "施工",
+      "workTypeCode": "14400",
+      "systemWorkType": "追加工事④",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "14400|法定福利費",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
       "workTypeCode": "14500",
       "systemWorkType": "追加工事⑤",
       "himoku": "外注費",
       "workType": "材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
       "workTypeKey": "14500|材料費＋労務費＋仮設機械経費＋現場経費+その他費用",
+      "dayNight": false
+    },
+    {
+      "section": "施工",
+      "workTypeCode": "14500",
+      "systemWorkType": "追加工事⑤",
+      "himoku": "その他費用",
+      "workType": "法定福利費",
+      "workTypeKey": "14500|法定福利費",
       "dayNight": false
     },
     {

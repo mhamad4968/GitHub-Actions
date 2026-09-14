@@ -2,6 +2,7 @@
 
 **作成日**: 2026-07-19  
 **状態**: **DRAFT / 総括 CLOSED／内訳 CLOSED／予実 CLOSED／版管理 CLOSED／試作 LIVE（App756）／本稼働 GO なし**  
+**2026-09-14（内訳・外注5費目の諸経費＋法定福利費手入力）**: 塗装工事〜追加工事⑤の諸経費母数は費目▼5件（材料費／労務費／仮設機械経費／現場経費／その他費用）＋字面外注費。種別＝法定福利費・各種保険料は母数外。法定福利費は別工種ブロックにせず、費目＝その他費用・種別＝法定福利費で手入力。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-uchiwake-gaichu-overhead-legal-welfare-spec.md`。BUILD `2026-09-14-ver02-gaichu-overhead-legal`。  
 **2026-09-13（金額増減 目視OK完了）**: ①=0確定は確認。前版0の次版は計が＋。LIVE BUILD `2026-09-13-ver02-amount-delta-zero-ok` rev **375**。修正・追加なし。夜は原価管理。正本 `docs/plans/2026-09-13-jikkou-yosan-v2-amount-delta-spec.md`。  
 **2026-09-13（①=0 版確定は確認・次版は＋）**: 請負①が 0 円でも版確定は止めず確認。作成者 OK なら前版 0 が正。次版に金額があれば計は＋。LIVE BUILD `2026-09-13-ver02-amount-delta-zero-ok`。  
 **2026-09-13（金額増減・空前版は－）**: 直前版の請負・給与が空（保存合計も空）なら全額＋にせず「－」。列は出す。LIVE BUILD `2026-09-13-ver02-amount-delta-empty`。  

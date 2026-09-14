@@ -370,17 +370,18 @@ export function createDetailBlockModel({
     return numbers;
   }
 
-  // 施工かつ対象工種: 諸経費 = 外注費明細合計×10%（費目「諸経費」は計から除く）。
+  // 施工かつ対象工種: 諸経費 = 外注5費目の明細合計×10%（法定福利・各種保険料は母数から除く）。
   function computedTotals(block) {
     const overheadBaseAmounts = [];
     const billedAmounts = [];
     block.detailRows.forEach((row, rowIndex) => {
       const himoku = resolveContinuedField(block.detailRows, rowIndex, "name1");
+      const typeName = resolveContinuedField(block.detailRows, rowIndex, "name2");
       const amount = detailRowAmount(row);
       if (amount === null) return;
       if (himoku === "諸経費") return;
       billedAmounts.push(amount);
-      if (isOverheadBaseHimoku(himoku)) overheadBaseAmounts.push(amount);
+      if (isOverheadBaseHimoku(himoku, typeName)) overheadBaseAmounts.push(amount);
     });
     const detailSum = billedAmounts.length ? sum(billedAmounts) : null;
     const showOverhead =
