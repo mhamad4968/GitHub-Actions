@@ -2,7 +2,7 @@
 **最終更新**: 2026-09-14 18:16 JST — 印刷目視OK。日締め until-pause。
 **次の1手**: **明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
 **レーン変更**: 印刷 LIVE 目視待ち → **印刷目視OK / バージョン管理は翌営業以降**
-**Git**: **`55f5ef64`** = `origin/main` — push 済
+**Git**: **`91e181df`** = `origin/main` — push 済
 **closeStatus**: **full 進行中**（after-go）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
 **本日状態**: **756**=`2026-09-14-ver02-cmv2-print-p2` rev**393** fileKey `b1faa69f-80c1-41ac-8348-9bfb45ddb980`。**757**=rev**34**（unit に泊）。**758**=rev**31**
