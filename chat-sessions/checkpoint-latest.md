@@ -1,8 +1,8 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-14 18:16 JST — 印刷目視OK。日締め until-pause。
-**次の1手**: **明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
-**レーン変更**: 印刷 LIVE 目視待ち → **印刷目視OK / バージョン管理は翌営業以降**
-**Git**: **`652107f8`** = `origin/main` — push 済
+**最終更新**: 2026-09-16 21:50 JST — 696メール目視OK。日締め after-go。
+**次の1手**: **明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
+**レーン変更**: 696メール追記・協力会社メモ目視OK → **日締め after-go**
+**Git**: **`ebc30a81`** = `origin/main` — close-git で同期
 **closeStatus**: **full 進行中**（after-go）
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
 **本日状態**: **756**=`2026-09-14-ver02-cmv2-print-p2` rev**393** fileKey `b1faa69f-80c1-41ac-8348-9bfb45ddb980`。**757**=rev**34**（unit に泊）。**758**=rev**31**
@@ -20,8 +20,8 @@
 | **776** | `2026-08-22-776-reorder-range-put` | **75** |
 | **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 印刷 LIVE rev393 **目視OK**。Excel 見送り。次はバージョン管理の見直し（GOまで不触）。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
-**GO待ち**: なし（③全GO済）。印刷・Excelの実装GOは意見交換のあと
+**継続メモ**: 696 未登録3件＋協力会社メモ26件 **目視OK**。協力会社はメモ。印刷 LIVE rev393 **目視OK**。次はバージョン管理の見直し（GOまで不触）。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
+**GO待ち**: なし。バージョン管理の customize は明示GOまでしない
 **調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`

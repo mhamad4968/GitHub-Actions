@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-09-16T12:09:21.457Z",
+  "scoredAt": "2026-09-16T12:53:18.590Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
+  "topTask": "**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
   "topTaskKind": "constraint",
   "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:**明日以降**_バージョン管理の見直し（明示GOまで_customize_/_",
-      "text": "**明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
+      "id": "checkpoint:**明示GOまで**_バージョン管理の見直し（customize_/_deplo",
+      "text": "**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
       "source": "checkpoint",
       "kind": "constraint",
       "difficulty": 5,

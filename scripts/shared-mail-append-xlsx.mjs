@@ -10,6 +10,7 @@
  *
  * 列: 利用種別 / 利用部署（または部署） / 表示名（または共有メールアドレス名・社員名） / メールアドレス / パスワード
  * 任意: メールアカウント（またはアカウント） / 協力会社（note へ）
+ * 既存 skip でも Excel 協力会社があり kintone メモに無い行は「既存・未転記」と出す（--apply は新規 POST のみ）。
  * 利用種別別名: 個人→個人メールアドレス / 共有ML→共有メールアドレス
  * ログにパスワードは出さない。
  */
@@ -63,6 +64,22 @@ function normalizeUsage(raw) {
   return USAGE_ALIASES[s] || s;
 }
 
+function compactContractor(s) {
+  return String(s || '')
+    .replace(/[\s　]/g, '')
+    .replace(/株式会社|\(株\)|（株）/g, '');
+}
+
+function noteHasContractor(note, contractor) {
+  const n = String(note || '');
+  const c = String(contractor || '').trim();
+  if (!c) return true;
+  if (n.includes(`協力会社=${c}`)) return true;
+  const cn = compactContractor(n);
+  const cc = compactContractor(c);
+  return Boolean(cc) && cn.includes(cc);
+}
+
 function validateMail(addr) {
   const s = String(addr || '').trim().toLowerCase();
   if (!s) return 'メール必須';
@@ -103,6 +120,7 @@ function readRows(xlsxPath) {
       status: STATUS_ACTIVE,
       registered_date: todayJstYmd(),
       note: notes.join(' / '),
+      contractor,
       password_set: Boolean(pw),
     });
   }
@@ -114,7 +132,7 @@ async function fetchAllMailMeta(baseUrl, headers, appId) {
   let offset = 0;
   for (;;) {
     const query = `order by legacy_no asc limit ${PAGE} offset ${offset}`;
-    const url = `${baseUrl}/k/v1/records.json?app=${appId}&query=${encodeURIComponent(query)}&fields[0]=legacy_no&fields[1]=mail_address`;
+    const url = `${baseUrl}/k/v1/records.json?app=${appId}&query=${encodeURIComponent(query)}&fields[0]=legacy_no&fields[1]=mail_address&fields[2]=note`;
     const res = await fetchJson(url, {
       method: 'GET',
       headers: { ...headers, 'Content-Type': undefined },
@@ -126,6 +144,7 @@ async function fetchAllMailMeta(baseUrl, headers, appId) {
         mail: String(r.mail_address?.value || '')
           .trim()
           .toLowerCase(),
+        note: String(r.note?.value || ''),
       });
     }
     if (rows.length < PAGE) break;
@@ -200,6 +219,7 @@ async function main() {
   const { baseUrl, headers } = getKintoneConfig();
   const existing = await fetchAllMailMeta(baseUrl, headers, appId);
   const existingMails = new Set(existing.map((x) => x.mail).filter(Boolean));
+  const existingByMail = new Map(existing.filter((x) => x.mail).map((x) => [x.mail, x]));
   let maxLegacy = 0;
   for (const x of existing) {
     if (Number.isFinite(x.legacy_no)) maxLegacy = Math.max(maxLegacy, x.legacy_no);
@@ -207,10 +227,15 @@ async function main() {
 
   const toCreate = [];
   const skipped = [];
+  const unfilledNote = [];
   let next = maxLegacy + 1;
   for (const r of uniqueSource) {
     if (existingMails.has(r.mail_address)) {
       skipped.push(r.mail_address);
+      const knote = existingByMail.get(r.mail_address)?.note || '';
+      if (r.contractor && !noteHasContractor(knote, r.contractor)) {
+        unfilledNote.push(`${r.mail_address} / 協力会社=${r.contractor}`);
+      }
       continue;
     }
     toCreate.push({ row: r, legacy_no: next });
@@ -220,6 +245,10 @@ async function main() {
   console.log(`[append] existing=${existing.length} maxLegacy=${maxLegacy}`);
   console.log(`[append] create=${toCreate.length} skipDuplicate=${skipped.length}`);
   if (skipped.length) console.log(`[append] skip sample: ${skipped.slice(0, 5).join(', ')}`);
+  console.log(`[append] existing-unfilled-note=${unfilledNote.length}`);
+  if (unfilledNote.length) {
+    console.log(`[append] unfilled sample: ${unfilledNote.slice(0, 5).join(', ')}`);
+  }
   if (toCreate.length) {
     const s0 = toCreate[0];
     console.log(

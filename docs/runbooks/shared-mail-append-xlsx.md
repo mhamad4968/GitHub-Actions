@@ -27,4 +27,6 @@ npm run shared-mail:append:xlsx -- --apply --xlsx="C:\Users\...\file.xlsx"
 任意: `メールアカウント`（または `アカウント`。空ならアドレスの @ 前） / `協力会社`（note へ）  
 利用種別別名: `個人`→`個人メールアドレス` / `共有ML`→`共有メールアドレス`
 
+dry-run / apply とも、既存メールで Excel に協力会社があり kintone メモに無い行は **`existing-unfilled-note`** として出す。`--apply` は新規 POST のみ（メモは自動 PUT しない）。
+
 利用部署は UI と同様 **自由記述可**（R68 正式名以外も可。依頼 Excel の表記を正とする）。
