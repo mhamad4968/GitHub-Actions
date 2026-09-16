@@ -8,7 +8,9 @@
  *   npm run shared-mail:append:xlsx -- --dry-run --xlsx="C:\\path\\file.xlsx"
  *   npm run shared-mail:append:xlsx -- --apply --xlsx="C:\\path\\file.xlsx"
  *
- * 列: 利用種別 / 利用部署 / 表示名（または共有メールアドレス名） / メールアドレス / パスワード
+ * 列: 利用種別 / 利用部署（または部署） / 表示名（または共有メールアドレス名・社員名） / メールアドレス / パスワード
+ * 任意: メールアカウント（またはアカウント） / 協力会社（note へ）
+ * 利用種別別名: 個人→個人メールアドレス / 共有ML→共有メールアドレス
  * ログにパスワードは出さない。
  */
 import { existsSync } from 'node:fs';
@@ -49,6 +51,18 @@ function todayJstYmd() {
   return fmt.format(new Date());
 }
 
+const USAGE_ALIASES = {
+  個人: '個人メールアドレス',
+  個人メールアドレス: '個人メールアドレス',
+  共有ML: '共有メールアドレス',
+  共有メールアドレス: '共有メールアドレス',
+};
+
+function normalizeUsage(raw) {
+  const s = String(raw || '').trim();
+  return USAGE_ALIASES[s] || s;
+}
+
 function validateMail(addr) {
   const s = String(addr || '').trim().toLowerCase();
   if (!s) return 'メール必須';
@@ -67,14 +81,18 @@ function readRows(xlsxPath) {
       .trim()
       .toLowerCase();
     if (!mail) continue;
-    const usage =
-      String(row['利用種別'] || USAGE_TYPE_DEFAULT).trim() || USAGE_TYPE_DEFAULT;
-    const dept = String(row['利用部署'] || '').trim();
+    const usageRaw = String(row['利用種別'] || USAGE_TYPE_DEFAULT).trim() || USAGE_TYPE_DEFAULT;
+    const usage = normalizeUsage(usageRaw);
+    const dept = String(row['利用部署'] || row['部署'] || '').trim();
     const displayName = String(
-      row['表示名'] || row['共有メールアドレス名'] || '',
+      row['表示名'] || row['共有メールアドレス名'] || row['社員名'] || '',
     ).trim();
     const pw = String(row['パスワード'] || '').trim();
-    const acctRaw = String(row['メールアカウント'] || '').trim();
+    const acctRaw = String(row['メールアカウント'] || row['アカウント'] || '').trim();
+    const contractor = String(row['協力会社'] || '').trim();
+    const notes = [];
+    if (usageRaw && usageRaw !== usage) notes.push(`Excel利用種別=${usageRaw}`);
+    if (contractor) notes.push(`協力会社=${contractor}`);
     out.push({
       usage_type: usage,
       department: dept,
@@ -84,7 +102,7 @@ function readRows(xlsxPath) {
       password: pw,
       status: STATUS_ACTIVE,
       registered_date: todayJstYmd(),
-      note: '',
+      note: notes.join(' / '),
       password_set: Boolean(pw),
     });
   }
@@ -164,10 +182,19 @@ async function main() {
     process.exit(2);
   }
 
-  const mails = source.map((r) => r.mail_address);
-  if (new Set(mails).size !== mails.length) {
-    console.error('[append] Excel 内でメール重複');
-    process.exit(2);
+  const seenExcel = new Set();
+  const excelDup = [];
+  const uniqueSource = [];
+  for (const r of source) {
+    if (seenExcel.has(r.mail_address)) {
+      excelDup.push(r.mail_address);
+      continue;
+    }
+    seenExcel.add(r.mail_address);
+    uniqueSource.push(r);
+  }
+  if (excelDup.length) {
+    console.log(`[append] Excel内重複 skip=${excelDup.length} sample=${excelDup.slice(0, 3).join(', ')}`);
   }
 
   const { baseUrl, headers } = getKintoneConfig();
@@ -181,7 +208,7 @@ async function main() {
   const toCreate = [];
   const skipped = [];
   let next = maxLegacy + 1;
-  for (const r of source) {
+  for (const r of uniqueSource) {
     if (existingMails.has(r.mail_address)) {
       skipped.push(r.mail_address);
       continue;
