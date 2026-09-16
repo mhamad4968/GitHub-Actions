@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-09-14T11:12:08.912Z",
+  "scoredAt": "2026-09-16T12:09:21.457Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "**明日以降** バージョン管理の見直し（明示GOまで customize / deploy しない）。印刷は目視OK。Excel はこのラウンド見送り。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
   "topTaskKind": "constraint",
