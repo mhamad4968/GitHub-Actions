@@ -59,11 +59,11 @@ function commitAllowlist(paths, message) {
     process.exit(1);
   }
   // pathspec 付き commit — index に載った allowlist 外（例: 682 workflow）を誤同梱しない
-  // post-commit checkpoint sync を入れると tip が再度ずれて D-CLOSE-02 が悪化する
+  // post-commit checkpoint sync は =1 で抑止。=0 は未設定と同じで follow-up が走り D-CLOSE-02 が悪化する
   const commit = git(['commit', '-m', message, '--', ...paths], {
     env: {
       ...process.env,
-      CIO_POST_COMMIT_CHECKPOINT_SYNC: '0',
+      CIO_POST_COMMIT_CHECKPOINT_SYNC: '1',
     },
   });
   if (!commit.ok) {
