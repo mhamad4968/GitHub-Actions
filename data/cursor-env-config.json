@@ -6,5 +6,5 @@
     "maxAgeHours": 48,
     "maxSectionLagDays": 2
   },
-  "note": "sessionEndHandoffExport=true で sessionEnd hook が export-handoff を試行（失敗してもセッション終了は継続）"
+  "note": "sessionEndHandoffExport=true で sessionEnd hook が export-handoff を試行。checkBridgeStaleness OK（WAKE parent-fold 含む）なら skip。失敗してもセッション終了は継続。"
 }

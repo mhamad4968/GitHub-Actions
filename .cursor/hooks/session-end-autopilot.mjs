@@ -13,6 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { runNpmScriptSync } from '../../scripts/lib/win-hidden-spawn.mjs';
 import { stopAllClock } from '../../scripts/lib/session-clock-process.mjs';
 import { readSessionClockMode } from '../../scripts/lib/session-clock-mode.mjs';
+import { loadBridge } from '../../scripts/lib/cio-session-bridge.mjs';
+import { checkBridgeStaleness } from '../../scripts/lib/cio-bridge-staleness.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const logDir = path.join(root, 'logs');
@@ -44,23 +46,32 @@ function main() {
     const cfgPath = path.join(root, 'data/cursor-env-config.json');
     const cfg = fs.existsSync(cfgPath) ? JSON.parse(fs.readFileSync(cfgPath, 'utf8')) : {};
     if (cfg.sessionEndHandoffExport === true) {
-      const handoff = runNpmScriptSync(root, 'cio:session:export-handoff', [], {
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-      if (handoff.status !== 0) {
-        throw new Error((handoff.stderr || handoff.stdout || '').slice(0, 400) || `exit=${handoff.status}`);
-      }
-      handoffMsg = ' handoff-export=OK';
-      logLine('handoff export OK');
-      if (cfg.sessionEndHandoffRollup === true) {
-        const rollup = runNpmScriptSync(root, 'cio:checkpoint:rollup', ['--', '--keep', '8'], {
+      // 新チャット切替の sessionEnd で gitHead を HEAD に追わせると WAKE 後の
+      // parent-fold（D-CLOSE-02）が壊れ、B1 残件になる。鮮度 OK なら export しない。
+      const bridge = loadBridge(root);
+      const staleness = checkBridgeStaleness(root, bridge, cfg.bridgeStaleness || {});
+      if (staleness.ok) {
+        logLine('handoff export skip (bridge fresh / parent-fold)');
+        handoffMsg = ' handoff-export=skip-fresh';
+      } else {
+        const handoff = runNpmScriptSync(root, 'cio:session:export-handoff', [], {
           stdio: ['pipe', 'pipe', 'pipe'],
         });
-        if (rollup.status !== 0) {
-          throw new Error((rollup.stderr || rollup.stdout || '').slice(0, 400) || `exit=${rollup.status}`);
+        if (handoff.status !== 0) {
+          throw new Error((handoff.stderr || handoff.stdout || '').slice(0, 400) || `exit=${handoff.status}`);
         }
-        logLine('checkpoint rollup OK');
-        handoffMsg += ' rollup=OK';
+        handoffMsg = ' handoff-export=OK';
+        logLine('handoff export OK');
+        if (cfg.sessionEndHandoffRollup === true) {
+          const rollup = runNpmScriptSync(root, 'cio:checkpoint:rollup', ['--', '--keep', '8'], {
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
+          if (rollup.status !== 0) {
+            throw new Error((rollup.stderr || rollup.stdout || '').slice(0, 400) || `exit=${rollup.status}`);
+          }
+          logLine('checkpoint rollup OK');
+          handoffMsg += ' rollup=OK';
+        }
       }
     }
   } catch (e) {
