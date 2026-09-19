@@ -1,5 +1,5 @@
 {
-  "scoredAt": "2026-09-19T03:43:31.452Z",
+  "scoredAt": "2026-09-19T03:45:01.669Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
   "topTask": "新チャットは WAKE のみ。776 追加改修は明示依頼までしない。756バージョン管理見直しは明示GOまで customize/deploy しない。完了済の776並び・印刷見出しを聞き直さない。",
   "topTaskKind": "constraint",
