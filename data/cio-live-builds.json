@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-09-19-776-reorder-check-search-heads",
-      "fileKey": "536ccbe9-4a31-45c5-a8ec-e48fbe69cfe4",
-      "revision": "80",
+      "build": "2026-09-19-776-reorder-visible-checkboxes",
+      "fileKey": "e12c28b8-e67f-457d-a3b2-88d90bdcaa17",
+      "revision": "81",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-09-19T10:13:03.066Z",
+      "deployedAt": "2026-09-19T10:20:57.265Z",
       "note": null
     }
   }

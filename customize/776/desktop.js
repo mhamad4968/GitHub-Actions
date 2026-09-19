@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-09-19-776-reorder-visible-checkboxes（各行左端に並び用レ点を自前描画）
  * BUILD: 2026-09-19-776-reorder-check-search-heads（レ点複数+基準検索+所属長ピン。本務のみ595.sort）
  * BUILD: 2026-09-19-776-print-hub-dept-label（印刷の部署見出しに支店名）
  * BUILD: 2026-09-19-776-dept-label-not-last-row（部署見出しがページ末尾なら次ページへ）
@@ -42,7 +43,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-09-19-776-reorder-check-search-heads";
+  var BUILD = "2026-09-19-776-reorder-visible-checkboxes";
   var ID_CACHE_KEY = "jbis776-idcache-v4";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -844,7 +845,17 @@
       "tr.jbis-776-block-head-section > td{" +
       "background-color:#eef2ff !important;color:#3730a3 !important;" +
       "font-weight:700 !important;font-size:11px !important;" +
-      "border-top:1px solid #a5b4fc !important;}";
+      "border-top:1px solid #a5b4fc !important;}" +
+      "label.jbis-776-move-wrap{" +
+      "display:inline-flex !important;align-items:center !important;" +
+      "gap:4px !important;margin:0 8px 0 0 !important;vertical-align:middle !important;" +
+      "cursor:pointer !important;user-select:none !important;}" +
+      "input.jbis-776-move-cb{" +
+      "width:16px !important;height:16px !important;margin:0 !important;" +
+      "accent-color:#c2410c !important;cursor:pointer !important;flex:none !important;}" +
+      "span.jbis-776-move-lab{" +
+      "font-size:11px !important;font-weight:700 !important;color:#c2410c !important;" +
+      "letter-spacing:0 !important;line-height:1 !important;}";
   }
 
   /** 役職チップ用: records 配列を titleRank776 で絞る（人数・Excel・印刷・集計と ID 経路で共用） */
@@ -961,20 +972,51 @@
   }
 
   function getCheckedVisibleRecordIds776() {
-    var trs = listIndexRows();
+    var boxes = document.querySelectorAll("input.jbis-776-move-cb:checked");
     var ids = [];
     var seen = {};
-    if (!trs || !trs.length) return ids;
-    for (var i = 0; i < trs.length; i++) {
-      var tr = trs[i];
-      var cb = tr.querySelector("td:first-child input[type=\"checkbox\"]");
-      if (!cb || !cb.checked) continue;
-      var id = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
+    for (var i = 0; i < boxes.length; i++) {
+      var tr = boxes[i].closest ? boxes[i].closest("tr") : null;
+      var id = "";
+      if (tr) id = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
+      if (!id) id = boxes[i].getAttribute("data-rid") || "";
       if (!id || seen[id]) continue;
       seen[id] = true;
       ids.push(id);
     }
     return ids;
+  }
+
+  function ensureMoveCheckboxes776() {
+    ensureDeptSepStyle();
+    var trs = listIndexRows();
+    if (!trs || !trs.length) return;
+    for (var i = 0; i < trs.length; i++) {
+      var tr = trs[i];
+      if (tr.querySelector("label.jbis-776-move-wrap")) continue;
+      var td = tr.querySelector("td");
+      if (!td) continue;
+      var id = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
+      var wrap = document.createElement("label");
+      wrap.className = "jbis-776-move-wrap";
+      wrap.title = "並び替えで動かす人";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "jbis-776-move-cb";
+      if (id) cb.setAttribute("data-rid", id);
+      cb.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+      });
+      var lab = document.createElement("span");
+      lab.className = "jbis-776-move-lab";
+      lab.textContent = "動かす";
+      wrap.appendChild(cb);
+      wrap.appendChild(lab);
+      wrap.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+      });
+      td.insertBefore(wrap, td.firstChild);
+    }
   }
 
   /** 一覧ヘッダから「役職」列の td インデックスを返す（見つからなければ -1） */
@@ -1390,6 +1432,7 @@
     }
     applyKenmuRowColors(records);
     applyTitleRankStyles(records);
+    ensureMoveCheckboxes776();
   }
 
   function escapeHtml(s) {
@@ -3721,6 +3764,7 @@
       var box = document.getElementById(REORDER_ID);
       if (box) box.style.display = uiOpen.reorder ? "flex" : "none";
       btnReorder.style.background = uiOpen.reorder ? "#fef3c7" : "#fff";
+      if (uiOpen.reorder) ensureMoveCheckboxes776();
     });
     if (uiOpen.reorder) btnReorder.style.background = "#fef3c7";
 
@@ -3755,7 +3799,7 @@
     var hint = document.createElement("div");
     hint.style.cssText = "font-size:12px;color:#475569;line-height:1.5;";
     hint.textContent =
-      "今見えている一覧のレ点で動かす人（複数可）。基準の人は検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
+      "各行の左端（オレンジの「動かす」）にレ点。複数可。基準の人は下の検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
     box.appendChild(hint);
 
     var checkedLab = document.createElement("div");
@@ -3999,6 +4043,7 @@
           }, 0);
           setTimeout(function () {
             applyIndexDeptSeparators(event.records, built.contDept);
+            ensureMoveCheckboxes776();
           }, 300);
         })
         .catch(function (err) {
