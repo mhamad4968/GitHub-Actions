@@ -9,6 +9,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   isWakeAdjacentGrandparentFold,
   isWakeHandoffParentGitHeadFold,
@@ -125,6 +126,16 @@ console.log('[test:cio-wake-handoff-allowlist] start');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+{
+  const wakeSrc = fs.readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'cio-wake-handoff-commit.mjs'),
+    'utf8',
+  );
+  assert.match(wakeSrc, /CIO_POST_COMMIT_CHECKPOINT_SYNC:\s*'1'/);
+  assert.doesNotMatch(wakeSrc, /CIO_POST_COMMIT_CHECKPOINT_SYNC:\s*'0'/);
+  console.log('  ✅ wake-handoff-commit skips post-commit checkpoint follow-up (=1)');
 }
 
 console.log('[test:cio-wake-handoff-allowlist] OK');
