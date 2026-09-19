@@ -1,13 +1,13 @@
 {
-  "scoredAt": "2026-09-19T01:32:27.116Z",
+  "scoredAt": "2026-09-19T03:43:31.452Z",
   "specPath": "templates/yojitsu-budget-lite/SPEC.md",
-  "topTask": "**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
+  "topTask": "新チャットは WAKE のみ。776 追加改修は明示依頼までしない。756バージョン管理見直しは明示GOまで customize/deploy しない。完了済の776並び・印刷見出しを聞き直さない。",
   "topTaskKind": "constraint",
   "topWorkTask": "B-MDFLOW: **Markdown ベースの開発フロー**（仕様・実装・レビューの一本化）",
   "tasks": [
     {
-      "id": "checkpoint:**明示GOまで**_バージョン管理の見直し（customize_/_deplo",
-      "text": "**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
+      "id": "checkpoint:新チャットは_WAKE_のみ。776_追加改修は明示依頼までしない。756バージ",
+      "text": "新チャットは WAKE のみ。776 追加改修は明示依頼までしない。756バージョン管理見直しは明示GOまで customize/deploy しない。完了済の776並び・印刷見出しを聞き直さない。",
       "source": "checkpoint",
       "kind": "constraint",
       "difficulty": 5,

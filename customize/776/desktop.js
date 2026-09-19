@@ -3,6 +3,10 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-09-19-776-print-hub-dept-label（印刷の部署見出しに支店名）
+ * BUILD: 2026-09-19-776-dept-label-not-last-row（部署見出しがページ末尾なら次ページへ）
+ * BUILD: 2026-09-19-776-block-heads-keep-order（部署/部見出し・他列ソート復帰・印刷見出し。list_sort不触）
+ * BUILD: 2026-09-19-776-reorder-follow-595-sort（並び替え後に本務順を595.sortへ追従）
  * BUILD: 2026-08-22-776-reorder-range-put（並び替え: 変化範囲だけ list_sort PUT）
  * BUILD: 2026-08-22-776-agg-kanetsu-seko-under-koji（集計: 関越支店施工部を工事部の直下へ）
  * BUILD: 2026-08-22-776-e1-title-filter（役職チップ: すべて／役職者／一般・Excel/集計も同条件）
@@ -37,8 +41,8 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-08-22-776-reorder-range-put";
-  var ID_CACHE_KEY = "jbis776-idcache-v3";
+  var BUILD = "2026-09-19-776-print-hub-dept-label";
+  var ID_CACHE_KEY = "jbis776-idcache-v4";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
   var AGG_ID = "jbis-776-index-agg";
@@ -67,6 +71,7 @@
   var CAT_SEISHAIN = "正社員";
   var CAT_JUNSHAIN = "準社員";
   var APP_ID = null;
+  var APP_MASTER_595 = "595";
 
   /** group_name コード → 集計表の拠点表示（Excel 集計表準拠） */
   var GROUP_LABEL = {
@@ -289,7 +294,16 @@
     return normalizeQuery(String(q || "").replace(/\s*order\s+by\s+.+$/i, ""));
   }
 
+  function hasForeignOrderBy776(q) {
+    var m = String(q || "").match(/\border\s+by\s+(.+)$/i);
+    if (!m) return false;
+    var clause = String(m[1] || "").replace(/\s+/g, " ").trim();
+    if (!clause) return false;
+    return !/^list_sort\b/i.test(clause);
+  }
+
   function queriesEquivalent(a, b) {
+    if (hasForeignOrderBy776(a) || hasForeignOrderBy776(b)) return false;
     var na = normalizeQuery(a);
     var nb = normalizeQuery(b);
     if (na === nb) return true;
@@ -336,7 +350,7 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: where + "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id", "list_sort", "job_title"],
+          fields: ["$id", "list_sort", "job_title", "dept_name"],
         })
         .then(function (resp) {
           var rows = resp.records || [];
@@ -345,6 +359,7 @@
               id: String(rows[i].$id.value),
               sort: Number(rows[i].list_sort && rows[i].list_sort.value),
               title: rows[i].job_title && rows[i].job_title.value,
+              dept: rows[i].dept_name && rows[i].dept_name.value,
             });
           }
           if (rows.length < 500) return all;
@@ -364,10 +379,13 @@
       var sorts = filtered.map(function (r) {
         return r.sort;
       });
+      var depts = filtered.map(function (r) {
+        return String(r.dept || "").trim();
+      });
       try {
         sessionStorage.setItem(
           ID_CACHE_KEY,
-          JSON.stringify({ fp: fp, build: BUILD, ids: ids, sorts: sorts, t: Date.now() }),
+          JSON.stringify({ fp: fp, build: BUILD, ids: ids, sorts: sorts, depts: depts, t: Date.now() }),
         );
       } catch (eSave) {
         /* noop */
@@ -386,9 +404,17 @@
         cached.build === BUILD &&
         Array.isArray(cached.ids) &&
         Array.isArray(cached.sorts) &&
-        cached.sorts.length === cached.ids.length
+        Array.isArray(cached.depts) &&
+        cached.sorts.length === cached.ids.length &&
+        cached.depts.length === cached.ids.length
       ) {
-        return Promise.resolve({ ids: cached.ids.map(String), sorts: cached.sorts.map(Number) });
+        return Promise.resolve({
+          ids: cached.ids.map(String),
+          sorts: cached.sorts.map(Number),
+          depts: cached.depts.map(function (d) {
+            return String(d || "");
+          }),
+        });
       }
     } catch (eCache) {
       /* noop */
@@ -396,37 +422,80 @@
     return fetchFilteredIds(st).then(function (ids) {
       try {
         var cached2 = JSON.parse(sessionStorage.getItem(ID_CACHE_KEY) || "null");
-        if (cached2 && Array.isArray(cached2.sorts) && cached2.sorts.length === ids.length) {
-          return { ids: ids, sorts: cached2.sorts.map(Number) };
+        if (
+          cached2 &&
+          Array.isArray(cached2.sorts) &&
+          Array.isArray(cached2.depts) &&
+          cached2.sorts.length === ids.length &&
+          cached2.depts.length === ids.length
+        ) {
+          return {
+            ids: ids,
+            sorts: cached2.sorts.map(Number),
+            depts: cached2.depts.map(function (d) {
+              return String(d || "");
+            }),
+          };
         }
       } catch (e2) {
         /* noop */
       }
-      return { ids: ids, sorts: ids.map(function () {
-        return NaN;
-      }) };
+      return {
+        ids: ids,
+        sorts: ids.map(function () {
+          return NaN;
+        }),
+        depts: ids.map(function () {
+          return "";
+        }),
+      };
     });
   }
 
-  function buildPagedQueryFromIds(ids, page, pageSize, st, sorts) {
+  /** 部署見出しがページ最終行に残らないよう、新しい部署の先頭は次ページへ */
+  function buildPageWindows776(ids, depts, pageSize) {
+    var n = (ids || []).length;
+    var ps = pageSize > 0 ? pageSize : 40;
+    var windows = [];
+    if (!n) return windows;
+    var useDept = Array.isArray(depts) && depts.length === n;
+    var i = 0;
+    while (i < n) {
+      var end = i + ps;
+      if (end > n) end = n;
+      if (useDept) {
+        while (
+          end > i + 1 &&
+          String(depts[end - 1] || "") !== String(depts[end - 2] || "")
+        ) {
+          end -= 1;
+        }
+      }
+      windows.push({ start: i, end: end });
+      i = end;
+    }
+    return windows;
+  }
+
+  function buildPagedQueryFromIds(ids, page, pageSize, st, sorts, depts) {
     var list = ids || [];
     var total = list.length;
     var ps = pageSize > 0 ? pageSize : 40;
-    var maxPage = Math.max(1, Math.ceil(total / ps) || 1);
+    var windows = buildPageWindows776(list, depts, ps);
+    var maxPage = Math.max(1, windows.length || Math.ceil(total / ps) || 1);
     var p = page > 0 ? page : 1;
     if (p > maxPage) p = maxPage;
-    var start = (p - 1) * ps;
-    var slice = list.slice(start, start + ps);
+    var win = windows[p - 1] || { start: 0, end: 0 };
+    var start = win.start;
+    var slice = list.slice(win.start, win.end);
     var where = buildWhere(st || {});
     var rankActive =
       st && (st.titleRank === "lead" || st.titleRank === "member");
     var query;
     if (!slice.length) {
-      // where は末尾スペースのみ（and 無し）→ $id 前に and 必須（欠落だと GAIA_IL08）
       query = where ? where + 'and $id = "0"' : '$id = "0"';
     } else if (!where && !rankActive) {
-      // 絞り込みなし: list_sort 連続番号で範囲指定（URL短・一覧で安定）
-      var sortSlice = (sorts || []).slice(start, start + ps).filter(function (n) {
+      var sortSlice = (sorts || []).slice(win.start, win.end).filter(function (n) {
         return isFinite(n);
       });
       var lo;
@@ -440,7 +509,6 @@
       }
       query = "list_sort >= " + lo + " and list_sort <= " + hi;
     } else {
-      // 絞り込みあり or 役職のみ: 該当 $id だけ（order by はビュー側 list_sort に任せる）
       var idClause =
         "$id in (" +
         slice
@@ -457,8 +525,13 @@
       maxPage: maxPage,
       total: total,
       from: slice.length ? start + 1 : 0,
-      to: slice.length ? start + slice.length : 0,
+      to: slice.length ? win.end : 0,
       shown: slice.length,
+      contDept:
+        p > 1 &&
+        Array.isArray(depts) &&
+        start > 0 &&
+        String(depts[start] || "") === String(depts[start - 1] || ""),
     };
   }
 
@@ -480,6 +553,7 @@
         next.pageSize || 40,
         next,
         meta.sorts,
+        meta.depts,
       );
       next.page = built.page;
       saveState(next);
@@ -631,18 +705,42 @@
       return;
     }
     var prevDept = null;
+    var prevSec = null;
     var blockIdx = -1;
+    var colN = EXPORT_COLS.length;
     var rowsHtml = records
       .map(function (r) {
         var dept = cell(r, "dept_name");
+        var sec = cell(r, FC_SECTION);
+        var grp = cell(r, "group_name");
         var cls = [];
+        var heads = "";
         if (dept !== prevDept) {
           blockIdx += 1;
           if (prevDept != null) cls.push("dept-sep");
+          heads +=
+            '<tr class="print-dept-head"><td colspan="' +
+            colN +
+            '">' +
+            escapeHtml(printHubDeptLabel776(grp, dept)) +
+            "</td></tr>";
           prevDept = dept;
+          prevSec = null;
+        }
+        if (sec && sec !== prevSec) {
+          heads +=
+            '<tr class="print-sec-head"><td colspan="' +
+            colN +
+            '">' +
+            escapeHtml(printHubSectionLabel776(grp, dept, sec)) +
+            "</td></tr>";
+          prevSec = sec;
+        } else if (!sec) {
+          prevSec = "";
         }
         if (blockIdx % 2 === 1) cls.push("dept-alt");
         return (
+          heads +
           '<tr class="' +
           cls.join(" ") +
           '">' +
@@ -664,6 +762,10 @@
         "th{background:#e2e8f0;border:1px solid #334155;}" +
         "tr.dept-sep td{border-top:1.5px solid #c4b5fd;}" +
         "tr.dept-alt td{background:#f0fdf4;}" +
+        "tr.print-dept-head td{background:#e0e7ff;font-weight:800;border-top:2px solid #4338ca;}" +
+        "tr.print-sec-head td{background:#eef2ff;font-weight:700;font-size:11px;}" +
+        "tr.print-dept-head,tr.print-sec-head{page-break-after:avoid;break-after:avoid;page-break-inside:avoid;}" +
+        "tr.print-dept-head+tr,tr.print-sec-head+tr{page-break-before:avoid;break-before:avoid;}" +
         ".note{margin:12px 0;color:#991b1b;font-weight:700;}" +
         "@media print{button{display:none}}</style></head><body>" +
         "<h1>社員名簿</h1>" +
@@ -732,7 +834,16 @@
       "outline:2px solid #ea580c !important;" +
       "outline-offset:-2px;" +
       "animation:jbis776Flash 1.6s ease-in-out 2;}" +
-      "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}";
+      "@keyframes jbis776Flash{0%,100%{background-color:inherit;}50%{background-color:#fed7aa !important;}}" +
+      "tr.jbis-776-block-head > td{" +
+      "background-color:#e0e7ff !important;color:#312e81 !important;" +
+      "font-weight:800 !important;font-size:12px !important;" +
+      "padding:5px 8px !important;letter-spacing:0.04em;" +
+      "border-top:2px solid #4338ca !important;}" +
+      "tr.jbis-776-block-head-section > td{" +
+      "background-color:#eef2ff !important;color:#3730a3 !important;" +
+      "font-weight:700 !important;font-size:11px !important;" +
+      "border-top:1px solid #a5b4fc !important;}";
   }
 
   /** 役職チップ用: records 配列を titleRank776 で絞る（人数・Excel・印刷・集計と ID 経路で共用） */
@@ -892,9 +1003,35 @@
     ];
     for (var s = 0; s < selectors.length; s++) {
       var found = document.querySelectorAll(selectors[s]);
-      if (found && found.length) return found;
+      if (!found || !found.length) continue;
+      var out = [];
+      for (var i = 0; i < found.length; i++) {
+        var tr = found[i];
+        if (tr.classList.contains("jbis-776-block-head")) continue;
+        if (tr.querySelector("th")) continue;
+        out.push(tr);
+      }
+      if (out.length) return out;
     }
     return null;
+  }
+
+  function makeBlockHeadTr776(colCount, text, kind) {
+    var tr = document.createElement("tr");
+    tr.className = "jbis-776-block-head jbis-776-block-head-" + kind;
+    tr.setAttribute("data-jbis-band", kind);
+    var td = document.createElement("td");
+    td.colSpan = colCount > 0 ? colCount : 8;
+    td.textContent = text;
+    tr.appendChild(td);
+    return tr;
+  }
+
+  function removeBlockHeadRows776() {
+    var heads = document.querySelectorAll("tr.jbis-776-block-head");
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].parentNode) heads[i].parentNode.removeChild(heads[i]);
+    }
   }
 
   function recordIdFromIndexTr(tr) {
@@ -1097,19 +1234,21 @@
     }, 150);
   }
 
-  function applyIndexDeptSeparators(records) {
+  function applyIndexDeptSeparators(records, contDept) {
     if (!records || !records.length) return;
     ensureDeptSepStyle();
+    removeBlockHeadRows776();
     var trs = listIndexRows();
     if (!trs || !trs.length) return;
 
     var prevDept = null;
+    var prevSec = null;
     var blockIdx = -1;
     var dataIdx = 0;
+    var colN = trs[0] ? trs[0].querySelectorAll("td").length : 8;
     for (var i = 0; i < trs.length; i++) {
       var tr = trs[i];
       tr.classList.remove("jbis-776-dept-sep", "jbis-776-dept-alt", "jbis-776-kenmu");
-      if (tr.querySelector("th")) continue;
       if (dataIdx >= records.length) break;
       var rid =
         records[dataIdx].$id && records[dataIdx].$id.value != null
@@ -1117,10 +1256,28 @@
           : "";
       if (rid) tr.setAttribute("data-jbis-rid", rid);
       var dept = cell(records[dataIdx], "dept_name");
-      if (dept !== prevDept) {
+      var sec = cell(records[dataIdx], FC_SECTION);
+      var deptChanged = dept !== prevDept;
+      if (deptChanged) {
         if (prevDept != null) tr.classList.add("jbis-776-dept-sep");
         blockIdx += 1;
+        var dlabel = dept || "（部署なし）";
+        if (dataIdx === 0 && contDept) dlabel = dlabel + "（続き）";
+        if (tr.parentNode) {
+          if (sec) {
+            tr.parentNode.insertBefore(makeBlockHeadTr776(colN, sec, "section"), tr);
+          }
+          tr.parentNode.insertBefore(makeBlockHeadTr776(colN, dlabel, "dept"), tr);
+        }
         prevDept = dept;
+        prevSec = sec || "";
+      } else if (sec && sec !== prevSec) {
+        if (tr.parentNode) {
+          tr.parentNode.insertBefore(makeBlockHeadTr776(colN, sec, "section"), tr);
+        }
+        prevSec = sec;
+      } else if (!sec) {
+        prevSec = "";
       }
       if (blockIdx % 2 === 1) tr.classList.add("jbis-776-dept-alt");
       dataIdx += 1;
@@ -1356,7 +1513,17 @@
     }
 
     return putListSortUpdates776(app, updates).then(function () {
-      return { updated: updates.length };
+      return follow595SortFrom776Honmu776()
+        .then(function () {
+          return { updated: updates.length };
+        })
+        .catch(function (err) {
+          console.warn("[jbis 776 follow 595.sort]", err);
+          window.alert(
+            "名簿の並びは更新しましたが、社員マスタの表示順への反映に失敗しました。権限を確認してください。"
+          );
+          return { updated: updates.length };
+        });
     });
   }
 
@@ -1374,6 +1541,140 @@
       })(updates.slice(b, b + 100));
     }
     return chain;
+  }
+
+  function fetchAll776MetaFor595Follow776() {
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: getAppId(),
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id", "row_role", "source_595_id", "list_sort"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          all = all.concat(rows);
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function fetch595ActiveForSortFollow776() {
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: APP_MASTER_595,
+          query:
+            'employment_status in ("在籍") order by sort asc, $id asc limit 500 offset ' +
+            offset,
+          fields: ["$id", "sort", "employment_category"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          all = all.concat(rows);
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function plan595SortFollowHonmu776(active595, honmu595IdsFrom776) {
+    var ordered = active595.slice();
+    var slots = [];
+    var occupants = [];
+    for (var i = 0; i < ordered.length; i++) {
+      var cat = ordered[i].category || "";
+      if (cat === CAT_SEISHAIN || cat === CAT_JUNSHAIN) {
+        slots.push(i);
+        occupants.push(String(ordered[i].id));
+      }
+    }
+    var occupantSet = {};
+    for (var o = 0; o < occupants.length; o++) occupantSet[occupants[o]] = true;
+    var seen = {};
+    var fill = [];
+    var from776 = honmu595IdsFrom776 || [];
+    for (var h = 0; h < from776.length; h++) {
+      var hid = String(from776[h] || "").trim();
+      if (!hid || !occupantSet[hid] || seen[hid]) continue;
+      seen[hid] = true;
+      fill.push(hid);
+    }
+    for (var p = 0; p < occupants.length; p++) {
+      var oid = occupants[p];
+      if (seen[oid]) continue;
+      seen[oid] = true;
+      fill.push(oid);
+    }
+    var byId = {};
+    for (var r = 0; r < ordered.length; r++) {
+      byId[String(ordered[r].id)] = ordered[r];
+    }
+    var next = ordered.slice();
+    for (var s = 0; s < slots.length; s++) {
+      next[slots[s]] = byId[fill[s]];
+    }
+    var updates = [];
+    for (var n = 0; n < next.length; n++) {
+      var want = String(n + 1);
+      var from = String(next[n].sort);
+      if (from !== want) {
+        updates.push({
+          id: next[n].id,
+          record: { sort: { value: want } },
+        });
+      }
+    }
+    return updates;
+  }
+
+  function put595SortUpdates776(updates) {
+    if (!updates || !updates.length) return Promise.resolve();
+    var chain = Promise.resolve();
+    for (var b = 0; b < updates.length; b += 100) {
+      (function (batch) {
+        chain = chain.then(function () {
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+            app: APP_MASTER_595,
+            records: batch,
+          });
+        });
+      })(updates.slice(b, b + 100));
+    }
+    return chain;
+  }
+
+  /** 名簿の本務順を社員マスタ sort に追従（その他の枠は維持。emp_id 不触） */
+  function follow595SortFrom776Honmu776() {
+    return Promise.all([
+      fetchAll776MetaFor595Follow776(),
+      fetch595ActiveForSortFollow776(),
+    ]).then(function (pair) {
+      var recs776 = pair[0] || [];
+      var recs595 = pair[1] || [];
+      var honmuIds = [];
+      for (var i = 0; i < recs776.length; i++) {
+        if (cell(recs776[i], "row_role") !== "本務") continue;
+        var sid = cell(recs776[i], "source_595_id");
+        if (sid) honmuIds.push(sid);
+      }
+      var active = [];
+      for (var j = 0; j < recs595.length; j++) {
+        var rec = recs595[j];
+        active.push({
+          id: String(rec.$id.value),
+          category: cell(rec, "employment_category"),
+          sort: Number(rec.sort && rec.sort.value),
+        });
+      }
+      var updates = plan595SortFollowHonmu776(active, honmuIds);
+      return put595SortUpdates776(updates);
+    });
   }
 
   /** 全件 1..N（値が変わった行だけ PUT）。部署ブロック差し替え等で使用 */
@@ -1742,6 +2043,26 @@
     wangan: "湾岸工事所",
     bnp: "ブリッジニアプラス",
   };
+
+  /** 印刷用: 静岡営業所 → 東海支店-静岡営業所。既に支店名で始まる部署はそのまま */
+  function printHubDeptLabel776(groupCode, deptName) {
+    var d = String(deptName || "").trim();
+    if (!d) return "（部署なし）";
+    var hub = AGG_HUB_LABEL[aggHubKey(groupCode, d)] || "";
+    if (!hub) return d;
+    if (d === hub) return d;
+    if (d.indexOf(hub) === 0) return d;
+    return hub + "-" + d;
+  }
+
+  function printHubSectionLabel776(groupCode, deptName, sectionName) {
+    var sec = String(sectionName || "").trim();
+    if (!sec) return "";
+    var hub = AGG_HUB_LABEL[aggHubKey(groupCode, deptName)] || "";
+    if (!hub) return sec;
+    if (sec.indexOf(hub) === 0) return sec;
+    return hub + "-" + sec;
+  }
 
   var AGG_HUB_ORDER = [
     "honsya",
@@ -3459,29 +3780,30 @@
             st.pageSize || 40,
             st,
             meta.sorts,
+            meta.depts,
           );
           if (st.page !== built.page) {
             st.page = built.page;
             saveState(st);
           }
-          if (!queriesEquivalent(curQ, built.query)) {
+          if (hasForeignOrderBy776(curQ) || !queriesEquivalent(curQ, built.query)) {
             navigate(built.query);
             return;
           }
           var tb = mountToolbar(space, st, built);
           mountReorder(space, st, tb.uiOpen);
           mountAggPanel(space, st, tb.uiOpen, tb.recordsP);
-          applyIndexDeptSeparators(event.records);
+          applyIndexDeptSeparators(event.records, built.contDept);
           consumeScrollAfterReorder(st);
           // 一覧DOM生成後に下ページ送りを再配置
           setTimeout(function () {
             mountRosterPagerExtras(st, built);
           }, 0);
           setTimeout(function () {
-            applyIndexDeptSeparators(event.records);
+            applyIndexDeptSeparators(event.records, built.contDept);
           }, 0);
           setTimeout(function () {
-            applyIndexDeptSeparators(event.records);
+            applyIndexDeptSeparators(event.records, built.contDept);
           }, 300);
         })
         .catch(function (err) {
@@ -3489,7 +3811,7 @@
           var tb2 = mountToolbar(space, st, null);
           mountReorder(space, st, tb2.uiOpen);
           mountAggPanel(space, st, tb2.uiOpen, tb2.recordsP);
-          applyIndexDeptSeparators(event.records);
+          applyIndexDeptSeparators(event.records, false);
         });
     } catch (e) {
       console.warn("[jbis 776 index]", e);

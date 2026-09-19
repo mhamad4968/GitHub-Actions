@@ -1,28 +1,24 @@
 # 復元チェックポイント（最新）
-**最終更新**: 2026-09-16 21:50 JST — 696メール目視OK。日締め after-go。
-**次の1手**: **明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。
-**レーン変更**: 696メール追記・協力会社メモ目視OK → **日締め after-go**
-**Git**: **`5a47b288`** = `origin/main` — push 済
-**closeStatus**: **full 進行中**（after-go）
+**最終更新**: 2026-09-19 12:40 JST — 776名簿 印刷OK。本セッション full CLOSE。
+**次の1手**: 新チャットは WAKE のみ。776 追加改修は明示依頼までしない。756バージョン管理見直しは明示GOまで customize/deploy しない。完了済の776並び・印刷見出しを聞き直さない。
+**レーン変更**: 756印刷/696 → **776 社員名簿**（並び・印刷。目視OK）
+**Git**: **`b5e00217`** — close-git 前（本締め後に更新）
+**closeStatus**: **full**
 **制約**: 閉済9件／ジャンル細分化禁止／A6-Sしない／印刷グラフ縮小禁止／720–721・682/683・**749 UX**再開は明示GOまで／**736不触**／688 WBGT以外不触／**浜田が言ったことを聞き直さない**／G0ロック範囲を再質問しない／金額増減は再開しない
-**本日状態**: **756**=`2026-09-14-ver02-cmv2-print-p2` rev**393** fileKey `b1faa69f-80c1-41ac-8348-9bfb45ddb980`。**757**=rev**34**（unit に泊）。**758**=rev**31**
+**本日状態**: **776**=`2026-09-19-776-print-hub-dept-label` rev**79** fileKey `e8440f84-732e-41b0-a2f6-317fc20f283f`。**595**=`2026-09-19-595-honmu-align-on-picker-only` rev**154** fileKey `0e9cfd33-9839-4e61-8c11-4d6179461e51`。756 rev**393** 不触。
 **674 live fileKey**: `a16f2595-8e7c-44b2-8bec-98e329aca6c3`
-### 本日アクティブ（BUILD/rev — 2026-09-13）
+### 本日アクティブ（BUILD/rev — 2026-09-19）
 | App | BUILD | rev |
 |-----|-------|-----|
+| **776** | `2026-09-19-776-print-hub-dept-label` | **79** |
+| **595** | `2026-09-19-595-honmu-align-on-picker-only` | **154** |
 | **756** | `2026-09-14-ver02-cmv2-print-p2` | **393** |
 | **715** | `2026-09-10-715-vl-serial-continue` | **28** |
-| **749** | `2026-08-29-749-ux-toolbar-copy-pill-print` | **18** |
 | **696** | `2026-08-24-696-modal-keep-open` | **18** |
-| **682** | `2026-08-23-682-banner-label-clarify` | **30** |
-| **683** | `2026-09-02-683-wiring-print-box` | **117** |
-| **721** | `2026-08-23-jr-ipad-dash-p2-vux` | **17** |
-| **776** | `2026-08-22-776-reorder-range-put` | **75** |
-| **595** | `2026-08-22-595-preserve-primary-list-sort` | **152** |
 | **674** | `2026-08-19-674-replace-fill-emp-id` | **341** |
-**継続メモ**: 696 未登録3件＋協力会社メモ26件 **目視OK**。協力会社はメモ。印刷 LIVE rev393 **目視OK**。次はバージョン管理の見直し（GOまで不触）。統括原価行正本 `docs/plans/2026-09-08-jikkou-yosan-v2-summary-cost-row-close.md`。設定タブ駐車。**MCP 試用は自発提案してよい**（足すのは GO 後）
-**GO待ち**: なし。バージョン管理の customize は明示GOまでしない
-**調査正本**: `docs/plans/2026-09-12-jikkou-yosan-v2-cost-mgmt-g0.md`
+**継続メモ**: 776印刷は拠点-部署（例: 東海支店-静岡営業所）。画面帯は短い部署名。一覧=集計拠点順。emp_id上書き禁止。698は別アプリ。756バージョン管理は明示GOまで不触。
+**GO待ち**: なし
+**調査正本**: `docs/plans/2026-08-21-employee-roster-kintone-spec.md`
 **品質ゲート**: `docs/runbooks/push-deploy-quality-gates-v2.md`
 **クローズ正本**: `data/cio-project-closures.json` / **Lifecycle v2**: `docs/runbooks/session-lifecycle-v2.md`
 

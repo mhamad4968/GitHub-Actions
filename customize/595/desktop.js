@@ -3,6 +3,8 @@
 
   /**
    * 595 社員マスタ
+   * BUILD: 2026-09-19-595-honmu-align-on-picker-only（sortピッカー時のみ776本務整列。兼務追加では戻さない）
+   * BUILD: 2026-09-19-595-align-776-honmu-sort（本務スロットを595.sort順へ。数値コピー禁止）
    * BUILD: 2026-08-22-595-preserve-primary-list-sort（兼務追加時も本務 list_sort を維持）
    * BUILD: 2026-08-22-595-roster-sync-fast（776同期: 全件renumber廃止・新規兼務は部署末尾整数・ミラーと並列）
    * BUILD: 2026-08-22-595-kenmu-list-sort-dept-end（新規兼務は776部署末尾・既存並び維持）
@@ -34,7 +36,7 @@
    * - 新規/異動保存: 「どこに入れますか？」モーダルで sort を確定（月次 CSV 振り直し不要）
    */
 
-  var BUILD = "2026-08-22-595-preserve-primary-list-sort";
+  var BUILD = "2026-09-19-595-honmu-align-on-picker-only";
 
   /** 新・PC台帳 所属候補マスタ（674 共有・JR と共用） */
   var APP_DEPT_MASTER_595 = "680";
@@ -2492,7 +2494,14 @@
           if (choice === false) {
             return false;
           }
-          return applySortRenumber595(event, choice, dept, peers, selfId);
+          return applySortRenumber595(event, choice, dept, peers, selfId).then(
+            function (ev) {
+              if (ev !== false) {
+                window.__jbis595DidSortPicker = true;
+              }
+              return ev;
+            }
+          );
         });
       })
       .catch(function (err) {
@@ -3646,17 +3655,156 @@
     return out;
   }
 
+  function fetchAll776ForHonmuAlign595() {
+    var all = [];
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: APP_ROSTER_776,
+          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
+          fields: ["$id", "row_role", "list_sort", "source_595_id"],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          all = all.concat(rows);
+          if (rows.length < 500) return all;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function fetch595HonmuSortMap595() {
+    var map = {};
+    function page(offset) {
+      return kintone
+        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
+          app: kintone.app.getId(),
+          query:
+            'employment_status in ("' +
+            escapeForQuery(EMP_ACTIVE) +
+            '") and employment_category in ("' +
+            escapeForQuery(CAT_SEISHAIN) +
+            '","' +
+            escapeForQuery(CAT_JUNSHAIN) +
+            '") order by sort asc, $id asc limit 500 offset ' +
+            offset,
+          fields: ["$id", FC595_SORT],
+        })
+        .then(function (resp) {
+          var rows = resp.records || [];
+          for (var i = 0; i < rows.length; i++) {
+            var sid = String(rows[i].$id.value);
+            var s = Number(scalarFrom595(rows[i], FC595_SORT));
+            if (sid && isFinite(s) && s > 0) map[sid] = s;
+          }
+          if (rows.length < 500) return map;
+          return page(offset + 500);
+        });
+    }
+    return page(0);
+  }
+
+  function planHonmuSlotAlign595(metaRows, sortBySourceId) {
+    var ordered = metaRows.slice();
+    var honmuIdx = [];
+    var honmuRows = [];
+    for (var i = 0; i < ordered.length; i++) {
+      if ((ordered[i].role || "") === "本務") {
+        honmuIdx.push(i);
+        honmuRows.push(ordered[i]);
+      }
+    }
+    honmuRows.sort(function (a, b) {
+      function rank(row) {
+        var s = Number(sortBySourceId[String(row.source595Id || "")]);
+        if (isFinite(s) && s > 0) return s;
+        return 999999;
+      }
+      var ra = rank(a);
+      var rb = rank(b);
+      if (ra !== rb) return ra - rb;
+      var sa = Number(a.listSort);
+      var sb = Number(b.listSort);
+      if (sa !== sb) {
+        return (isFinite(sa) ? sa : 999999) - (isFinite(sb) ? sb : 999999);
+      }
+      return String(a.id).localeCompare(String(b.id));
+    });
+    var next = ordered.slice();
+    for (var h = 0; h < honmuIdx.length; h++) {
+      next[honmuIdx[h]] = honmuRows[h];
+    }
+    var updates = [];
+    for (var n = 0; n < next.length; n++) {
+      var want = String(n + 1);
+      var from = String(next[n].listSort);
+      if (from !== want) {
+        updates.push({
+          id: next[n].id,
+          record: { list_sort: { value: want } },
+        });
+      }
+    }
+    return updates;
+  }
+
+  function put776ListSortRecords595(updates) {
+    if (!updates || !updates.length) return Promise.resolve();
+    var chain = Promise.resolve();
+    for (var b = 0; b < updates.length; b += 100) {
+      (function (batch) {
+        chain = chain.then(function () {
+          return kintone.api(kintone.api.url("/k/v1/records.json", true), "PUT", {
+            app: APP_ROSTER_776,
+            records: batch,
+          });
+        });
+      })(updates.slice(b, b + 100));
+    }
+    return chain;
+  }
+
+  /**
+   * 本務行の「枠」だけ 595.sort 順にする。兼務の位置は維持。
+   * 595.sort の数値は 776.list_sort にコピーしない。emp_id / 部室は不触。
+   */
+  function alignRoster776HonmuOrder595() {
+    return Promise.all([fetchAll776ForHonmuAlign595(), fetch595HonmuSortMap595()]).then(
+      function (pair) {
+        var recs = pair[0] || [];
+        var sortMap = pair[1] || {};
+        var meta = [];
+        for (var i = 0; i < recs.length; i++) {
+          var r = recs[i];
+          meta.push({
+            id: String(r.$id.value),
+            role: r.row_role && r.row_role.value != null ? String(r.row_role.value) : "",
+            listSort: Number(r.list_sort && r.list_sort.value),
+            source595Id: r.source_595_id && r.source_595_id.value != null
+              ? String(r.source_595_id.value)
+              : "",
+          });
+        }
+        var updates = planHonmuSlotAlign595(meta, sortMap);
+        return put776ListSortRecords595(updates);
+      }
+    );
+  }
+
   /**
    * 595 1人 → 776 upsert（正社員/準社員のみ。以外・退職は776から削除）。
-   * list_sort: 本務=既存776行があればその値を維持（兼務追加で本務が動かない）。新規本務のみ 595.sort。
+   * 本務の並び（兼務を除いた順）は、異動・新規で位置ピッカーを使ったときだけ 595.sort に合わせる。
+   * 兼務追加の再保存では本務位置を戻さない。595.sort 数値はコピーしない。
    * 兼務は既存行があれば維持、新規のみ当該部署の末尾（整数 max+1）。
-   * 保存ごとの全件 renumber はしない（レスポンスのため。隙間は許容）。
    * emp_id は emp_id_ref へのコピーのみ。
    */
   function syncRoster776OneFrom595(record) {
     if (!record || !record.$id || record.$id.value == null) {
       return Promise.resolve();
     }
+    var needHonmuAlign = !!window.__jbis595DidSortPicker;
+    window.__jbis595DidSortPicker = false;
     var sid = String(record.$id.value);
     var cat = scalarFrom595(record, FC595_CAT).trim();
     var emp = scalarFrom595(record, FC595_EMP).trim();
@@ -3667,7 +3815,6 @@
         var delIds = existing.map(function (r) {
           return r.$id.value;
         });
-        // 削除のみ。全件振り直しはしない（隙間可）
         return delete776Records595(delIds);
       }
 
@@ -3847,12 +3994,16 @@
             toAdd.push(desired[di].record);
           }
           if (!toAdd.length) {
-            return;
+            return needHonmuAlign ? alignRoster776HonmuOrder595() : undefined;
           }
-          return kintone.api(kintone.api.url("/k/v1/records.json", true), "POST", {
-            app: APP_ROSTER_776,
-            records: toAdd,
-          });
+          return kintone
+            .api(kintone.api.url("/k/v1/records.json", true), "POST", {
+              app: APP_ROSTER_776,
+              records: toAdd,
+            })
+            .then(function () {
+              return needHonmuAlign ? alignRoster776HonmuOrder595() : undefined;
+            });
         });
       });
     });

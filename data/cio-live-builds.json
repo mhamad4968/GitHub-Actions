@@ -2,11 +2,11 @@
   "version": 1,
   "apps": {
     "595": {
-      "build": "2026-08-22-595-preserve-primary-list-sort",
-      "fileKey": "526e1412-681a-4883-be1c-8480bdba479c",
-      "revision": "152",
+      "build": "2026-09-19-595-honmu-align-on-picker-only",
+      "fileKey": "0e9cfd33-9839-4e61-8c11-4d6179461e51",
+      "revision": "154",
       "relPath": "customize/595/desktop.js",
-      "deployedAt": "2026-08-22T10:02:57.849Z",
+      "deployedAt": "2026-09-19T02:11:22.061Z",
       "note": null
     },
     "627": {
@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-08-22-776-reorder-range-put",
-      "fileKey": "8c2d0243-583b-48e6-a53a-f85fdd6684b2",
-      "revision": "75",
+      "build": "2026-09-19-776-print-hub-dept-label",
+      "fileKey": "e8440f84-732e-41b0-a2f6-317fc20f283f",
+      "revision": "79",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-08-22T10:03:41.223Z",
+      "deployedAt": "2026-09-19T03:37:18.321Z",
       "note": null
     }
   }
