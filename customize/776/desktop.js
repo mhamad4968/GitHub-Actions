@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-09-19-776-pin-bucho-in-section（部長は部の先頭。支店先頭は支店長・副・所長）
  * BUILD: 2026-09-19-776-reorder-cb-left-of-sort（並び替えON時のみ表示順列の左に□）
  * BUILD: 2026-09-19-776-reorder-cb-right-on-toggle（並び替えON時のみ行右端に□）
  * BUILD: 2026-09-19-776-reorder-visible-checkboxes（各行左端に並び用レ点を自前描画）
@@ -45,7 +46,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-09-19-776-reorder-cb-left-of-sort";
+  var BUILD = "2026-09-19-776-pin-bucho-in-section";
   var ID_CACHE_KEY = "jbis776-idcache-v4";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -882,7 +883,7 @@
     return "other";
   }
 
-  /** 所属長ピン用ランク。小さいほど上。社長・常務等は自動ピンしない(99)。副支店長は支店長より先に判定 */
+  /** 所属長ピン用ランク。1〜3が部署先頭（支店長・副支店長・所長）。部長=4は部ブロック先頭。社長・常務は99 */
   function deptHeadRank776(title) {
     var t = String(title || "").trim();
     if (!t) return 99;
@@ -904,26 +905,38 @@
     return t.indexOf("室長") >= 0 && t.indexOf("副室長") < 0;
   }
 
-  function pinShitsuBlocks776(rest) {
-    var out = [];
-    var i = 0;
-    while (i < rest.length) {
+  function isBuchoTitle776(title) {
+    var t = String(title || "").trim();
+    if (t.indexOf("副部長") >= 0) return false;
+    return t.indexOf("部長") >= 0;
+  }
+
+  function pinSectionGroups776(rest) {
+    var keys = [];
+    var groups = {};
+    for (var i = 0; i < rest.length; i++) {
       var sec = String(rest[i].section || "");
-      var j = i + 1;
-      while (j < rest.length && String(rest[j].section || "") === sec) j += 1;
-      var block = rest.slice(i, j);
-      if (isShitsuSection776(sec)) {
-        var heads = [];
-        var others = [];
-        for (var k = 0; k < block.length; k++) {
-          if (isShitsuchoTitle776(block[k].title)) heads.push(block[k]);
-          else others.push(block[k]);
-        }
-        out = out.concat(heads, others);
-      } else {
-        out = out.concat(block);
+      if (!Object.prototype.hasOwnProperty.call(groups, sec)) {
+        groups[sec] = [];
+        keys.push(sec);
       }
-      i = j;
+      groups[sec].push(rest[i]);
+    }
+    var out = [];
+    for (var k = 0; k < keys.length; k++) {
+      var gsec = keys[k];
+      var block = groups[gsec];
+      var bucho = [];
+      var shitsu = [];
+      var others = [];
+      for (var j = 0; j < block.length; j++) {
+        var p = block[j];
+        if (isBuchoTitle776(p.title)) bucho.push(p);
+        else if (isShitsuSection776(gsec) && isShitsuchoTitle776(p.title)) shitsu.push(p);
+        else others.push(p);
+      }
+      if (isShitsuSection776(gsec)) out = out.concat(shitsu, bucho, others);
+      else out = out.concat(bucho, shitsu, others);
     }
     return out;
   }
@@ -940,9 +953,13 @@
       });
     }
     var heads = [];
+    var emptyBucho = [];
     var rest = [];
     for (var p = 0; p < tagged.length; p++) {
-      if (deptHeadRank776(tagged[p].title) < 99) heads.push(tagged[p]);
+      var rank = deptHeadRank776(tagged[p].title);
+      var sec = String(tagged[p].section || "").trim();
+      if (rank >= 1 && rank <= 3) heads.push(tagged[p]);
+      else if (isBuchoTitle776(tagged[p].title) && !sec) emptyBucho.push(tagged[p]);
       else rest.push(tagged[p]);
     }
     heads.sort(function (a, b) {
@@ -951,7 +968,7 @@
       if (ra !== rb) return ra - rb;
       return a._i - b._i;
     });
-    return heads.concat(pinShitsuBlocks776(rest));
+    return heads.concat(emptyBucho, pinSectionGroups776(rest));
   }
 
   function pinDeptSlots776(ids, byId, dept) {
@@ -3891,7 +3908,7 @@
     var hint = document.createElement("div");
     hint.style.cssText = "font-size:12px;color:#475569;line-height:1.5;";
     hint.textContent =
-      "並び替えを開くと、表示順の左に□が出ます。レ点で動かす人（複数可）。基準の人は下の検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
+      "並び替えを開くと、表示順の左に□が出ます。レ点で動かす人（複数可）。基準の人は下の検索（部署をまたいでよい）。置いたあと、支店長・副支店長・所長は部署の先頭、部長はその部、室長はその室へ直します。";
     box.appendChild(hint);
 
     var checkedLab = document.createElement("div");

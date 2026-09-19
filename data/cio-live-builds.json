@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-09-19-776-reorder-cb-left-of-sort",
-      "fileKey": "29b0842b-960a-4bb0-9ae2-c708a4fe5ebb",
-      "revision": "83",
+      "build": "2026-09-19-776-pin-bucho-in-section",
+      "fileKey": "9bf3bda9-6d5b-4bd1-85ce-31cd9bf870bb",
+      "revision": "84",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-09-19T10:28:38.776Z",
+      "deployedAt": "2026-09-19T10:49:48.430Z",
       "note": null
     }
   }
