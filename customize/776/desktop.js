@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-09-19-776-reorder-check-search-heads（レ点複数+基準検索+所属長ピン。本務のみ595.sort）
  * BUILD: 2026-09-19-776-print-hub-dept-label（印刷の部署見出しに支店名）
  * BUILD: 2026-09-19-776-dept-label-not-last-row（部署見出しがページ末尾なら次ページへ）
  * BUILD: 2026-09-19-776-block-heads-keep-order（部署/部見出し・他列ソート復帰・印刷見出し。list_sort不触）
@@ -41,7 +42,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-09-19-776-print-hub-dept-label";
+  var BUILD = "2026-09-19-776-reorder-check-search-heads";
   var ID_CACHE_KEY = "jbis776-idcache-v4";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -871,6 +872,111 @@
     return "other";
   }
 
+  /** 所属長ピン用ランク。小さいほど上。社長・常務等は自動ピンしない(99)。副支店長は支店長より先に判定 */
+  function deptHeadRank776(title) {
+    var t = String(title || "").trim();
+    if (!t) return 99;
+    if (t.indexOf("副支店長") >= 0) return 2;
+    if (t.indexOf("支店長") >= 0) return 1;
+    if (t.indexOf("副所長") >= 0) return 99;
+    if (t.indexOf("所長") >= 0) return 3;
+    if (t.indexOf("副部長") >= 0) return 99;
+    if (t.indexOf("部長") >= 0) return 4;
+    return 99;
+  }
+
+  function isShitsuSection776(section) {
+    return /室/.test(String(section || ""));
+  }
+
+  function isShitsuchoTitle776(title) {
+    var t = String(title || "").trim();
+    return t.indexOf("室長") >= 0 && t.indexOf("副室長") < 0;
+  }
+
+  function pinShitsuBlocks776(rest) {
+    var out = [];
+    var i = 0;
+    while (i < rest.length) {
+      var sec = String(rest[i].section || "");
+      var j = i + 1;
+      while (j < rest.length && String(rest[j].section || "") === sec) j += 1;
+      var block = rest.slice(i, j);
+      if (isShitsuSection776(sec)) {
+        var heads = [];
+        var others = [];
+        for (var k = 0; k < block.length; k++) {
+          if (isShitsuchoTitle776(block[k].title)) heads.push(block[k]);
+          else others.push(block[k]);
+        }
+        out = out.concat(heads, others);
+      } else {
+        out = out.concat(block);
+      }
+      i = j;
+    }
+    return out;
+  }
+
+  function pinDeptPeople776(people) {
+    var tagged = [];
+    for (var i = 0; i < people.length; i++) {
+      tagged.push({
+        id: people[i].id,
+        dept: people[i].dept,
+        section: people[i].section,
+        title: people[i].title,
+        _i: i
+      });
+    }
+    var heads = [];
+    var rest = [];
+    for (var p = 0; p < tagged.length; p++) {
+      if (deptHeadRank776(tagged[p].title) < 99) heads.push(tagged[p]);
+      else rest.push(tagged[p]);
+    }
+    heads.sort(function (a, b) {
+      var ra = deptHeadRank776(a.title);
+      var rb = deptHeadRank776(b.title);
+      if (ra !== rb) return ra - rb;
+      return a._i - b._i;
+    });
+    return heads.concat(pinShitsuBlocks776(rest));
+  }
+
+  function pinDeptSlots776(ids, byId, dept) {
+    if (!dept) return;
+    var slots = [];
+    var people = [];
+    for (var i = 0; i < ids.length; i++) {
+      var row = byId[ids[i]];
+      if (row && row.dept === dept) {
+        slots.push(i);
+        people.push(row);
+      }
+    }
+    if (people.length < 2) return;
+    var pinned = pinDeptPeople776(people);
+    for (var k = 0; k < slots.length; k++) ids[slots[k]] = pinned[k].id;
+  }
+
+  function getCheckedVisibleRecordIds776() {
+    var trs = listIndexRows();
+    var ids = [];
+    var seen = {};
+    if (!trs || !trs.length) return ids;
+    for (var i = 0; i < trs.length; i++) {
+      var tr = trs[i];
+      var cb = tr.querySelector("td:first-child input[type=\"checkbox\"]");
+      if (!cb || !cb.checked) continue;
+      var id = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
+      if (!id || seen[id]) continue;
+      seen[id] = true;
+      ids.push(id);
+    }
+    return ids;
+  }
+
   /** 一覧ヘッダから「役職」列の td インデックスを返す（見つからなければ -1） */
   function findJobTitleColIndex776(sampleTr) {
     var table =
@@ -1305,6 +1411,7 @@
       cell(r, "row_role") +
       "・順" +
       cell(r, "list_sort") +
+      (cell(r, "section_name") ? "・" + cell(r, "section_name") : "") +
       "）"
     );
   }
@@ -1327,6 +1434,7 @@
           "row_role",
           "list_sort",
           "group_name",
+          "section_name",
         ],
       })
       .then(function (resp) {
@@ -1334,7 +1442,7 @@
       });
   }
 
-  function placeMoverRelative(moverId, anchorId, place) {
+  function fetchAll776ForReorder() {
     var app = getAppId();
     var all = [];
     function page(offset) {
@@ -1342,7 +1450,15 @@
         .api(kintone.api.url("/k/v1/records.json", true), "GET", {
           app: app,
           query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id", "list_sort"],
+          fields: [
+            "$id",
+            "list_sort",
+            "dept_name",
+            "section_name",
+            "job_title",
+            "row_role",
+            "user_name"
+          ]
         })
         .then(function (resp) {
           var rows = resp.records || [];
@@ -1350,88 +1466,141 @@
             all.push({
               id: String(rows[i].$id.value),
               sort: Number(rows[i].list_sort && rows[i].list_sort.value),
+              dept: cell(rows[i], "dept_name"),
+              section: cell(rows[i], "section_name"),
+              title: cell(rows[i], "job_title"),
+              name: cell(rows[i], "user_name")
             });
           }
           if (rows.length < 500) return all;
           return page(offset + 500);
         });
     }
-    return page(0).then(function (rows) {
-      var ids = rows.map(function (r) {
-        return r.id;
+    return page(0);
+  }
+
+  function uniqueIdsPreserveOrder776(ids) {
+    var seen = {};
+    var out = [];
+    for (var i = 0; i < ids.length; i++) {
+      var id = String(ids[i] || "");
+      if (!id || seen[id]) continue;
+      seen[id] = true;
+      out.push(id);
+    }
+    return out;
+  }
+
+  function placeMoversRelative(moverIds, anchorId, place) {
+    var app = getAppId();
+    var want = uniqueIdsPreserveOrder776(moverIds);
+    var anchor = String(anchorId || "");
+    want = want.filter(function (id) {
+      return id !== anchor;
+    });
+    if (!want.length) {
+      return Promise.reject(new Error("動かす人を今見えている一覧でレ点してください"));
+    }
+    if (!anchor) return Promise.reject(new Error("基準の人を検索して選んでください"));
+    return fetchAll776ForReorder().then(function (rows) {
+      var byId = {};
+      for (var r = 0; r < rows.length; r++) byId[rows[r].id] = rows[r];
+      var ids = rows.map(function (row) {
+        return row.id;
       });
-      var from = ids.indexOf(String(moverId));
-      var anchor = ids.indexOf(String(anchorId));
-      if (from < 0) return Promise.reject(new Error("動かす人が一覧にありません"));
-      if (anchor < 0) return Promise.reject(new Error("基準の人が一覧にありません"));
-      ids.splice(from, 1);
-      if (from < anchor) anchor -= 1;
-      var insertAt = place === "above" ? anchor : anchor + 1;
-      if (insertAt < 0) insertAt = 0;
-      if (insertAt > ids.length) insertAt = ids.length;
-      ids.splice(insertAt, 0, String(moverId));
-      return applyListSortOrder776(app, rows, ids).then(function () {
-        return { total: ids.length, at: insertAt + 1 };
+      var movers = [];
+      for (var m = 0; m < want.length; m++) {
+        if (ids.indexOf(want[m]) < 0) {
+          return Promise.reject(new Error("動かす人が名簿にありません"));
+        }
+        movers.push(want[m]);
+      }
+      var drop = {};
+      for (var d = 0; d < movers.length; d++) drop[movers[d]] = true;
+      var next = [];
+      for (var i = 0; i < ids.length; i++) {
+        if (!drop[ids[i]]) next.push(ids[i]);
+      }
+      var anchorAt = next.indexOf(anchor);
+      if (anchorAt < 0) return Promise.reject(new Error("基準の人が名簿にありません"));
+      var insertAt = place === "above" ? anchorAt : anchorAt + 1;
+      next = next.slice(0, insertAt).concat(movers, next.slice(insertAt));
+      var depts = {};
+      var arow = byId[anchor];
+      if (arow && arow.dept) depts[arow.dept] = true;
+      for (var p = 0; p < movers.length; p++) {
+        var mr = byId[movers[p]];
+        if (mr && mr.dept) depts[mr.dept] = true;
+      }
+      Object.keys(depts).forEach(function (dept) {
+        pinDeptSlots776(next, byId, dept);
+      });
+      return applyListSortOrder776(app, rows, next).then(function () {
+        var at = next.indexOf(movers[0]);
+        return { total: next.length, at: at + 1, count: movers.length };
       });
     });
   }
 
-  /** 基準の人と同じ部署ブロックの末尾へ（「下に置く」が部署内末尾にならない問題の修正） */
-  function placeMoverAtDeptEnd(moverId, anchorId) {
-    var app = getAppId();
-    var all = [];
-    function page(offset) {
-      return kintone
-        .api(kintone.api.url("/k/v1/records.json", true), "GET", {
-          app: app,
-          query: "order by list_sort asc, レコード番号 asc limit 500 offset " + offset,
-          fields: ["$id", "dept_name", "list_sort"],
-        })
-        .then(function (resp) {
-          var rows = resp.records || [];
-          for (var i = 0; i < rows.length; i++) {
-            all.push({
-              id: String(rows[i].$id.value),
-              dept: cell(rows[i], "dept_name"),
-              sort: Number(rows[i].list_sort && rows[i].list_sort.value),
-            });
-          }
-          if (rows.length < 500) return all;
-          return page(offset + 500);
-        });
-    }
-    return page(0).then(function (rows) {
-      var ids = rows.map(function (r) {
-        return r.id;
-      });
-      var from = ids.indexOf(String(moverId));
-      var anchor = ids.indexOf(String(anchorId));
-      if (from < 0) return Promise.reject(new Error("動かす人が一覧にありません"));
-      if (anchor < 0) return Promise.reject(new Error("基準の人が一覧にありません"));
-      var dept = rows[anchor].dept;
-      if (!dept) return Promise.reject(new Error("基準の人の部署名が空です"));
+  function placeMoverRelative(moverId, anchorId, place) {
+    return placeMoversRelative([moverId], anchorId, place);
+  }
 
-      ids.splice(from, 1);
-      // 削除後の「その部署の最後の index」を探す
-      var lastDept = -1;
-      for (var i = 0; i < ids.length; i++) {
-        var row = null;
-        for (var j = 0; j < rows.length; j++) {
-          if (rows[j].id === ids[i]) {
-            row = rows[j];
-            break;
-          }
+  /** 基準の人と同じ部署の末尾へ（複数可） */
+  function placeMoversAtDeptEnd(moverIds, anchorId) {
+    var app = getAppId();
+    var want = uniqueIdsPreserveOrder776(moverIds);
+    var anchor = String(anchorId || "");
+    want = want.filter(function (id) {
+      return id !== anchor;
+    });
+    if (!want.length) {
+      return Promise.reject(new Error("動かす人を今見えている一覧でレ点してください"));
+    }
+    if (!anchor) return Promise.reject(new Error("基準の人を検索して選んでください"));
+    return fetchAll776ForReorder().then(function (rows) {
+      var byId = {};
+      for (var r = 0; r < rows.length; r++) byId[rows[r].id] = rows[r];
+      if (!byId[anchor]) return Promise.reject(new Error("基準の人が名簿にありません"));
+      var dept = byId[anchor].dept;
+      if (!dept) return Promise.reject(new Error("基準の人の部署名が空です"));
+      var ids = rows.map(function (row) {
+        return row.id;
+      });
+      var movers = [];
+      for (var m = 0; m < want.length; m++) {
+        if (ids.indexOf(want[m]) < 0) {
+          return Promise.reject(new Error("動かす人が名簿にありません"));
         }
-        if (row && row.dept === dept) lastDept = i;
+        movers.push(want[m]);
       }
-      var insertAt = lastDept < 0 ? ids.length : lastDept + 1;
-      if (insertAt < 0) insertAt = 0;
-      if (insertAt > ids.length) insertAt = ids.length;
-      ids.splice(insertAt, 0, String(moverId));
-      return applyListSortOrder776(app, rows, ids).then(function () {
-        return { total: ids.length, at: insertAt + 1, dept: dept };
+      var drop = {};
+      for (var d = 0; d < movers.length; d++) drop[movers[d]] = true;
+      var next = [];
+      for (var i = 0; i < ids.length; i++) {
+        if (!drop[ids[i]]) next.push(ids[i]);
+      }
+      var lastDept = -1;
+      for (var j = 0; j < next.length; j++) {
+        var row = byId[next[j]];
+        if (row && row.dept === dept) lastDept = j;
+      }
+      var insertAt = lastDept < 0 ? next.length : lastDept + 1;
+      next = next.slice(0, insertAt).concat(movers, next.slice(insertAt));
+      pinDeptSlots776(next, byId, dept);
+      for (var p = 0; p < movers.length; p++) {
+        var mr = byId[movers[p]];
+        if (mr && mr.dept && mr.dept !== dept) pinDeptSlots776(next, byId, mr.dept);
+      }
+      return applyListSortOrder776(app, rows, next).then(function () {
+        var at = next.indexOf(movers[0]);
+        return { total: next.length, at: at + 1, dept: dept, count: movers.length };
       });
     });
+  }
+
+  function placeMoverAtDeptEnd(moverId, anchorId) {
+    return placeMoversAtDeptEnd([moverId], anchorId);
   }
 
   /**
@@ -3580,8 +3749,31 @@
 
     var title = document.createElement("div");
     title.style.cssText = "font-weight:700;color:#0f172a;font-size:13px;";
-    title.textContent = "並び替え（名前検索 → 基準の上／下／部署末尾）";
+    title.textContent = "並び替え（一覧のレ点 → 基準を検索 → 上／下）";
     box.appendChild(title);
+
+    var hint = document.createElement("div");
+    hint.style.cssText = "font-size:12px;color:#475569;line-height:1.5;";
+    hint.textContent =
+      "今見えている一覧のレ点で動かす人（複数可）。基準の人は検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
+    box.appendChild(hint);
+
+    var checkedLab = document.createElement("div");
+    checkedLab.style.cssText = "font-size:12px;color:#0f766e;font-weight:600;";
+    function refreshCheckedCount() {
+      var n = getCheckedVisibleRecordIds776().length;
+      checkedLab.textContent = "レ点中: " + n + " 人（この画面に見えている行）";
+    }
+    refreshCheckedCount();
+    box.appendChild(checkedLab);
+    box.addEventListener("mouseenter", refreshCheckedCount);
+    document.addEventListener("change", function onCb() {
+      if (!document.getElementById(REORDER_ID)) {
+        document.removeEventListener("change", onCb);
+        return;
+      }
+      refreshCheckedCount();
+    });
 
     function mkRow(labelText) {
       var row = document.createElement("div");
@@ -3610,9 +3802,7 @@
       return { row: row, input: input, btn: btn, sel: sel };
     }
 
-    var mover = mkRow("動かす人");
     var anchor = mkRow("基準の人");
-    box.appendChild(mover.row);
     box.appendChild(anchor.row);
 
     var actions = document.createElement("div");
@@ -3677,7 +3867,6 @@
         }
       });
     }
-    wireSearch(mover);
     wireSearch(anchor);
 
     function selectedId(sel) {
@@ -3686,10 +3875,16 @@
     }
 
     function runPlace(place) {
-      var m = selectedId(mover.sel);
+      refreshCheckedCount();
+      var movers = getCheckedVisibleRecordIds776();
       var a = selectedId(anchor.sel);
-      if (!m || !a || m === a) {
-        status.textContent = "動かす人・基準の人を別々に選んでください";
+      if (!movers.length) {
+        status.textContent = "今見えている一覧で、動かす人にレ点を付けてください";
+        status.style.color = "#b91c1c";
+        return;
+      }
+      if (!a) {
+        status.textContent = "基準の人を検索して選んでください";
         status.style.color = "#b91c1c";
         return;
       }
@@ -3698,20 +3893,20 @@
       btnAbove.disabled = true;
       btnBelow.disabled = true;
       btnDeptEnd.disabled = true;
-      var moverName = selectedLabel(mover.sel);
+      var moverName = selectedLabel(anchor.sel);
       var job =
         place === "dept-end"
-          ? placeMoverAtDeptEnd(m, a)
-          : placeMoverRelative(m, a, place);
+          ? placeMoversAtDeptEnd(movers, a)
+          : placeMoversRelative(movers, a, place);
       job
         .then(function (res) {
           var msg =
             place === "dept-end"
-              ? "完了（" + (res.dept || "部署") + " 末尾・順 " + res.at + "）。再読込…"
-              : "完了（順 " + res.at + "）。再読込…";
+              ? "完了（" + (res.count || movers.length) + "人・" + (res.dept || "部署") + " 末尾・順 " + res.at + "）。再読込…"
+              : "完了（" + (res.count || movers.length) + "人・順 " + res.at + "）。再読込…";
           status.textContent = msg;
           status.style.color = "#047857";
-          rememberScrollAfterReorder({ id: m, name: moverName, at: res.at });
+          rememberScrollAfterReorder({ id: movers[0], name: moverName, at: res.at });
           setTimeout(function () {
             try {
               sessionStorage.removeItem("jbis776-idcache-v1");
@@ -3722,7 +3917,7 @@
             }
             fetchFilteredSortMeta(st)
               .then(function (meta) {
-                var idx = meta.ids.indexOf(String(m));
+                var idx = meta.ids.indexOf(String(movers[0]));
                 var ps = st.pageSize || 40;
                 var page = idx >= 0 ? Math.floor(idx / ps) + 1 : st.page || 1;
                 return goRosterPage(st, page);
