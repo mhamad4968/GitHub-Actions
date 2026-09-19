@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-09-19-776-reorder-visible-checkboxes",
-      "fileKey": "e12c28b8-e67f-457d-a3b2-88d90bdcaa17",
-      "revision": "81",
+      "build": "2026-09-19-776-reorder-cb-right-on-toggle",
+      "fileKey": "367c6ff7-6778-4361-8faf-c1cc1feae247",
+      "revision": "82",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-09-19T10:20:57.265Z",
+      "deployedAt": "2026-09-19T10:24:00.603Z",
       "note": null
     }
   }
