@@ -1,7 +1,7 @@
 {
   "version": "2026-05-30",
-  "exportedAt": "2026-09-19T01:34:47.571Z",
-  "gitHead": "2d3ecd0f",
+  "exportedAt": "2026-09-19T01:42:18.859Z",
+  "gitHead": "4ddb7dd9",
   "gitStatus": "## main...origin/main",
   "nextTask": "**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。",
   "nextFiles": [
@@ -17,6 +17,8 @@
     "docs/knowledge/debug-tips.md"
   ],
   "lastFailures": [],
-  "promptBlock": "【SESSION-BRIDGE】git=2d3ecd0f | 次=**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
-  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import"
+  "promptBlock": "【SESSION-BRIDGE】git=4ddb7dd9 | 次=**明示GOまで** バージョン管理の見直し（customize / deploy しない）。印刷は目視OK。696 協力会社はメモ。正本 `docs/plans/2026-09-14-jikkou-yosan-v2-cost-mgmt-print-spec.md`。 | Read: chat-sessions/checkpoint-latest.md, chat-sessions/handoff-log.md, docs/handoff/latest-session-bridge.json",
+  "note": "New Chat 第1ターン: npm run verify:session-handoff-integrity -- --import",
+  "validatedAt": "2026-09-19T01:43:13.625Z",
+  "crosscheckOk": true
 }
