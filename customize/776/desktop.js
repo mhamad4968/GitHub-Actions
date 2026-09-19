@@ -3,6 +3,7 @@
 
   /**
    * 776 社員名簿
+ * BUILD: 2026-09-19-776-reorder-cb-left-of-sort（並び替えON時のみ表示順列の左に□）
  * BUILD: 2026-09-19-776-reorder-cb-right-on-toggle（並び替えON時のみ行右端に□）
  * BUILD: 2026-09-19-776-reorder-visible-checkboxes（各行左端に並び用レ点を自前描画）
  * BUILD: 2026-09-19-776-reorder-check-search-heads（レ点複数+基準検索+所属長ピン。本務のみ595.sort）
@@ -44,7 +45,7 @@
  * BUILD: 2026-08-21-776-agg-col-mid（集計表の列幅を中庸に）
  * BUILD: 2026-08-21-776-agg-col-fixed（集計表の列幅を固定・部署を抑制）
    */
-  var BUILD = "2026-09-19-776-reorder-cb-right-on-toggle";
+  var BUILD = "2026-09-19-776-reorder-cb-left-of-sort";
   var ID_CACHE_KEY = "jbis776-idcache-v4";
   var WRAP_ID = "jbis-776-index-toolbar";
   var REORDER_ID = "jbis-776-index-reorder";
@@ -849,7 +850,7 @@
       "border-top:1px solid #a5b4fc !important;}" +
       "label.jbis-776-move-wrap{" +
       "display:inline-flex !important;align-items:center !important;" +
-      "float:right !important;margin:0 0 0 8px !important;vertical-align:middle !important;" +
+      "float:left !important;margin:0 8px 0 0 !important;vertical-align:middle !important;" +
       "cursor:pointer !important;user-select:none !important;}" +
       "input.jbis-776-move-cb{" +
       "width:16px !important;height:16px !important;margin:0 !important;" +
@@ -1007,6 +1008,68 @@
     }
   }
 
+  function isNativeCheckboxTd776(td) {
+    if (!td) return false;
+    var cb = td.querySelector('input[type="checkbox"]');
+    if (!cb || cb.classList.contains("jbis-776-move-cb")) return false;
+    return true;
+  }
+
+  function findHyojijunColIndex776(sampleTr) {
+    var table =
+      (sampleTr && sampleTr.closest && sampleTr.closest("table")) ||
+      document.querySelector(
+        ".recordlist-gaia, .gaia-argoui-app-index-table, .ocean-ui-app-index-table",
+      );
+    if (!table) return -1;
+    var ths = table.querySelectorAll("thead th");
+    if (!ths.length) ths = table.querySelectorAll("tr th");
+    var idx = -1;
+    for (var h = 0; h < ths.length; h++) {
+      var lab = String(ths[h].textContent || "")
+        .replace(/\s|\u3000/g, "")
+        .trim();
+      if (lab === "表示順" || lab.indexOf("表示順") === 0) {
+        idx = h;
+        break;
+      }
+    }
+    if (idx < 0) return -1;
+    var tr = sampleTr;
+    if (!tr) {
+      var bodyRows = table.querySelectorAll("tbody tr");
+      for (var r = 0; r < bodyRows.length; r++) {
+        if (!bodyRows[r].querySelector("th") && !bodyRows[r].classList.contains("jbis-776-block-head")) {
+          tr = bodyRows[r];
+          break;
+        }
+      }
+    }
+    if (tr) {
+      var firstTd = tr.querySelector("td");
+      var firstTh = ths[0];
+      var bodyHasCb = isNativeCheckboxTd776(firstTd);
+      var headHasCb =
+        !!(firstTh && firstTh.querySelector('input[type="checkbox"]'));
+      if (bodyHasCb && !headHasCb) idx += 1;
+    }
+    return idx;
+  }
+
+  function moveCheckboxHostTd776(tr) {
+    if (!tr) return null;
+    var tds = tr.querySelectorAll("td");
+    if (!tds.length) return null;
+    var colIdx = findHyojijunColIndex776(tr);
+    if (colIdx >= 0 && colIdx < tds.length && !isNativeCheckboxTd776(tds[colIdx])) {
+      return tds[colIdx];
+    }
+    for (var j = 0; j < tds.length; j++) {
+      if (!isNativeCheckboxTd776(tds[j])) return tds[j];
+    }
+    return tds[0];
+  }
+
   function ensureMoveCheckboxes776() {
     ensureDeptSepStyle();
     if (!isReorderPanelOpen776()) {
@@ -1017,13 +1080,16 @@
     if (!trs || !trs.length) return;
     for (var i = 0; i < trs.length; i++) {
       var tr = trs[i];
-      var tds = tr.querySelectorAll("td");
-      var td = tds.length ? tds[tds.length - 1] : null;
+      var td = moveCheckboxHostTd776(tr);
       if (!td) continue;
       var existing = tr.querySelector("label.jbis-776-move-wrap");
       if (existing) {
-        if (existing.parentNode === td) continue;
-        existing.parentNode.removeChild(existing);
+        if (existing.parentNode !== td) {
+          existing.parentNode.removeChild(existing);
+        } else {
+          if (td.firstChild !== existing) td.insertBefore(existing, td.firstChild);
+          continue;
+        }
       }
       var id = tr.getAttribute("data-jbis-rid") || recordIdFromIndexTr(tr);
       var wrap = document.createElement("label");
@@ -1040,7 +1106,7 @@
       wrap.addEventListener("click", function (ev) {
         ev.stopPropagation();
       });
-      td.appendChild(wrap);
+      td.insertBefore(wrap, td.firstChild);
     }
   }
 
@@ -3825,7 +3891,7 @@
     var hint = document.createElement("div");
     hint.style.cssText = "font-size:12px;color:#475569;line-height:1.5;";
     hint.textContent =
-      "並び替えを開くと、今見えている各行の右端に□が出ます。レ点で動かす人（複数可）。基準の人は下の検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
+      "並び替えを開くと、表示順の左に□が出ます。レ点で動かす人（複数可）。基準の人は下の検索（部署をまたいでよい）。置いたあと、関係する部署だけ所属長を先頭に直します。";
     box.appendChild(hint);
 
     var checkedLab = document.createElement("div");

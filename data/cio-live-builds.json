@@ -474,11 +474,11 @@
       "note": null
     },
     "776": {
-      "build": "2026-09-19-776-reorder-cb-right-on-toggle",
-      "fileKey": "367c6ff7-6778-4361-8faf-c1cc1feae247",
-      "revision": "82",
+      "build": "2026-09-19-776-reorder-cb-left-of-sort",
+      "fileKey": "29b0842b-960a-4bb0-9ae2-c708a4fe5ebb",
+      "revision": "83",
       "relPath": "customize/776/desktop.js",
-      "deployedAt": "2026-09-19T10:24:00.603Z",
+      "deployedAt": "2026-09-19T10:28:38.776Z",
       "note": null
     }
   }
